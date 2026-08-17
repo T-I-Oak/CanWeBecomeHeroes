@@ -22,6 +22,7 @@ import FacilityReturnSystem from '../game/FacilityReturnSystem.js';
 import ShopSystem from '../game/ShopSystem.js';
 import BattleSystem from '../game/BattleSystem.js';
 import ItemFactory from '../game/ItemFactory.js';
+import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 
 const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
 const EQUIPMENT_GRID_HEIGHT = PREPARATION_LAYOUT.equipmentSlotSize * 3 + PREPARATION_LAYOUT.equipmentGap * 2;
@@ -202,6 +203,20 @@ function drawAreaBackground(context, assets, areaName) {
   context.restore();
 }
 
+function drawBattleSlotGround(context, assets) {
+  const image = assets.load('/assets/background/trampled-ground.png');
+  if (!image.complete || image.naturalWidth === 0) return;
+  const battle = GAME_AREAS.battle;
+  const startX = battle.x + (battle.width - HERO_SLOT_SIZE * 6) / 2;
+  const rows = [
+    { columns: [0, 1, 2, 3, 4, 5], y: battle.y + (BATTLE_ENEMY_AREA_HEIGHT - HERO_SLOT_SIZE) / 2 },
+    { columns: [1, 2, 3, 4], y: battle.y + BATTLE_ENEMY_AREA_HEIGHT },
+  ];
+  rows.forEach(({ columns, y }) => {
+    columns.forEach((column) => context.drawImage(image, startX + column * HERO_SLOT_SIZE, y, HERO_SLOT_SIZE, HERO_SLOT_SIZE));
+  });
+}
+
 function drawDemoBattleMeasurement(context, battleSystem, currentTick) {
   const elapsedTicks = battleSystem.getElapsedTicks(currentTick);
   if (elapsedTicks === null) return;
@@ -367,6 +382,7 @@ export function startGame({ scenario }) {
     context.scale(camera.zoom, camera.zoom);
     context.translate(-camera.x, -camera.y);
     ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
+    drawBattleSlotGround(context, assets);
     scenario.drawGuides(context);
     drawDemoBattleMeasurement(context, battleSystem, clock.tick);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction());
