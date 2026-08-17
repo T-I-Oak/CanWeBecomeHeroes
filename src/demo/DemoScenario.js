@@ -3,16 +3,12 @@ import HeroFactory from '../game/HeroFactory.js';
 import ItemFactory, { DESTINATION_TYPES } from '../game/ItemFactory.js';
 import { GAME_AREAS, getPreparationSubareaBounds } from '../game/GameAreas.js';
 import { PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
-import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
+import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import ShopState from '../game/ShopState.js';
 import { getShopLayout } from '../game/ShopLayout.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 
 const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
-const BATTLE_ROWS = Object.freeze([
-  { occupiedColumns: [0, 1, 2, 3, 4, 5], color: '#d88989', y: (area) => area.y + (BATTLE_ENEMY_AREA_HEIGHT - HERO_SLOT_SIZE) / 2 },
-  { occupiedColumns: [1, 2, 3, 4], color: '#7aa8dc', y: (area) => area.y + BATTLE_ENEMY_AREA_HEIGHT },
-]);
 const FACILITY_SLOT_COLORS = Object.freeze({ shop: '#b58c59', guild: '#8d78b8', training: '#5d9b7a' });
 
 function randomWarehousePosition(radius = CHIP_RADIUS.item) {
@@ -32,13 +28,8 @@ function drawSlot(context, x, y, color) {
 }
 
 function drawDemoGuides(context) {
-  const battle = GAME_AREAS.battle;
-  const battleX = battle.x + (battle.width - HERO_SLOT_SIZE * 6) / 2;
   context.save();
   context.lineWidth = 3;
-  BATTLE_ROWS.forEach(({ occupiedColumns, color, y }) => {
-    occupiedColumns.forEach((column) => drawSlot(context, battleX + column * HERO_SLOT_SIZE, y(battle), color));
-  });
   ['shop', 'guild', 'training'].forEach((name) => {
     const area = GAME_AREAS[name];
     const slot = name === 'shop'
