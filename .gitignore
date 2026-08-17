@@ -1,0 +1,5 @@
+node_modules/
+dist/
+local_*
+dev_*
+tmp_*

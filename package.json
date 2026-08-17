@@ -1,0 +1,14 @@
+{
+  "name": "can-we-become-heroes",
+  "version": "0.3.38",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
+  }
+}
