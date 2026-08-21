@@ -148,7 +148,7 @@ export default class BattleSystem {
     }));
     this.actionLogResults = null;
   }
-  getEntityLabel(entity) { return isHero(entity) ? `【${entity.profession}・${entity.name.ja}】` : `【enemy:${entity.definition.id}】`; }
+  getEntityLabel(entity) { return isHero(entity) ? `【${entity.profession}・${entity.name.ja}】` : `【${entity.definition.nameJa}】`; }
   logDamage(actor, target, type, damage, remaining) { this.logger?.info?.(`[Battle] ${this.getEntityLabel(actor)} -> ${this.getEntityLabel(target)} | ${type} | ${damage.toFixed(3)} damage | ${remaining}`); }
   defeatEnemy(enemy) { if (!onBoard(this.board, enemy)) return; this.board.removeChip(enemy.chip); this.controller?.remove(enemy); this.contributionPoints += enemy.contributionPoints; const a = GAME_AREAS.warehouse; const item = this.itemFactory.createBodyItem({ part: 'head', tags: [enemy.definition.tagAffinity], x: a.x + a.width / 2 + (this.random() - .5) * 96, y: a.y + a.height / 2 + (this.random() - .5) * 96, random: this.random }); this.controller?.addToWarehouse(item); }
   getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }

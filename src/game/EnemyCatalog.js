@@ -4,6 +4,7 @@ export const ENEMY_CATALOG = Object.freeze({
     size: 'small',
     tagAffinity: 'valor',
     nameKey: 'enemy.smallValor',
+    nameJa: 'ゴブリン',
     assetPath: '/assets/enemies/small-valor.png',
   }),
 });

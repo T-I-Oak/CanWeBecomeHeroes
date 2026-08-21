@@ -47,7 +47,7 @@ test('a full action gauge resolves basic damage, awards contribution, drops an i
   assert.equal(dropped.length, 1);
   assert.equal(dropped[0].tags.includes('valor'), true);
   assert.equal(battle.getElapsedTicks(1), 1);
-  assert.match(records[0], /【剣士・アヴェリー】 -> 【enemy:small-valor】/);
+  assert.match(records[0], /【剣士・アヴェリー】 -> 【ゴブリン】/);
   assert.match(records[0], /damage/);
 });
 
@@ -133,7 +133,7 @@ test('one action records one visible battle log per actor and target', () => {
   battle.flushActionLogs();
 
   assert.deepEqual(records, [{
-    message: '【剣士・アヴェリー】は【enemy:small-valor】に会心ダメージ30を与えた。',
+    message: '【剣士・アヴェリー】は【ゴブリン】に会心ダメージ30を与えた。',
     options: { subject: 'hero', level: 'luck' },
   }]);
 });
@@ -150,7 +150,7 @@ test('a missed action records a visible unlucky battle log', () => {
   battle.flushActionLogs();
 
   assert.deepEqual(records, [{
-    message: '【剣士・アヴェリー】の【enemy:small-valor】への攻撃は外れた。',
+    message: '【剣士・アヴェリー】の【ゴブリン】への攻撃は外れた。',
     options: { subject: 'hero', level: 'unluck' },
   }]);
 });
@@ -168,7 +168,7 @@ test('a defeat replaces the action damage log with a visible defeat log', () => 
   battle.flushActionLogs();
 
   assert.deepEqual(records, [{
-    message: '【剣士・アヴェリー】は【enemy:small-valor】を倒した。',
+    message: '【剣士・アヴェリー】は【ゴブリン】を倒した。',
     options: { subject: 'hero', level: 'info' },
   }]);
 });
