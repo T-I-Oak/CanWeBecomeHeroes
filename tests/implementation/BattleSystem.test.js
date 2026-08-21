@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import BattleSystem, { getAttackDamage } from '../../src/game/BattleSystem.js';
+import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
@@ -101,4 +102,19 @@ test('attribute values are applied by maximum and decay every sixty ticks', () =
   assert.ok(Math.abs(hero.attributes.water - 0.85) < 1e-9);
   assert.ok(Math.abs(hero.attributes.lightning - 0.375) < 1e-9);
   assert.equal(hero.chip.attributeValues, hero.attributes);
+});
+
+test('one action aggregates miss and damage feedback by target with critical priority', () => {
+  const effects = new CombatEffectSystem();
+  const target = { chip: {} };
+
+  effects.beginAction();
+  effects.miss(target);
+  effects.damage(target, 0.1);
+  effects.damage(target, 0.2, true);
+  effects.endAction();
+
+  assert.equal(effects.popups.length, 1);
+  assert.equal(effects.popups[0].label, 'critical 30');
+  assert.equal(effects.hits.length, 1);
 });

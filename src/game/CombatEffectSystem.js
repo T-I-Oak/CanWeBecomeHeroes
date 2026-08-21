@@ -14,6 +14,20 @@ export default class CombatEffectSystem {
     this.hits = [];
     this.popups = [];
     this.lightning = [];
+    this.actionResults = null;
+  }
+
+  beginAction() {
+    this.actionResults = new Map();
+  }
+
+  endAction() {
+    if (!this.actionResults) return;
+    this.actionResults.forEach(({ target, amount, priority, lightning }) => {
+      if (priority === 'miss') this.emitMiss(target);
+      else this.emitDamage(target, amount, priority === 'critical', lightning);
+    });
+    this.actionResults = null;
   }
 
   attack(actor, rangeLevel) {
@@ -21,17 +35,45 @@ export default class CombatEffectSystem {
   }
 
   miss(target) {
-    this.popups.push({ chip: target.chip, label: 'miss!', color: '#dce5f2', elapsed: 0, duration: 0.8 });
+    if (this.actionResults) {
+      const current = this.getActionResult(target);
+      if (current.priority === null) current.priority = 'miss';
+      return;
+    }
+    this.emitMiss(target);
   }
 
   damage(target, amount, critical = false) {
     if (amount < 0.01) return;
-    this.hits.push({ chip: target.chip, elapsed: 0, amount, lightning: false });
-    this.popups.push({ chip: target.chip, label: `${critical ? 'critical' : 'damage'} ${Math.round(amount * 100)}`, color: critical ? '#ffd365' : '#f6f0d8', elapsed: 0, duration: 0.9 });
+    if (this.actionResults) {
+      const current = this.getActionResult(target);
+      current.amount += amount;
+      current.priority = critical ? 'critical' : current.priority === 'critical' ? 'critical' : 'damage';
+      return;
+    }
+    this.emitDamage(target, amount, critical);
   }
 
   lightningHit(target) {
+    if (this.actionResults) {
+      this.getActionResult(target).lightning = true;
+      return;
+    }
     this.hits.push({ chip: target.chip, elapsed: 0, amount: 0, lightning: true });
+  }
+
+  getActionResult(target) {
+    if (!this.actionResults.has(target.chip)) this.actionResults.set(target.chip, { target, amount: 0, priority: null, lightning: false });
+    return this.actionResults.get(target.chip);
+  }
+
+  emitMiss(target) {
+    this.popups.push({ chip: target.chip, label: 'miss!', color: '#dce5f2', elapsed: 0, duration: 0.8 });
+  }
+
+  emitDamage(target, amount, critical, lightning = false) {
+    this.hits.push({ chip: target.chip, elapsed: 0, amount, lightning });
+    this.popups.push({ chip: target.chip, label: `${critical ? 'critical' : 'damage'} ${Math.round(amount * 100)}`, color: critical ? '#ffd365' : '#f6f0d8', elapsed: 0, duration: 0.9 });
   }
 
   lightningPropagation(from, to) {

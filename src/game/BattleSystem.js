@@ -58,9 +58,9 @@ export default class BattleSystem {
     return coefficients.map((coefficient, index) => ({ target: foes[at + index - center], coefficient })).filter(({ target: t }) => t);
   }
   resolveAction(actor, target, participants) {
-    const targets = this.rangeTargets(actor, target, participants); this.effects?.attack(actor, actor.getTagCount('area'));
+    const targets = this.rangeTargets(actor, target, participants); this.effects?.attack(actor, actor.getTagCount('area')); this.effects?.beginAction(actor);
     targets.forEach(({ target: t, coefficient }) => ['fire', 'water', 'lightning'].forEach((tag) => { const value = actor.getTagCount(tag) * coefficient; if (value) { t.attributes[tag] = Math.max(t.attributes[tag], value); t.chip.attributeValues = t.attributes; } }));
-    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants)); actor.luckBonus = 0;
+    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants)); this.effects?.endAction(); actor.luckBonus = 0;
   }
   attackTypes(actor) {
     if (isHero(actor)) return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');
