@@ -2,9 +2,9 @@ import { GAME_AREAS } from './GameAreas.js';
 import { getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
 
 const TICKS_PER_SECOND = 60;
-const ACTION_GAUGE_BASE_RATE = 13 / 150;
+const ACTION_GAUGE_BASE_RATE = 13 / 300;
 const ACTION_GAUGE_WEIGHT_SCALE = 25;
-const ATTRIBUTE_TICK_INTERVAL = 30;
+const ATTRIBUTE_TICK_INTERVAL = 60;
 const RANGE = [[1], [0.3, 0.5, 0.3], [0.4, 0.5, 0.4], [0.1, 0.4, 0.6, 0.4, 0.1], [0.2, 0.5, 0.6, 0.5, 0.2], [0.1, 0.3, 0.5, 0.7, 0.5, 0.3, 0.1], [0.2, 0.4, 0.6, 0.7, 0.6, 0.4, 0.2], [0.1, 0.3, 0.5, 0.6, 0.8, 0.6, 0.5, 0.3, 0.1]];
 const ATTACKS = { sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['power', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['magic', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] };
 const isHero = (actor) => actor.chip.type === 'hero';
