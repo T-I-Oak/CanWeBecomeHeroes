@@ -106,8 +106,8 @@ export default class CombatEffectSystem {
       context.globalAlpha = 1 - ratio;
       context.fillStyle = effect.color;
       context.strokeStyle = '#24334d';
-      context.lineWidth = 3;
-      context.font = 'bold 18px system-ui';
+      context.lineWidth = 6;
+      context.font = 'bold 40px system-ui';
       context.textAlign = 'center';
       context.textBaseline = 'middle';
       const y = position.y - effect.chip.radius - ratio * 22;
