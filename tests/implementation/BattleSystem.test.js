@@ -63,7 +63,7 @@ test('an actor with no opponent spends a full action gauge without performing an
   hero.currentArea = 'battle';
   hero.chip.height = 0;
   board.addChip(hero.chip);
-  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory() });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
 
   battle.battleStartTick = 0;
   battle.update({ heroes: [hero], enemies: [], tick: 1, tickDelta: 1000 });
@@ -79,7 +79,7 @@ test('leaving the battle area clears an actor action gauge', () => {
   hero.targetArea = 'preparation';
   hero.chip.actionGauge = 4;
   hero.chip.actionGaugeMaximum = 15;
-  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory() });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
 
   battle.update({ heroes: [hero], enemies: [], tick: 1, tickDelta: 1 });
 
@@ -117,4 +117,19 @@ test('one action aggregates miss and damage feedback by target with critical pri
   assert.equal(effects.popups.length, 1);
   assert.equal(effects.popups[0].label, 'critical 30');
   assert.equal(effects.hits.length, 1);
+});
+
+test('physical reduction is consumed and iron reflects part of the remaining physical damage', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const actor = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
+  const target = new HeroFactory().create({ profession: 'guard', x: 200, y: 100, stamina: 3 });
+  target.physicalDamageReduction = 0.2;
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  const dealt = battle.applyPhysicalDamage(actor, target, 'sword', 1, false, [actor, target]);
+
+  assert.equal(target.physicalDamageReduction, 0);
+  assert.ok(Math.abs(dealt - 0.72) < 1e-9);
+  assert.ok(Math.abs(target.stamina - 2.28) < 1e-9);
+  assert.ok(Math.abs(actor.stamina - 2.82) < 1e-9);
 });

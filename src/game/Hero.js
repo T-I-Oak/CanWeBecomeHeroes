@@ -1,4 +1,4 @@
-import { getTagWeight, TAGS } from './TagCatalog.js';
+import { getStatusValue, getTagWeight } from './TagCatalog.js';
 import { getHeroStepDistance } from './MovementSettings.js';
 
 export default class Hero {
@@ -16,6 +16,7 @@ export default class Hero {
     this.targetArea = null;
     this.currentArea = 'preparation';
     this.attributes = { fire: 0, water: 0, lightning: 0 };
+    this.physicalDamageReduction = 0;
     this.luckBonus = 0;
     this.chip.attributeValues = this.attributes;
   }
@@ -37,8 +38,7 @@ export default class Hero {
   }
 
   getStatus(stat) {
-    const count = this.getTags().filter((tag) => TAGS[tag]?.stat === stat).length;
-    return Math.min(this.maximums[stat], count);
+    return getStatusValue(this.getTags(), stat, this.maximums[stat]);
   }
 
   getLuckDegree() {

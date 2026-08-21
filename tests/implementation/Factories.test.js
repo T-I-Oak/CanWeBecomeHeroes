@@ -34,6 +34,26 @@ test('hero converts current luck from zero through seven into a luck rate', () =
   assert.equal(maximumLuckHero.getLuckRate(), 0.75);
 });
 
+test('status values use the greater of their two tag types instead of their sum', () => {
+  const hero = new Hero({
+    profession: 'test', name: {}, chip: { weight: 0 },
+    maximums: { power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 },
+    tags: [
+      'valor', 'valor', 'iron', 'iron', 'iron', 'iron',
+      'arcane', 'cloth', 'cloth', 'cloth',
+      'dexterity', 'feather', 'feather',
+      'reputation', 'gem', 'gem',
+      'blessing', 'fortune', 'fortune', 'fortune',
+    ],
+  });
+
+  assert.equal(hero.getStatus('power'), 4);
+  assert.equal(hero.getStatus('magic'), 3);
+  assert.equal(hero.getStatus('speed'), 2);
+  assert.equal(hero.getStatus('negotiation'), 2);
+  assert.equal(hero.getStatus('luck'), 3);
+});
+
 test('item factory calculates tag weight, price, and equipment assets', () => {
   const item = new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor', 'fire'], x: 100, y: 200 });
   assert.equal(item.chip.weight, 5);

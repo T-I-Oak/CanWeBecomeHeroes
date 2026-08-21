@@ -68,14 +68,37 @@ export default class BattleSystem {
   }
   resolveWeapon(actor, target, type, participants) {
     if (!onBoard(this.board, target)) return;
+    if (type === 'shield') this.applyShield(actor, participants);
     const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * .1); const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * .1);
     if (evade > accuracy) { this.effects?.miss(target); return; }
     const attack = ATTACKS[type];
     this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
       const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const crit = actor.getTagCount(statTag) > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * (crit ? 1 + actor.getTagCount(statTag) ** 2 * .1 : 1);
       if (type === 'orb') this.applyOrb(actor, t, coefficient);
-      this.applyDamage(actor, t, type, damage, crit); this.propagate(actor, t, type, damage, participants);
+      const dealt = attack[0] === 'power'
+        ? this.applyPhysicalDamage(actor, t, type, damage, crit, participants)
+        : this.applyDamage(actor, t, type, damage, crit);
+      this.propagate(actor, t, type, dealt, participants);
     });
+  }
+  applyShield(actor, participants) {
+    const reduction = actor.getTagCount('iron') * 0.1;
+    participants.filter((candidate) => isHero(candidate) === isHero(actor)).forEach((ally) => {
+      ally.physicalDamageReduction = Math.max(ally.physicalDamageReduction, reduction);
+    });
+  }
+  applyPhysicalDamage(actor, target, type, damage, critical, participants) {
+    const absorbed = Math.min(target.physicalDamageReduction, damage);
+    target.physicalDamageReduction = Math.max(0, target.physicalDamageReduction - absorbed);
+    const afterProtection = Math.max(0, damage - absorbed * 0.5);
+    const reflected = target.getTagSkillLevel('iron') > 0 ? afterProtection * target.getTagCount('iron') * 0.1 : 0;
+    const dealt = Math.max(0, afterProtection - reflected);
+    this.applyDamage(actor, target, type, dealt, critical);
+    if (reflected >= 0.01) {
+      this.applyDamage(target, actor, 'reflection', reflected);
+      this.propagate(target, actor, 'reflection', reflected, participants);
+    }
+    return dealt;
   }
   applyOrb(actor, target, coefficient) {
     if (this.random() >= (actor.getLuckDegree() + .3) * coefficient) return;
@@ -87,9 +110,9 @@ export default class BattleSystem {
     participants.filter((c) => isHero(c) !== isHero(actor) && c !== target && onBoard(this.board, c)).toSorted((a, b) => Math.abs(a.chip.x - target.chip.x) - Math.abs(b.chip.x - target.chip.x)).slice(0, Math.floor(value)).forEach((other, index) => { const dealt = damage * (value * .1 + .3) ** (index + 1); this.effects?.lightningPropagation(target, other); this.effects?.lightningHit(other); this.applyDamage(actor, other, type, dealt, false); });
   }
   applyDamage(actor, target, type, damage, critical = false) {
-    if (damage < .01) return; this.effects?.damage(target, damage, critical);
-    if (isHero(target)) { target.stamina = Math.max(0, target.stamina - damage); if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return; }
-    target.hp = Math.max(0, target.hp - damage); if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) this.defeatEnemy(target);
+    if (damage < .01) return 0; this.effects?.damage(target, damage, critical);
+    if (isHero(target)) { target.stamina = Math.max(0, target.stamina - damage); if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return damage; }
+    target.hp = Math.max(0, target.hp - damage); if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) this.defeatEnemy(target); return damage;
   }
   logDamage(actor, target, type, damage, remaining) { const label = (e) => isHero(e) ? `${e.profession}・${e.name.ja}` : `enemy:${e.definition.id}`; this.logger?.info?.(`[Battle] ${label(actor)} -> ${label(target)} | ${type} | ${damage.toFixed(3)} damage | ${remaining}`); }
   defeatEnemy(enemy) { if (!onBoard(this.board, enemy)) return; this.board.removeChip(enemy.chip); this.controller?.remove(enemy); this.contributionPoints += enemy.contributionPoints; const a = GAME_AREAS.warehouse; const item = this.itemFactory.createBodyItem({ part: 'head', tags: [enemy.definition.tagAffinity], x: a.x + a.width / 2 + (this.random() - .5) * 96, y: a.y + a.height / 2 + (this.random() - .5) * 96, random: this.random }); this.controller?.addToWarehouse(item); }

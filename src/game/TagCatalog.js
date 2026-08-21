@@ -16,6 +16,21 @@ export const TAGS = Object.freeze({
   area: { group: 'attribute', weight: 3, price: 3 },
 });
 
+export const STATUS_TAGS = Object.freeze({
+  power: Object.freeze(['valor', 'iron']),
+  magic: Object.freeze(['arcane', 'cloth']),
+  speed: Object.freeze(['dexterity', 'feather']),
+  negotiation: Object.freeze(['reputation', 'gem']),
+  luck: Object.freeze(['blessing', 'fortune']),
+});
+
+export function getStatusValue(tags, stat, maximum) {
+  const sources = STATUS_TAGS[stat];
+  if (!sources) return 0;
+  const sourceMaximum = Math.max(...sources.map((tag) => Math.min(7, tags.filter((current) => current === tag).length)));
+  return Math.min(maximum, sourceMaximum);
+}
+
 export function getTagWeight(tags) {
   return tags.reduce((total, tag) => total + TAGS[tag].weight, 0);
 }

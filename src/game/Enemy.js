@@ -1,4 +1,4 @@
-import { getTagPaths, getTagWeight, TAGS } from './TagCatalog.js';
+import { getStatusValue, getTagPaths, getTagWeight } from './TagCatalog.js';
 
 const MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
 
@@ -14,6 +14,7 @@ export default class Enemy {
     this.equipment = [...equipment];
     this.currentArea = 'battle';
     this.attributes = { fire: 0, water: 0, lightning: 0 };
+    this.physicalDamageReduction = 0;
     this.luckBonus = 0;
     this.refreshDerivedValues();
   }
@@ -36,8 +37,7 @@ export default class Enemy {
   }
 
   getStatus(stat) {
-    const count = this.getTags().filter((tag) => TAGS[tag]?.stat === stat).length;
-    return Math.min(MAXIMUMS[stat], count);
+    return getStatusValue(this.getTags(), stat, MAXIMUMS[stat]);
   }
 
   getCarriedWeight() {
