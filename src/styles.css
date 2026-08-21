@@ -1,6 +1,14 @@
 :root {
   color: #1e2a3a;
   font-family: system-ui, sans-serif;
+
+  --color-subject-hero: #2d6ac5;
+  --color-subject-enemy: #b84b4b;
+  --color-subject-system: #64748b;
+
+  --color-level-info: #64748b;
+  --color-level-luck: #bd7b00;
+  --color-level-unluck: #a64b61;
 }
 
 * {
