@@ -94,7 +94,10 @@ export default class ChipRenderer {
       const image = this.assets.load(`/assets/effects/attributes/${attribute}.png`);
       if (!image.complete || image.naturalWidth === 0) return;
       const magnitude = Math.min(7, value) / 7;
-      const size = chip.radius * 2 * (0.82 + magnitude * 0.42);
+      // 属性はチップの表面を覆うのではなく、外周を取り囲むリングとして描く。
+      // 付与値の減衰・再付与にそのまま追従するため、時間経過で縮小し、
+      // max による再付与時には直ちに大きさを取り戻す。
+      const size = chip.radius * 2 * (1.25 + magnitude * 0.75);
       const phase = timeSeconds * (attribute === 'lightning' ? 13 : attribute === 'fire' ? 3.1 : 2.2) + index * 1.7;
       const sway = attribute === 'lightning'
         ? Math.sin(phase) * (1.5 + magnitude * 3)
