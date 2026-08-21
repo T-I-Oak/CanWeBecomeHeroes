@@ -119,6 +119,42 @@ test('one action aggregates miss and damage feedback by target with critical pri
   assert.equal(effects.hits.length, 1);
 });
 
+test('one action records one visible battle log per actor and target', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
+  const enemy = new EnemyFactory().createInitialEncounter();
+  const records = [];
+  const battle = new BattleSystem(board, { gameLog: { log: (message, options) => records.push({ message, options }) } });
+
+  battle.actionLogResults = new Map();
+  battle.recordMiss(hero, enemy);
+  battle.recordDamage(hero, enemy, 0.1, false);
+  battle.recordDamage(hero, enemy, 0.2, true);
+  battle.flushActionLogs();
+
+  assert.deepEqual(records, [{
+    message: '剣士・アヴェリーはenemy:small-valorに会心ダメージ30を与えた。',
+    options: { subject: 'hero', level: 'luck' },
+  }]);
+});
+
+test('a missed action records a visible normal battle log', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
+  const enemy = new EnemyFactory().createInitialEncounter();
+  const records = [];
+  const battle = new BattleSystem(board, { gameLog: { log: (message, options) => records.push({ message, options }) } });
+
+  battle.actionLogResults = new Map();
+  battle.recordMiss(hero, enemy);
+  battle.flushActionLogs();
+
+  assert.deepEqual(records, [{
+    message: '剣士・アヴェリーのenemy:small-valorへの攻撃は外れた。',
+    options: { subject: 'hero', level: 'info' },
+  }]);
+});
+
 test('physical reduction is consumed and iron reflects part of the remaining physical damage', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const actor = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });

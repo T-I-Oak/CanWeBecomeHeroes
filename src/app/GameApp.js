@@ -251,7 +251,7 @@ export function startGame({ scenario }) {
   const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem });
   const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), gameLog });
   const combatEffects = new CombatEffectSystem();
-  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem, effects: combatEffects });
+  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem, effects: combatEffects, gameLog });
   const staminaRecovery = new StaminaRecoverySystem();
   const facilitySwing = new FacilitySwingSystem();
   const assets = new AssetLoader();

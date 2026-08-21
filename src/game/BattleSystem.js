@@ -12,8 +12,8 @@ const onBoard = (board, entity) => board.chips.includes(entity.chip);
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, returnSystem, effects = null, random = Math.random, logger = console } = {}) {
-    Object.assign(this, { board, controller, itemFactory, returnSystem, effects, random, logger });
+  constructor(board, { controller, itemFactory, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console } = {}) {
+    Object.assign(this, { board, controller, itemFactory, returnSystem, effects, gameLog, random, logger });
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.attributeTicks = 0;
   }
   update({ heroes, enemies, tick, tickDelta }) {
@@ -58,9 +58,9 @@ export default class BattleSystem {
     return coefficients.map((coefficient, index) => ({ target: foes[at + index - center], coefficient })).filter(({ target: t }) => t);
   }
   resolveAction(actor, target, participants) {
-    const targets = this.rangeTargets(actor, target, participants); this.effects?.attack(actor, actor.getTagCount('area')); this.effects?.beginAction(actor);
+    const targets = this.rangeTargets(actor, target, participants); this.actionLogResults = new Map(); this.effects?.attack(actor, actor.getTagCount('area')); this.effects?.beginAction(actor);
     targets.forEach(({ target: t, coefficient }) => ['fire', 'water', 'lightning'].forEach((tag) => { const value = actor.getTagCount(tag) * coefficient; if (value) { t.attributes[tag] = Math.max(t.attributes[tag], value); t.chip.attributeValues = t.attributes; } }));
-    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants)); this.effects?.endAction(); actor.luckBonus = 0;
+    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants)); this.effects?.endAction(); this.flushActionLogs(); actor.luckBonus = 0;
   }
   attackTypes(actor) {
     if (isHero(actor)) return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');
@@ -70,7 +70,7 @@ export default class BattleSystem {
     if (!onBoard(this.board, target)) return;
     if (type === 'shield') this.applyShield(actor, participants);
     const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * .1); const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * .1);
-    if (evade > accuracy) { this.effects?.miss(target); return; }
+    if (evade > accuracy) { this.effects?.miss(target); this.recordMiss(actor, target); return; }
     const attack = ATTACKS[type];
     this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
       const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const crit = actor.getTagCount(statTag) > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * (crit ? 1 + actor.getTagCount(statTag) ** 2 * .1 : 1);
@@ -110,11 +110,41 @@ export default class BattleSystem {
     participants.filter((c) => isHero(c) !== isHero(actor) && c !== target && onBoard(this.board, c)).toSorted((a, b) => Math.abs(a.chip.x - target.chip.x) - Math.abs(b.chip.x - target.chip.x)).slice(0, Math.floor(value)).forEach((other, index) => { const dealt = damage * (value * .1 + .3) ** (index + 1); this.effects?.lightningPropagation(target, other); this.effects?.lightningHit(other); this.applyDamage(actor, other, type, dealt, false); });
   }
   applyDamage(actor, target, type, damage, critical = false) {
-    if (damage < .01) return 0; this.effects?.damage(target, damage, critical);
+    if (damage < .01) return 0; this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
     if (isHero(target)) { target.stamina = Math.max(0, target.stamina - damage); if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return damage; }
     target.hp = Math.max(0, target.hp - damage); if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) this.defeatEnemy(target); return damage;
   }
-  logDamage(actor, target, type, damage, remaining) { const label = (e) => isHero(e) ? `${e.profession}・${e.name.ja}` : `enemy:${e.definition.id}`; this.logger?.info?.(`[Battle] ${label(actor)} -> ${label(target)} | ${type} | ${damage.toFixed(3)} damage | ${remaining}`); }
+  recordMiss(actor, target) {
+    if (!this.actionLogResults || !actor || !target) return;
+    const result = this.getActionLogResult(actor, target); result.miss = true;
+  }
+  recordDamage(actor, target, damage, critical) {
+    if (!this.actionLogResults || !actor || !target) return;
+    const result = this.getActionLogResult(actor, target); result.damage += damage; result.critical ||= critical;
+  }
+  getActionLogResult(actor, target) {
+    let targets = this.actionLogResults.get(actor);
+    if (!targets) { targets = new Map(); this.actionLogResults.set(actor, targets); }
+    let result = targets.get(target);
+    if (!result) { result = { actor, target, damage: 0, critical: false, miss: false }; targets.set(target, result); }
+    return result;
+  }
+  flushActionLogs() {
+    if (!this.actionLogResults) return;
+    this.actionLogResults.forEach((targets) => targets.forEach((result) => {
+      const { actor, target, damage, critical, miss } = result;
+      const subject = isHero(actor) ? 'hero' : 'enemy'; const actorLabel = this.getEntityLabel(actor); const targetLabel = this.getEntityLabel(target);
+      if (damage >= .01) {
+        const message = critical
+          ? `${actorLabel}は${targetLabel}に会心ダメージ${Math.round(damage * 100)}を与えた。`
+          : `${actorLabel}は${targetLabel}にダメージ${Math.round(damage * 100)}を与えた。`;
+        this.gameLog?.log(message, { subject, level: critical ? 'luck' : 'info' });
+      } else if (miss) this.gameLog?.log(`${actorLabel}の${targetLabel}への攻撃は外れた。`, { subject, level: 'info' });
+    }));
+    this.actionLogResults = null;
+  }
+  getEntityLabel(entity) { return isHero(entity) ? `${entity.profession}・${entity.name.ja}` : `enemy:${entity.definition.id}`; }
+  logDamage(actor, target, type, damage, remaining) { this.logger?.info?.(`[Battle] ${this.getEntityLabel(actor)} -> ${this.getEntityLabel(target)} | ${type} | ${damage.toFixed(3)} damage | ${remaining}`); }
   defeatEnemy(enemy) { if (!onBoard(this.board, enemy)) return; this.board.removeChip(enemy.chip); this.controller?.remove(enemy); this.contributionPoints += enemy.contributionPoints; const a = GAME_AREAS.warehouse; const item = this.itemFactory.createBodyItem({ part: 'head', tags: [enemy.definition.tagAffinity], x: a.x + a.width / 2 + (this.random() - .5) * 96, y: a.y + a.height / 2 + (this.random() - .5) * 96, random: this.random }); this.controller?.addToWarehouse(item); }
   getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }
 }
