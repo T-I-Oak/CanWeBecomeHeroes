@@ -97,16 +97,18 @@ export default class ChipRenderer {
       // 属性はチップの表面を覆うのではなく、外周を取り囲むリングとして描く。
       // 付与値の減衰・再付与にそのまま追従するため、時間経過で縮小し、
       // max による再付与時には直ちに大きさを取り戻す。
-      const size = chip.radius * 2 * (0.25 + 1.75 * magnitude ** 1.35);
+      const size = chip.radius * 2 * (0.55 + 1.45 * magnitude ** 1.2);
       const phase = timeSeconds * (attribute === 'lightning' ? 13 : attribute === 'fire' ? 3.1 : 2.2) + index * 1.7;
       const sway = attribute === 'lightning'
         ? Math.sin(phase) * (1.5 + magnitude * 3)
         : Math.sin(phase) * (1 + magnitude * 4);
       this.context.save();
-      this.context.translate(x + sway, y + Math.cos(phase * 0.7) * magnitude * 2);
+      this.context.translate(x + sway, y + chip.radius * 0.9 + Math.cos(phase * 0.7) * magnitude * 2);
       this.context.scale(1 + Math.sin(phase) * magnitude * 0.035, 1 + Math.cos(phase * 0.8) * magnitude * 0.035);
       this.context.globalAlpha = 0.72 + magnitude * 0.22;
-      drawImageCover(this.context, image, 0, 0, size);
+      // 足元の位置を固定して拡大・縮小する。付与値が小さい間は足元だけに
+      // 見え、強い付与値では同じ基点からチップ全体を囲む。
+      drawImageCover(this.context, image, 0, -size / 2, size);
       this.context.restore();
     });
   }
