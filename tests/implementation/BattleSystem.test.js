@@ -138,7 +138,7 @@ test('one action records one visible battle log per actor and target', () => {
   }]);
 });
 
-test('a missed action records a visible normal battle log', () => {
+test('a missed action records a visible unlucky battle log', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
   const enemy = new EnemyFactory().createInitialEncounter();
@@ -151,6 +151,24 @@ test('a missed action records a visible normal battle log', () => {
 
   assert.deepEqual(records, [{
     message: '剣士・アヴェリーのenemy:small-valorへの攻撃は外れた。',
+    options: { subject: 'hero', level: 'unluck' },
+  }]);
+});
+
+test('a defeat replaces the action damage log with a visible defeat log', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
+  const enemy = new EnemyFactory().createInitialEncounter();
+  const records = [];
+  const battle = new BattleSystem(board, { gameLog: { log: (message, options) => records.push({ message, options }) } });
+
+  battle.actionLogResults = new Map();
+  battle.recordDamage(hero, enemy, 2, false);
+  battle.recordDefeat(hero, enemy);
+  battle.flushActionLogs();
+
+  assert.deepEqual(records, [{
+    message: '剣士・アヴェリーはenemy:small-valorを倒した。',
     options: { subject: 'hero', level: 'info' },
   }]);
 });

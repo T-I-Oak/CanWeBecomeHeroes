@@ -112,7 +112,7 @@ export default class BattleSystem {
   applyDamage(actor, target, type, damage, critical = false) {
     if (damage < .01) return 0; this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
     if (isHero(target)) { target.stamina = Math.max(0, target.stamina - damage); if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return damage; }
-    target.hp = Math.max(0, target.hp - damage); if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) this.defeatEnemy(target); return damage;
+    target.hp = Math.max(0, target.hp - damage); if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) { if (actor) this.recordDefeat(actor, target); this.defeatEnemy(target); } return damage;
   }
   recordMiss(actor, target) {
     if (!this.actionLogResults || !actor || !target) return;
@@ -122,24 +122,29 @@ export default class BattleSystem {
     if (!this.actionLogResults || !actor || !target) return;
     const result = this.getActionLogResult(actor, target); result.damage += damage; result.critical ||= critical;
   }
+  recordDefeat(actor, target) {
+    if (!this.actionLogResults || !actor || !target) return;
+    this.getActionLogResult(actor, target).defeated = true;
+  }
   getActionLogResult(actor, target) {
     let targets = this.actionLogResults.get(actor);
     if (!targets) { targets = new Map(); this.actionLogResults.set(actor, targets); }
     let result = targets.get(target);
-    if (!result) { result = { actor, target, damage: 0, critical: false, miss: false }; targets.set(target, result); }
+    if (!result) { result = { actor, target, damage: 0, critical: false, miss: false, defeated: false }; targets.set(target, result); }
     return result;
   }
   flushActionLogs() {
     if (!this.actionLogResults) return;
     this.actionLogResults.forEach((targets) => targets.forEach((result) => {
-      const { actor, target, damage, critical, miss } = result;
+      const { actor, target, damage, critical, miss, defeated } = result;
       const subject = isHero(actor) ? 'hero' : 'enemy'; const actorLabel = this.getEntityLabel(actor); const targetLabel = this.getEntityLabel(target);
-      if (damage >= .01) {
+      if (defeated) this.gameLog?.log(`${actorLabel}は${targetLabel}を倒した。`, { subject, level: 'info' });
+      else if (damage >= .01) {
         const message = critical
           ? `${actorLabel}は${targetLabel}に会心ダメージ${Math.round(damage * 100)}を与えた。`
           : `${actorLabel}は${targetLabel}にダメージ${Math.round(damage * 100)}を与えた。`;
         this.gameLog?.log(message, { subject, level: critical ? 'luck' : 'info' });
-      } else if (miss) this.gameLog?.log(`${actorLabel}の${targetLabel}への攻撃は外れた。`, { subject, level: 'info' });
+      } else if (miss) this.gameLog?.log(`${actorLabel}の${targetLabel}への攻撃は外れた。`, { subject, level: 'unluck' });
     }));
     this.actionLogResults = null;
   }
