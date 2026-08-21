@@ -21,6 +21,7 @@ import { getShopLayout, SHOP_TRANSACTION_ARROW_WIDTH } from '../game/ShopLayout.
 import FacilityReturnSystem from '../game/FacilityReturnSystem.js';
 import ShopSystem from '../game/ShopSystem.js';
 import BattleSystem from '../game/BattleSystem.js';
+import CombatEffectSystem from '../game/CombatEffectSystem.js';
 import ItemFactory from '../game/ItemFactory.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 
@@ -249,7 +250,8 @@ export function startGame({ scenario }) {
   const returnSystem = new FacilityReturnSystem(board, slotManager, { onItemReturned: (item) => controller.addToWarehouse(item) });
   const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem });
   const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), gameLog });
-  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem });
+  const combatEffects = new CombatEffectSystem();
+  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem, effects: combatEffects });
   const staminaRecovery = new StaminaRecoverySystem();
   const facilitySwing = new FacilitySwingSystem();
   const assets = new AssetLoader();
@@ -369,6 +371,7 @@ export function startGame({ scenario }) {
     previousTime = time;
     clock.advance(deltaSeconds, (simulationDeltaSeconds, tickDelta) => {
       board.update(simulationDeltaSeconds);
+      combatEffects.update(simulationDeltaSeconds);
       controller.update(simulationDeltaSeconds);
       staminaRecovery.update(controller.getHeroes(), simulationDeltaSeconds);
       training.update(controller.getHeroes(), simulationDeltaSeconds);
@@ -423,6 +426,7 @@ export function startGame({ scenario }) {
       drawTagList(context, assets, hero, x, y + PREPARATION_TAG_LIST_TOP);
     });
     board.getRenderChips().forEach((chip) => renderer.draw(chip, time / 1000));
+    combatEffects.draw(context);
     drawChipSelectionGuide();
     context.restore();
     requestAnimationFrame(render);

@@ -85,3 +85,20 @@ test('leaving the battle area clears an actor action gauge', () => {
   assert.equal(hero.chip.actionGauge, null);
   assert.equal(hero.chip.actionGaugeMaximum, null);
 });
+
+test('attribute values are applied by maximum and decay every thirty ticks', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
+  hero.attributes.fire = 2;
+  hero.attributes.water = 1;
+  hero.attributes.lightning = 0.5;
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory() });
+
+  battle.updateAttributes([hero], 30);
+
+  assert.ok(Math.abs(hero.stamina - 2.8) < 1e-9);
+  assert.ok(Math.abs(hero.attributes.fire - 1.8) < 1e-9);
+  assert.ok(Math.abs(hero.attributes.water - 0.85) < 1e-9);
+  assert.ok(Math.abs(hero.attributes.lightning - 0.375) < 1e-9);
+  assert.equal(hero.chip.attributeValues, hero.attributes);
+});

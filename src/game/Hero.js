@@ -15,6 +15,9 @@ export default class Hero {
     this.currentSlotId = null;
     this.targetArea = null;
     this.currentArea = 'preparation';
+    this.attributes = { fire: 0, water: 0, lightning: 0 };
+    this.luckBonus = 0;
+    this.chip.attributeValues = this.attributes;
   }
 
   equip(item) {
@@ -38,8 +41,12 @@ export default class Hero {
     return Math.min(this.maximums[stat], count);
   }
 
+  getLuckDegree() {
+    return Math.max(0, (5 + this.getStatus('luck') * 10) / 100);
+  }
+
   getLuckRate() {
-    return (this.getStatus('luck') + 0.5) / 10;
+    return this.getLuckDegree();
   }
 
   getTags() {
@@ -47,7 +54,7 @@ export default class Hero {
   }
 
   getTagCount(tag) {
-    return this.getTags().filter((current) => current === tag).length;
+    return Math.min(7, this.getTags().filter((current) => current === tag).length);
   }
 
   getTagSkillLevel(tag) {
@@ -56,7 +63,7 @@ export default class Hero {
   }
 
   getCarriedWeight() {
-    return getTagWeight(Object.values(this.equipment).flatMap((item) => item?.tags ?? []));
+    return getTagWeight(this.getTags());
   }
 
   getStepDistance() {

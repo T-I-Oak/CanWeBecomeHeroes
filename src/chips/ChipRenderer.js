@@ -30,7 +30,8 @@ export default class ChipRenderer {
   draw(chip, timeSeconds = 0) {
     const { context } = this;
     const scale = chip.scale;
-    const drawY = chip.y - chip.height;
+    const visualX = chip.x + (chip.effectOffsetX ?? 0);
+    const drawY = chip.y - chip.height + (chip.effectOffsetY ?? 0);
     const airRatio = Math.min(chip.height / (chip.radius * 5), 0.65);
     const shadowAlpha = 0.24 / (1 + airRatio);
 
@@ -38,8 +39,8 @@ export default class ChipRenderer {
     context.fillStyle = `rgba(19, 28, 46, ${shadowAlpha})`;
     context.beginPath();
     context.ellipse(
-      chip.x,
-      chip.y,
+      visualX,
+      chip.y + (chip.effectOffsetY ?? 0),
       chip.radius * scale * (1 + airRatio * 0.45),
       chip.radius * scale * (1 - airRatio * 0.5),
       0,
@@ -48,9 +49,9 @@ export default class ChipRenderer {
     );
     context.fill();
 
-    context.translate(chip.x, drawY);
+    context.translate(visualX, drawY);
     context.save();
-    context.rotate(chip.tilt + chip.poseTilt);
+    context.rotate(chip.tilt + chip.poseTilt + (chip.effectRotation ?? 0));
     context.scale(scale, scale);
     context.fillStyle = chip.fillColors
       ? chip.fillColors[Math.floor(timeSeconds * 2) % chip.fillColors.length]
@@ -82,6 +83,29 @@ export default class ChipRenderer {
     context.arc(0, 0, chip.radius - context.lineWidth / 2, 0, Math.PI * 2);
     context.stroke();
     context.restore();
+    this.drawAttributeOverlays(chip, visualX, drawY, timeSeconds);
+  }
+
+  drawAttributeOverlays(chip, x, y, timeSeconds) {
+    const values = Object.entries(chip.attributeValues ?? {})
+      .filter(([, value]) => value > 0)
+      .sort(([leftName, leftValue], [rightName, rightValue]) => rightValue - leftValue || leftName.localeCompare(rightName));
+    values.forEach(([attribute, value], index) => {
+      const image = this.assets.load(`/assets/effects/attributes/${attribute}.png`);
+      if (!image.complete || image.naturalWidth === 0) return;
+      const magnitude = Math.min(7, value) / 7;
+      const size = chip.radius * 2 * (0.82 + magnitude * 0.42);
+      const phase = timeSeconds * (attribute === 'lightning' ? 13 : attribute === 'fire' ? 3.1 : 2.2) + index * 1.7;
+      const sway = attribute === 'lightning'
+        ? Math.sin(phase) * (1.5 + magnitude * 3)
+        : Math.sin(phase) * (1 + magnitude * 4);
+      this.context.save();
+      this.context.translate(x + sway, y + Math.cos(phase * 0.7) * magnitude * 2);
+      this.context.scale(1 + Math.sin(phase) * magnitude * 0.035, 1 + Math.cos(phase * 0.8) * magnitude * 0.035);
+      this.context.globalAlpha = 0.72 + magnitude * 0.22;
+      drawImageCover(this.context, image, 0, 0, size);
+      this.context.restore();
+    });
   }
 
   drawTags(chip) {

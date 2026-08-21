@@ -1,154 +1,98 @@
 import { GAME_AREAS } from './GameAreas.js';
+import { getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
 
 const TICKS_PER_SECOND = 60;
 const ACTION_GAUGE_BASE_RATE = 13 / 150;
 const ACTION_GAUGE_WEIGHT_SCALE = 25;
-const ATTACKS = Object.freeze({
-  sword: { stat: 'power', multiplier: 1 },
-  shield: { stat: 'power', multiplier: 1 / 8 },
-  claw: { stat: 'power', multiplier: 1 / 8 },
-  bow: { stat: 'power', multiplier: 1 / 2 },
-  banner: { stat: 'power', multiplier: 1 / 8 },
-  staff: { stat: 'magic', multiplier: 1 },
-  'holy-book': { stat: 'magic', multiplier: 1 / 4 },
-  orb: { stat: 'magic', multiplier: 1 / 8 },
-  'holy-symbol': { stat: 'magic', multiplier: 1 / 8 },
-  'tarot-cards': { stat: 'magic', multiplier: 1 / 8 },
-  unarmed: { stat: 'power', multiplier: 1 / 8 },
-});
-
-export function getAttackDamage(actor, attack) {
-  const divisor = attack.stat === 'magic' ? 4 : 2;
-  return ((actor.getStatus(attack.stat) + 0.5) / divisor) * attack.multiplier;
-}
-
-function isOnBoard(board, entity) {
-  return board.chips.includes(entity.chip);
-}
-
-function actionGaugeMaximum(actor) {
-  return 15 - actor.getStatus('speed');
-}
-
-function actionGaugeRate(actor) {
-  return ACTION_GAUGE_BASE_RATE / (1 + (actor.getCarriedWeight() / ACTION_GAUGE_WEIGHT_SCALE) ** 2);
-}
-
-function isHero(actor) {
-  return actor.chip.type === 'hero';
-}
+const ATTRIBUTE_TICK_INTERVAL = 30;
+const RANGE = [[1], [0.3, 0.5, 0.3], [0.4, 0.5, 0.4], [0.1, 0.4, 0.6, 0.4, 0.1], [0.2, 0.5, 0.6, 0.5, 0.2], [0.1, 0.3, 0.5, 0.7, 0.5, 0.3, 0.1], [0.2, 0.4, 0.6, 0.7, 0.6, 0.4, 0.2], [0.1, 0.3, 0.5, 0.6, 0.8, 0.6, 0.5, 0.3, 0.1]];
+const ATTACKS = { sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['power', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['magic', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] };
+const isHero = (actor) => actor.chip.type === 'hero';
+const onBoard = (board, entity) => board.chips.includes(entity.chip);
+export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, returnSystem, random = Math.random, logger = console } = {}) {
-    this.board = board;
-    this.controller = controller;
-    this.itemFactory = itemFactory;
-    this.returnSystem = returnSystem;
-    this.random = random;
-    this.logger = logger;
-    this.contributionPoints = 0;
-    this.battleStartTick = null;
-    this.defeatTick = null;
+  constructor(board, { controller, itemFactory, returnSystem, effects = null, random = Math.random, logger = console } = {}) {
+    Object.assign(this, { board, controller, itemFactory, returnSystem, effects, random, logger });
+    this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.attributeTicks = 0;
   }
-
   update({ heroes, enemies, tick, tickDelta }) {
-    [...heroes, ...enemies]
-      .filter((actor) => actor.currentArea !== 'battle' || actor.targetArea)
-      .forEach((actor) => {
-        actor.chip.actionGauge = null;
-        actor.chip.actionGaugeMaximum = null;
-      });
-    const activeEnemies = enemies.filter((enemy) => isOnBoard(this.board, enemy));
-    if (this.battleStartTick === null && activeEnemies.some((enemy) => enemy.chip.isSettled)) this.battleStartTick = tick;
+    [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => { a.chip.actionGauge = null; a.chip.actionGaugeMaximum = null; });
+    const activeEnemies = enemies.filter((e) => onBoard(this.board, e));
+    if (this.battleStartTick === null && activeEnemies.some((e) => e.chip.isSettled)) this.battleStartTick = tick;
     if (this.battleStartTick === null) return;
-
-    const participants = [
-      ...heroes.filter((hero) => hero.currentArea === 'battle' && !hero.targetArea && isOnBoard(this.board, hero) && hero.chip.isSettled),
-      ...activeEnemies.filter((enemy) => enemy.chip.isSettled),
-    ];
-    participants.forEach((actor) => this.updateActor(actor, participants, tickDelta));
-    if (enemies.every((enemy) => !isOnBoard(this.board, enemy)) && this.defeatTick === null) this.defeatTick = tick;
-    heroes.forEach((hero) => this.returnSystem?.update(hero));
+    const participants = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && onBoard(this.board, h) && h.chip.isSettled), ...activeEnemies.filter((e) => e.chip.isSettled)];
+    this.updateAttributes(participants, tickDelta);
+    participants.forEach((a) => this.updateActor(a, participants, tickDelta));
+    if (enemies.every((e) => !onBoard(this.board, e)) && this.defeatTick === null) this.defeatTick = tick;
+    heroes.forEach((h) => this.returnSystem?.update(h));
   }
-
-  updateActor(actor, participants, tickDelta) {
-    if (!isOnBoard(this.board, actor)) return;
-    const maximum = actionGaugeMaximum(actor);
-    actor.chip.actionGaugeMaximum = maximum;
-    actor.chip.actionGauge = (actor.chip.actionGauge ?? 0) + actionGaugeRate(actor) * tickDelta;
-    if (actor.chip.actionGauge < maximum) return;
+  updateAttributes(participants, delta) {
+    this.attributeTicks += delta;
+    while (this.attributeTicks >= ATTRIBUTE_TICK_INTERVAL) {
+      this.attributeTicks -= ATTRIBUTE_TICK_INTERVAL;
+      participants.forEach((actor) => {
+        const a = actor.attributes;
+        if (a.fire > 0) this.applyDamage(null, actor, 'fire', a.fire * 0.1);
+        ['fire', 'water', 'lightning'].forEach((key) => { a[key] = Math.max(0, a[key] * 0.95 - 0.1); });
+        actor.chip.attributeValues = a;
+      });
+    }
+  }
+  updateActor(actor, participants, delta) {
+    const max = 15 - actor.getStatus('speed');
+    actor.chip.actionGaugeMaximum = max;
+    actor.chip.actionGauge = (actor.chip.actionGauge ?? 0) + ACTION_GAUGE_BASE_RATE / (1 + (actor.getCarriedWeight() / ACTION_GAUGE_WEIGHT_SCALE) ** 2) * delta;
+    if (actor.chip.actionGauge < max) return;
     actor.chip.actionGauge = 0;
-
     const target = this.findTarget(actor, participants);
-    if (!target) return;
-    this.resolveAction(actor, target);
+    if (target) this.resolveAction(actor, target, participants);
   }
-
   findTarget(actor, participants) {
-    const candidates = participants.filter((candidate) => isHero(candidate) !== isHero(actor) && isOnBoard(this.board, candidate));
-    const inFront = candidates.filter((candidate) => Math.abs(candidate.chip.x - actor.chip.x) < 1);
-    const targetSet = inFront.length > 0 ? inFront : candidates;
-    return targetSet.toSorted((left, right) => {
-      const leftDistance = Math.hypot(left.chip.x - actor.chip.x, left.chip.y - actor.chip.y);
-      const rightDistance = Math.hypot(right.chip.x - actor.chip.x, right.chip.y - actor.chip.y);
-      return leftDistance - rightDistance || left.chip.x - right.chip.x;
-    })[0] ?? null;
+    const candidates = participants.filter((c) => isHero(c) !== isHero(actor) && onBoard(this.board, c));
+    const front = candidates.filter((c) => Math.abs(c.chip.x - actor.chip.x) < 1);
+    return (front.length ? front : candidates).toSorted((a, b) => Math.hypot(a.chip.x - actor.chip.x, a.chip.y - actor.chip.y) - Math.hypot(b.chip.x - actor.chip.x, b.chip.y - actor.chip.y) || a.chip.x - b.chip.x)[0] ?? null;
   }
-
-  resolveAction(actor, target) {
-    for (const attackType of this.getAttackTypes(actor)) {
-      if (!isOnBoard(this.board, target)) break;
-      const attack = ATTACKS[attackType];
-      const damage = getAttackDamage(actor, attack);
-      this.applyDamage(actor, target, attackType, damage);
-    }
+  rangeTargets(actor, target, participants) {
+    const coefficients = RANGE[actor.getTagCount('area')]; const foes = participants.filter((c) => isHero(c) !== isHero(actor) && onBoard(this.board, c)).toSorted((a, b) => a.chip.x - b.chip.x); const at = foes.indexOf(target); const center = Math.floor(coefficients.length / 2);
+    return coefficients.map((coefficient, index) => ({ target: foes[at + index - center], coefficient })).filter(({ target: t }) => t);
   }
-
-  getAttackTypes(actor) {
-    const weapons = isHero(actor)
-      ? [actor.equipment.rightHand, actor.equipment.leftHand].filter((item) => item?.category === 'weapon').map((item) => item.type)
-      : actor.equipment.filter((item) => item.category === 'weapon').slice(0, 2).map((item) => item.type);
-    return [...weapons, ...Array.from({ length: Math.max(0, 2 - weapons.length) }, () => 'unarmed')];
+  resolveAction(actor, target, participants) {
+    const targets = this.rangeTargets(actor, target, participants); this.effects?.attack(actor, actor.getTagCount('area'));
+    targets.forEach(({ target: t, coefficient }) => ['fire', 'water', 'lightning'].forEach((tag) => { const value = actor.getTagCount(tag) * coefficient; if (value) { t.attributes[tag] = Math.max(t.attributes[tag], value); t.chip.attributeValues = t.attributes; } }));
+    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants)); actor.luckBonus = 0;
   }
-
-  applyDamage(actor, target, attackType, damage) {
-    if (isHero(target)) {
-      target.stamina = Math.max(0, target.stamina - damage);
-      this.logDamage(actor, target, attackType, damage, `スタミナ ${target.stamina.toFixed(2)}`);
-      if (target.stamina === 0) this.returnSystem?.begin(target);
-      return;
-    }
-    target.hp = Math.max(0, target.hp - damage);
-    this.logDamage(actor, target, attackType, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`);
-    if (target.hp === 0) this.defeatEnemy(target);
+  attackTypes(actor) {
+    if (isHero(actor)) return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');
+    const weapons = actor.equipment.filter((item) => item.category === 'weapon').map((item) => item.type); return weapons.length ? weapons : ['unarmed'];
   }
-
-  logDamage(actor, target, attackType, damage, remaining) {
-    const actorLabel = isHero(actor) ? `${actor.profession}・${actor.name.ja}` : `enemy:${actor.definition.id}`;
-    const targetLabel = isHero(target) ? `${target.profession}・${target.name.ja}` : `enemy:${target.definition.id}`;
-    this.logger?.info?.(`[Battle] ${actorLabel} -> ${targetLabel} | ${attackType} | ${damage.toFixed(3)} damage | ${remaining}`);
-  }
-
-  defeatEnemy(enemy) {
-    if (!isOnBoard(this.board, enemy)) return;
-    this.board.removeChip(enemy.chip);
-    this.controller?.remove(enemy);
-    this.contributionPoints += enemy.contributionPoints;
-    const area = GAME_AREAS.warehouse;
-    const drop = this.itemFactory.createBodyItem({
-      part: 'head', tags: [enemy.definition.tagAffinity],
-      x: area.x + area.width / 2 + (this.random() - 0.5) * 96,
-      y: area.y + area.height / 2 + (this.random() - 0.5) * 96,
-      random: this.random,
+  resolveWeapon(actor, target, type, participants) {
+    if (!onBoard(this.board, target)) return;
+    const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * .1); const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * .1);
+    if (evade > accuracy) { this.effects?.miss(target); return; }
+    const attack = ATTACKS[type];
+    this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
+      const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const crit = actor.getTagCount(statTag) > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * (crit ? 1 + actor.getTagCount(statTag) ** 2 * .1 : 1);
+      if (type === 'orb') this.applyOrb(actor, t, coefficient);
+      this.applyDamage(actor, t, type, damage, crit); this.propagate(actor, t, type, damage, participants);
     });
-    this.controller?.addToWarehouse(drop);
   }
-
-  getElapsedTicks(currentTick) {
-    if (this.battleStartTick === null) return null;
-    const endTick = this.defeatTick ?? currentTick;
-    return Math.max(0, Math.round(endTick - this.battleStartTick));
+  applyOrb(actor, target, coefficient) {
+    if (this.random() >= (actor.getLuckDegree() + .3) * coefficient) return;
+    const items = (isHero(target) ? Object.values(target.equipment) : target.equipment).filter((item) => item && item.tags.length < 3); const item = items[Math.floor(this.random() * items.length)];
+    if (!item?.addTag('gem')) return; item.chip.weight = getTagWeight(item.tags); item.chip.tagPaths = getTagPaths(item.tags); item.price = getTagPrice(item.tags); target.refreshDerivedValues?.();
   }
+  propagate(actor, target, type, damage, participants) {
+    const value = target.attributes.lightning; if (!value || damage < .01) return;
+    participants.filter((c) => isHero(c) !== isHero(actor) && c !== target && onBoard(this.board, c)).toSorted((a, b) => Math.abs(a.chip.x - target.chip.x) - Math.abs(b.chip.x - target.chip.x)).slice(0, Math.floor(value)).forEach((other, index) => { const dealt = damage * (value * .1 + .3) ** (index + 1); this.effects?.lightningPropagation(target, other); this.effects?.lightningHit(other); this.applyDamage(actor, other, type, dealt, false); });
+  }
+  applyDamage(actor, target, type, damage, critical = false) {
+    if (damage < .01) return; this.effects?.damage(target, damage, critical);
+    if (isHero(target)) { target.stamina = Math.max(0, target.stamina - damage); if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return; }
+    target.hp = Math.max(0, target.hp - damage); if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) this.defeatEnemy(target);
+  }
+  logDamage(actor, target, type, damage, remaining) { const label = (e) => isHero(e) ? `${e.profession}・${e.name.ja}` : `enemy:${e.definition.id}`; this.logger?.info?.(`[Battle] ${label(actor)} -> ${label(target)} | ${type} | ${damage.toFixed(3)} damage | ${remaining}`); }
+  defeatEnemy(enemy) { if (!onBoard(this.board, enemy)) return; this.board.removeChip(enemy.chip); this.controller?.remove(enemy); this.contributionPoints += enemy.contributionPoints; const a = GAME_AREAS.warehouse; const item = this.itemFactory.createBodyItem({ part: 'head', tags: [enemy.definition.tagAffinity], x: a.x + a.width / 2 + (this.random() - .5) * 96, y: a.y + a.height / 2 + (this.random() - .5) * 96, random: this.random }); this.controller?.addToWarehouse(item); }
+  getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }
 }
-
 export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, TICKS_PER_SECOND };

@@ -28,6 +28,10 @@ export default class Chip {
     this.storageCapacity = null;
     this.actionGauge = null;
     this.actionGaugeMaximum = null;
+    this.attributeValues = null;
+    this.effectOffsetX = 0;
+    this.effectOffsetY = 0;
+    this.effectRotation = 0;
   }
 
   get isSettled() {

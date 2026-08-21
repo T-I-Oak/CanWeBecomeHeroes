@@ -29,4 +29,10 @@ export default class Item {
     this.chip.storageCount = this.storedItems.length;
     return true;
   }
+
+  addTag(tag) {
+    if (this.tags.length >= 3) return false;
+    this.tags.push(tag);
+    return true;
+  }
 }

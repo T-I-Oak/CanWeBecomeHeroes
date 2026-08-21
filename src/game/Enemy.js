@@ -13,6 +13,8 @@ export default class Enemy {
     this.contributionPoints = contributionPoints;
     this.equipment = [...equipment];
     this.currentArea = 'battle';
+    this.attributes = { fire: 0, water: 0, lightning: 0 };
+    this.luckBonus = 0;
     this.refreshDerivedValues();
   }
 
@@ -21,7 +23,16 @@ export default class Enemy {
   }
 
   getTagCount(tag) {
-    return this.getTags().filter((current) => current === tag).length;
+    return Math.min(7, this.getTags().filter((current) => current === tag).length);
+  }
+
+  getTagSkillLevel(tag) {
+    const count = this.getTagCount(tag);
+    return [7, 5, 3, 1].find((level) => count >= level) ?? 0;
+  }
+
+  getLuckDegree() {
+    return Math.max(0, (5 + this.getStatus('luck') * 10) / 100);
   }
 
   getStatus(stat) {
@@ -50,5 +61,6 @@ export default class Enemy {
     const tags = this.getTags();
     this.chip.weight = getTagWeight(tags);
     this.chip.tagPaths = getTagPaths(this.tags);
+    this.chip.attributeValues = this.attributes;
   }
 }
