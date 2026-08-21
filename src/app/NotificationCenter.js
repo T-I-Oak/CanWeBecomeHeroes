@@ -5,35 +5,37 @@ export default class NotificationCenter {
   constructor(container, gameLog) {
     this.container = container;
     this.notifications = [];
-    this.unsubscribe = gameLog.subscribe((record, level) => {
-      if (record.notify) this.show(record, level);
+    this.unsubscribe = gameLog.subscribe((record, definitions) => {
+      if (record.notify) this.show(record, definitions);
     });
   }
 
-  show(record, level) {
+  show(record, definitions) {
     const element = document.createElement('article');
-    element.className = 'NotificationCenter__Message';
+    element.className = 'Toast';
     element.dataset.level = record.level;
+    element.dataset.subject = record.subject;
     element.setAttribute('role', 'status');
-    element.style.setProperty('--notification-accent', level.accent);
-    element.style.setProperty('--notification-surface', level.surface);
     const levelElement = document.createElement('span');
-    levelElement.className = 'NotificationCenter__Level';
-    levelElement.textContent = level.label;
+    levelElement.className = 'Toast__Level';
+    levelElement.textContent = definitions.level.label;
     const messageElement = document.createElement('p');
-    messageElement.className = 'NotificationCenter__Text';
-    messageElement.textContent = record.message;
-    element.append(levelElement, messageElement);
+    messageElement.className = `Toast__Message ${record.subject} ${record.level}`;
+    const textElement = document.createElement('span');
+    textElement.className = 'Toast__Text';
+    textElement.textContent = record.message;
+    messageElement.append(levelElement, textElement);
+    element.append(messageElement);
     this.container.append(element);
     this.notifications.push(element);
-    requestAnimationFrame(() => element.classList.add('is-visible'));
+    requestAnimationFrame(() => element.classList.add('state-visible'));
     window.setTimeout(() => this.dismiss(element), DISPLAY_DURATION_MS);
   }
 
   dismiss(element) {
-    if (!element.isConnected || element.classList.contains('is-leaving')) return;
-    element.classList.remove('is-visible');
-    element.classList.add('is-leaving');
+    if (!element.isConnected || element.classList.contains('state-leaving')) return;
+    element.classList.remove('state-visible');
+    element.classList.add('state-leaving');
     window.setTimeout(() => {
       const previousPositions = new Map(this.notifications
         .filter((notification) => notification !== element)

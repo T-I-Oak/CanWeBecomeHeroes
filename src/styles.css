@@ -112,7 +112,24 @@ body {
   pointer-events: none;
 }
 
-.NotificationCenter__Message {
+.Toast {
+  width: 100%;
+  opacity: 0;
+  transform: translateX(calc(100% + 24px));
+  transition: transform 260ms ease-out, opacity 260ms ease-out;
+}
+
+.Toast.state-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.Toast.state-leaving {
+  opacity: 0;
+  transform: translateY(-36px);
+}
+
+.Toast__Message {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
@@ -122,38 +139,70 @@ body {
   padding: 10px 12px;
   overflow: hidden;
   color: #24334d;
-  background: var(--notification-surface);
-  border: 1px solid var(--notification-accent);
-  border-left: 5px solid var(--notification-accent);
+  background: color-mix(in srgb, var(--toast-level-color) 12%, #ffffff);
+  border: 1px solid var(--toast-level-color);
+  border-left: 5px solid var(--toast-subject-color);
   border-radius: 8px;
   box-shadow: 0 8px 22px #24334d2b;
-  opacity: 0;
-  transform: translateX(calc(100% + 24px));
-  transition: transform 260ms ease-out, opacity 260ms ease-out;
 }
 
-.NotificationCenter__Message.is-visible {
-  opacity: 1;
-  transform: translateX(0);
+.Toast .hero.info {
+  --toast-subject-color: var(--color-subject-hero);
+  --toast-level-color: var(--color-level-info);
 }
 
-.NotificationCenter__Message.is-leaving {
-  opacity: 0;
-  transform: translateY(-36px);
+.Toast .hero.luck {
+  --toast-subject-color: var(--color-subject-hero);
+  --toast-level-color: var(--color-level-luck);
 }
 
-.NotificationCenter__Level {
+.Toast .hero.unluck {
+  --toast-subject-color: var(--color-subject-hero);
+  --toast-level-color: var(--color-level-unluck);
+}
+
+.Toast .enemy.info {
+  --toast-subject-color: var(--color-subject-enemy);
+  --toast-level-color: var(--color-level-info);
+}
+
+.Toast .enemy.luck {
+  --toast-subject-color: var(--color-subject-enemy);
+  --toast-level-color: var(--color-level-luck);
+}
+
+.Toast .enemy.unluck {
+  --toast-subject-color: var(--color-subject-enemy);
+  --toast-level-color: var(--color-level-unluck);
+}
+
+.Toast .system.info {
+  --toast-subject-color: var(--color-subject-system);
+  --toast-level-color: var(--color-level-info);
+}
+
+.Toast .system.luck {
+  --toast-subject-color: var(--color-subject-system);
+  --toast-level-color: var(--color-level-luck);
+}
+
+.Toast .system.unluck {
+  --toast-subject-color: var(--color-subject-system);
+  --toast-level-color: var(--color-level-unluck);
+}
+
+.Toast__Level {
   padding: 3px 6px;
   color: #ffffff;
   font-size: 11px;
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
-  background: var(--notification-accent);
+  background: var(--toast-level-color);
   border-radius: 999px;
 }
 
-.NotificationCenter__Text {
+.Toast__Text {
   margin: 0;
   font-size: 14px;
   line-height: 1.45;

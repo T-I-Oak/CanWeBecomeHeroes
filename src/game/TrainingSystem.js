@@ -67,7 +67,7 @@ export default class TrainingSystem {
     }
     hero.stamina -= staminaCost;
     hero.maximums[selected.stat] = Math.min(MAXIMUM_STAT_VALUE, hero.maximums[selected.stat] + 1);
-    this.gameLog?.log(`${hero.profession}・${hero.name.ja}は${STAT_LABELS[selected.stat]}を強化した。`, { level: isLucky ? 'fortune' : 'hero' });
+    this.gameLog?.log(`${hero.profession}・${hero.name.ja}は${STAT_LABELS[selected.stat]}を強化した。`, { subject: 'hero', level: isLucky ? 'luck' : 'info' });
   }
 
   beginReturn(hero, state) {

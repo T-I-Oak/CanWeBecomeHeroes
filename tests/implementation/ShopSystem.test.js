@@ -33,7 +33,7 @@ test('shop converts a bag sale into a nearby five-part equipment set and returns
   assert.equal(shop.getTransaction().revealed, 1);
   shop.update([hero], (SHOP_PURCHASE_DELIVERY_TICKS - SHOP_REVEAL_INTERVAL_TICKS * 2) / 60);
   assert.equal(shop.getTransaction().revealed, 5);
-  assert.ok(logs.some(({ options }) => options.level === 'fortune'));
+  assert.ok(logs.some(({ options }) => options.subject === 'hero' && options.level === 'luck'));
   shop.update([hero], SHOP_REVEAL_INTERVAL_TICKS / 60);
 
   assert.equal(bag.storedItems.length, 0);

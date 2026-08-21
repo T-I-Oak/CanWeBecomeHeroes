@@ -1,13 +1,18 @@
+export const DEFAULT_LOG_SUBJECTS = Object.freeze({
+  hero: { label: 'キャラクター' },
+  enemy: { label: '敵' },
+  system: { label: 'システム' },
+});
+
 export const DEFAULT_LOG_LEVELS = Object.freeze({
-  fortune: { label: '幸運', accent: '#bd7b00', surface: '#fff4d6' },
-  misfortune: { label: '不運', accent: '#a64b61', surface: '#fff0f3' },
-  hero: { label: 'キャラクター', accent: '#2d6ac5', surface: '#e8f1ff' },
-  enemy: { label: '敵', accent: '#b84b4b', surface: '#fff0f0' },
-  system: { label: 'システム', accent: '#64748b', surface: '#f1f5f9' },
+  info: { label: '情報' },
+  luck: { label: '幸運' },
+  unluck: { label: '不運' },
 });
 
 export default class GameLog {
-  constructor({ levels = DEFAULT_LOG_LEVELS, now = () => Date.now() } = {}) {
+  constructor({ subjects = DEFAULT_LOG_SUBJECTS, levels = DEFAULT_LOG_LEVELS, now = () => Date.now() } = {}) {
+    this.subjects = new Map(Object.entries(subjects));
     this.levels = new Map(Object.entries(levels));
     this.now = now;
     this.records = [];
@@ -19,14 +24,20 @@ export default class GameLog {
     this.levels.set(id, Object.freeze({ ...definition }));
   }
 
-  log(message, { level = 'system', notify = true, data = null } = {}) {
+  defineSubject(id, definition) {
+    this.subjects.set(id, Object.freeze({ ...definition }));
+  }
+
+  log(message, { subject = 'system', level = 'info', notify = true, data = null } = {}) {
+    const subjectDefinition = this.subjects.get(subject);
     const definition = this.levels.get(level);
+    if (!subjectDefinition) throw new Error(`Unknown log subject: ${subject}`);
     if (!definition) throw new Error(`Unknown log level: ${level}`);
     const record = Object.freeze({
-      id: this.nextId++, message, level, notify, data, timestamp: this.now(),
+      id: this.nextId++, message, subject, level, notify, data, timestamp: this.now(),
     });
     this.records.push(record);
-    this.listeners.forEach((listener) => listener(record, definition));
+    this.listeners.forEach((listener) => listener(record, { subject: subjectDefinition, level: definition }));
     return record;
   }
 

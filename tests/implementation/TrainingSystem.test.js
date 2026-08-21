@@ -23,7 +23,7 @@ test('training raises a weighted eligible maximum after 200 ticks and consumes s
 
   assert.equal(hero.maximums.magic, 4);
   assert.equal(hero.stamina, 2);
-  assert.deepEqual(messages, [{ message: '魔法使い・ケイシーは魔力を強化した。', options: { level: 'fortune' } }]);
+  assert.deepEqual(messages, [{ message: '魔法使い・ケイシーは魔力を強化した。', options: { subject: 'hero', level: 'luck' } }]);
 });
 
 test('training records a hero log after a non-lucky result', () => {
@@ -36,7 +36,7 @@ test('training records a hero log after a non-lucky result', () => {
   training.update([hero], TRAINING_INTERVAL_TICKS / 60);
 
   assert.equal(hero.stamina, 1);
-  assert.deepEqual(messages, [{ message: '魔法使い・ケイシーはスタミナを強化した。', options: { level: 'hero' } }]);
+  assert.deepEqual(messages, [{ message: '魔法使い・ケイシーはスタミナを強化した。', options: { subject: 'hero', level: 'info' } }]);
 });
 
 test('training returns a hero with insufficient stamina and restores only destination equipment', () => {
