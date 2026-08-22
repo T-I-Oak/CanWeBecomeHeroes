@@ -62,5 +62,6 @@ export default class Enemy {
     this.chip.weight = getTagWeight(tags);
     this.chip.tagPaths = getTagPaths(this.tags);
     this.chip.attributeValues = this.attributes;
+    this.chip.physicalDamageReduction = this.physicalDamageReduction;
   }
 }

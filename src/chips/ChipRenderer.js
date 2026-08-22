@@ -20,6 +20,15 @@ export function getCenterImagePlacement(radius) {
   return { x: 0, y: radius - size / 2, size };
 }
 
+export function getPhysicalShieldPresentation(reduction) {
+  const strength = Math.max(0, Math.min(1, reduction / 0.7));
+  return {
+    alpha: strength === 0 ? 0 : 0.22 + strength * 0.68,
+    pulse: 0.012 + strength * 0.052,
+    sizeRatio: 2.2,
+  };
+}
+
 export default class ChipRenderer {
   constructor(context, assets, { tagSlotCount = DEFAULT_TAG_SLOT_COUNT } = {}) {
     this.context = context;
@@ -83,7 +92,24 @@ export default class ChipRenderer {
     context.arc(0, 0, chip.radius - context.lineWidth / 2, 0, Math.PI * 2);
     context.stroke();
     context.restore();
+    this.drawPhysicalShieldOverlay(chip, visualX, drawY, timeSeconds);
     this.drawAttributeOverlays(chip, visualX, drawY, timeSeconds);
+  }
+
+  drawPhysicalShieldOverlay(chip, x, y, timeSeconds) {
+    const presentation = getPhysicalShieldPresentation(chip.physicalDamageReduction ?? 0);
+    if (presentation.alpha === 0) return;
+    const image = this.assets.load('/assets/effects/defense/physical-shield.png');
+    if (!image.complete || image.naturalWidth === 0) return;
+    const phase = timeSeconds * 2.15;
+    const pulse = 1 + Math.sin(phase) * presentation.pulse;
+    const size = chip.radius * presentation.sizeRatio;
+    this.context.save();
+    this.context.translate(x, y);
+    this.context.scale(pulse, pulse);
+    this.context.globalAlpha = presentation.alpha;
+    drawImageCover(this.context, image, 0, 0, size);
+    this.context.restore();
   }
 
   drawAttributeOverlays(chip, x, y, timeSeconds) {

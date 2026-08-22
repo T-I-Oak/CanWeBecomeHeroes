@@ -19,6 +19,7 @@ export default class Hero {
     this.physicalDamageReduction = 0;
     this.luckBonus = 0;
     this.chip.attributeValues = this.attributes;
+    this.chip.physicalDamageReduction = this.physicalDamageReduction;
   }
 
   equip(item) {

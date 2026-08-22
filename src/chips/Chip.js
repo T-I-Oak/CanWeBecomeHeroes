@@ -29,6 +29,7 @@ export default class Chip {
     this.actionGauge = null;
     this.actionGaugeMaximum = null;
     this.attributeValues = null;
+    this.physicalDamageReduction = 0;
     this.effectOffsetX = 0;
     this.effectOffsetY = 0;
     this.effectRotation = 0;

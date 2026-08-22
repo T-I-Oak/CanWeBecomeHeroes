@@ -84,12 +84,12 @@ export default class BattleSystem {
   applyShield(actor, participants) {
     const reduction = actor.getTagCount('iron') * 0.1;
     participants.filter((candidate) => isHero(candidate) === isHero(actor)).forEach((ally) => {
-      ally.physicalDamageReduction = Math.max(ally.physicalDamageReduction, reduction);
+      this.setPhysicalDamageReduction(ally, Math.max(ally.physicalDamageReduction, reduction));
     });
   }
   applyPhysicalDamage(actor, target, type, damage, critical, participants) {
     const absorbed = Math.min(target.physicalDamageReduction, damage);
-    target.physicalDamageReduction = Math.max(0, target.physicalDamageReduction - absorbed);
+    this.setPhysicalDamageReduction(target, Math.max(0, target.physicalDamageReduction - absorbed));
     const afterProtection = Math.max(0, damage - absorbed * 0.5);
     const reflected = target.getTagSkillLevel('iron') > 0 ? afterProtection * target.getTagCount('iron') * 0.1 : 0;
     const dealt = Math.max(0, afterProtection - reflected);
@@ -99,6 +99,10 @@ export default class BattleSystem {
       this.propagate(target, actor, 'reflection', reflected, participants);
     }
     return dealt;
+  }
+  setPhysicalDamageReduction(target, value) {
+    target.physicalDamageReduction = value;
+    target.chip.physicalDamageReduction = value;
   }
   applyOrb(actor, target, coefficient) {
     if (this.random() >= (actor.getLuckDegree() + .3) * coefficient) return;

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createTagAngles, getCenterImagePlacement } from '../../src/chips/ChipRenderer.js';
+import { createTagAngles, getCenterImagePlacement, getPhysicalShieldPresentation } from '../../src/chips/ChipRenderer.js';
 
 test('tag angles keep the same interval for two and three tags', () => {
   const slotCount = 8;
@@ -28,4 +28,14 @@ test('center image is scaled from the bottom center of the chip', () => {
   assert.equal(placement.x, 0);
   assert.equal(placement.y, 15);
   assert.equal(placement.y + placement.size / 2, 100);
+});
+
+test('physical shield presentation strengthens with physical damage reduction', () => {
+  const absent = getPhysicalShieldPresentation(0);
+  const partial = getPhysicalShieldPresentation(0.2);
+  const full = getPhysicalShieldPresentation(0.7);
+
+  assert.equal(absent.alpha, 0);
+  assert.ok(full.alpha > partial.alpha);
+  assert.ok(full.pulse > partial.pulse);
 });

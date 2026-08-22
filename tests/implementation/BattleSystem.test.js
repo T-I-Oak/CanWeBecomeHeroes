@@ -183,6 +183,7 @@ test('physical reduction is consumed and iron reflects part of the remaining phy
   const dealt = battle.applyPhysicalDamage(actor, target, 'sword', 1, false, [actor, target]);
 
   assert.equal(target.physicalDamageReduction, 0);
+  assert.equal(target.chip.physicalDamageReduction, 0);
   assert.ok(Math.abs(dealt - 0.72) < 1e-9);
   assert.ok(Math.abs(target.stamina - 2.28) < 1e-9);
   assert.ok(Math.abs(actor.stamina - 2.82) < 1e-9);
