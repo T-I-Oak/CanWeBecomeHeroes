@@ -85,7 +85,17 @@ export function analyzeTagSubAffinities({ tags = DEFAULT_TAGS, ticks = 1000, tri
       averageSubAffinity: average(rows.map((row) => row.subAffinity)),
     };
   }));
-  return { conditions: { tags: selectedTags, ticks, trials, seed, durability: DEFAULT_MAXIMUMS.stamina }, details, summaries };
+  const matchups = selectedTags.flatMap((heroTag) => selectedTags.map((mainTag) => {
+    const baseline = getBaseline(heroTag, mainTag);
+    return {
+      heroTag,
+      enemyTag: mainTag,
+      heroDamage: damage(baseline, 'left'),
+      enemyDamage: damage(baseline, 'right'),
+      enemyDamageShare: enemyShare(baseline),
+    };
+  }));
+  return { conditions: { tags: selectedTags, ticks, trials, seed, durability: DEFAULT_MAXIMUMS.stamina }, matchups, details, summaries };
 }
 
 export function toCsv(rows) {
