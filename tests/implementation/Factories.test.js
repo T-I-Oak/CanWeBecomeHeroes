@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import Hero from '../../src/game/Hero.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
+import EnemyFactory from '../../src/game/EnemyFactory.js';
 import { AREA_THEME } from '../../src/game/AreaTheme.js';
 
 test('hero factory creates a profession chip with its two fixed tags', () => {
@@ -52,6 +53,15 @@ test('status values use the greater of their two tag types instead of their sum'
   assert.equal(hero.getStatus('speed'), 2);
   assert.equal(hero.getStatus('negotiation'), 2);
   assert.equal(hero.getStatus('luck'), 3);
+});
+
+test('enemy maximums can cap its status independently of the default maximum', () => {
+  const enemy = new EnemyFactory().create({
+    size: 'small', tagAffinity: 'valor', slotPosition: 3, maximumHp: 3, contributionPoints: 0, totalTagCount: 0,
+    maximums: { power: 3 },
+  });
+  enemy.tags = ['valor', 'valor', 'valor', 'valor'];
+  assert.equal(enemy.getStatus('power'), 3);
 });
 
 test('item factory calculates tag weight, price, and equipment assets', () => {

@@ -8,11 +8,11 @@ test('battle simulation runs the production battle system for a one-hero tag com
     trials: 3,
     seed: 123,
     left: [{ label: 'valor x3', tags: ['valor', 'valor', 'valor'], weapons: ['sword'] }],
-    right: [{ label: 'iron x3', tags: ['iron', 'iron', 'iron'], weapons: ['sword'], maximumHp: 3 }],
+    right: [{ label: 'iron x4', tags: ['iron', 'iron', 'iron', 'iron'], weapons: ['sword'], maximumHp: 3, maximums: { power: 3 } }],
   });
 
   assert.equal(result.conditions.left[0].tags.filter((tag) => tag === 'valor').length, 3);
-  assert.equal(result.conditions.right[0].tags.filter((tag) => tag === 'iron').length, 3);
+  assert.equal(result.conditions.right[0].tags.filter((tag) => tag === 'iron').length, 4);
   assert.equal(result.outcomes.leftWins + result.outcomes.rightWins + result.outcomes.draws, 3);
   assert.ok(result.averages.damageBySide.left > 0);
   assert.ok(result.averages.damageBySide.right > 0);

@@ -59,7 +59,7 @@ function createHero(entity, index, board, itemFactory) {
 }
 
 function createEnemy(entity, index, board, itemFactory, random) {
-  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ slotPosition: Math.min(6, index + 1), maximumHp: entity.maximumHp ?? 3, totalTagCount: 0, random });
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ slotPosition: Math.min(6, index + 1), maximumHp: entity.maximumHp ?? 3, maximums: { ...DEFAULT_MAXIMUMS, ...entity.maximums }, totalTagCount: 0, random });
   enemy.tags = entity.tags;
   enemy.equipment = createWeaponItems(entity, itemFactory);
   enemy.chip.x = 500 + index * 240;

@@ -1,9 +1,9 @@
 import { getStatusValue, getTagPaths, getTagWeight } from './TagCatalog.js';
 
-const MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
+const DEFAULT_MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
 
 export default class Enemy {
-  constructor({ definition, tags, chip, maximumHp, contributionPoints, equipment = [] }) {
+  constructor({ definition, tags, chip, maximumHp, contributionPoints, equipment = [], maximums = {} }) {
     this.definition = definition;
     this.nameKey = definition.nameKey;
     this.tags = [...tags];
@@ -12,6 +12,7 @@ export default class Enemy {
     this.hp = maximumHp;
     this.contributionPoints = contributionPoints;
     this.equipment = [...equipment];
+    this.maximums = { ...DEFAULT_MAXIMUMS, ...maximums };
     this.currentArea = 'battle';
     this.attributes = { fire: 0, water: 0, lightning: 0 };
     this.attributeSources = { fire: null, water: null, lightning: null };
@@ -38,7 +39,7 @@ export default class Enemy {
   }
 
   getStatus(stat) {
-    return getStatusValue(this.getTags(), stat, MAXIMUMS[stat]);
+    return getStatusValue(this.getTags(), stat, this.maximums[stat]);
   }
 
   getCarriedWeight() {

@@ -25,7 +25,7 @@ export default class EnemyFactory {
     this.itemFactory = itemFactory;
   }
 
-  create({ size, tagAffinity, slotPosition, maximumHp, contributionPoints, totalTagCount, random = Math.random }) {
+  create({ size, tagAffinity, slotPosition, maximumHp, contributionPoints, totalTagCount, maximums, random = Math.random }) {
     const definition = getEnemyDefinition({ size, tagAffinity });
     if (!definition) throw new Error(`Missing enemy definition: ${size}-${tagAffinity}`);
     const slot = getSlot(slotPosition);
@@ -48,7 +48,7 @@ export default class EnemyFactory {
     const equipment = EQUIPMENT_PARTS.map((part, index) => createTrendEquipmentItem({
       part, count: tagCounts[index], productTags, itemFactory: this.itemFactory, random,
     }));
-    return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment });
+    return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums });
   }
 
   createInitialEncounter(options = {}) {
