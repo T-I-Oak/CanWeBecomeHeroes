@@ -396,6 +396,7 @@ export function startGame({ scenario }) {
       const { x, y, height } = getPreparationSubareaBounds(index);
       const image = assets.load(hero.chip.centerPath);
       context.strokeStyle = '#aab4c6';
+      context.lineWidth = 1;
       context.strokeRect(x, y, PREPARATION_PANEL_WIDTH, height);
       if (image.complete && image.naturalWidth > 0) {
         const placement = getCenterImagePlacement(hero.chip.radius);
