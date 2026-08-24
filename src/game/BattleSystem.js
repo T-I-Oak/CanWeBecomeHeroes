@@ -13,8 +13,8 @@ export function getAttackDamage(actor, attack) { const [stat, multiplier] = Arra
 export function getRandomModifier(random = Math.random) { return 0.8 + random() * 0.4; }
 
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console } = {}) {
-    Object.assign(this, { board, controller, itemFactory, returnSystem, effects, gameLog, random, logger });
+  constructor(board, { controller, itemFactory, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console, onDamage = null } = {}) {
+    Object.assign(this, { board, controller, itemFactory, returnSystem, effects, gameLog, random, logger, onDamage });
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.attributeTicks = 0;
   }
   update({ heroes, enemies, tick, tickDelta }) {
@@ -34,7 +34,7 @@ export default class BattleSystem {
       this.attributeTicks -= ATTRIBUTE_TICK_INTERVAL;
       participants.forEach((actor) => {
         const a = actor.attributes;
-        if (a.fire > 0) this.applyDamage(null, actor, 'fire', a.fire * 0.1);
+        if (a.fire > 0) this.applyDamage(actor.attributeSources?.fire ?? null, actor, 'fire', a.fire * 0.1);
         ['fire', 'water', 'lightning'].forEach((key) => { a[key] = Math.max(0, a[key] * 0.95 - 0.1); });
         actor.chip.attributeValues = a;
       });
@@ -64,7 +64,11 @@ export default class BattleSystem {
       const tagCount = actor.getTagCount(tag);
       if (!tagCount) return;
       const value = tagCount * coefficient * getRandomModifier(this.random);
-      t.attributes[tag] = Math.max(t.attributes[tag], value); t.chip.attributeValues = t.attributes;
+      if (value > t.attributes[tag]) {
+        t.attributes[tag] = value;
+        t.attributeSources[tag] = actor;
+      }
+      t.chip.attributeValues = t.attributes;
     }));
     this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants)); this.effects?.endAction(); this.flushActionLogs(); actor.luckBonus = 0;
   }
@@ -121,8 +125,14 @@ export default class BattleSystem {
   }
   applyDamage(actor, target, type, damage, critical = false) {
     if (damage < .01) return 0; this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
-    if (isHero(target)) { target.stamina = Math.max(0, target.stamina - damage); if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return damage; }
-    target.hp = Math.max(0, target.hp - damage); if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) { if (actor) this.recordDefeat(actor, target); this.defeatEnemy(target); } return damage;
+    if (isHero(target)) {
+      target.stamina = Math.max(0, target.stamina - damage);
+      this.onDamage?.({ actor, target, type, damage, critical });
+      if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return damage;
+    }
+    target.hp = Math.max(0, target.hp - damage);
+    this.onDamage?.({ actor, target, type, damage, critical });
+    if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) { if (actor) this.recordDefeat(actor, target); this.defeatEnemy(target); } return damage;
   }
   recordMiss(actor, target) {
     if (!this.actionLogResults || !actor || !target) return;

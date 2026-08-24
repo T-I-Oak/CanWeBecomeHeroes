@@ -16,6 +16,7 @@ export default class Hero {
     this.targetArea = null;
     this.currentArea = 'preparation';
     this.attributes = { fire: 0, water: 0, lightning: 0 };
+    this.attributeSources = { fire: null, water: null, lightning: null };
     this.physicalDamageReduction = 0;
     this.luckBonus = 0;
     this.chip.attributeValues = this.attributes;

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node --test"
+    "test": "node --test",
+    "simulate:battle": "node scripts/simulate-battle.js"
   },
   "devDependencies": {
     "vite": "^7.0.0"
