@@ -13,10 +13,11 @@ const PROFESSIONS = Object.freeze({
   negotiator: { asset: 'negotiator', tag: 'reputation', profession: '交渉人', name: { en: 'Harper', ja: 'ハーパー' } },
 });
 
+export const HERO_PROFESSION_IDS = Object.freeze(Object.keys(PROFESSIONS));
+
 export default class HeroFactory {
   createRandom({ x, y, random = Math.random, bounds = null, stamina = 0 }) {
-    const professions = Object.keys(PROFESSIONS);
-    return this.create({ profession: professions[Math.floor(random() * professions.length)], x, y, bounds, stamina });
+    return this.create({ profession: HERO_PROFESSION_IDS[Math.floor(random() * HERO_PROFESSION_IDS.length)], x, y, bounds, stamina });
   }
 
   create({ profession, x, y, maximums, bounds = null, stamina = 0 }) {

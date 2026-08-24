@@ -164,8 +164,11 @@ function drawShopPanel(context, assets, shop, bag, transaction) {
     drawItemSlot(context, assets, transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null, sellX + index * (slotSize + gap), sellItemsTop);
   });
   const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
+  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
+  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
   purchaseSlots.forEach(([column, row], index) => {
-    drawItemSlot(context, assets, index < (transaction?.revealed ?? 0) ? transaction.purchases[index].item : null, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
+    const purchase = transaction?.purchases[purchaseSetStart + index];
+    drawItemSlot(context, assets, index < revealedInSet ? purchase.item : null, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
   });
   const arrowY = sellItemsTop + slotSize / 2;
   const arrowWidth = SHOP_TRANSACTION_ARROW_WIDTH;

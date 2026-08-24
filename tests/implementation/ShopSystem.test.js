@@ -6,10 +6,10 @@ import HeroSlotManager from '../../src/game/HeroSlotManager.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
-import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TICKS, SHOP_REVEAL_INTERVAL_TICKS } from '../../src/game/ShopSystem.js';
+import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TICKS, SHOP_REVEAL_INTERVAL_TICKS, SHOP_SET_COUNT } from '../../src/game/ShopSystem.js';
 import { GAME_AREAS } from '../../src/game/GameAreas.js';
 
-test('shop converts a bag sale into a nearby five-part equipment set and returns the hero', () => {
+test('shop converts a bag sale into two nearby five-part equipment sets and returns the hero', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const hero = new HeroFactory().create({ profession: 'mage', x: 500, y: 500, stamina: 3, bounds: { x: 0, y: 0, width: 600, height: 400 } });
   hero.currentArea = 'shop';
@@ -36,12 +36,21 @@ test('shop converts a bag sale into a nearby five-part equipment set and returns
   assert.ok(logs.some(({ options }) => options.subject === 'hero' && options.level === 'luck'));
   shop.update([hero], SHOP_REVEAL_INTERVAL_TICKS / 60);
 
-  assert.equal(bag.storedItems.length, 0);
   assert.equal(bought.length, 5);
-  assert.deepEqual(bought.map((item) => item.category), ['head', 'weapon', 'torso', 'weapon', 'feet']);
+  assert.equal(bag.storedItems.length, 1);
+  assert.equal(shop.getTransaction().deliveredSets, 1);
+  shop.update([hero], (SHOP_PURCHASE_DELIVERY_TICKS - SHOP_REVEAL_INTERVAL_TICKS) / 60);
+  assert.equal(shop.getTransaction().revealed, 10);
+  shop.update([hero], SHOP_REVEAL_INTERVAL_TICKS / 60);
+
+  assert.equal(bag.storedItems.length, 0);
+  assert.equal(bought.length, 10);
+  assert.deepEqual(bought.map((item) => item.category), ['head', 'weapon', 'torso', 'weapon', 'feet', 'head', 'weapon', 'torso', 'weapon', 'feet']);
   assert.ok(bought.every((item) => item.chip.bounds.width === GAME_AREAS.warehouse.width));
-  const purchaseSpan = Math.max(...bought.map((item) => item.chip.x)) - Math.min(...bought.map((item) => item.chip.x));
-  assert.ok(purchaseSpan <= 64);
+  Array.from({ length: SHOP_SET_COUNT }, (_, index) => bought.slice(index * 5, index * 5 + 5)).forEach((set) => {
+    const purchaseSpan = Math.max(...set.map((item) => item.chip.x)) - Math.min(...set.map((item) => item.chip.x));
+    assert.ok(purchaseSpan <= 64);
+  });
   assert.equal(hero.equipment.rightHand, null);
   assert.equal(hero.stamina, 0);
   assert.equal(hero.targetArea, 'preparation');

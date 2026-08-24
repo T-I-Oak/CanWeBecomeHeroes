@@ -1,10 +1,11 @@
 import ItemFactory from './ItemFactory.js';
 import { GAME_AREAS } from './GameAreas.js';
-import { EQUIPMENT_PARTS, createTrendEquipmentItem, createTrendProductTags, distributeTagCounts } from './TrendEquipmentGenerator.js';
+import { EQUIPMENT_PARTS, createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
 
 // 暫定値。ゲーム時間で計測し、バランス調整時はこの定数だけを変更する。
 export const SHOP_REVEAL_INTERVAL_TICKS = 100;
 export const SHOP_PURCHASE_DELIVERY_TICKS = 600;
+export const SHOP_SET_COUNT = 2;
 const GAME_TICK_SECONDS = 1 / 60;
 const PART_LABELS = Object.freeze({ head: '頭装備', torso: '胴装備', weapon: '手装備', feet: '脚装備' });
 
@@ -52,10 +53,14 @@ export default class ShopSystem {
 
   beginTransaction(hero) {
     const transaction = this.trade(hero);
-    return { ...transaction, elapsed: 0, ticks: 0, revealed: 0, returning: false };
+    return { ...transaction, elapsed: 0, ticks: 0, revealed: 0, deliveredSets: 0, returning: false };
   }
 
   updateTransactionTick(hero, state) {
+    if (state.ticks % SHOP_PURCHASE_DELIVERY_TICKS === 0) {
+      this.deliverSet(hero, state);
+      return;
+    }
     if (state.ticks % SHOP_REVEAL_INTERVAL_TICKS === 0 && state.revealed < state.purchases.length) {
       const purchase = state.purchases[state.revealed];
       state.revealed += 1;
@@ -63,8 +68,13 @@ export default class ShopSystem {
         this.gameLog?.log(`${hero.profession}・${hero.name.ja}は買った${PART_LABELS[purchase.part]}の隠れた能力を見つけた。`, { subject: 'hero', level: 'luck' });
       }
     }
-    if (state.ticks < SHOP_PURCHASE_DELIVERY_TICKS) return;
-    state.purchases.forEach(({ item }) => this.onItemPurchased(item));
+  }
+
+  deliverSet(hero, state) {
+    const start = state.deliveredSets * EQUIPMENT_PARTS.length;
+    state.purchases.slice(start, start + EQUIPMENT_PARTS.length).forEach(({ item }) => this.onItemPurchased(item));
+    state.deliveredSets += 1;
+    if (state.deliveredSets < SHOP_SET_COUNT) return;
     if (state.bag) state.bag.storedItems.length = 0;
     this.shopState.advance(this.random);
     this.gameLog?.log(`${hero.profession}・${hero.name.ja}はショップで買い物をした。`, { subject: 'hero', level: 'info' });
@@ -81,19 +91,24 @@ export default class ShopSystem {
     const bag = [hero.equipment.rightHand, hero.equipment.leftHand].find((item) => item?.isShoppingBag);
     const saleValue = (bag?.storedItems ?? []).reduce((total, item) => total + item.price, 0);
     const tagBudget = getSaleTagCount(saleValue, hero.getStatus('negotiation'));
-    const productTags = createTrendProductTags(this.shopState.saleTag, this.random);
-    const counts = distributeTagCounts(tagBudget, this.random);
-    const dropCenter = this.getPurchaseDropCenter();
-    return { bag, soldItems: [...(bag?.storedItems ?? [])], purchases: EQUIPMENT_PARTS.map((part, index) => this.createPurchase(part, counts[index], productTags, hero, dropCenter)) };
+    const purchases = Array.from({ length: SHOP_SET_COUNT }, () => this.createPurchaseSet(tagBudget, hero)).flat();
+    return { bag, soldItems: [...(bag?.storedItems ?? [])], purchases };
   }
 
-  createPurchase(part, initialCount, productTags, hero, dropCenter) {
-    let count = initialCount;
+  createPurchaseSet(tagBudget, hero) {
+    const dropCenter = this.getPurchaseDropCenter();
     const attempts = getGemAttempts(hero.getTagSkillLevel('gem'));
-    const enhanced = count < 3 && Array.from({ length: attempts }, () => this.random() < hero.getLuckRate()).some(Boolean);
-    if (enhanced) count += 1;
-    const area = this.getPurchaseDropArea(dropCenter);
-    return { item: createTrendEquipmentItem({ part, count, productTags, itemFactory: this.itemFactory, random: this.random, ...area }), enhanced, part };
+    return createTrendEquipmentSet({
+      trendTag: this.shopState.saleTag,
+      tagBudget,
+      itemFactory: this.itemFactory,
+      random: this.random,
+      placePart: () => this.getPurchaseDropArea(dropCenter),
+      modifyTagCount: ({ count }) => {
+        const enhanced = count < 3 && Array.from({ length: attempts }, () => this.random() < hero.getLuckRate()).some(Boolean);
+        return { count: enhanced ? count + 1 : count, enhanced };
+      },
+    });
   }
 
   getPurchaseDropCenter() {

@@ -33,3 +33,17 @@ export function createTrendEquipmentItem({ part, count, productTags, itemFactory
   const tags = Array.from({ length: count }, () => randomFrom(productTags, random));
   return itemFactory.createBodyItem({ part, tags, x, y, random });
 }
+
+export function createTrendEquipmentSet({ trendTag, tagBudget, itemFactory, random = Math.random, placePart = () => ({}), modifyTagCount = ({ count }) => ({ count }) }) {
+  const productTags = createTrendProductTags(trendTag, random);
+  const counts = distributeTagCounts(tagBudget, random);
+  return EQUIPMENT_PARTS.map((part, index) => {
+    const adjustment = modifyTagCount({ part, index, count: counts[index], productTags });
+    const position = placePart({ part, index });
+    return {
+      part,
+      ...adjustment,
+      item: createTrendEquipmentItem({ part, count: adjustment.count, productTags, itemFactory, random, ...position }),
+    };
+  });
+}
