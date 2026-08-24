@@ -10,6 +10,7 @@ const ATTACKS = { sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power',
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
+export function getRandomModifier(random = Math.random) { return 0.8 + random() * 0.4; }
 
 export default class BattleSystem {
   constructor(board, { controller, itemFactory, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console } = {}) {
@@ -59,7 +60,12 @@ export default class BattleSystem {
   }
   resolveAction(actor, target, participants) {
     const targets = this.rangeTargets(actor, target, participants); this.actionLogResults = new Map(); this.effects?.attack(actor, actor.getTagCount('area')); this.effects?.beginAction(actor);
-    targets.forEach(({ target: t, coefficient }) => ['fire', 'water', 'lightning'].forEach((tag) => { const value = actor.getTagCount(tag) * coefficient; if (value) { t.attributes[tag] = Math.max(t.attributes[tag], value); t.chip.attributeValues = t.attributes; } }));
+    targets.forEach(({ target: t, coefficient }) => ['fire', 'water', 'lightning'].forEach((tag) => {
+      const tagCount = actor.getTagCount(tag);
+      if (!tagCount) return;
+      const value = tagCount * coefficient * getRandomModifier(this.random);
+      t.attributes[tag] = Math.max(t.attributes[tag], value); t.chip.attributeValues = t.attributes;
+    }));
     this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants)); this.effects?.endAction(); this.flushActionLogs(); actor.luckBonus = 0;
   }
   attackTypes(actor) {
@@ -73,7 +79,7 @@ export default class BattleSystem {
     if (evade > accuracy) { this.effects?.miss(target); this.recordMiss(actor, target); return; }
     const attack = ATTACKS[type];
     this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
-      const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const crit = actor.getTagCount(statTag) > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * (crit ? 1 + actor.getTagCount(statTag) ** 2 * .1 : 1);
+      const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const crit = actor.getTagCount(statTag) > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * getRandomModifier(this.random) * (crit ? 1 + actor.getTagCount(statTag) ** 2 * .1 : 1);
       if (type === 'orb') this.applyOrb(actor, t, coefficient);
       const dealt = attack[0] === 'power'
         ? this.applyPhysicalDamage(actor, t, type, damage, crit, participants)
