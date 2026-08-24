@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "test": "node --test",
-    "simulate:battle": "node scripts/simulate-battle.js"
+    "simulate:battle": "node scripts/simulate-battle.js",
+    "analyze:tag-affinity": "node scripts/analyze-tag-affinity.js"
   },
   "devDependencies": {
     "vite": "^7.0.0"

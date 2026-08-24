@@ -1,0 +1,6 @@
+{
+  "ticks": 1000,
+  "trials": 20,
+  "seed": 1,
+  "outputDirectory": "tmp/tag-affinity"
+}
