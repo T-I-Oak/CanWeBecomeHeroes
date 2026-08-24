@@ -10,7 +10,22 @@ export function randomFrom(values, random) {
 }
 
 export function createTrendProductTags(trendTag, random) {
-  return [trendTag, randomFrom(TAG_KEYS, random), randomFrom(TAG_KEYS, random)];
+  const tags = [trendTag];
+  while (tags.length < 3) {
+    const statusTags = tags.filter((tag) => TAGS[tag].group === 'status');
+    const attributeTags = tags.filter((tag) => TAGS[tag].group === 'attribute');
+    const candidates = TAG_KEYS.filter((tag) => {
+      if (TAGS[tag].group === 'attribute') return attributeTags.length < 2 && attributeTags.filter((current) => current === tag).length < 2;
+      return statusTags.length === 0 || (statusTags.length === 1 && statusTags[0] === tag);
+    });
+    tags.push(randomFrom(candidates, random));
+  }
+  return tags;
+}
+
+function pickTags(tags, count, random) {
+  const pool = [...tags];
+  return Array.from({ length: Math.min(count, pool.length) }, () => pool.splice(Math.floor(random() * pool.length), 1)[0]);
 }
 
 export function distributeTagCounts(tagBudget, random) {
@@ -27,10 +42,10 @@ export function createTrendEquipmentItem({ part, count, productTags, itemFactory
     const statusTag = productTags.find((tag) => WEAPON_FOR_STATUS[tag]);
     const weapon = statusTag ? WEAPON_FOR_STATUS[statusTag] : 'sword';
     const allowedTags = productTags.filter((tag) => TAGS[tag]?.group === 'attribute' || tag === statusTag);
-    const tags = Array.from({ length: count }, () => randomFrom(allowedTags, random));
+    const tags = pickTags(allowedTags, count, random);
     return itemFactory.createWeapon({ weapon, tags, x, y });
   }
-  const tags = Array.from({ length: count }, () => randomFrom(productTags, random));
+  const tags = pickTags(productTags, count, random);
   return itemFactory.createBodyItem({ part, tags, x, y, random });
 }
 

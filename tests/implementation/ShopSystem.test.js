@@ -8,6 +8,7 @@ import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
 import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TICKS, SHOP_REVEAL_INTERVAL_TICKS, SHOP_SET_COUNT } from '../../src/game/ShopSystem.js';
 import { GAME_AREAS } from '../../src/game/GameAreas.js';
+import { createTrendEquipmentSet, createTrendProductTags } from '../../src/game/TrendEquipmentGenerator.js';
 
 test('shop converts a bag sale into two nearby five-part equipment sets and returns the hero', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
@@ -61,6 +62,22 @@ test('shop pricing and gem skill tiers follow the sale rules', () => {
   assert.equal(getSaleTagCount(10, 0), 6);
   assert.equal(getSaleTagCount(117, 7), 15);
   assert.deepEqual([0, 1, 3, 5, 7].map(getGemAttempts), [0, 1, 2, 3, 4]);
+});
+
+test('shop creates a valid three-tag product before selecting each equipment item from it', () => {
+  const productTags = createTrendProductTags('water', () => 0.75);
+  assert.equal(productTags.filter((tag) => tag === 'water').length, 2);
+  assert.equal(productTags.filter((tag) => ['fire', 'water', 'lightning', 'vitality', 'area'].includes(tag)).length, 2);
+
+  const set = createTrendEquipmentSet({
+    trendTag: 'water',
+    tagBudget: 15,
+    itemFactory: new ItemFactory(),
+    random: () => 0.75,
+  });
+
+  assert.ok(set.every(({ item }) => item.tags.filter((tag) => tag === 'water').length <= 2));
+  assert.equal(set.reduce((total, { item }) => total + item.tags.length, 0), 15);
 });
 
 test('hero exposes the highest unlocked tag-skill level', () => {
