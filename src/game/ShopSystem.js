@@ -14,7 +14,7 @@ export function getSaleTagCount(value, negotiation) {
 }
 
 export function getGemAttempts(skillLevel) {
-  return Object.freeze({ 0: 0, 1: 1, 3: 2, 5: 3, 7: 4 })[skillLevel] ?? 0;
+  return Math.max(0, Math.min(4, skillLevel));
 }
 
 export default class ShopSystem {

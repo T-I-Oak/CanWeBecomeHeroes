@@ -83,7 +83,7 @@ export default class BattleSystem {
     if (evade > accuracy) { this.effects?.miss(target); this.recordMiss(actor, target); return; }
     const attack = ATTACKS[type];
     this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
-      const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const crit = actor.getTagCount(statTag) > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * getRandomModifier(this.random) * (crit ? 1 + actor.getTagCount(statTag) ** 2 * .1 : 1);
+      const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const skillLevel = actor.getTagSkillLevel(statTag); const crit = skillLevel > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * getRandomModifier(this.random) * (crit ? 1 + skillLevel ** 2 * .1 : 1);
       if (type === 'orb') this.applyOrb(actor, t, coefficient);
       const dealt = attack[0] === 'power'
         ? this.applyPhysicalDamage(actor, t, type, damage, crit, participants)
@@ -101,7 +101,7 @@ export default class BattleSystem {
     const absorbed = Math.min(target.physicalDamageReduction, damage);
     this.setPhysicalDamageReduction(target, Math.max(0, target.physicalDamageReduction - absorbed));
     const afterProtection = Math.max(0, damage - absorbed * 0.5);
-    const reflected = target.getTagSkillLevel('iron') > 0 ? afterProtection * target.getTagCount('iron') * 0.1 : 0;
+    const reflected = afterProtection * target.getTagSkillLevel('iron') * 0.2;
     const dealt = Math.max(0, afterProtection - reflected);
     this.applyDamage(actor, target, type, dealt, critical);
     if (reflected >= 0.01) {

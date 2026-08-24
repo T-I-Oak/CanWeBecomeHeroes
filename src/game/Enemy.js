@@ -31,7 +31,7 @@ export default class Enemy {
 
   getTagSkillLevel(tag) {
     const count = this.getTagCount(tag);
-    return [7, 5, 3, 1].find((level) => count >= level) ?? 0;
+    return Math.floor((count + 1) / 2);
   }
 
   getLuckDegree() {

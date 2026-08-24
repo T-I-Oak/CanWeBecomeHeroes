@@ -193,3 +193,18 @@ test('physical reduction is consumed and iron reflects part of the remaining phy
   assert.ok(Math.abs(target.stamina - 2.28) < 1e-9);
   assert.ok(Math.abs(actor.stamina - 2.82) < 1e-9);
 });
+
+test('iron reflection uses tag-skill level instead of the raw iron tag count', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const actor = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
+  const target = new HeroFactory().create({ profession: 'guard', x: 200, y: 100, stamina: 3 });
+  target.tags.push('iron', 'iron');
+  target.physicalDamageReduction = 0.2;
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  const dealt = battle.applyPhysicalDamage(actor, target, 'sword', 1, false, [actor, target]);
+
+  assert.equal(target.getTagSkillLevel('iron'), 2);
+  assert.ok(Math.abs(dealt - 0.54) < 1e-9);
+  assert.ok(Math.abs(actor.stamina - 2.64) < 1e-9);
+});

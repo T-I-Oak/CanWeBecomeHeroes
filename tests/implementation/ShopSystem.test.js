@@ -61,7 +61,7 @@ test('shop pricing and gem skill tiers follow the sale rules', () => {
   assert.equal(getSaleTagCount(0, 0), 5);
   assert.equal(getSaleTagCount(10, 0), 6);
   assert.equal(getSaleTagCount(117, 7), 15);
-  assert.deepEqual([0, 1, 3, 5, 7].map(getGemAttempts), [0, 1, 2, 3, 4]);
+  assert.deepEqual([0, 1, 2, 3, 4].map(getGemAttempts), [0, 1, 2, 3, 4]);
 });
 
 test('shop creates a valid three-tag product before selecting each equipment item from it', () => {
@@ -84,5 +84,5 @@ test('hero exposes the highest unlocked tag-skill level', () => {
   const hero = new HeroFactory().create({ profession: 'merchant', x: 0, y: 0 });
   assert.equal(hero.getTagSkillLevel('gem'), 1);
   hero.tags.push('gem', 'gem', 'gem', 'gem');
-  assert.equal(hero.getTagSkillLevel('gem'), 5);
+  assert.equal(hero.getTagSkillLevel('gem'), 3);
 });
