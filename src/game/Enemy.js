@@ -4,7 +4,7 @@ import { getLuckDegree } from './Luck.js';
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
 
 export default class Enemy {
-  constructor({ definition, tags, chip, maximumHp, contributionPoints, equipment = [], maximums = {} }) {
+  constructor({ definition, tags, chip, maximumHp, contributionPoints, equipment = [], maximums = {}, rank = 'regular', mainTag = definition.tagAffinity, subTags = [] }) {
     this.definition = definition;
     this.nameKey = definition.nameKey;
     this.tags = [...tags];
@@ -12,6 +12,9 @@ export default class Enemy {
     this.maximumHp = maximumHp;
     this.hp = maximumHp;
     this.contributionPoints = contributionPoints;
+    this.rank = rank;
+    this.mainTag = mainTag;
+    this.subTags = [...subTags];
     this.equipment = [...equipment];
     this.maximums = { ...DEFAULT_MAXIMUMS, ...maximums };
     this.currentArea = 'battle';

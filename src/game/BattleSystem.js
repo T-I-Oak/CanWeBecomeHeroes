@@ -1,5 +1,6 @@
 import { GAME_AREAS } from './GameAreas.js';
 import { getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
+import { createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
 
 const TICKS_PER_SECOND = 60;
 const ACTION_GAUGE_BASE_RATE = 13 / 300;
@@ -7,6 +8,7 @@ const ACTION_GAUGE_WEIGHT_SCALE = 25;
 const ATTRIBUTE_TICK_INTERVAL = 60;
 const RANGE = [[1], [0.3, 0.5, 0.3], [0.4, 0.5, 0.4], [0.1, 0.4, 0.6, 0.4, 0.1], [0.2, 0.5, 0.6, 0.5, 0.2], [0.1, 0.3, 0.5, 0.7, 0.5, 0.3, 0.1], [0.2, 0.4, 0.6, 0.7, 0.6, 0.4, 0.2], [0.1, 0.3, 0.5, 0.6, 0.8, 0.6, 0.5, 0.3, 0.1]];
 const ATTACKS = { sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['power', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['magic', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] };
+const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
@@ -214,7 +216,31 @@ export default class BattleSystem {
   }
   getEntityLabel(entity) { return isHero(entity) ? `【${entity.profession}・${entity.name.ja}】` : `【${entity.definition.nameJa}】`; }
   logDamage(actor, target, type, damage, remaining) { this.logger?.info?.(`[Battle] ${this.getEntityLabel(actor)} -> ${this.getEntityLabel(target)} | ${type} | ${damage.toFixed(3)} damage | ${remaining}`); }
-  defeatEnemy(enemy) { if (!onBoard(this.board, enemy)) return; this.board.removeChip(enemy.chip); this.controller?.remove(enemy); this.contributionPoints += enemy.contributionPoints; const a = GAME_AREAS.warehouse; const item = this.itemFactory.createBodyItem({ part: 'head', tags: [enemy.definition.tagAffinity], x: a.x + a.width / 2 + (this.random() - .5) * 96, y: a.y + a.height / 2 + (this.random() - .5) * 96, random: this.random }); this.controller?.addToWarehouse(item); }
+  getWarehouseDropPosition() {
+    const area = GAME_AREAS.warehouse;
+    const margin = 64;
+    return {
+      x: area.x + margin + this.random() * (area.width - margin * 2),
+      y: area.y + margin + this.random() * (area.height - margin * 2),
+    };
+  }
+  createEnemyDrops(enemy) {
+    const config = ENEMY_DROP_SETS[enemy.rank] ?? ENEMY_DROP_SETS.regular;
+    return Array.from({ length: config.setCount }, () => createTrendEquipmentSet({
+      trendTag: enemy.mainTag,
+      tagBudget: config.tagBudget,
+      itemFactory: this.itemFactory,
+      random: this.random,
+      placePart: () => this.getWarehouseDropPosition(),
+    }).map(({ item }) => item)).flat();
+  }
+  defeatEnemy(enemy) {
+    if (!onBoard(this.board, enemy)) return;
+    this.board.removeChip(enemy.chip);
+    this.controller?.remove(enemy);
+    this.contributionPoints += enemy.contributionPoints;
+    this.createEnemyDrops(enemy).forEach((item) => this.controller?.addToWarehouse(item));
+  }
   getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }
 }
 export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, TICKS_PER_SECOND };

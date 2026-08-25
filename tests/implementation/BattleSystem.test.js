@@ -44,11 +44,28 @@ test('a full action gauge resolves basic damage, awards contribution, drops an i
   assert.equal(board.chips.includes(enemy.chip), false);
   assert.equal(battle.contributionPoints, 2);
   assert.deepEqual(removed, [enemy]);
-  assert.equal(dropped.length, 1);
-  assert.equal(dropped[0].tags.includes('valor'), true);
+  assert.equal(dropped.length, 5);
+  assert.equal(dropped.reduce((total, item) => total + item.tags.length, 0), 5);
   assert.equal(battle.getElapsedTicks(1), 1);
   assert.match(records[0], /【剣士・アヴェリー】 -> 【ゴブリン】/);
   assert.match(records[0], /damage/);
+});
+
+test('enemy rank determines the number and tag budgets of dropped equipment sets', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0, logger: { info: () => {} } });
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const midBoss = enemyFactory.createInitialEncounter({ rank: 'midBoss' });
+  const boss = enemyFactory.createInitialEncounter({ rank: 'boss' });
+
+  const midBossDrops = battle.createEnemyDrops(midBoss);
+  const bossDrops = battle.createEnemyDrops(boss);
+
+  assert.equal(midBossDrops.length, 10);
+  assert.equal(midBossDrops.reduce((total, item) => total + item.tags.length, 0), 20);
+  assert.equal(bossDrops.length, 15);
+  assert.equal(bossDrops.reduce((total, item) => total + item.tags.length, 0), 45);
 });
 
 test('magic standard damage uses half the physical standard divisor', () => {

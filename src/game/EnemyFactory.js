@@ -25,12 +25,12 @@ export default class EnemyFactory {
     this.itemFactory = itemFactory;
   }
 
-  create({ size, tagAffinity, slotPosition, maximumHp, contributionPoints, totalTagCount, maximums, random = Math.random }) {
-    const definition = getEnemyDefinition({ size, tagAffinity });
+  create({ size, tagAffinity, slotPosition, maximumHp, contributionPoints, totalTagCount, maximums, rank = 'regular', mainTag = tagAffinity, subTags = [], random = Math.random }) {
+    const definition = getEnemyDefinition({ size, tagAffinity: mainTag });
     if (!definition) throw new Error(`Missing enemy definition: ${size}-${tagAffinity}`);
     const slot = getSlot(slotPosition);
     const radius = ENEMY_CHIP_DIAMETER[size] / 2;
-    const tags = [tagAffinity];
+    const tags = [mainTag, ...subTags];
     const chip = new Chip({
       id: 0,
       type: 'enemy',
@@ -43,12 +43,12 @@ export default class EnemyFactory {
       bounds: slot.bounds,
       fillColor: AREA_THEME.battle.chipFill,
     });
-    const productTags = createTrendProductTags(tagAffinity, random);
+    const productTags = createTrendProductTags(mainTag, random);
     const tagCounts = distributeTagCounts(totalTagCount, random);
     const equipment = EQUIPMENT_PARTS.map((part, index) => createTrendEquipmentItem({
       part, count: tagCounts[index], productTags, itemFactory: this.itemFactory, random,
     }));
-    return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums });
+    return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums, rank, mainTag, subTags });
   }
 
   createInitialEncounter(options = {}) {
