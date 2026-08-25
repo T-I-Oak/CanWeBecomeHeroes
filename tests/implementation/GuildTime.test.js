@@ -19,10 +19,23 @@ test('guild time uses five hundred ticks per hour with a seven-day initial deadl
   assert.equal(formatRemainingGuildTime(status.remainingHours), '5日 23時間');
 });
 
-test('guild timeline switches to a proportional horizon when remaining time and extension estimate exceed fourteen days', () => {
+test('guild timeline expands beyond the initial seven-day horizon for remaining time and extension estimate', () => {
   const status = getGuildTimeStatus({ tick: 0, contributionPoints: 240, extensionHours: 200 });
 
   assert.equal(status.remainingHours, 368);
   assert.equal(status.estimatedExtensionHours, 24);
   assert.equal(status.timelineHours, 392);
+});
+
+test('guild timeline maximum does not shrink after it has expanded', () => {
+  const expanded = getGuildTimeStatus({ tick: 0, contributionPoints: 240, extensionHours: 200 });
+  const later = getGuildTimeStatus({
+    tick: GAME_TICKS_PER_HOUR * 300,
+    contributionPoints: 0,
+    extensionHours: 200,
+    timelineHours: expanded.timelineHours,
+  });
+
+  assert.equal(later.remainingHours, 68);
+  assert.equal(later.timelineHours, expanded.timelineHours);
 });

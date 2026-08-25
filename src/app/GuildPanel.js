@@ -84,9 +84,9 @@ function drawTimelineLegend(context, { x, y, width }) {
   context.fillText(label, labelX, y);
 }
 
-export function drawGuildPanel(context, { tick, contributionPoints }) {
+export function drawGuildPanel(context, { tick, contributionPoints, timelineHours }) {
   const panel = getPanelBounds();
-  const status = getGuildTimeStatus({ tick, contributionPoints });
+  const status = getGuildTimeStatus({ tick, contributionPoints, timelineHours });
   const contentX = panel.x + 16;
   const contentWidth = panel.width - 32;
   context.save();
@@ -118,4 +118,5 @@ export function drawGuildPanel(context, { tick, contributionPoints }) {
   const extensionLabel = status.estimatedExtensionHours >= GUILD_EXTENSION_MAX_HOURS ? '24H（MAX）' : formatGuildHours(status.estimatedExtensionHours);
   drawRow(context, '延長見込', extensionLabel, contentX, panel.y + 212, contentWidth, EXTENSION_COLOR);
   context.restore();
+  return status;
 }

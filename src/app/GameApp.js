@@ -26,6 +26,7 @@ import ItemFactory from '../game/ItemFactory.js';
 import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { drawGuildPanel } from './GuildPanel.js';
+import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 
 const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
 const EQUIPMENT_GRID_HEIGHT = PREPARATION_LAYOUT.equipmentSlotSize * 3 + PREPARATION_LAYOUT.equipmentGap * 2;
@@ -247,6 +248,7 @@ export function startGame({ scenario }) {
   const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem, effects: combatEffects, gameLog });
   const staminaRecovery = new StaminaRecoverySystem();
   const facilitySwing = new FacilitySwingSystem();
+  let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const assets = new AssetLoader();
   const renderer = new ChipRenderer(context, assets);
 
@@ -385,7 +387,11 @@ export function startGame({ scenario }) {
     drawBattleSlotGround(context, assets);
     scenario.drawGuides(context);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction());
-    drawGuildPanel(context, { tick: clock.tick, contributionPoints: battleSystem.contributionPoints });
+    guildTimelineHours = drawGuildPanel(context, {
+      tick: clock.tick,
+      contributionPoints: battleSystem.contributionPoints,
+      timelineHours: guildTimelineHours,
+    }).timelineHours;
     preparationHeroes.forEach((hero, index) => {
       const { x, y, height } = getPreparationSubareaBounds(index);
       const image = assets.load(hero.chip.centerPath);
