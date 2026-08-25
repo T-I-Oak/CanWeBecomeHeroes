@@ -128,6 +128,55 @@ test('holy book reduces every ally attribute with a base reduction even without 
   assert.equal(taglessUser.attributes.fire, 3.9);
 });
 
+test('claw steals the highest available eligible item tier for heroes and enemies', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3 });
+  hero.tags.push('dexterity', 'dexterity', 'dexterity');
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  const enemyItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor', 'valor', 'fire'], x: 0, y: 0 });
+  enemy.equipment = [enemyItem];
+  enemy.refreshDerivedValues();
+  const dropped = [];
+  const heroBattle = new BattleSystem(board, { controller: { addToWarehouse: (item) => dropped.push(item) }, itemFactory, random: () => 0, logger: { info: () => {} } });
+
+  assert.equal(heroBattle.resolveTheft(hero, enemy), enemyItem);
+  assert.equal(enemy.equipment.length, 0);
+  assert.deepEqual(dropped, [enemyItem]);
+
+  const enemyThief = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  enemyThief.tags = ['dexterity', 'dexterity', 'dexterity', 'dexterity', 'dexterity'];
+  enemyThief.equipment = [];
+  enemyThief.refreshDerivedValues();
+  const targetHero = new HeroFactory().create({ profession: 'swordfighter', x: 200, y: 100, stamina: 3 });
+  const warehouseItem = itemFactory.createWeapon({ weapon: 'staff', tags: ['arcane', 'water'], x: 300, y: 100 });
+  board.addChip(warehouseItem.chip);
+  const entities = new Map([[warehouseItem.chip.id, warehouseItem]]);
+  const enemyBattle = new BattleSystem(board, {
+    controller: { entities, remove: (item) => { board.removeChip(item.chip); entities.delete(item.chip.id); } }, itemFactory, random: () => 0, logger: { info: () => {} },
+  });
+
+  assert.equal(enemyBattle.resolveTheft(enemyThief, targetHero), warehouseItem);
+  assert.deepEqual(enemyThief.equipment, [warehouseItem]);
+  assert.equal(entities.size, 0);
+});
+
+test('claw proceeds to lower theft tiers when a higher tag tier is absent', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3 });
+  hero.tags.push('dexterity');
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  const item = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor', 'fire'], x: 0, y: 0 });
+  enemy.equipment = [item];
+  const dropped = [];
+  const battle = new BattleSystem(board, { controller: { addToWarehouse: (stolen) => dropped.push(stolen) }, itemFactory, random: () => 0, logger: { info: () => {} } });
+
+  assert.equal(hero.getTagSkillLevel('dexterity'), 2);
+  assert.equal(battle.resolveTheft(hero, enemy), item);
+  assert.deepEqual(dropped, [item]);
+});
+
 test('one action aggregates miss and damage feedback by target with critical priority', () => {
   const effects = new CombatEffectSystem();
   const target = { chip: {} };

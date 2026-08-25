@@ -86,6 +86,7 @@ export default class BattleSystem {
     this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
       const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const skillLevel = actor.getTagSkillLevel(statTag); const crit = skillLevel > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * getRandomModifier(this.random) * (crit ? 1 + skillLevel ** 2 * .1 : 1);
       if (type === 'orb') this.applyOrb(actor, t, coefficient);
+      if (type === 'claw') this.resolveTheft(actor, t);
       const dealt = attack[0] === 'power'
         ? this.applyPhysicalDamage(actor, t, type, damage, crit, participants)
         : this.applyDamage(actor, t, type, damage, crit);
@@ -126,6 +127,41 @@ export default class BattleSystem {
     if (this.random() >= (actor.getLuckDegree() + .3) * coefficient) return;
     const items = (isHero(target) ? Object.values(target.equipment) : target.equipment).filter((item) => item && item.tags.length < 3); const item = items[Math.floor(this.random() * items.length)];
     if (!item?.addTag('gem')) return; item.chip.weight = getTagWeight(item.tags); item.chip.tagPaths = getTagPaths(item.tags); item.price = getTagPrice(item.tags); target.refreshDerivedValues?.();
+  }
+  getTheftCandidates(target) {
+    if (!isHero(target)) return target.equipment;
+    return [...(this.controller?.entities?.values?.() ?? [])].filter((entity) => entity.chip.type === 'item' && !entity.isStored && entity.category !== 'destination' && onBoard(this.board, entity));
+  }
+  resolveTheft(actor, target) {
+    const candidates = this.getTheftCandidates(target);
+    const skillLevel = actor.getTagSkillLevel('dexterity');
+    for (let tagCount = 3; tagCount >= 0; tagCount -= 1) {
+      if (!candidates.some((item) => item.tags.length >= tagCount)) continue;
+      if (skillLevel < tagCount) continue;
+      const eligibleCandidates = candidates.filter((item) => item.tags.length <= tagCount);
+      if (eligibleCandidates.length === 0) continue;
+      const successRate = actor.getLuckDegree() * (skillLevel - tagCount + 1) * 0.2;
+      if (this.random() >= successRate) continue;
+      const maximumTagCount = Math.max(...eligibleCandidates.map((item) => item.tags.length));
+      const choices = eligibleCandidates.filter((item) => item.tags.length === maximumTagCount);
+      const item = choices[Math.floor(this.random() * choices.length)];
+      this.transferStolenItem(actor, target, item);
+      return item;
+    }
+    return null;
+  }
+  transferStolenItem(actor, target, item) {
+    if (isHero(actor)) {
+      target.removeEquipment(item);
+      const area = GAME_AREAS.warehouse;
+      item.chip.x = area.x + item.chip.radius + this.random() * (area.width - item.chip.radius * 2);
+      item.chip.y = area.y + item.chip.radius + this.random() * (area.height - item.chip.radius * 2);
+      item.chip.scale = 1;
+      this.controller?.addToWarehouse?.(item);
+      return;
+    }
+    this.controller?.remove?.(item);
+    actor.addEquipment(item);
   }
   propagate(actor, target, type, damage, participants) {
     const value = target.attributes.lightning; if (!value || damage < .01) return;
