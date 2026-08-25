@@ -9,7 +9,7 @@ export default class HeroItemInteractionController {
     this.entities = new Map();
     this.gameLog = gameLog;
     this.bagAbsorptions = [];
-    this.selection = { source: null, links: [], hover: null };
+    this.selection = { source: null, hover: null };
   }
 
   add(entity) {
@@ -48,10 +48,9 @@ export default class HeroItemInteractionController {
 
   beginSelection(entity) {
     if (!entity) return false;
-    if (this.selection.links.length > 0 && !this.isSecondSelectionOrigin(entity)) return false;
     if (this.selection.source === entity) return true;
     this.selection.source = entity;
-    this.activeHero = entity.chip.type === 'hero' ? entity : this.getLinkedHero();
+    this.activeHero = entity.chip.type === 'hero' ? entity : null;
     return true;
   }
 
@@ -60,18 +59,18 @@ export default class HeroItemInteractionController {
   }
 
   clearSelection() {
-    this.selection = { source: null, links: [], hover: null };
+    this.selection = { source: null, hover: null };
     this.activeHero = null;
   }
 
   getSelectionGuide() {
-    const { source, links, hover } = this.selection;
-    if (!source && links.length === 0) return null;
+    const { source, hover } = this.selection;
+    if (!source) return null;
     const target = hover?.entity && hover.entity !== source ? hover.entity : null;
     const action = source && target ? this.getSelectionAction(source, target) : null;
     return {
       source,
-      links,
+      links: [],
       target,
       valid: action?.valid ?? null,
       pointerX: hover?.x ?? source?.chip.x,
@@ -94,13 +93,7 @@ export default class HeroItemInteractionController {
       if (stored) this.clearSelection();
       return stored;
     }
-    if (action.kind === 'hero-first') {
-      this.selection.links = [{ source: action.hero, target: action.item }];
-      this.selection.source = null;
-      this.activeHero = action.hero;
-      return true;
-    }
-    this.pickupController.start(action.hero, action.firstItem, action.secondItem);
+    this.pickupController.start(action.hero, action.item);
     this.clearSelection();
     return true;
   }
@@ -116,28 +109,10 @@ export default class HeroItemInteractionController {
     if (source.chip.type === 'item' && target.isShoppingBag) {
       return { kind: 'store', valid: target.canStore(source), item: source, bag: target };
     }
-    const linkedHero = this.getLinkedHero();
-    if (this.selection.links.length > 0) {
-      const firstItem = this.selection.links[0].target;
-      if (!this.isSecondSelectionOrigin(source) || target.chip.type !== 'item' || target === firstItem) return { valid: false };
-      const bothDestinationItems = firstItem.category === 'destination' && target.category === 'destination';
-      return { kind: 'hero-second', valid: !bothDestinationItems, hero: linkedHero, firstItem, secondItem: target };
-    }
     if (source.chip.type !== 'hero' || target.chip.type !== 'item') return { valid: false };
     const canStart = source.currentArea === 'preparation' && source.stamina >= 3;
     if (!canStart) return { valid: false };
-    return source.stamina >= 5
-      ? { kind: 'hero-first', valid: true, hero: source, item: target }
-      : { kind: 'hero-second', valid: true, hero: source, firstItem: target, secondItem: null };
-  }
-
-  getLinkedHero() {
-    return this.selection.links[0]?.source ?? null;
-  }
-
-  isSecondSelectionOrigin(entity) {
-    const link = this.selection.links[0];
-    return Boolean(link && (entity === link.source || entity === link.target));
+    return { kind: 'hero-start', valid: true, hero: source, item: target };
   }
 
   update(deltaSeconds) {

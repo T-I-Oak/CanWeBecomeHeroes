@@ -97,24 +97,18 @@ test('a ready hero starts moving when one item is selected', () => {
   assert.equal(pickupController.states.get(hero).item, item);
 });
 
-test('a stamina-five hero waits for a second selected item before moving', () => {
+test('a stamina-five hero starts moving after selecting one item', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const pickupController = new ItemPickupController(board, new HeroSlotManager());
   const controller = new HeroItemInteractionController(board, pickupController);
   const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700, stamina: 5 });
   const firstItem = new ItemFactory().createWeapon({ weapon: 'staff', tags: [], x: 800, y: 700 });
-  const secondItem = new ItemFactory().createWeapon({ weapon: 'sword', tags: [], x: 900, y: 700 });
-  [hero, firstItem, secondItem].forEach((entity) => controller.add(entity));
+  [hero, firstItem].forEach((entity) => controller.add(entity));
 
   controller.tap(hero.chip.x, hero.chip.y);
   controller.tap(firstItem.chip.x, firstItem.chip.y);
-  assert.equal(pickupController.states.has(hero), false);
-  assert.equal(controller.getSelectionGuide().links[0].target, firstItem);
-  controller.tap(hero.chip.x, hero.chip.y);
-  controller.tap(secondItem.chip.x, secondItem.chip.y);
-
   assert.equal(pickupController.states.get(hero).item, firstItem);
-  assert.deepEqual(pickupController.states.get(hero).selectedItems, [secondItem]);
+  assert.deepEqual(pickupController.states.get(hero).selectedItems, []);
 });
 
 test('adding an item to the warehouse starts the same drop used for new chips', () => {
