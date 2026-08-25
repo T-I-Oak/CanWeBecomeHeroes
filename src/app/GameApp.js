@@ -361,6 +361,8 @@ export function startGame({ scenario }) {
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
     } else if (drag.entity && !drag.startedSelection) {
       controller.completeSelectionAt(point.x, point.y);
+    } else if (!drag.entity && !drag.moved && controller.hasSelectionSource()) {
+      controller.completeSelectionAt(point.x, point.y);
     }
     drag = null;
   });

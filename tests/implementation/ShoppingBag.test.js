@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import HeroItemInteractionController from '../../src/game/HeroItemInteractionController.js';
 import HeroSlotManager from '../../src/game/HeroSlotManager.js';
+import HeroFactory from '../../src/game/HeroFactory.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 import ItemPickupController from '../../src/game/ItemPickupController.js';
 
@@ -42,5 +43,24 @@ test('an invalid target clears an item-to-bag selection', () => {
   controller.tap(item.chip.x, item.chip.y);
   assert.equal(controller.hasSelectionSource(), true);
   assert.equal(controller.tap(invalidItem.chip.x, invalidItem.chip.y), false);
+  assert.equal(controller.hasSelectionSource(), false);
+});
+
+test('an empty endpoint or invalid item clears a hero selection', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const pickupController = new ItemPickupController(board, new HeroSlotManager());
+  const controller = new HeroItemInteractionController(board, pickupController);
+  const factory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700, stamina: 0 });
+  const item = factory.createWeapon({ weapon: 'staff', tags: [], x: 800, y: 700 });
+  controller.add(hero);
+  controller.add(item);
+
+  controller.tap(hero.chip.x, hero.chip.y);
+  assert.equal(controller.tap(item.chip.x, item.chip.y), false);
+  assert.equal(controller.hasSelectionSource(), false);
+
+  controller.tap(item.chip.x, item.chip.y);
+  assert.equal(controller.tap(0, 0), false);
   assert.equal(controller.hasSelectionSource(), false);
 });

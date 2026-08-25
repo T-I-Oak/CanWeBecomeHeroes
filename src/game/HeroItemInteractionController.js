@@ -81,7 +81,7 @@ export default class HeroItemInteractionController {
   completeSelectionAt(x, y) {
     const target = this.getEntityAt(x, y);
     if (!target) {
-      if (this.selection.source?.chip.type === 'item') this.clearSelection();
+      if (this.selection.source) this.clearSelection();
       return false;
     }
     if (!this.selection.source) return this.beginSelection(target);
@@ -91,7 +91,7 @@ export default class HeroItemInteractionController {
     }
     const action = this.getSelectionAction(this.selection.source, target);
     if (!action?.valid) {
-      if (this.selection.source.chip.type === 'item') this.clearSelection();
+      this.clearSelection();
       return false;
     }
     if (action.kind === 'store') {
