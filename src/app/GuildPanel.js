@@ -32,10 +32,15 @@ function getPanelBounds() {
 function drawTimeline(context, { x, y, width, height }, status) {
   const widths = [status.remainingHours, status.estimatedExtensionHours]
     .map((hours) => width * hours / status.timelineHours);
+  const radius = height / 2;
   context.fillStyle = TIMELINE_TRACK;
   context.beginPath();
-  context.roundRect(x, y, width, height, height / 2);
+  context.roundRect(x, y, width, height, radius);
   context.fill();
+  context.save();
+  context.beginPath();
+  context.roundRect(x, y, width, height, radius);
+  context.clip();
   let segmentX = x;
   [[widths[0], REMAINING_COLOR], [widths[1], EXTENSION_COLOR]].forEach(([segmentWidth, color]) => {
     if (segmentWidth <= 0) return;
@@ -43,10 +48,11 @@ function drawTimeline(context, { x, y, width, height }, status) {
     context.fillRect(segmentX, y, segmentWidth, height);
     segmentX += segmentWidth;
   });
+  context.restore();
   context.strokeStyle = '#161522';
   context.lineWidth = 1;
   context.beginPath();
-  context.roundRect(x, y, width, height, height / 2);
+  context.roundRect(x, y, width, height, radius);
   context.stroke();
 }
 
