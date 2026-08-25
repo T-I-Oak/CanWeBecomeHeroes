@@ -80,14 +80,20 @@ export default class HeroItemInteractionController {
 
   completeSelectionAt(x, y) {
     const target = this.getEntityAt(x, y);
-    if (!target) return false;
+    if (!target) {
+      if (this.selection.source?.chip.type === 'item') this.clearSelection();
+      return false;
+    }
     if (!this.selection.source) return this.beginSelection(target);
     if (target === this.selection.source) {
       this.clearSelection();
       return true;
     }
     const action = this.getSelectionAction(this.selection.source, target);
-    if (!action?.valid) return false;
+    if (!action?.valid) {
+      if (this.selection.source.chip.type === 'item') this.clearSelection();
+      return false;
+    }
     if (action.kind === 'store') {
       const stored = this.storeInShoppingBag(action.item, action.bag);
       if (stored) this.clearSelection();
@@ -100,7 +106,7 @@ export default class HeroItemInteractionController {
 
   tap(x, y) {
     const entity = this.getEntityAt(x, y);
-    if (!entity) return false;
+    if (!entity) return this.completeSelectionAt(x, y);
     if (!this.selection.source) return this.beginSelection(entity);
     return this.completeSelectionAt(x, y);
   }
