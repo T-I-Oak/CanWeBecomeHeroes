@@ -1,5 +1,5 @@
 export const ENEMY_SPAWN_SLOT_ORDER = Object.freeze([1, 6, 2, 5, 3, 4]);
-export const ENEMY_SPAWN_INTERVAL_TICKS = 150;
+export const ENEMY_SPAWN_INTERVAL_TICKS = 50;
 
 export default class EnemySpawnSystem {
   constructor(controller, { intervalTicks = ENEMY_SPAWN_INTERVAL_TICKS } = {}) {

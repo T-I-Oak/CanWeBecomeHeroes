@@ -11,12 +11,12 @@ test('enemy spawns follow the outer-to-center slot order with fixed empty-slot d
   const slotFour = factory.createInitialLivingArmor();
   spawn.schedule([slotFour, slotThree]);
 
-  spawn.update(599);
+  spawn.update(199);
   assert.equal(added.length, 0);
-  spawn.update(600);
+  spawn.update(200);
   assert.deepEqual(added, [slotThree]);
-  spawn.update(749);
+  spawn.update(249);
   assert.deepEqual(added, [slotThree]);
-  spawn.update(750);
+  spawn.update(250);
   assert.deepEqual(added, [slotThree, slotFour]);
 });
