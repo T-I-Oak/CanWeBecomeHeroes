@@ -175,9 +175,10 @@ export default class ChipRenderer {
   }
 
   drawActionGauge(chip) {
-    if (chip.actionGauge === null || chip.actionGaugeMaximum === null) return;
+    if (chip.actionGauge === null || chip.actionGaugeMaximum === null || chip.actionGaugeBaseMaximum === null) return;
     const { context } = this;
-    const width = chip.radius * 1.28;
+    const baseWidth = chip.radius * 1.28;
+    const width = baseWidth * Math.min(1, chip.actionGaugeMaximum / chip.actionGaugeBaseMaximum);
     const height = Math.max(7, chip.radius * 0.12);
     const x = -width / 2;
     const y = chip.radius * 0.5 - height / 2;

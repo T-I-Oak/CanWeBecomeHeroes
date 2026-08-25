@@ -28,6 +28,7 @@ export default class Chip {
     this.storageCapacity = null;
     this.actionGauge = null;
     this.actionGaugeMaximum = null;
+    this.actionGaugeBaseMaximum = null;
     this.attributeValues = null;
     this.physicalDamageReduction = 0;
     this.effectOffsetX = 0;

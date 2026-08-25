@@ -101,6 +101,12 @@ test('bows shorten the action gauge by ten percent per weapon up to five weapons
   hero.equip(itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
   assert.equal(getActionGaugeMaximum(hero), (15 - hero.getStatus('speed')) * 0.8);
 
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, logger: { info: () => {} } });
+  battle.updateActionGaugeMaximum(hero);
+  assert.equal(hero.chip.actionGaugeBaseMaximum, 15 - hero.getStatus('speed'));
+  assert.equal(hero.chip.actionGaugeMaximum / hero.chip.actionGaugeBaseMaximum, 0.8);
+
   const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
   enemy.equipment = Array.from({ length: 6 }, () => itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
   enemy.refreshDerivedValues();

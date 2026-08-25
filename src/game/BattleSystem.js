@@ -15,8 +15,9 @@ const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 export function getRandomModifier(random = Math.random) { return 0.8 + random() * 0.4; }
+export function getActionGaugeBaseMaximum(actor) { return 15 - actor.getStatus('speed'); }
 export function getActionGaugeMaximum(actor) {
-  const baseMaximum = 15 - actor.getStatus('speed');
+  const baseMaximum = getActionGaugeBaseMaximum(actor);
   const equipment = Array.isArray(actor.equipment) ? actor.equipment : Object.values(actor.equipment);
   const bowCount = equipment.filter((item) => item?.category === 'weapon' && item.type === 'bow').length;
   const shortening = Math.min(bowCount, MAX_BOW_GAUGE_SHORTENING_WEAPONS) * BOW_GAUGE_SHORTENING_PER_WEAPON;
@@ -29,7 +30,7 @@ export default class BattleSystem {
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.attributeTicks = 0;
   }
   update({ heroes, enemies, tick, tickDelta }) {
-    [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => { a.chip.actionGauge = null; a.chip.actionGaugeMaximum = null; });
+    [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => { a.chip.actionGauge = null; a.chip.actionGaugeMaximum = null; a.chip.actionGaugeBaseMaximum = null; });
     const activeEnemies = enemies.filter((e) => onBoard(this.board, e));
     if (this.battleStartTick === null && activeEnemies.some((e) => e.chip.isSettled)) this.battleStartTick = tick;
     if (this.battleStartTick === null) return;
@@ -61,6 +62,7 @@ export default class BattleSystem {
   }
   updateActionGaugeMaximum(actor) {
     const maximum = getActionGaugeMaximum(actor);
+    actor.chip.actionGaugeBaseMaximum = getActionGaugeBaseMaximum(actor);
     actor.chip.actionGaugeMaximum = maximum;
     return maximum;
   }
