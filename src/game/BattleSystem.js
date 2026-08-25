@@ -34,7 +34,7 @@ export default class BattleSystem {
       this.attributeTicks -= ATTRIBUTE_TICK_INTERVAL;
       participants.forEach((actor) => {
         const a = actor.attributes;
-        if (a.fire > 0) this.applyDamage(actor.attributeSources?.fire ?? null, actor, 'fire', a.fire * 0.1);
+        if (a.fire > 0) this.applyDamage(actor.attributeSources?.fire ?? null, actor, 'fire', a.fire * 0.1 * (1 - actor.getTagSkillLevel('cloth') * 0.1));
         ['fire', 'water', 'lightning'].forEach((key) => { a[key] = Math.max(0, a[key] * 0.95 - 0.1); });
         actor.chip.attributeValues = a;
       });
@@ -79,7 +79,8 @@ export default class BattleSystem {
   resolveWeapon(actor, target, type, participants) {
     if (!onBoard(this.board, target)) return;
     if (type === 'shield') this.applyShield(actor, participants);
-    const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * .1); const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * .1);
+    if (type === 'holy-book') this.applyHolyBook(actor, participants);
+    const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * .1); const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * .1 * (1 - actor.getTagSkillLevel('cloth') * .1));
     if (evade > accuracy) { this.effects?.miss(target); this.recordMiss(actor, target); return; }
     const attack = ATTACKS[type];
     this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
@@ -95,6 +96,13 @@ export default class BattleSystem {
     const reduction = actor.getTagCount('iron') * 0.1;
     participants.filter((candidate) => isHero(candidate) === isHero(actor)).forEach((ally) => {
       this.setPhysicalDamageReduction(ally, Math.max(ally.physicalDamageReduction, reduction));
+    });
+  }
+  applyHolyBook(actor, participants) {
+    const reduction = actor.getTagCount('cloth') * 0.05 + 0.025;
+    participants.filter((candidate) => isHero(candidate) === isHero(actor)).forEach((ally) => {
+      ['fire', 'water', 'lightning'].forEach((attribute) => { ally.attributes[attribute] *= 1 - reduction; });
+      ally.chip.attributeValues = ally.attributes;
     });
   }
   applyPhysicalDamage(actor, target, type, damage, critical, participants) {
@@ -121,7 +129,7 @@ export default class BattleSystem {
   }
   propagate(actor, target, type, damage, participants) {
     const value = target.attributes.lightning; if (!value || damage < .01) return;
-    participants.filter((c) => isHero(c) !== isHero(actor) && c !== target && onBoard(this.board, c)).toSorted((a, b) => Math.abs(a.chip.x - target.chip.x) - Math.abs(b.chip.x - target.chip.x)).slice(0, Math.floor(value)).forEach((other, index) => { const dealt = damage * (value * .1 + .3) ** (index + 1); this.effects?.lightningPropagation(target, other); this.effects?.lightningHit(other); this.applyDamage(actor, other, type, dealt, false); });
+    participants.filter((c) => isHero(c) !== isHero(actor) && c !== target && onBoard(this.board, c)).toSorted((a, b) => Math.abs(a.chip.x - target.chip.x) - Math.abs(b.chip.x - target.chip.x)).slice(0, Math.floor(value)).forEach((other, index) => { const dealt = damage * (1 - target.getTagSkillLevel('cloth') * .1) * (value * .1 + .3) ** (index + 1); this.effects?.lightningPropagation(target, other); this.effects?.lightningHit(other); this.applyDamage(actor, other, type, dealt, false); });
   }
   applyDamage(actor, target, type, damage, critical = false) {
     if (damage < .01) return 0; this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);

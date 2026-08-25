@@ -109,6 +109,25 @@ test('attribute values are applied by maximum and decay every sixty ticks', () =
   assert.equal(hero.chip.attributeValues, hero.attributes);
 });
 
+test('holy book reduces every ally attribute with a base reduction even without cloth tags', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const cleric = new HeroFactory().create({ profession: 'cleric', x: 100, y: 100, stamina: 3 });
+  const ally = new HeroFactory().create({ profession: 'swordfighter', x: 200, y: 100, stamina: 3 });
+  cleric.attributes = { fire: 4, water: 2, lightning: 1 };
+  ally.attributes = { fire: 4, water: 2, lightning: 1 };
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  battle.applyHolyBook(cleric, [cleric, ally]);
+
+  assert.equal(cleric.attributes.fire, 3.5);
+  assert.equal(ally.attributes.fire, 3.5);
+  assert.equal(ally.attributes.water, 1.75);
+  const taglessUser = new HeroFactory().create({ profession: 'swordfighter', x: 300, y: 100, stamina: 3 });
+  taglessUser.attributes.fire = 4;
+  battle.applyHolyBook(taglessUser, [taglessUser]);
+  assert.equal(taglessUser.attributes.fire, 3.9);
+});
+
 test('one action aggregates miss and damage feedback by target with critical priority', () => {
   const effects = new CombatEffectSystem();
   const target = { chip: {} };

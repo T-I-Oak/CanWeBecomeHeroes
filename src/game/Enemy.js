@@ -1,4 +1,5 @@
 import { getStatusValue, getTagPaths, getTagWeight } from './TagCatalog.js';
+import { getLuckDegree } from './Luck.js';
 
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
 
@@ -35,7 +36,13 @@ export default class Enemy {
   }
 
   getLuckDegree() {
-    return Math.max(0, (5 + this.getStatus('luck') * 10) / 100);
+    return getLuckDegree({
+      luck: this.getStatus('luck'),
+      blessingSkillLevel: this.getTagSkillLevel('blessing'),
+      fortuneSkillLevel: this.getTagSkillLevel('fortune'),
+      currentStamina: this.hp,
+      maximumStamina: this.maximumHp,
+    });
   }
 
   getStatus(stat) {

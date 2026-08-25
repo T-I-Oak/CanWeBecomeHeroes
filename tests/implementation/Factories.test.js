@@ -4,6 +4,7 @@ import HeroFactory from '../../src/game/HeroFactory.js';
 import Hero from '../../src/game/Hero.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
+import Enemy from '../../src/game/Enemy.js';
 import { AREA_THEME } from '../../src/game/AreaTheme.js';
 
 test('hero factory creates a profession chip with its two fixed tags', () => {
@@ -24,15 +25,28 @@ test('hero aggregates equipped item tags into status and chip weight', () => {
   assert.equal(hero.chip.weight, 9);
 });
 
-test('hero converts current luck from zero through seven into a luck rate', () => {
+test('hero derives luck degree from its current stamina and blessing or fortune skill level', () => {
   const chip = { weight: 0 };
   const noLuckHero = new Hero({ profession: 'test', name: {}, tags: [], chip, maximums: { luck: 7 } });
-  const maximumLuckHero = new Hero({
-    profession: 'test', name: {}, chip, maximums: { luck: 7 },
-    tags: ['blessing', 'blessing', 'blessing', 'blessing', 'blessing', 'blessing', 'blessing'],
+  const blessingHero = new Hero({
+    profession: 'test', name: {}, tags: ['blessing'], chip, stamina: 0, maximums: { luck: 7, stamina: 3 },
   });
+  const fortuneHero = new Hero({
+    profession: 'test', name: {}, tags: ['fortune', 'fortune', 'fortune'], chip, stamina: 3, maximums: { luck: 7, stamina: 3 },
+  });
+
   assert.equal(noLuckHero.getLuckRate(), 0.05);
-  assert.equal(maximumLuckHero.getLuckRate(), 0.75);
+  assert.ok(Math.abs(blessingHero.getLuckRate() - 0.235) < 1e-9);
+  blessingHero.stamina = 0.3;
+  assert.ok(Math.abs(blessingHero.getLuckRate() - 0.15) < 1e-9);
+  assert.ok(Math.abs(fortuneHero.getLuckRate() - 0.48) < 1e-9);
+  fortuneHero.stamina = 2.4;
+  assert.ok(Math.abs(fortuneHero.getLuckRate() - 0.35) < 1e-9);
+
+  const fortuneEnemy = new Enemy({
+    definition: {}, tags: ['fortune', 'fortune', 'fortune'], chip: {}, maximumHp: 10, contributionPoints: 0,
+  });
+  assert.ok(Math.abs(fortuneEnemy.getLuckDegree() - 0.48) < 1e-9);
 });
 
 test('status values use the greater of their two tag types instead of their sum', () => {

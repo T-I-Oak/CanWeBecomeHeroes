@@ -1,5 +1,6 @@
 import { getStatusValue, getTagWeight } from './TagCatalog.js';
 import { getHeroStepDistance } from './MovementSettings.js';
+import { getLuckDegree } from './Luck.js';
 
 export default class Hero {
   constructor({ profession, name, tags, chip, stamina = 0, maximums = {} }) {
@@ -44,7 +45,13 @@ export default class Hero {
   }
 
   getLuckDegree() {
-    return Math.max(0, (5 + this.getStatus('luck') * 10) / 100);
+    return getLuckDegree({
+      luck: this.getStatus('luck'),
+      blessingSkillLevel: this.getTagSkillLevel('blessing'),
+      fortuneSkillLevel: this.getTagSkillLevel('fortune'),
+      currentStamina: this.stamina,
+      maximumStamina: this.maximums.stamina,
+    });
   }
 
   getLuckRate() {
