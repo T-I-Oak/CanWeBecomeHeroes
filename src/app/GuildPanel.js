@@ -1,0 +1,97 @@
+import { GAME_AREAS } from '../game/GameAreas.js';
+import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
+import {
+  formatElapsedGuildTime,
+  formatGuildHours,
+  formatRemainingGuildTime,
+  GUILD_EXTENSION_MAX_HOURS,
+  getGuildTimeStatus,
+} from '../game/GuildTime.js';
+
+const PANEL_MARGIN = 16;
+const PANEL_GAP_FROM_SLOT = 16;
+const PANEL_FILL = '#29273a';
+const PANEL_BORDER = '#71509d';
+const PANEL_TEXT = '#f3ecdc';
+const MUTED_TEXT = '#c5bed1';
+const TIMELINE_TRACK = '#1b1a27';
+const ELAPSED_COLOR = '#777989';
+const REMAINING_COLOR = '#a486d1';
+const EXTENSION_COLOR = '#d3a65e';
+
+function getPanelBounds() {
+  const area = GAME_AREAS.guild;
+  const slotRight = area.x + (area.width / 2 - HERO_SLOT_SIZE) / 2 + HERO_SLOT_SIZE;
+  return Object.freeze({
+    x: slotRight + PANEL_GAP_FROM_SLOT,
+    y: area.y + PANEL_MARGIN,
+    width: area.x + area.width - PANEL_MARGIN - (slotRight + PANEL_GAP_FROM_SLOT),
+    height: area.height - PANEL_MARGIN * 2,
+  });
+}
+
+function drawTimeline(context, { x, y, width, height }, status) {
+  const widths = [status.elapsedHours, status.remainingHours, status.estimatedExtensionHours]
+    .map((hours) => width * hours / status.timelineHours);
+  context.fillStyle = TIMELINE_TRACK;
+  context.beginPath();
+  context.roundRect(x, y, width, height, height / 2);
+  context.fill();
+  let segmentX = x;
+  [[widths[0], ELAPSED_COLOR], [widths[1], REMAINING_COLOR], [widths[2], EXTENSION_COLOR]].forEach(([segmentWidth, color]) => {
+    if (segmentWidth <= 0) return;
+    context.fillStyle = color;
+    context.fillRect(segmentX, y, segmentWidth, height);
+    segmentX += segmentWidth;
+  });
+  context.strokeStyle = '#161522';
+  context.lineWidth = 1;
+  context.beginPath();
+  context.roundRect(x, y, width, height, height / 2);
+  context.stroke();
+}
+
+function drawRow(context, label, value, x, y, width, valueColor = PANEL_TEXT) {
+  context.font = '13px system-ui';
+  context.textAlign = 'start';
+  context.fillStyle = MUTED_TEXT;
+  context.fillText(label, x, y);
+  context.textAlign = 'end';
+  context.fillStyle = valueColor;
+  context.fillText(value, x + width, y);
+}
+
+export function drawGuildPanel(context, { tick, contributionPoints }) {
+  const panel = getPanelBounds();
+  const status = getGuildTimeStatus({ tick, contributionPoints });
+  const contentX = panel.x + 16;
+  const contentWidth = panel.width - 32;
+  context.save();
+  context.fillStyle = PANEL_FILL;
+  context.strokeStyle = PANEL_BORDER;
+  context.lineWidth = 3;
+  context.beginPath();
+  context.roundRect(panel.x, panel.y, panel.width, panel.height, 8);
+  context.fill();
+  context.stroke();
+  context.textAlign = 'start';
+  context.textBaseline = 'middle';
+  context.fillStyle = MUTED_TEXT;
+  context.font = 'bold 13px system-ui';
+  context.fillText('残り期限', contentX, panel.y + 25);
+  context.fillStyle = PANEL_TEXT;
+  context.font = 'bold 26px system-ui';
+  context.fillText(formatRemainingGuildTime(status.remainingHours), contentX, panel.y + 55);
+  drawTimeline(context, { x: contentX, y: panel.y + 78, width: contentWidth, height: 16 }, status);
+  context.strokeStyle = PANEL_BORDER;
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(contentX, panel.y + 116);
+  context.lineTo(contentX + contentWidth, panel.y + 116);
+  context.stroke();
+  drawRow(context, '経過時間', formatElapsedGuildTime(status.elapsedHours), contentX, panel.y + 146, contentWidth);
+  drawRow(context, '貢献', `${Math.floor(contributionPoints)} pt`, contentX, panel.y + 176, contentWidth);
+  const extensionLabel = status.estimatedExtensionHours >= GUILD_EXTENSION_MAX_HOURS ? '24H（MAX）' : formatGuildHours(status.estimatedExtensionHours);
+  drawRow(context, '延長見込', extensionLabel, contentX, panel.y + 206, contentWidth, EXTENSION_COLOR);
+  context.restore();
+}

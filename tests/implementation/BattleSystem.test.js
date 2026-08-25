@@ -50,7 +50,7 @@ test('a full action gauge resolves basic damage, awards contribution, drops an i
   battle.update({ heroes: [hero], enemies: [enemy], tick: 1, tickDelta: 1000 });
 
   assert.equal(board.chips.includes(enemy.chip), false);
-  assert.equal(battle.contributionPoints, 2);
+  assert.equal(battle.contributionPoints, 10);
   assert.deepEqual(removed, [enemy]);
   assert.equal(dropped.length, 5);
   assert.equal(dropped.reduce((total, item) => total + item.tags.length, 0), 5);
@@ -74,6 +74,8 @@ test('enemy rank determines the number and tag budgets of dropped equipment sets
   assert.equal(midBossDrops.reduce((total, item) => total + item.tags.length, 0), 20);
   assert.equal(bossDrops.length, 15);
   assert.equal(bossDrops.reduce((total, item) => total + item.tags.length, 0), 45);
+  assert.equal(midBoss.contributionPoints, 50);
+  assert.equal(boss.contributionPoints, 250);
 });
 
 test('magic standard damage uses half the physical standard divisor', () => {

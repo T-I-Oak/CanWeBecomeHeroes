@@ -25,6 +25,7 @@ import CombatEffectSystem from '../game/CombatEffectSystem.js';
 import ItemFactory from '../game/ItemFactory.js';
 import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
+import { drawGuildPanel } from './GuildPanel.js';
 
 const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
 const EQUIPMENT_GRID_HEIGHT = PREPARATION_LAYOUT.equipmentSlotSize * 3 + PREPARATION_LAYOUT.equipmentGap * 2;
@@ -226,24 +227,6 @@ function drawBattleSlotGround(context, assets) {
   });
 }
 
-function drawDemoBattleMeasurement(context, battleSystem, currentTick) {
-  const elapsedTicks = battleSystem.getElapsedTicks(currentTick);
-  if (elapsedTicks === null) return;
-  const battle = GAME_AREAS.battle;
-  context.save();
-  context.fillStyle = 'rgba(19, 30, 45, 0.78)';
-  context.beginPath();
-  context.roundRect(battle.x + 16, battle.y + 16, 180, 42, 8);
-  context.fill();
-  context.fillStyle = '#f6f0d8';
-  context.font = 'bold 16px system-ui';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  const label = battleSystem.defeatTick === null ? `BATTLE ${elapsedTicks} tick` : `CLEAR ${elapsedTicks} tick`;
-  context.fillText(label, battle.x + 106, battle.y + 37);
-  context.restore();
-}
-
 export function startGame({ scenario }) {
   const canvas = document.querySelector('#chip-canvas');
   const context = canvas.getContext('2d');
@@ -401,8 +384,8 @@ export function startGame({ scenario }) {
     preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
     drawBattleSlotGround(context, assets);
     scenario.drawGuides(context);
-    drawDemoBattleMeasurement(context, battleSystem, clock.tick);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction());
+    drawGuildPanel(context, { tick: clock.tick, contributionPoints: battleSystem.contributionPoints });
     preparationHeroes.forEach((hero, index) => {
       const { x, y, height } = getPreparationSubareaBounds(index);
       const image = assets.load(hero.chip.centerPath);

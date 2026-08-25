@@ -8,6 +8,7 @@ import ItemFactory from './ItemFactory.js';
 import { getTagPaths, getTagWeight } from './TagCatalog.js';
 import { EQUIPMENT_PARTS, createTrendEquipmentItem, createTrendProductTags, distributeTagCounts } from './TrendEquipmentGenerator.js';
 
+export const ENEMY_CONTRIBUTION_POINTS = Object.freeze({ regular: 10, midBoss: 50, boss: 250 });
 
 function getSlot(slotPosition) {
   const area = GAME_AREAS.battle;
@@ -25,7 +26,7 @@ export default class EnemyFactory {
     this.itemFactory = itemFactory;
   }
 
-  create({ size, tagAffinity, slotPosition, maximumHp, contributionPoints, totalTagCount, maximums, rank = 'regular', mainTag = tagAffinity, subTags = [], random = Math.random }) {
+  create({ size, tagAffinity, slotPosition, maximumHp, totalTagCount, maximums, rank = 'regular', contributionPoints = ENEMY_CONTRIBUTION_POINTS[rank], mainTag = tagAffinity, subTags = [], random = Math.random }) {
     const definition = getEnemyDefinition({ size, tagAffinity: mainTag });
     if (!definition) throw new Error(`Missing enemy definition: ${size}-${tagAffinity}`);
     const slot = getSlot(slotPosition);
@@ -52,14 +53,14 @@ export default class EnemyFactory {
   }
 
   createInitialEncounter(options = {}) {
-    return this.create({ size: 'small', tagAffinity: 'valor', slotPosition: 3, maximumHp: 2, contributionPoints: 2, totalTagCount: 0, ...options });
+    return this.create({ size: 'small', tagAffinity: 'valor', slotPosition: 3, maximumHp: 2, totalTagCount: 0, ...options });
   }
 
   createInitialLivingArmor(options = {}) {
-    return this.create({ size: 'small', tagAffinity: 'iron', slotPosition: 4, maximumHp: 2, contributionPoints: 2, totalTagCount: 0, ...options });
+    return this.create({ size: 'small', tagAffinity: 'iron', slotPosition: 4, maximumHp: 2, totalTagCount: 0, ...options });
   }
 
   createInitialWisp(options = {}) {
-    return this.create({ size: 'small', tagAffinity: 'arcane', slotPosition: 2, maximumHp: 2, contributionPoints: 2, totalTagCount: 0, ...options });
+    return this.create({ size: 'small', tagAffinity: 'arcane', slotPosition: 2, maximumHp: 2, totalTagCount: 0, ...options });
   }
 }

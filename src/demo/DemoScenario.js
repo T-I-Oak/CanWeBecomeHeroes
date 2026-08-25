@@ -85,7 +85,7 @@ export function createDemoScenario({ random = Math.random } = {}) {
       });
       const enemyType = DEMO_ENEMY_TYPES[Math.floor(random() * DEMO_ENEMY_TYPES.length)];
       const enemies = [3, 4].map((slotPosition) => enemyFactory.create({
-        ...enemyType, slotPosition, maximumHp: 2, contributionPoints: 2, totalTagCount: 0, random,
+        ...enemyType, slotPosition, maximumHp: 2, contributionPoints: 10, totalTagCount: 0, random,
       }));
       return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), enemies });
     },
