@@ -191,20 +191,24 @@ function drawShopPanel(context, assets, shop, bag, transaction) {
   context.textBaseline = 'alphabetic';
 }
 
-function drawAreaBackground(context, assets, areaName) {
-  const area = GAME_AREAS[areaName];
-  const image = assets.load(`/assets/background/${areaName}.png`);
+function drawTiledBackground(context, assets, imagePath, bounds) {
+  const { x, y, width, height } = bounds;
+  const image = assets.load(imagePath);
   if (!image.complete || image.naturalWidth === 0) return;
   const pattern = context.createPattern(image, 'repeat');
   if (!pattern) return;
   context.save();
   context.beginPath();
-  context.rect(area.x, area.y, area.width, area.height);
+  context.rect(x, y, width, height);
   context.clip();
-  context.translate(area.x, area.y);
+  context.translate(x, y);
   context.fillStyle = pattern;
-  context.fillRect(0, 0, area.width, area.height);
+  context.fillRect(0, 0, width, height);
   context.restore();
+}
+
+function drawAreaBackground(context, assets, areaName) {
+  drawTiledBackground(context, assets, `/assets/background/${areaName}.png`, GAME_AREAS[areaName]);
 }
 
 function drawBattleSlotGround(context, assets) {
@@ -388,6 +392,7 @@ export function startGame({ scenario }) {
     context.scale(camera.zoom, camera.zoom);
     context.translate(-camera.x, -camera.y);
     ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
+    preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
     drawBattleSlotGround(context, assets);
     scenario.drawGuides(context);
     drawDemoBattleMeasurement(context, battleSystem, clock.tick);
