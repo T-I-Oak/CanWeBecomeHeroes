@@ -160,6 +160,22 @@ test('attribute values are applied by maximum and decay every sixty ticks', () =
   assert.equal(hero.chip.attributeValues, hero.attributes);
 });
 
+test('vitality recovers a fixed 0.2 per tag after a successful luck check', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 1 });
+  hero.tags.push('vitality', 'vitality');
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ maximumHp: 3, totalTagCount: 0 });
+  enemy.tags.push('vitality', 'vitality', 'vitality');
+  enemy.hp = 2.5;
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0, logger: { info: () => {} } });
+
+  assert.ok(Math.abs(battle.resolveVitality(hero) - 0.4) < 1e-9);
+  assert.equal(hero.stamina, 1.4);
+  assert.equal(battle.resolveVitality(enemy), 0.5);
+  assert.equal(enemy.hp, 3);
+});
+
 test('holy book reduces every ally attribute with a base reduction even without cloth tags', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const cleric = new HeroFactory().create({ profession: 'cleric', x: 100, y: 100, stamina: 3 });

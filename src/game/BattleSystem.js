@@ -87,11 +87,26 @@ export default class BattleSystem {
       }
       t.chip.attributeValues = t.attributes;
     }));
-    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants)); this.effects?.endAction(); this.flushActionLogs(); actor.luckBonus = 0;
+    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants));
+    this.resolveVitality(actor);
+    this.effects?.endAction(); this.flushActionLogs(); actor.luckBonus = 0;
   }
   attackTypes(actor) {
     if (isHero(actor)) return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');
     const weapons = actor.equipment.filter((item) => item.category === 'weapon').map((item) => item.type); return weapons.length ? weapons : ['unarmed'];
+  }
+  resolveVitality(actor) {
+    const tagCount = actor.getTagCount('vitality');
+    if (!tagCount || this.random() >= actor.getLuckDegree()) return 0;
+    const recovery = tagCount * 0.2;
+    if (isHero(actor)) {
+      const previous = actor.stamina;
+      actor.stamina = Math.min(actor.maximums.stamina, actor.stamina + recovery);
+      return actor.stamina - previous;
+    }
+    const previous = actor.hp;
+    actor.hp = Math.min(actor.maximumHp, actor.hp + recovery);
+    return actor.hp - previous;
   }
   resolveWeapon(actor, target, type, participants) {
     if (!onBoard(this.board, target)) return;
