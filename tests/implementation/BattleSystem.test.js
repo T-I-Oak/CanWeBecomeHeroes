@@ -18,6 +18,14 @@ test('initial enemy has five tagless equipment items and its affinity as an intr
   assert.equal(enemy.chip.radius, 64);
 });
 
+test('small arcane enemy resolves to the wisp catalog entry', () => {
+  const enemy = new EnemyFactory().create({ size: 'small', tagAffinity: 'arcane', slotPosition: 4, maximumHp: 2, contributionPoints: 2, totalTagCount: 0 });
+
+  assert.equal(enemy.definition.nameJa, 'ウィスプ');
+  assert.equal(enemy.chip.centerPath, '/assets/enemies/small-arcane.png');
+  assert.deepEqual(enemy.tags, ['arcane']);
+});
+
 test('a full action gauge resolves basic damage, awards contribution, drops an item, and records elapsed ticks', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();

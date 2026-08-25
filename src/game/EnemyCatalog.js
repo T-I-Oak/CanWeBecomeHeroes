@@ -15,6 +15,14 @@ export const ENEMY_CATALOG = Object.freeze({
     nameJa: 'リビングアーマー',
     assetPath: '/assets/enemies/small-iron.png',
   }),
+  'small-arcane': Object.freeze({
+    id: 'small-arcane',
+    size: 'small',
+    tagAffinity: 'arcane',
+    nameKey: 'enemy.smallArcane',
+    nameJa: 'ウィスプ',
+    assetPath: '/assets/enemies/small-arcane.png',
+  }),
 });
 
 export function getEnemyDefinition({ size, tagAffinity }) {
