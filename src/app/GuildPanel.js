@@ -60,6 +60,24 @@ function drawRow(context, label, value, x, y, width, valueColor = PANEL_TEXT) {
   context.fillText(value, x + width, y);
 }
 
+function drawTimelineLegend(context, { x, y, width }) {
+  const swatchSize = 10;
+  context.font = '12px system-ui';
+  context.textAlign = 'start';
+  context.fillStyle = REMAINING_COLOR;
+  context.fillRect(x, y - swatchSize / 2, swatchSize, swatchSize);
+  context.fillStyle = MUTED_TEXT;
+  context.fillText('残り期限', x + swatchSize + 5, y);
+
+  const label = '貢献による延長見込';
+  const labelWidth = context.measureText(label).width;
+  const labelX = x + width - labelWidth;
+  context.fillStyle = EXTENSION_COLOR;
+  context.fillRect(labelX - swatchSize - 5, y - swatchSize / 2, swatchSize, swatchSize);
+  context.fillStyle = MUTED_TEXT;
+  context.fillText(label, labelX, y);
+}
+
 export function drawGuildPanel(context, { tick, contributionPoints }) {
   const panel = getPanelBounds();
   const status = getGuildTimeStatus({ tick, contributionPoints });
@@ -82,13 +100,7 @@ export function drawGuildPanel(context, { tick, contributionPoints }) {
   context.font = 'bold 26px system-ui';
   context.fillText(formatRemainingGuildTime(status.remainingHours), contentX, panel.y + 55);
   drawTimeline(context, { x: contentX, y: panel.y + 78, width: contentWidth, height: 16 }, status);
-  context.font = '12px system-ui';
-  context.fillStyle = REMAINING_COLOR;
-  context.textAlign = 'start';
-  context.fillText('■ 残り期限', contentX, panel.y + 105);
-  context.fillStyle = EXTENSION_COLOR;
-  context.textAlign = 'end';
-  context.fillText('■ 貢献による延長見込', contentX + contentWidth, panel.y + 105);
+  drawTimelineLegend(context, { x: contentX, y: panel.y + 105, width: contentWidth });
   context.strokeStyle = PANEL_BORDER;
   context.lineWidth = 1;
   context.beginPath();
