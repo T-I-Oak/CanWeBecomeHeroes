@@ -11,6 +11,11 @@ import { createTrendEquipmentSet } from '../game/TrendEquipmentGenerator.js';
 
 const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
 const FACILITY_SLOT_COLORS = Object.freeze({ shop: '#b58c59', guild: '#8d78b8', training: '#5d9b7a' });
+const DEMO_ENEMY_TYPES = Object.freeze([
+  Object.freeze({ size: 'small', tagAffinity: 'valor' }),
+  Object.freeze({ size: 'small', tagAffinity: 'iron' }),
+  Object.freeze({ size: 'small', tagAffinity: 'arcane' }),
+]);
 
 function randomWarehousePosition(radius = CHIP_RADIUS.item, random = Math.random) {
   return {
@@ -78,11 +83,10 @@ export function createDemoScenario({ random = Math.random } = {}) {
         const { x, y } = randomWarehousePosition(CHIP_RADIUS.item, random);
         controller.addToWarehouse(itemFactory.createDestination({ destination, x, y }));
       });
-      const enemies = [
-        enemyFactory.createInitialWisp({ random }),
-        enemyFactory.createInitialEncounter({ random }),
-        enemyFactory.createInitialLivingArmor({ random }),
-      ];
+      const enemyType = DEMO_ENEMY_TYPES[Math.floor(random() * DEMO_ENEMY_TYPES.length)];
+      const enemies = [3, 4].map((slotPosition) => enemyFactory.create({
+        ...enemyType, slotPosition, maximumHp: 2, contributionPoints: 2, totalTagCount: 0, random,
+      }));
       enemies.forEach((enemy) => {
         enemy.chip.beginDrop();
         controller.add(enemy);
