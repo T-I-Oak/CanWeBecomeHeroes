@@ -79,6 +79,7 @@ export function createDemoScenario({ random = Math.random } = {}) {
         controller.addToWarehouse(itemFactory.createDestination({ destination, x, y }));
       });
       const enemies = [
+        enemyFactory.createInitialWisp({ random }),
         enemyFactory.createInitialEncounter({ random }),
         enemyFactory.createInitialLivingArmor({ random }),
       ];
