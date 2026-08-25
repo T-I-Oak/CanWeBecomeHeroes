@@ -232,7 +232,7 @@ test('banner advances only allies using their gauge maximum before bow shortenin
   battle.applyBanner(actor, [actor, ally]);
 
   assert.equal(actor.chip.actionGauge, null);
-  assert.equal(ally.chip.actionGauge, 2.5);
+  assert.equal(ally.chip.actionGauge, 2.875);
   assert.equal(getActionGaugeMaximum(ally), 12);
 });
 

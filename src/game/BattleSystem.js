@@ -142,7 +142,7 @@ export default class BattleSystem {
     });
   }
   applyBanner(actor, participants) {
-    const gaugeIncrease = actor.getTagCount('reputation') * 0.05;
+    const gaugeIncrease = actor.getTagCount('reputation') * 0.05 + 0.025;
     participants.filter((candidate) => candidate !== actor && isHero(candidate) === isHero(actor)).forEach((ally) => {
       ally.chip.actionGauge = (ally.chip.actionGauge ?? 0) + getActionGaugeBaseMaximum(ally) * gaugeIncrease;
     });
