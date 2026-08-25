@@ -54,4 +54,8 @@ export default class EnemyFactory {
   createInitialEncounter(options = {}) {
     return this.create({ size: 'small', tagAffinity: 'valor', slotPosition: 3, maximumHp: 2, contributionPoints: 2, totalTagCount: 0, ...options });
   }
+
+  createInitialLivingArmor(options = {}) {
+    return this.create({ size: 'small', tagAffinity: 'iron', slotPosition: 4, maximumHp: 2, contributionPoints: 2, totalTagCount: 0, ...options });
+  }
 }

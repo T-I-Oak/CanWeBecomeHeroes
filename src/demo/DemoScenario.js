@@ -78,10 +78,15 @@ export function createDemoScenario({ random = Math.random } = {}) {
         const { x, y } = randomWarehousePosition(CHIP_RADIUS.item, random);
         controller.addToWarehouse(itemFactory.createDestination({ destination, x, y }));
       });
-      const enemy = enemyFactory.createInitialEncounter({ random });
-      enemy.chip.beginDrop();
-      controller.add(enemy);
-      return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), enemies: [enemy] });
+      const enemies = [
+        enemyFactory.createInitialEncounter({ random }),
+        enemyFactory.createInitialLivingArmor({ random }),
+      ];
+      enemies.forEach((enemy) => {
+        enemy.chip.beginDrop();
+        controller.add(enemy);
+      });
+      return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), enemies });
     },
     addItem({ controller }) {
       const { x, y } = randomWarehousePosition();
