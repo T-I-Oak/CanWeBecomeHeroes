@@ -48,7 +48,7 @@ export default class EnemyFactory {
     const equipment = EQUIPMENT_PARTS.map((part, index) => createTrendEquipmentItem({
       part, count: tagCounts[index], productTags, itemFactory: this.itemFactory, random,
     }));
-    return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums, rank, mainTag, subTags });
+    return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums, rank, mainTag, subTags, slotPosition });
   }
 
   createInitialEncounter(options = {}) {

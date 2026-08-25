@@ -23,6 +23,7 @@ import ShopSystem from '../game/ShopSystem.js';
 import BattleSystem from '../game/BattleSystem.js';
 import CombatEffectSystem from '../game/CombatEffectSystem.js';
 import ItemFactory from '../game/ItemFactory.js';
+import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 
 const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
@@ -253,7 +254,9 @@ export function startGame({ scenario }) {
   const gameLog = new GameLog();
   new NotificationCenter(document.querySelector('#notification-center'), gameLog);
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog), gameLog);
-  const { preparationHeroes, shop } = scenario.initialize({ controller });
+  const { preparationHeroes, shop, enemies } = scenario.initialize({ controller });
+  const enemySpawn = new EnemySpawnSystem(controller);
+  enemySpawn.schedule(enemies);
   const returnSystem = new FacilityReturnSystem(board, slotManager, { onItemReturned: (item) => controller.addToWarehouse(item) });
   const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem });
   const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), gameLog });
@@ -379,6 +382,7 @@ export function startGame({ scenario }) {
     const deltaSeconds = (time - previousTime) / 1000;
     previousTime = time;
     clock.advance(deltaSeconds, (simulationDeltaSeconds, tickDelta) => {
+      enemySpawn.update(clock.tick);
       board.update(simulationDeltaSeconds);
       combatEffects.update(simulationDeltaSeconds);
       controller.update(simulationDeltaSeconds);

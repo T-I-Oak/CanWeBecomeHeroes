@@ -87,10 +87,6 @@ export function createDemoScenario({ random = Math.random } = {}) {
       const enemies = [3, 4].map((slotPosition) => enemyFactory.create({
         ...enemyType, slotPosition, maximumHp: 2, contributionPoints: 2, totalTagCount: 0, random,
       }));
-      enemies.forEach((enemy) => {
-        enemy.chip.beginDrop();
-        controller.add(enemy);
-      });
       return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), enemies });
     },
     addItem({ controller }) {
