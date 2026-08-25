@@ -203,6 +203,56 @@ test('holy book reduces every ally attribute with a base reduction even without 
   assert.equal(taglessUser.attributes.fire, 3.9);
 });
 
+test('shield grants every ally a base physical reduction even without iron tags', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const guard = new HeroFactory().create({ profession: 'guard', x: 100, y: 100, stamina: 3 });
+  const ally = new HeroFactory().create({ profession: 'swordfighter', x: 200, y: 100, stamina: 3 });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  battle.applyShield(guard, [guard, ally]);
+  assert.equal(guard.physicalDamageReduction, 0.25);
+  assert.equal(ally.physicalDamageReduction, 0.25);
+
+  const taglessUser = new HeroFactory().create({ profession: 'swordfighter', x: 300, y: 100, stamina: 3 });
+  battle.applyShield(taglessUser, [taglessUser]);
+  assert.equal(taglessUser.physicalDamageReduction, 0.05);
+});
+
+test('banner advances only allies using their gauge maximum before bow shortening', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const actor = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
+  actor.tags.push('reputation', 'reputation');
+  const ally = new HeroFactory().create({ profession: 'swordfighter', x: 200, y: 100, stamina: 3 });
+  ally.equip(itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
+  ally.equip(itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
+  ally.chip.actionGauge = 1;
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, logger: { info: () => {} } });
+
+  battle.applyBanner(actor, [actor, ally]);
+
+  assert.equal(actor.chip.actionGauge, null);
+  assert.equal(ally.chip.actionGauge, 2.5);
+  assert.equal(getActionGaugeMaximum(ally), 12);
+});
+
+test('holy symbol and tarot cards support only other allies', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const actor = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 1 });
+  actor.tags.push('blessing', 'blessing', 'fortune', 'fortune');
+  const ally = new HeroFactory().create({ profession: 'swordfighter', x: 200, y: 100, stamina: 1 });
+  ally.luckBonus = 0.1;
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  battle.applyHolySymbol(actor, [actor, ally]);
+  battle.applyTarotCards(actor, [actor, ally]);
+
+  assert.equal(actor.stamina, 1);
+  assert.equal(actor.luckBonus, 0);
+  assert.equal(ally.stamina, 1.25);
+  assert.equal(ally.luckBonus, 0.25);
+});
+
 test('claw steals the highest available eligible item tier for heroes and enemies', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();

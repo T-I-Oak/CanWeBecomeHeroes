@@ -112,6 +112,9 @@ export default class BattleSystem {
     if (!onBoard(this.board, target)) return;
     if (type === 'shield') this.applyShield(actor, participants);
     if (type === 'holy-book') this.applyHolyBook(actor, participants);
+    if (type === 'banner') this.applyBanner(actor, participants);
+    if (type === 'holy-symbol') this.applyHolySymbol(actor, participants);
+    if (type === 'tarot-cards') this.applyTarotCards(actor, participants);
     const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * .1); const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * .1 * (1 - actor.getTagSkillLevel('cloth') * .1));
     if (evade > accuracy) { this.effects?.miss(target); this.recordMiss(actor, target); return; }
     const attack = ATTACKS[type];
@@ -126,7 +129,7 @@ export default class BattleSystem {
     });
   }
   applyShield(actor, participants) {
-    const reduction = actor.getTagCount('iron') * 0.1;
+    const reduction = actor.getTagCount('iron') * 0.1 + 0.05;
     participants.filter((candidate) => isHero(candidate) === isHero(actor)).forEach((ally) => {
       this.setPhysicalDamageReduction(ally, Math.max(ally.physicalDamageReduction, reduction));
     });
@@ -136,6 +139,25 @@ export default class BattleSystem {
     participants.filter((candidate) => isHero(candidate) === isHero(actor)).forEach((ally) => {
       ['fire', 'water', 'lightning'].forEach((attribute) => { ally.attributes[attribute] *= 1 - reduction; });
       ally.chip.attributeValues = ally.attributes;
+    });
+  }
+  applyBanner(actor, participants) {
+    const gaugeIncrease = actor.getTagCount('reputation') * 0.05;
+    participants.filter((candidate) => candidate !== actor && isHero(candidate) === isHero(actor)).forEach((ally) => {
+      ally.chip.actionGauge = (ally.chip.actionGauge ?? 0) + getActionGaugeBaseMaximum(ally) * gaugeIncrease;
+    });
+  }
+  applyHolySymbol(actor, participants) {
+    const recovery = actor.getTagCount('blessing') * 0.1 + 0.05;
+    participants.filter((candidate) => candidate !== actor && isHero(candidate) === isHero(actor)).forEach((ally) => {
+      if (isHero(ally)) ally.stamina = Math.min(ally.maximums.stamina, ally.stamina + recovery);
+      else ally.hp = Math.min(ally.maximumHp, ally.hp + recovery);
+    });
+  }
+  applyTarotCards(actor, participants) {
+    const bonus = actor.getTagCount('fortune') * 0.1 + 0.05;
+    participants.filter((candidate) => candidate !== actor && isHero(candidate) === isHero(actor)).forEach((ally) => {
+      ally.luckBonus = Math.max(ally.luckBonus, bonus);
     });
   }
   applyPhysicalDamage(actor, target, type, damage, critical, participants) {
