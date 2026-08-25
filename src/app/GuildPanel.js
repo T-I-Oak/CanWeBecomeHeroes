@@ -15,7 +15,6 @@ const PANEL_BORDER = '#71509d';
 const PANEL_TEXT = '#f3ecdc';
 const MUTED_TEXT = '#c5bed1';
 const TIMELINE_TRACK = '#1b1a27';
-const ELAPSED_COLOR = '#777989';
 const REMAINING_COLOR = '#a486d1';
 const EXTENSION_COLOR = '#d3a65e';
 
@@ -31,14 +30,14 @@ function getPanelBounds() {
 }
 
 function drawTimeline(context, { x, y, width, height }, status) {
-  const widths = [status.elapsedHours, status.remainingHours, status.estimatedExtensionHours]
+  const widths = [status.remainingHours, status.estimatedExtensionHours]
     .map((hours) => width * hours / status.timelineHours);
   context.fillStyle = TIMELINE_TRACK;
   context.beginPath();
   context.roundRect(x, y, width, height, height / 2);
   context.fill();
   let segmentX = x;
-  [[widths[0], ELAPSED_COLOR], [widths[1], REMAINING_COLOR], [widths[2], EXTENSION_COLOR]].forEach(([segmentWidth, color]) => {
+  [[widths[0], REMAINING_COLOR], [widths[1], EXTENSION_COLOR]].forEach(([segmentWidth, color]) => {
     if (segmentWidth <= 0) return;
     context.fillStyle = color;
     context.fillRect(segmentX, y, segmentWidth, height);
@@ -83,15 +82,22 @@ export function drawGuildPanel(context, { tick, contributionPoints }) {
   context.font = 'bold 26px system-ui';
   context.fillText(formatRemainingGuildTime(status.remainingHours), contentX, panel.y + 55);
   drawTimeline(context, { x: contentX, y: panel.y + 78, width: contentWidth, height: 16 }, status);
+  context.font = '12px system-ui';
+  context.fillStyle = REMAINING_COLOR;
+  context.textAlign = 'start';
+  context.fillText('■ 残り期限', contentX, panel.y + 105);
+  context.fillStyle = EXTENSION_COLOR;
+  context.textAlign = 'end';
+  context.fillText('■ 貢献による延長見込', contentX + contentWidth, panel.y + 105);
   context.strokeStyle = PANEL_BORDER;
   context.lineWidth = 1;
   context.beginPath();
-  context.moveTo(contentX, panel.y + 116);
-  context.lineTo(contentX + contentWidth, panel.y + 116);
+  context.moveTo(contentX, panel.y + 122);
+  context.lineTo(contentX + contentWidth, panel.y + 122);
   context.stroke();
-  drawRow(context, '経過時間', formatElapsedGuildTime(status.elapsedHours), contentX, panel.y + 146, contentWidth);
-  drawRow(context, '貢献', `${Math.floor(contributionPoints)} pt`, contentX, panel.y + 176, contentWidth);
+  drawRow(context, '経過時間', formatElapsedGuildTime(status.elapsedHours), contentX, panel.y + 152, contentWidth);
+  drawRow(context, '貢献', `${Math.floor(contributionPoints)} pt`, contentX, panel.y + 182, contentWidth);
   const extensionLabel = status.estimatedExtensionHours >= GUILD_EXTENSION_MAX_HOURS ? '24H（MAX）' : formatGuildHours(status.estimatedExtensionHours);
-  drawRow(context, '延長見込', extensionLabel, contentX, panel.y + 206, contentWidth, EXTENSION_COLOR);
+  drawRow(context, '延長見込', extensionLabel, contentX, panel.y + 212, contentWidth, EXTENSION_COLOR);
   context.restore();
 }
