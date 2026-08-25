@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
-import BattleSystem, { getAttackDamage, getRandomModifier } from '../../src/game/BattleSystem.js';
+import BattleSystem, { getActionGaugeMaximum, getAttackDamage, getRandomModifier } from '../../src/game/BattleSystem.js';
 import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
@@ -92,6 +92,34 @@ test('an actor with no opponent spends a full action gauge without performing an
 
   assert.equal(hero.chip.actionGauge, 0);
   assert.equal(hero.stamina, 3);
+});
+
+test('bows shorten the action gauge by ten percent per weapon up to five weapons', () => {
+  const itemFactory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'hunter', x: 100, y: 100, stamina: 3 });
+  hero.equip(itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
+  hero.equip(itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
+  assert.equal(getActionGaugeMaximum(hero), (15 - hero.getStatus('speed')) * 0.8);
+
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  enemy.equipment = Array.from({ length: 6 }, () => itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
+  enemy.refreshDerivedValues();
+  assert.equal(getActionGaugeMaximum(enemy), (15 - enemy.getStatus('speed')) * 0.5);
+});
+
+test('stealing a bow immediately refreshes the affected action gauge maximum', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3 });
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  const bow = itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 });
+  enemy.equipment = [bow];
+  enemy.refreshDerivedValues();
+  const battle = new BattleSystem(board, { controller: { addToWarehouse: () => {} }, itemFactory, logger: { info: () => {} } });
+
+  battle.transferStolenItem(hero, enemy, bow);
+
+  assert.equal(enemy.chip.actionGaugeMaximum, 15 - enemy.getStatus('speed'));
 });
 
 test('leaving the battle area clears an actor action gauge', () => {

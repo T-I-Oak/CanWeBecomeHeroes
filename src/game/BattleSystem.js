@@ -9,10 +9,19 @@ const ATTRIBUTE_TICK_INTERVAL = 60;
 const RANGE = [[1], [0.3, 0.5, 0.3], [0.4, 0.5, 0.4], [0.1, 0.4, 0.6, 0.4, 0.1], [0.2, 0.5, 0.6, 0.5, 0.2], [0.1, 0.3, 0.5, 0.7, 0.5, 0.3, 0.1], [0.2, 0.4, 0.6, 0.7, 0.6, 0.4, 0.2], [0.1, 0.3, 0.5, 0.6, 0.8, 0.6, 0.5, 0.3, 0.1]];
 const ATTACKS = { sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['power', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['magic', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] };
 const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
+const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
+const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 export function getRandomModifier(random = Math.random) { return 0.8 + random() * 0.4; }
+export function getActionGaugeMaximum(actor) {
+  const baseMaximum = 15 - actor.getStatus('speed');
+  const equipment = Array.isArray(actor.equipment) ? actor.equipment : Object.values(actor.equipment);
+  const bowCount = equipment.filter((item) => item?.category === 'weapon' && item.type === 'bow').length;
+  const shortening = Math.min(bowCount, MAX_BOW_GAUGE_SHORTENING_WEAPONS) * BOW_GAUGE_SHORTENING_PER_WEAPON;
+  return baseMaximum * (1 - shortening);
+}
 
 export default class BattleSystem {
   constructor(board, { controller, itemFactory, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console, onDamage = null } = {}) {
@@ -43,13 +52,17 @@ export default class BattleSystem {
     }
   }
   updateActor(actor, participants, delta) {
-    const max = 15 - actor.getStatus('speed');
-    actor.chip.actionGaugeMaximum = max;
+    const max = this.updateActionGaugeMaximum(actor);
     actor.chip.actionGauge = (actor.chip.actionGauge ?? 0) + ACTION_GAUGE_BASE_RATE / (1 + (actor.getCarriedWeight() / ACTION_GAUGE_WEIGHT_SCALE) ** 2) * delta;
     if (actor.chip.actionGauge < max) return;
     actor.chip.actionGauge = 0;
     const target = this.findTarget(actor, participants);
     if (target) this.resolveAction(actor, target, participants);
+  }
+  updateActionGaugeMaximum(actor) {
+    const maximum = getActionGaugeMaximum(actor);
+    actor.chip.actionGaugeMaximum = maximum;
+    return maximum;
   }
   findTarget(actor, participants) {
     const candidates = participants.filter((c) => isHero(c) !== isHero(actor) && onBoard(this.board, c));
@@ -155,6 +168,7 @@ export default class BattleSystem {
   transferStolenItem(actor, target, item) {
     if (isHero(actor)) {
       target.removeEquipment(item);
+      this.updateActionGaugeMaximum(target);
       const area = GAME_AREAS.warehouse;
       item.chip.x = area.x + item.chip.radius + this.random() * (area.width - item.chip.radius * 2);
       item.chip.y = area.y + item.chip.radius + this.random() * (area.height - item.chip.radius * 2);
@@ -164,6 +178,7 @@ export default class BattleSystem {
     }
     this.controller?.remove?.(item);
     actor.addEquipment(item);
+    this.updateActionGaugeMaximum(actor);
   }
   propagate(actor, target, type, damage, participants) {
     const value = target.attributes.lightning; if (!value || damage < .01) return;
@@ -243,4 +258,4 @@ export default class BattleSystem {
   }
   getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }
 }
-export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, TICKS_PER_SECOND };
+export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, TICKS_PER_SECOND, BOW_GAUGE_SHORTENING_PER_WEAPON, MAX_BOW_GAUGE_SHORTENING_WEAPONS };
