@@ -3,7 +3,7 @@ import BattleSystem from '../game/BattleSystem.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import HeroFactory from '../game/HeroFactory.js';
 import ItemFactory from '../game/ItemFactory.js';
-import { getTagFramePaths, getTagPaths, getTagWeight } from '../game/TagCatalog.js';
+import { getTagBaseColors, getTagFramePaths, getTagPaths, getTagWeight } from '../game/TagCatalog.js';
 
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 3, magic: 3, speed: 3, negotiation: 3, luck: 3, stamina: 3 });
 const DEFAULT_TICKS = 10000;
@@ -43,6 +43,7 @@ function refreshEntity(entity) {
   entity.chip.weight = getTagWeight(entity.getTags());
   entity.chip.tagPaths = getTagPaths(entity.tags);
   entity.chip.tagFramePaths = getTagFramePaths(entity.tags);
+  entity.chip.tagBaseColors = getTagBaseColors(entity.tags);
   entity.refreshDerivedValues?.();
 }
 

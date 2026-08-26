@@ -7,7 +7,7 @@ import ItemPickupController from '../game/ItemPickupController.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, getPreparationSubareaBounds, WORLD_SIZE } from '../game/GameAreas.js';
 import { HERO_PREPARATION_IMAGE_SIZE, PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
-import { getTagFramePaths, TAGS } from '../game/TagCatalog.js';
+import { getTagBaseColors, getTagFramePaths, TAGS } from '../game/TagCatalog.js';
 import HeroItemInteractionController from '../game/HeroItemInteractionController.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
 import GameClock from '../game/GameClock.js';
@@ -75,7 +75,13 @@ function drawTextAtVisualCenter(context, text, x, centerY) {
   context.fillText(text, x, centerY + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2);
 }
 
-function drawFramedTag(context, assets, tagPath, framePath, x, y, size) {
+function drawFramedTag(context, assets, tagPath, framePath, baseColor, x, y, size) {
+  if (baseColor) {
+    context.fillStyle = baseColor;
+    context.beginPath();
+    context.arc(x + size / 2, y + size / 2, size * 0.42, 0, Math.PI * 2);
+    context.fill();
+  }
   const icon = assets.load(tagPath);
   if (icon.complete && icon.naturalWidth > 0) context.drawImage(icon, x, y, size, size);
   const frame = assets.load(framePath ?? TAG_FRAME_PATH);
@@ -98,7 +104,7 @@ function drawTagList(context, assets, hero, x, y) {
     context.roundRect(badgeX, badgeY, 20, PREPARATION_LAYOUT.tagBadgeHeight, 6);
     context.fill();
     context.stroke();
-    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagFramePaths([tag])[0], badgeCenterX - PREPARATION_LAYOUT.tagIconSize / 2, badgeY + 3, PREPARATION_LAYOUT.tagIconSize);
+    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagFramePaths([tag])[0], getTagBaseColors([tag])[0], badgeCenterX - PREPARATION_LAYOUT.tagIconSize / 2, badgeY + 3, PREPARATION_LAYOUT.tagIconSize);
     context.fillStyle = '#24334d';
     drawTextAtVisualCenter(context, String(count), badgeCenterX, badgeY + 31);
   });
@@ -126,7 +132,7 @@ function drawItemSlot(context, assets, item, slotX, slotY) {
   const tagStartX = slotX + (slotSize - tagWidth) / 2;
   item.chip.tagPaths.forEach((tagPath, tagIndex) => {
     const tagX = tagStartX + tagIndex * (PREPARATION_LAYOUT.equipmentTagIconSize + PREPARATION_LAYOUT.equipmentTagGap);
-    drawFramedTag(context, assets, tagPath, item.chip.tagFramePaths[tagIndex], tagX, slotY + 2, PREPARATION_LAYOUT.equipmentTagIconSize);
+    drawFramedTag(context, assets, tagPath, item.chip.tagFramePaths[tagIndex], item.chip.tagBaseColors[tagIndex], tagX, slotY + 2, PREPARATION_LAYOUT.equipmentTagIconSize);
   });
 }
 
@@ -164,7 +170,7 @@ function drawShopPanel(context, assets, shop, bag, transaction) {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillText(label, panelCenterX, y + 26);
-    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagFramePaths([tag])[0], panelCenterX - 24, y + 44, 48);
+    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagFramePaths([tag])[0], getTagBaseColors([tag])[0], panelCenterX - 24, y + 44, 48);
   };
   drawTrend('SALE FOR', shop.saleTag, layout.saleBoards.sale);
   drawTrend('NEXT', shop.nextTag, layout.saleBoards.next);

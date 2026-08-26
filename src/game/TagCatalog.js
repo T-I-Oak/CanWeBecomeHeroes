@@ -33,6 +33,15 @@ const TAG_FRAME_PATHS = Object.freeze({
   attribute: '/assets/tags/frames/attribute.png',
 });
 
+const TAG_BASE_COLORS = Object.freeze({
+  power: '#8d5b3d',
+  magic: '#66429b',
+  speed: '#1b8eab',
+  negotiation: '#c89025',
+  luck: '#539f3c',
+  attribute: '#e1e8f0',
+});
+
 export function getStatusValue(tags, stat, maximum) {
   const sources = STATUS_TAGS[stat];
   if (!sources) return 0;
@@ -58,5 +67,13 @@ export function getTagFramePaths(tags) {
     const definition = TAGS[tag];
     const frameKey = definition.group === 'attribute' ? 'attribute' : definition.stat;
     return TAG_FRAME_PATHS[frameKey];
+  });
+}
+
+export function getTagBaseColors(tags) {
+  return tags.map((tag) => {
+    const definition = TAGS[tag];
+    const baseKey = definition.group === 'attribute' ? 'attribute' : definition.stat;
+    return TAG_BASE_COLORS[baseKey];
   });
 }

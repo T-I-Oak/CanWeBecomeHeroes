@@ -34,8 +34,8 @@ export default class ChipBoard {
     this.height = height;
   }
 
-  add({ type, x, y, weight, centerPath, tagPaths, tagFramePaths = [] }) {
-    const chip = new Chip({ id: this.nextId++, type, x, y, weight, centerPath, tagPaths, tagFramePaths });
+  add({ type, x, y, weight, centerPath, tagPaths, tagFramePaths = [], tagBaseColors = [] }) {
+    const chip = new Chip({ id: this.nextId++, type, x, y, weight, centerPath, tagPaths, tagFramePaths, tagBaseColors });
     this.chips.push(chip);
     return chip;
   }

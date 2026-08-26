@@ -5,7 +5,7 @@ import { BATTLE_ENEMY_AREA_HEIGHT, ENEMY_CHIP_DIAMETER, HERO_SLOT_SIZE } from '.
 import { getEnemyDefinition } from './EnemyCatalog.js';
 import Enemy from './Enemy.js';
 import ItemFactory from './ItemFactory.js';
-import { getTagFramePaths, getTagPaths, getTagWeight } from './TagCatalog.js';
+import { getTagBaseColors, getTagFramePaths, getTagPaths, getTagWeight } from './TagCatalog.js';
 import { EQUIPMENT_PARTS, createTrendEquipmentItem, createTrendProductTags, distributeTagCounts } from './TrendEquipmentGenerator.js';
 
 export const ENEMY_CONTRIBUTION_POINTS = Object.freeze({ regular: 10, midBoss: 50, boss: 250 });
@@ -42,6 +42,7 @@ export default class EnemyFactory {
       centerPath: definition.assetPath,
       tagPaths: getTagPaths(tags),
       tagFramePaths: getTagFramePaths(tags),
+      tagBaseColors: getTagBaseColors(tags),
       bounds: slot.bounds,
       fillColor: AREA_THEME.battle.chipFill,
     });
