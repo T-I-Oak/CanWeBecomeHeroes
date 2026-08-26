@@ -35,8 +35,12 @@ const PREPARATION_TAG_LIST_TOP = PREPARATION_LAYOUT.topPadding + EQUIPMENT_GRID_
 const CHARACTER_IMAGE_VERTICAL_OFFSET = Math.max(0, CHIP_RADIUS.hero * 2 - (PREPARATION_TAG_LIST_TOP - PREPARATION_LAYOUT.topPadding));
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
-  { key: 'power', label: 'パワー' }, { key: 'magic', label: '魔力' }, { key: 'speed', label: 'スピード' },
-  { key: 'negotiation', label: '交渉力' }, { key: 'luck', label: '運' }, { key: 'stamina', label: 'スタミナ' },
+  { key: 'power', label: 'パワー', frameColor: '#594238' },
+  { key: 'magic', label: '魔力', frameColor: '#4b3c63' },
+  { key: 'speed', label: 'スピード', frameColor: '#285b5a' },
+  { key: 'negotiation', label: '交渉力', frameColor: '#695528' },
+  { key: 'luck', label: '運', frameColor: '#603d5b' },
+  { key: 'stamina', label: 'スタミナ', frameColor: '#3d4d62' },
 ]);
 const TAG_ORDER = Object.freeze(Object.keys(TAGS));
 
@@ -46,13 +50,13 @@ function getStaminaGaugeColor(value) {
   return '#54c96b';
 }
 
-function drawStatusGauge(context, x, y, value, maximum, width = 204, activeColor = '#54c96b') {
+function drawStatusGauge(context, x, y, value, maximum, width = 204, activeColor = '#54c96b', frameColor = '#293954') {
   const height = 20;
   const inset = 3;
   const gap = 2;
   const capacity = 7;
   const segmentWidth = (width - inset * 2 - gap * (capacity - 1)) / capacity;
-  context.fillStyle = '#293954';
+  context.fillStyle = frameColor;
   context.beginPath();
   context.roundRect(x, y, width, height, 10);
   context.fill();
@@ -419,12 +423,21 @@ export function startGame({ scenario }) {
       context.textAlign = 'start';
       const statusTop = y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight;
       context.font = '11px system-ui';
-      STATUS_DEFINITIONS.forEach(({ key, label }, statIndex) => {
+      STATUS_DEFINITIONS.forEach(({ key, label, frameColor }, statIndex) => {
         const y = statusTop + statIndex * PREPARATION_LAYOUT.statusRowHeight;
         const value = key === 'stamina' ? Math.floor(hero.stamina) : Math.floor(hero.getStatus(key));
         context.fillStyle = '#24334d';
         drawTextAtVisualCenter(context, label, x + 12, y + 13);
-          drawStatusGauge(context, x + 76, y + 4, value, hero.maximums[key], 116, key === 'stamina' ? getStaminaGaugeColor(value) : '#54c96b');
+        drawStatusGauge(
+          context,
+          x + 76,
+          y + 4,
+          value,
+          hero.maximums[key],
+          116,
+          key === 'stamina' ? getStaminaGaugeColor(value) : '#54c96b',
+          frameColor,
+        );
       });
       context.textBaseline = 'alphabetic';
       drawEquipmentGrid(context, assets, hero, x, y + PREPARATION_LAYOUT.topPadding);
