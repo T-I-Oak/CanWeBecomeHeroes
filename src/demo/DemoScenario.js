@@ -3,14 +3,11 @@ import HeroFactory, { HERO_PROFESSION_IDS } from '../game/HeroFactory.js';
 import ItemFactory, { DESTINATION_TYPES } from '../game/ItemFactory.js';
 import { GAME_AREAS, getPreparationSubareaBounds } from '../game/GameAreas.js';
 import { PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
-import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import ShopState from '../game/ShopState.js';
-import { getShopLayout } from '../game/ShopLayout.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import { createTrendEquipmentSet } from '../game/TrendEquipmentGenerator.js';
 
 const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
-const FACILITY_SLOT_COLORS = Object.freeze({ shop: '#b58c59', guild: '#8d78b8', training: '#5d9b7a' });
 const DEMO_ENEMY_TYPES = Object.freeze([
   Object.freeze({ size: 'small', tagAffinity: 'valor' }),
   Object.freeze({ size: 'small', tagAffinity: 'iron' }),
@@ -27,28 +24,6 @@ function randomWarehousePosition(radius = CHIP_RADIUS.item, random = Math.random
 function selectRandomProfessions(random) {
   const candidates = [...HERO_PROFESSION_IDS];
   return Array.from({ length: 2 }, () => candidates.splice(Math.floor(random() * candidates.length), 1)[0]);
-}
-
-function drawSlot(context, x, y, color) {
-  context.fillStyle = `${color}22`;
-  context.strokeStyle = color;
-  context.beginPath();
-  context.roundRect(x + 5, y + 5, HERO_SLOT_SIZE - 10, HERO_SLOT_SIZE - 10, 18);
-  context.fill();
-  context.stroke();
-}
-
-function drawDemoGuides(context) {
-  context.save();
-  context.lineWidth = 3;
-  ['shop', 'guild', 'training'].forEach((name) => {
-    const area = GAME_AREAS[name];
-    const slot = name === 'shop'
-      ? getShopLayout(area).heroSlot
-      : { x: area.x + (area.width / 2 - HERO_SLOT_SIZE) / 2, y: area.y + (area.height - HERO_SLOT_SIZE) / 2 };
-    drawSlot(context, slot.x, slot.y, FACILITY_SLOT_COLORS[name]);
-  });
-  context.restore();
 }
 
 export function createDemoScenario({ random = Math.random } = {}) {
@@ -93,6 +68,5 @@ export function createDemoScenario({ random = Math.random } = {}) {
       const { x, y } = randomWarehousePosition();
       controller.addToWarehouse(itemFactory.createRandomEquipment({ x, y }));
     },
-    drawGuides: drawDemoGuides,
   });
 }

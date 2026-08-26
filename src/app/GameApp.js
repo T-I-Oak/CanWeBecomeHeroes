@@ -27,6 +27,7 @@ import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { drawGuildPanel } from './GuildPanel.js';
 import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
+import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 
 const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
 const EQUIPMENT_GRID_HEIGHT = PREPARATION_LAYOUT.equipmentSlotSize * 3 + PREPARATION_LAYOUT.equipmentGap * 2;
@@ -385,7 +386,7 @@ export function startGame({ scenario }) {
     ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
     preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
     drawBattleSlotGround(context, assets);
-    scenario.drawGuides(context);
+    drawFacilitySlots(context);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction());
     guildTimelineHours = drawGuildPanel(context, {
       tick: clock.tick,
