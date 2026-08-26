@@ -1,6 +1,10 @@
 const DISPLAY_DURATION_MS = 4200;
 const EXIT_DURATION_MS = 260;
 
+function getToastGap(container) {
+  return Number.parseFloat(window.getComputedStyle(container).rowGap) || 0;
+}
+
 export default class NotificationCenter {
   constructor(container, gameLog) {
     this.container = container;
@@ -34,6 +38,8 @@ export default class NotificationCenter {
 
   dismiss(element) {
     if (!element.isConnected || element.classList.contains('state-leaving')) return;
+    const exitDistance = element.getBoundingClientRect().height + getToastGap(this.container);
+    element.style.setProperty('--toast-exit-distance', `${exitDistance}px`);
     element.classList.remove('state-visible');
     element.classList.add('state-leaving');
     window.setTimeout(() => {

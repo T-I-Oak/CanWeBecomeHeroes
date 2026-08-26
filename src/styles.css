@@ -126,7 +126,7 @@ body {
 
 .Toast.state-leaving {
   opacity: 0;
-  transform: translateY(-36px);
+  transform: translateY(calc(-1 * var(--toast-exit-distance, 36px)));
 }
 
 .Toast__Message {
