@@ -8,9 +8,9 @@ function drawImageCover(context, image, x, y, size) {
   context.drawImage(image, x - size / 2, y - size / 2, size, size);
 }
 
-function drawFramedTag(context, assets, path, x, y, size) {
+function drawFramedTag(context, assets, path, framePath, x, y, size) {
   drawImageCover(context, assets.load(path), x, y, size);
-  drawImageCover(context, assets.load(TAG_FRAME_PATH), x, y, size);
+  drawImageCover(context, assets.load(framePath ?? TAG_FRAME_PATH), x, y, size);
 }
 
 export function createTagAngles(count, tagSlotCount) {
@@ -158,7 +158,7 @@ export default class ChipRenderer {
       const y = Math.sin(angle) * tagRadius;
       context.save();
       context.translate(x, y);
-      drawFramedTag(context, this.assets, path, 0, 0, iconSize);
+      drawFramedTag(context, this.assets, path, chip.tagFramePaths[index], 0, 0, iconSize);
       context.restore();
     });
   }

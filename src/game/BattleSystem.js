@@ -1,5 +1,5 @@
 import { GAME_AREAS } from './GameAreas.js';
-import { getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
+import { getTagFramePaths, getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
 import { createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
 
 const TICKS_PER_SECOND = 60;
@@ -180,7 +180,7 @@ export default class BattleSystem {
   applyOrb(actor, target, coefficient) {
     if (this.random() >= (actor.getLuckDegree() + .3) * coefficient) return;
     const items = (isHero(target) ? Object.values(target.equipment) : target.equipment).filter((item) => item && item.tags.length < 3); const item = items[Math.floor(this.random() * items.length)];
-    if (!item?.addTag('gem')) return; item.chip.weight = getTagWeight(item.tags); item.chip.tagPaths = getTagPaths(item.tags); item.price = getTagPrice(item.tags); target.refreshDerivedValues?.();
+    if (!item?.addTag('gem')) return; item.chip.weight = getTagWeight(item.tags); item.chip.tagPaths = getTagPaths(item.tags); item.chip.tagFramePaths = getTagFramePaths(item.tags); item.price = getTagPrice(item.tags); target.refreshDerivedValues?.();
   }
   getTheftCandidates(target) {
     if (!isHero(target)) return target.equipment;

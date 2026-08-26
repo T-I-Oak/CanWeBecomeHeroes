@@ -24,6 +24,15 @@ export const STATUS_TAGS = Object.freeze({
   luck: Object.freeze(['blessing', 'fortune']),
 });
 
+const TAG_FRAME_PATHS = Object.freeze({
+  power: '/assets/tags/frames/power.png',
+  magic: '/assets/tags/frames/magic.png',
+  speed: '/assets/tags/frames/speed.png',
+  negotiation: '/assets/tags/frames/negotiation.png',
+  luck: '/assets/tags/frames/luck.png',
+  attribute: '/assets/tags/frames/attribute.png',
+});
+
 export function getStatusValue(tags, stat, maximum) {
   const sources = STATUS_TAGS[stat];
   if (!sources) return 0;
@@ -42,4 +51,12 @@ export function getTagPrice(tags) {
 
 export function getTagPaths(tags) {
   return tags.map((tag) => `/assets/tags/${tag}.png`);
+}
+
+export function getTagFramePaths(tags) {
+  return tags.map((tag) => {
+    const definition = TAGS[tag];
+    const frameKey = definition.group === 'attribute' ? 'attribute' : definition.stat;
+    return TAG_FRAME_PATHS[frameKey];
+  });
 }

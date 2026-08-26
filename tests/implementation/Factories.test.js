@@ -84,6 +84,7 @@ test('item factory calculates tag weight, price, and equipment assets', () => {
   assert.equal(item.price, 8);
   assert.equal(item.fixedStatusTag, 'valor');
   assert.equal(item.equipmentAssets.head, '/assets/items/head-1.png');
+  assert.deepEqual(item.chip.tagFramePaths, ['/assets/tags/frames/power.png', '/assets/tags/frames/attribute.png']);
 });
 
 test('tagless items have weight one, price one, and a selectable base asset', () => {

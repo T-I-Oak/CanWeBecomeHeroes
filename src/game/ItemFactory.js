@@ -1,6 +1,6 @@
 import Chip from '../chips/Chip.js';
 import Item from './Item.js';
-import { TAGS, getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
+import { TAGS, getTagFramePaths, getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
 
@@ -56,7 +56,7 @@ export default class ItemFactory {
   }
 
   createWeapon({ weapon, tags, x, y }) {
-    const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(tags)), centerPath: `/assets/items/hand-${weapon}.png`, tagPaths: getTagPaths(tags), bounds: GAME_AREAS.warehouse });
+    const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(tags)), centerPath: `/assets/items/hand-${weapon}.png`, tagPaths: getTagPaths(tags), tagFramePaths: getTagFramePaths(tags), bounds: GAME_AREAS.warehouse });
     const item = new Item({ type: weapon, category: 'weapon', tags, chip, equipmentAssets: assetPaths(tags) });
     item.price = getTagPrice(tags);
     item.fixedStatusTag = WEAPONS[weapon];
@@ -65,7 +65,7 @@ export default class ItemFactory {
 
   createDestination({ destination, x, y }) {
     const tags = [];
-    const chip = new Chip({ id: 0, type: 'item', x, y, weight: 1, centerPath: `/assets/items/hand-${destination}.png`, tagPaths: [], bounds: GAME_AREAS.warehouse, fillColor: AREA_THEME[DESTINATIONS[destination]].chipFill });
+    const chip = new Chip({ id: 0, type: 'item', x, y, weight: 1, centerPath: `/assets/items/hand-${destination}.png`, tagPaths: [], tagFramePaths: [], bounds: GAME_AREAS.warehouse, fillColor: AREA_THEME[DESTINATIONS[destination]].chipFill });
     const item = new Item({ type: destination, category: 'destination', tags, chip, equipmentAssets: assetPaths(tags) });
     item.price = 1;
     item.destination = DESTINATIONS[destination];
@@ -84,7 +84,7 @@ export default class ItemFactory {
 
   createBodyItem({ part, tags = [], x, y, random = Math.random }) {
     const imageNumber = tags.length === 0 ? 1 + Math.floor(random() * 5) : Number(assetPaths(tags)[part].match(/-(\d+)\.png$/)[1]);
-    const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(tags)), centerPath: `/assets/items/${part}-${imageNumber}.png`, tagPaths: getTagPaths(tags), bounds: GAME_AREAS.warehouse });
+    const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(tags)), centerPath: `/assets/items/${part}-${imageNumber}.png`, tagPaths: getTagPaths(tags), tagFramePaths: getTagFramePaths(tags), bounds: GAME_AREAS.warehouse });
     const item = new Item({ type: `${part}-${imageNumber}`, category: part, tags, chip, equipmentAssets: assetPaths(tags) });
     item.price = getTagPrice(tags);
     return item;
