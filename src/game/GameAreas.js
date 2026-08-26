@@ -1,4 +1,4 @@
-import { PREPARATION_LAYOUT, PREPARATION_SUBAREA_HEIGHT } from './PreparationLayout.js';
+import { PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH, PREPARATION_SUBAREA_HEIGHT } from './PreparationLayout.js';
 import { BATTLE_AREA_HEIGHT, BATTLE_ENEMY_SLOT_COUNT, HERO_SLOT_SIZE } from './HeroSlotLayout.js';
 
 export { PREPARATION_LAYOUT, PREPARATION_SUBAREA_HEIGHT };
@@ -20,7 +20,7 @@ export const SHOP_HEIGHT = PREPARATION_HEIGHT
   - GAME_AREA_BASE.guildAndTrainingHeight * 2
   - GAME_AREA_BASE.rightAreaGap * 2;
 
-const WAREHOUSE_X = PREPARATION_LAYOUT.panelWidth + GAME_AREA_BASE.warehouseGap;
+const WAREHOUSE_X = PREPARATION_PANEL_WIDTH + GAME_AREA_BASE.warehouseGap;
 const WAREHOUSE_Y = GAME_AREA_BASE.battleHeight + GAME_AREA_BASE.warehouseGap;
 const RIGHT_AREA_X = WAREHOUSE_X + GAME_AREA_BASE.warehouseWidth + GAME_AREA_BASE.warehouseGap;
 const GUILD_Y = WAREHOUSE_Y + SHOP_HEIGHT + GAME_AREA_BASE.rightAreaGap;
@@ -33,7 +33,7 @@ export const WORLD_SIZE = Object.freeze({
 
 export const GAME_AREAS = Object.freeze({
   battle: Object.freeze({ x: WAREHOUSE_X, y: 0, width: GAME_AREA_BASE.warehouseWidth, height: GAME_AREA_BASE.battleHeight }),
-  preparation: Object.freeze({ x: 0, y: WAREHOUSE_Y, width: PREPARATION_LAYOUT.panelWidth, height: PREPARATION_HEIGHT }),
+  preparation: Object.freeze({ x: 0, y: WAREHOUSE_Y, width: PREPARATION_PANEL_WIDTH, height: PREPARATION_HEIGHT }),
   warehouse: Object.freeze({ x: WAREHOUSE_X, y: WAREHOUSE_Y, width: GAME_AREA_BASE.warehouseWidth, height: PREPARATION_HEIGHT }),
   shop: Object.freeze({ x: RIGHT_AREA_X, y: WAREHOUSE_Y, width: GAME_AREA_BASE.rightAreaWidth, height: SHOP_HEIGHT }),
   guild: Object.freeze({ x: RIGHT_AREA_X, y: GUILD_Y, width: GAME_AREA_BASE.rightAreaWidth, height: GAME_AREA_BASE.guildAndTrainingHeight }),

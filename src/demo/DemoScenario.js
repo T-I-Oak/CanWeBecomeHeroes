@@ -2,12 +2,11 @@ import { CHIP_RADIUS } from '../chips/Chip.js';
 import HeroFactory, { HERO_PROFESSION_IDS } from '../game/HeroFactory.js';
 import ItemFactory, { DESTINATION_TYPES } from '../game/ItemFactory.js';
 import { GAME_AREAS, getPreparationSubareaBounds } from '../game/GameAreas.js';
-import { PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
+import { PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH } from '../game/PreparationLayout.js';
 import ShopState from '../game/ShopState.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import { createTrendEquipmentSet } from '../game/TrendEquipmentGenerator.js';
 
-const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
 const DEMO_ENEMY_TYPES = Object.freeze([
   Object.freeze({ size: 'small', tagAffinity: 'valor' }),
   Object.freeze({ size: 'small', tagAffinity: 'iron' }),

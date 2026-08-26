@@ -2,12 +2,12 @@ import '../styles.css';
 import AssetLoader from '../chips/AssetLoader.js';
 import ChipBoard from '../chips/ChipBoard.js';
 import ChipRenderer, { getCenterImagePlacement } from '../chips/ChipRenderer.js';
-import { CHIP_RADIUS } from '../chips/Chip.js';
 import ItemPickupController from '../game/ItemPickupController.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, getPreparationSubareaBounds, WORLD_SIZE } from '../game/GameAreas.js';
-import { HERO_PREPARATION_IMAGE_SIZE, PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
-import { getTagBaseColors, getTagGlyphScales, TAGS } from '../game/TagCatalog.js';
+import { HERO_PREPARATION_IMAGE_SIZE, PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH } from '../game/PreparationLayout.js';
+import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
+import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import HeroItemInteractionController from '../game/HeroItemInteractionController.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
 import GameClock from '../game/GameClock.js';
@@ -29,20 +29,20 @@ import { drawGuildPanel } from './GuildPanel.js';
 import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 
-const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.panelWidth;
-const EQUIPMENT_GRID_HEIGHT = PREPARATION_LAYOUT.equipmentSlotSize * 3 + PREPARATION_LAYOUT.equipmentGap * 2;
-const PREPARATION_TAG_LIST_TOP = PREPARATION_LAYOUT.topPadding + EQUIPMENT_GRID_HEIGHT - PREPARATION_LAYOUT.tagBadgeHeight;
-const CHARACTER_IMAGE_VERTICAL_OFFSET = Math.max(0, CHIP_RADIUS.hero * 2 - (PREPARATION_TAG_LIST_TOP - PREPARATION_LAYOUT.topPadding));
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
-  { key: 'power', label: 'パワー', frameColor: '#594238' },
-  { key: 'magic', label: '魔力', frameColor: '#4b3c63' },
-  { key: 'speed', label: 'スピード', frameColor: '#285b5a' },
-  { key: 'negotiation', label: '交渉力', frameColor: '#695528' },
-  { key: 'luck', label: '運', frameColor: '#603d5b' },
-  { key: 'stamina', label: 'スタミナ', frameColor: '#3d4d62' },
+  { key: 'power', visual: STATUS_VISUALS.power },
+  { key: 'magic', visual: STATUS_VISUALS.magic },
+  { key: 'speed', visual: STATUS_VISUALS.speed },
+  { key: 'negotiation', visual: STATUS_VISUALS.negotiation },
+  { key: 'luck', visual: STATUS_VISUALS.luck },
+  { key: 'stamina', visual: STATUS_VISUALS.stamina },
 ]);
-const TAG_ORDER = Object.freeze(Object.keys(TAGS));
+const TAG_GRID = Object.freeze([
+  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'fortune']),
+  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'blessing']),
+  Object.freeze(['fire', 'water', 'lightning', 'vitality', 'area']),
+]);
 
 function getStaminaGaugeColor(value) {
   if (value <= 2) return '#db5b5b';
@@ -50,20 +50,22 @@ function getStaminaGaugeColor(value) {
   return '#54c96b';
 }
 
-function drawStatusGauge(context, x, y, value, maximum, width = 204, activeColor = '#54c96b', frameColor = '#293954') {
-  const height = 20;
-  const inset = 3;
-  const gap = 2;
+function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeColor = '#54c96b') {
+  const { statusGaugeWidth: width, statusGaugeHeight: height, statusIconSize, statusIconTopPadding, statusIconSegmentGap, statusGaugeHorizontalPadding: inset, statusGaugeBottomPadding, statusSegmentHeight, statusSegmentGap: gap } = PREPARATION_LAYOUT;
   const capacity = 7;
-  const segmentWidth = (width - inset * 2 - gap * (capacity - 1)) / capacity;
-  context.fillStyle = frameColor;
+  context.fillStyle = visual.gaugeFrameColor;
   context.beginPath();
-  context.roundRect(x, y, width, height, 10);
+  context.roundRect(x, y, width, height, 9);
   context.fill();
+  const icon = assets.load(visual.iconPath);
+  if (icon.complete && icon.naturalWidth > 0) {
+    context.drawImage(icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
+  }
   for (let index = 0; index < capacity; index += 1) {
+    const segmentY = y + height - statusGaugeBottomPadding - statusSegmentHeight - index * (statusSegmentHeight + gap);
     context.fillStyle = index < value ? activeColor : index < maximum ? '#9da9ba' : '#46536a';
     context.beginPath();
-    context.roundRect(x + inset + index * (segmentWidth + gap), y + inset, segmentWidth, height - inset * 2, 7);
+    context.roundRect(x + inset, segmentY, width - inset * 2, statusSegmentHeight, 4);
     context.fill();
   }
 }
@@ -96,24 +98,27 @@ function drawFramedTag(context, assets, tagPath, baseColor, glyphScale = 1, x, y
 }
 
 function drawTagList(context, assets, hero, x, y) {
-  const cellWidth = PREPARATION_LAYOUT.tagCellWidth;
-  context.font = 'bold 13px system-ui';
+  const { statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagIconSize, tagIconNumberGap, tagRowGap } = PREPARATION_LAYOUT;
+  context.font = 'bold 14px system-ui';
   context.textAlign = 'center';
-  TAG_ORDER.forEach((tag, index) => {
-    const count = hero.getTagCount(tag);
-    const badgeX = x + 12 + PREPARATION_LAYOUT.tagListOffset + index * cellWidth + 1;
-    const badgeCenterX = badgeX + 10;
-    const badgeY = y;
-    context.fillStyle = count === 0 ? '#dce2eb' : '#f8fafc';
-    context.strokeStyle = count === 0 ? '#b8c1d0' : '#53627c';
-    context.lineWidth = 1;
-    context.beginPath();
-    context.roundRect(badgeX, badgeY, 20, PREPARATION_LAYOUT.tagBadgeHeight, 6);
-    context.fill();
-    context.stroke();
-    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], badgeCenterX - PREPARATION_LAYOUT.tagIconSize / 2, badgeY + 3, PREPARATION_LAYOUT.tagIconSize);
-    context.fillStyle = '#24334d';
-    drawTextAtVisualCenter(context, String(count), badgeCenterX, badgeY + 31);
+  TAG_GRID.forEach((row, rowIndex) => {
+    row.forEach((tag, columnIndex) => {
+      const count = hero.getTagCount(tag);
+      const cellX = x + columnIndex * (statusColumnWidth + statusColumnGap);
+      const badgeX = cellX + (statusColumnWidth - tagBadgeWidth) / 2;
+      const badgeY = y + rowIndex * (tagBadgeHeight + tagRowGap);
+      context.fillStyle = count === 0 ? '#dce2eb' : '#f8fafc';
+      context.strokeStyle = count === 0 ? '#b8c1d0' : '#53627c';
+      context.lineWidth = 1;
+      context.beginPath();
+      context.roundRect(badgeX, badgeY, tagBadgeWidth, tagBadgeHeight, 6);
+      context.fill();
+      context.stroke();
+      const tagY = badgeY + (tagBadgeHeight - tagIconSize) / 2;
+      drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], badgeX + 3, tagY, tagIconSize);
+      context.fillStyle = '#24334d';
+      drawTextAtVisualCenter(context, String(count), badgeX + tagBadgeWidth - 9 - tagIconNumberGap, badgeY + tagBadgeHeight / 2);
+    });
   });
   context.textAlign = 'start';
   context.textBaseline = 'alphabetic';
@@ -146,8 +151,12 @@ function drawItemSlot(context, assets, item, slotX, slotY) {
 function drawEquipmentGrid(context, assets, hero, x, y) {
   const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
   const gap = PREPARATION_LAYOUT.equipmentGap;
-  const gridWidth = slotSize * 3 + gap * 2;
-  const startX = x + PREPARATION_PANEL_WIDTH - PREPARATION_LAYOUT.bottomPadding - gridWidth;
+  const startX = x
+    + PREPARATION_LAYOUT.topPadding
+    + PREPARATION_LAYOUT.characterAreaWidth
+    + PREPARATION_LAYOUT.areaGap
+    + PREPARATION_LAYOUT.informationAreaWidth
+    + PREPARATION_LAYOUT.areaGap;
   const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
   EQUIPMENT_SLOTS.forEach((slot) => {
     const [column, row] = positions[slot];
@@ -421,10 +430,12 @@ export function startGame({ scenario }) {
       context.strokeStyle = '#aab4c6';
       context.lineWidth = 1;
       context.strokeRect(x, y, PREPARATION_PANEL_WIDTH, height);
+      const characterX = x + PREPARATION_LAYOUT.topPadding;
+      const informationX = characterX + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
       if (image.complete && image.naturalWidth > 0) {
         const placement = getCenterImagePlacement(hero.chip.radius);
-        const centerX = x + PREPARATION_LAYOUT.leftAreaWidth + HERO_PREPARATION_IMAGE_SIZE / 2;
-        const centerY = y + PREPARATION_LAYOUT.topPadding + hero.chip.radius - CHARACTER_IMAGE_VERTICAL_OFFSET;
+        const centerX = characterX + PREPARATION_LAYOUT.characterAreaWidth / 2;
+        const centerY = y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight + PREPARATION_LAYOUT.sectionGap + HERO_PREPARATION_IMAGE_SIZE / 2;
         context.drawImage(
           image,
           centerX + placement.x - placement.size / 2,
@@ -437,29 +448,24 @@ export function startGame({ scenario }) {
       context.font = '16px system-ui';
       context.textBaseline = 'middle';
       context.textAlign = 'center';
-      context.fillText(`【${hero.profession}・${hero.name.ja}】`, x + PREPARATION_LAYOUT.leftAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
+      context.fillText(`【${hero.profession}・${hero.name.ja}】`, characterX + PREPARATION_LAYOUT.characterAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
       context.textAlign = 'start';
-      const statusTop = y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight;
-      context.font = '11px system-ui';
-      STATUS_DEFINITIONS.forEach(({ key, label, frameColor }, statIndex) => {
-        const y = statusTop + statIndex * PREPARATION_LAYOUT.statusRowHeight;
+      STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
         const value = key === 'stamina' ? Math.floor(hero.stamina) : Math.floor(hero.getStatus(key));
-        context.fillStyle = '#24334d';
-        drawTextAtVisualCenter(context, label, x + 12, y + 13);
         drawStatusGauge(
           context,
-          x + 76,
-          y + 4,
+          assets,
+          visual,
+          informationX + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
+          y + PREPARATION_LAYOUT.topPadding,
           value,
           hero.maximums[key],
-          116,
           key === 'stamina' ? getStaminaGaugeColor(value) : '#54c96b',
-          frameColor,
         );
       });
       context.textBaseline = 'alphabetic';
       drawEquipmentGrid(context, assets, hero, x, y + PREPARATION_LAYOUT.topPadding);
-      drawTagList(context, assets, hero, x, y + PREPARATION_TAG_LIST_TOP);
+      drawTagList(context, assets, hero, informationX, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.statusGaugeHeight + PREPARATION_LAYOUT.sectionGap);
     });
     board.getRenderChips().forEach((chip) => renderer.draw(chip, time / 1000));
     combatEffects.draw(context);

@@ -26,14 +26,7 @@ export const STATUS_TAGS = Object.freeze({
   luck: Object.freeze(['blessing', 'fortune']),
 });
 
-const TAG_BASE_COLORS = Object.freeze({
-  power: '#8d5b3d',
-  magic: '#66429b',
-  speed: '#1b8eab',
-  negotiation: '#c89025',
-  luck: '#539f3c',
-  attribute: '#e1e8f0',
-});
+const ATTRIBUTE_TAG_BASE_COLOR = '#e1e8f0';
 
 export function getStatusValue(tags, stat, maximum) {
   const sources = STATUS_TAGS[stat];
@@ -58,11 +51,11 @@ export function getTagPaths(tags) {
 export function getTagBaseColors(tags) {
   return tags.map((tag) => {
     const definition = TAGS[tag];
-    const baseKey = definition.group === 'attribute' ? 'attribute' : definition.stat;
-    return TAG_BASE_COLORS[baseKey];
+    return definition.group === 'attribute' ? ATTRIBUTE_TAG_BASE_COLOR : STATUS_VISUALS[definition.stat].tagBaseColor;
   });
 }
 
 export function getTagGlyphScales(tags) {
   return tags.map(() => TAG_GLYPH_SCALE);
 }
+import { STATUS_VISUALS } from './StatusVisualCatalog.js';

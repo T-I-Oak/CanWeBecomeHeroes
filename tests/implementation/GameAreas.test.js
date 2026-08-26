@@ -23,5 +23,5 @@ test('game areas form the fixed world with four preparation subareas', () => {
     width: GAME_AREAS.preparation.width,
     height: PREPARATION_SUBAREA_HEIGHT,
   });
-  assert.deepEqual(WORLD_SIZE, { width: 2608, height: 1760 });
+  assert.deepEqual(WORLD_SIZE, { width: 2752, height: 1760 });
 });
