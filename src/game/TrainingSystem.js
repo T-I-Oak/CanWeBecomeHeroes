@@ -1,6 +1,7 @@
 import FacilityReturnSystem from './FacilityReturnSystem.js';
 
 export const TRAINING_INTERVAL_TICKS = 200;
+export const TRAINING_RESULT_DISPLAY_TICKS = 120;
 const GAME_TICK_SECONDS = 1 / 60;
 const STAT_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck', 'stamina']);
 const STAT_LABELS = Object.freeze({ power: 'パワー', magic: '魔力', speed: 'スピード', negotiation: '交渉力', luck: '運', stamina: 'スタミナ' });
@@ -34,8 +35,13 @@ export default class TrainingSystem {
       this.states.delete(hero);
       return;
     }
-    const trainingState = state ?? { ticks: 0, returning: false };
+    const trainingState = state ?? { ticks: 0, returning: false, returnAfterResult: false, resultTicks: 0, gainedCells: [] };
     this.states.set(hero, trainingState);
+    if (trainingState.returnAfterResult) {
+      trainingState.resultTicks -= 1;
+      if (trainingState.resultTicks <= 0) this.beginReturn(hero, trainingState);
+      return;
+    }
     trainingState.ticks += 1;
     if (trainingState.ticks < TRAINING_INTERVAL_TICKS) return;
     trainingState.ticks = 0;
@@ -49,7 +55,7 @@ export default class TrainingSystem {
       .filter((candidate) => candidate.weight > 0);
     const totalWeight = candidates.reduce((total, candidate) => total + candidate.weight, 0);
     if (totalWeight === 0) {
-      this.beginReturn(hero, state);
+      this.finishTraining(hero, state);
       return;
     }
 
@@ -62,18 +68,34 @@ export default class TrainingSystem {
     const staminaCost = isLucky ? 1 : 2;
     if (hero.stamina < staminaCost) {
       hero.stamina = 0;
-      this.beginReturn(hero, state);
+      this.finishTraining(hero, state);
       return;
     }
     hero.stamina -= staminaCost;
     hero.maximums[selected.stat] = Math.min(MAXIMUM_STAT_VALUE, hero.maximums[selected.stat] + 1);
+    state.gainedCells.push(Object.freeze({ stat: selected.stat, value: hero.maximums[selected.stat] }));
     this.gameLog?.log(`${hero.profession}・${hero.name.ja}は${STAT_LABELS[selected.stat]}を強化した。`, { subject: 'hero', level: isLucky ? 'luck' : 'info' });
   }
 
   beginReturn(hero, state) {
+    if (state.returning) return;
     if (this.returnSystem) this.returnSystem.begin(hero);
     else throw new Error('Training hero requires a facility return system.');
     state.returning = true;
+  }
+
+  finishTraining(hero, state) {
+    state.returnAfterResult = true;
+    state.resultTicks = TRAINING_RESULT_DISPLAY_TICKS;
+  }
+
+  getPresentation(hero) {
+    const state = this.states.get(hero);
+    if (!state || hero.currentArea !== 'training') return null;
+    return Object.freeze({
+      gainedCells: Object.freeze([...state.gainedCells]),
+      isShowingResult: state.returnAfterResult,
+    });
   }
 
   updateReturn(hero) {

@@ -29,6 +29,7 @@ import { drawGuildPanel } from './GuildPanel.js';
 import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
+import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -51,7 +52,7 @@ function getStaminaGaugeColor(value) {
   return '#54c96b';
 }
 
-function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeColor = '#54c96b') {
+function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeColor = '#54c96b', { highlightedCells = [], highlightPhase = 0 } = {}) {
   const { statusGaugeWidth: width, statusGaugeHeight: height, statusIconSize, statusIconTopPadding, statusIconSegmentGap, statusGaugeHorizontalPadding: inset, statusGaugeBottomPadding, statusSegmentHeight, statusSegmentGap: gap } = PREPARATION_LAYOUT;
   const capacity = 7;
   context.fillStyle = visual.gaugeFrameColor;
@@ -68,7 +69,47 @@ function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeCo
     context.beginPath();
     context.roundRect(x + inset, segmentY, width - inset * 2, statusSegmentHeight, 4);
     context.fill();
+    if (highlightedCells.includes(index + 1)) {
+      const glow = 0.55 + Math.sin(highlightPhase) * 0.25;
+      context.save();
+      context.fillStyle = `rgba(255, 215, 91, ${glow})`;
+      context.shadowColor = '#fff3af';
+      context.shadowBlur = 7;
+      context.fill();
+      context.strokeStyle = '#fff4ba';
+      context.lineWidth = 2;
+      context.stroke();
+      context.restore();
+    }
   }
+}
+
+function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
+  if (!hero || !presentation) return;
+  const area = GAME_AREAS.training;
+  const slotOrigin = getFacilitySlotOrigin('training');
+  const x = slotOrigin.x + HERO_SLOT_SIZE + 24;
+  const y = area.y + (area.height - PREPARATION_LAYOUT.statusGaugeHeight) / 2;
+  const highlightsByStat = new Map();
+  presentation.gainedCells.forEach(({ stat, value }) => {
+    const cells = highlightsByStat.get(stat) ?? [];
+    cells.push(value);
+    highlightsByStat.set(stat, cells);
+  });
+  STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
+    const value = key === 'stamina' ? Math.floor(hero.stamina) : Math.floor(hero.getStatus(key));
+    drawStatusGauge(
+      context,
+      assets,
+      visual,
+      x + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
+      y,
+      value,
+      hero.maximums[key],
+      key === 'stamina' ? getStaminaGaugeColor(value) : '#54c96b',
+      { highlightedCells: highlightsByStat.get(key) ?? [], highlightPhase: time / 180 },
+    );
+  });
 }
 
 function drawTextAtVisualCenter(context, text, x, centerY) {
@@ -426,6 +467,8 @@ export function startGame({ scenario }) {
       contributionPoints: battleSystem.contributionPoints,
       timelineHours: guildTimelineHours,
     }).timelineHours;
+    const trainingHero = controller.getHeroes().find((hero) => hero.currentArea === 'training');
+    drawTrainingStatusPanel(context, assets, trainingHero, trainingHero && training.getPresentation(trainingHero), time);
     preparationHeroes.forEach((hero, index) => {
       const { x, y, height } = getPreparationSubareaBounds(index);
       const image = assets.load(hero.chip.centerPath);
