@@ -1,15 +1,16 @@
 import { GAME_AREAS } from './GameAreas.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from './HeroSlotLayout.js';
+import { getFacilitySlotOrigin } from './FacilityLayout.js';
 
 const BATTLE_ORDER = Object.freeze(['battle-2', 'battle-3', 'battle-1', 'battle-4']);
 
 function facilitySlot(id, areaName) {
-  const area = GAME_AREAS[areaName];
+  const origin = getFacilitySlotOrigin(areaName);
   return Object.freeze({
     id,
     area: areaName,
-    x: area.x + (area.width / 2 - HERO_SLOT_SIZE) / 2 + HERO_SLOT_SIZE / 2,
-    y: area.y + area.height / 2,
+    x: origin.x + HERO_SLOT_SIZE / 2,
+    y: origin.y + HERO_SLOT_SIZE / 2,
   });
 }
 

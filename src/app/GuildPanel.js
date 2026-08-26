@@ -1,5 +1,6 @@
 import { GAME_AREAS } from '../game/GameAreas.js';
 import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
+import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import {
   formatElapsedGuildTime,
   formatGuildHours,
@@ -8,8 +9,9 @@ import {
   getGuildTimeStatus,
 } from '../game/GuildTime.js';
 
-const PANEL_MARGIN = 16;
-const PANEL_GAP_FROM_SLOT = 16;
+const PANEL_VERTICAL_MARGIN = 16;
+const PANEL_RIGHT_MARGIN = 24;
+const PANEL_GAP_FROM_SLOT = 24;
 const PANEL_FILL = '#29273a';
 const PANEL_BORDER = '#71509d';
 const PANEL_TEXT = '#f3ecdc';
@@ -20,12 +22,12 @@ const EXTENSION_COLOR = '#d3a65e';
 
 function getPanelBounds() {
   const area = GAME_AREAS.guild;
-  const slotRight = area.x + (area.width / 2 - HERO_SLOT_SIZE) / 2 + HERO_SLOT_SIZE;
+  const slotRight = getFacilitySlotOrigin('guild').x + HERO_SLOT_SIZE;
   return Object.freeze({
     x: slotRight + PANEL_GAP_FROM_SLOT,
-    y: area.y + PANEL_MARGIN,
-    width: area.x + area.width - PANEL_MARGIN - (slotRight + PANEL_GAP_FROM_SLOT),
-    height: area.height - PANEL_MARGIN * 2,
+    y: area.y + PANEL_VERTICAL_MARGIN,
+    width: area.x + area.width - PANEL_RIGHT_MARGIN - (slotRight + PANEL_GAP_FROM_SLOT),
+    height: area.height - PANEL_VERTICAL_MARGIN * 2,
   });
 }
 

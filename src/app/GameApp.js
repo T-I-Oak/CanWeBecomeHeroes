@@ -28,6 +28,7 @@ import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout
 import { drawGuildPanel } from './GuildPanel.js';
 import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
+import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -417,6 +418,7 @@ export function startGame({ scenario }) {
     ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
     preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
     drawBattleSlotGround(context, assets);
+    drawFacilityNameplates(context, assets);
     drawFacilitySlots(context);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction());
     guildTimelineHours = drawGuildPanel(context, {
