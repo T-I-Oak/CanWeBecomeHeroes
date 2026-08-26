@@ -9,9 +9,9 @@ test('facility hero slots share a 24px left alignment and named facilities leave
     const origin = getFacilitySlotOrigin(areaName);
     assert.equal(origin.x, GAME_AREAS[areaName].x + FACILITY_LAYOUT.slotLeft);
   });
-  assert.equal(getFacilitySlotOrigin('shop').y, GAME_AREAS.shop.y + FACILITY_LAYOUT.shopSlotTop);
-  assert.equal(getFacilitySlotOrigin('guild').y, GAME_AREAS.guild.y + FACILITY_LAYOUT.namedSlotTop);
-  assert.equal(getFacilitySlotOrigin('training').y, GAME_AREAS.training.y + FACILITY_LAYOUT.namedSlotTop);
+  ['shop', 'guild', 'training'].forEach((areaName) => {
+    assert.equal(getFacilitySlotOrigin(areaName).y, GAME_AREAS[areaName].y + FACILITY_LAYOUT.heroSlotTop);
+  });
 });
 
 test('facility nameplates use the shared 3:1 bounds at the upper left', () => {

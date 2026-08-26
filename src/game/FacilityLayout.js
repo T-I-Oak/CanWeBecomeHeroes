@@ -6,8 +6,7 @@ export const FACILITY_LAYOUT = Object.freeze({
   nameplateTop: 16,
   nameplateWidth: 144,
   nameplateHeight: 48,
-  namedSlotTop: 80,
-  shopSlotTop: 96,
+  heroSlotTop: 80,
 });
 
 export function getFacilitySlotOrigin(areaName) {
@@ -15,7 +14,7 @@ export function getFacilitySlotOrigin(areaName) {
   if (!area) throw new Error(`Unknown facility area: ${areaName}`);
   return Object.freeze({
     x: area.x + FACILITY_LAYOUT.slotLeft,
-    y: area.y + (areaName === 'shop' ? FACILITY_LAYOUT.shopSlotTop : FACILITY_LAYOUT.namedSlotTop),
+    y: area.y + FACILITY_LAYOUT.heroSlotTop,
   });
 }
 
