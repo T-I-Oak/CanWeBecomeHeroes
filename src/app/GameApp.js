@@ -43,6 +43,7 @@ const STATUS_DEFINITIONS = Object.freeze([
   { key: 'stamina', label: 'スタミナ', frameColor: '#3d4d62' },
 ]);
 const TAG_ORDER = Object.freeze(Object.keys(TAGS));
+const TAG_FRAME_PATH = '/assets/tags/frame.png';
 
 function getStaminaGaugeColor(value) {
   if (value <= 2) return '#db5b5b';
@@ -74,6 +75,13 @@ function drawTextAtVisualCenter(context, text, x, centerY) {
   context.fillText(text, x, centerY + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2);
 }
 
+function drawFramedTag(context, assets, tagPath, x, y, size) {
+  const icon = assets.load(tagPath);
+  if (icon.complete && icon.naturalWidth > 0) context.drawImage(icon, x, y, size, size);
+  const frame = assets.load(TAG_FRAME_PATH);
+  if (frame.complete && frame.naturalWidth > 0) context.drawImage(frame, x, y, size, size);
+}
+
 function drawTagList(context, assets, hero, x, y) {
   const cellWidth = PREPARATION_LAYOUT.tagCellWidth;
   context.font = 'bold 13px system-ui';
@@ -90,8 +98,7 @@ function drawTagList(context, assets, hero, x, y) {
     context.roundRect(badgeX, badgeY, 20, PREPARATION_LAYOUT.tagBadgeHeight, 6);
     context.fill();
     context.stroke();
-    const icon = assets.load(`/assets/tags/${tag}.png`);
-    if (icon.complete && icon.naturalWidth > 0) context.drawImage(icon, badgeCenterX - PREPARATION_LAYOUT.tagIconSize / 2, badgeY + 3, PREPARATION_LAYOUT.tagIconSize, PREPARATION_LAYOUT.tagIconSize);
+    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, badgeCenterX - PREPARATION_LAYOUT.tagIconSize / 2, badgeY + 3, PREPARATION_LAYOUT.tagIconSize);
     context.fillStyle = '#24334d';
     drawTextAtVisualCenter(context, String(count), badgeCenterX, badgeY + 31);
   });
@@ -118,9 +125,8 @@ function drawItemSlot(context, assets, item, slotX, slotY) {
     + Math.max(0, item.chip.tagPaths.length - 1) * PREPARATION_LAYOUT.equipmentTagGap;
   const tagStartX = slotX + (slotSize - tagWidth) / 2;
   item.chip.tagPaths.forEach((tagPath, tagIndex) => {
-    const tag = assets.load(tagPath);
     const tagX = tagStartX + tagIndex * (PREPARATION_LAYOUT.equipmentTagIconSize + PREPARATION_LAYOUT.equipmentTagGap);
-    if (tag.complete && tag.naturalWidth > 0) context.drawImage(tag, tagX, slotY + 2, PREPARATION_LAYOUT.equipmentTagIconSize, PREPARATION_LAYOUT.equipmentTagIconSize);
+    drawFramedTag(context, assets, tagPath, tagX, slotY + 2, PREPARATION_LAYOUT.equipmentTagIconSize);
   });
 }
 
@@ -158,8 +164,7 @@ function drawShopPanel(context, assets, shop, bag, transaction) {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillText(label, panelCenterX, y + 26);
-    const image = assets.load(`/assets/tags/${tag}.png`);
-    if (image.complete && image.naturalWidth > 0) context.drawImage(image, panelCenterX - 24, y + 44, 48, 48);
+    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, panelCenterX - 24, y + 44, 48);
   };
   drawTrend('SALE FOR', shop.saleTag, layout.saleBoards.sale);
   drawTrend('NEXT', shop.nextTag, layout.saleBoards.next);

@@ -1,10 +1,16 @@
 const DEFAULT_TAG_SLOT_COUNT = 8;
 export const CENTER_IMAGE_SCALE = 0.85;
 const CHIP_RIM_WIDTH_RATIO = 0.065;
+const TAG_FRAME_PATH = '/assets/tags/frame.png';
 
 function drawImageCover(context, image, x, y, size) {
   if (!image.complete || image.naturalWidth === 0) return;
   context.drawImage(image, x - size / 2, y - size / 2, size, size);
+}
+
+function drawFramedTag(context, assets, path, x, y, size) {
+  drawImageCover(context, assets.load(path), x, y, size);
+  drawImageCover(context, assets.load(TAG_FRAME_PATH), x, y, size);
 }
 
 export function createTagAngles(count, tagSlotCount) {
@@ -152,7 +158,7 @@ export default class ChipRenderer {
       const y = Math.sin(angle) * tagRadius;
       context.save();
       context.translate(x, y);
-      drawImageCover(context, this.assets.load(path), 0, 0, iconSize);
+      drawFramedTag(context, this.assets, path, 0, 0, iconSize);
       context.restore();
     });
   }
