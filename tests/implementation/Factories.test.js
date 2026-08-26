@@ -84,7 +84,6 @@ test('item factory calculates tag weight, price, and equipment assets', () => {
   assert.equal(item.price, 8);
   assert.equal(item.fixedStatusTag, 'valor');
   assert.equal(item.equipmentAssets.head, '/assets/items/head-1.png');
-  assert.deepEqual(item.chip.tagFramePaths, ['/assets/tags/frames/power.png', '/assets/tags/frames/attribute.png']);
   assert.deepEqual(item.chip.tagBaseColors, ['#8d5b3d', '#e1e8f0']);
   assert.deepEqual(item.chip.tagGlyphScales, [0.72, 0.72]);
 });

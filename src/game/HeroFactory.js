@@ -1,6 +1,6 @@
 import Chip from '../chips/Chip.js';
 import Hero from './Hero.js';
-import { getTagBaseColors, getTagFramePaths, getTagGlyphScales, getTagPaths, getTagWeight } from './TagCatalog.js';
+import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagWeight } from './TagCatalog.js';
 
 const PROFESSIONS = Object.freeze({
   swordfighter: { asset: 'swoardfighter', tag: 'valor', profession: '剣士', name: { en: 'Avery', ja: 'アヴェリー' } },
@@ -23,7 +23,7 @@ export default class HeroFactory {
   create({ profession, x, y, maximums, bounds = null, stamina = 0 }) {
     const definition = PROFESSIONS[profession];
     const tags = [definition.tag, definition.tag];
-    const chip = new Chip({ id: 0, type: 'hero', x, y, weight: getTagWeight(tags), centerPath: `/assets/heroes/${definition.asset}.png`, tagPaths: getTagPaths(tags), tagFramePaths: getTagFramePaths(tags), tagBaseColors: getTagBaseColors(tags), tagGlyphScales: getTagGlyphScales(tags), bounds });
+    const chip = new Chip({ id: 0, type: 'hero', x, y, weight: getTagWeight(tags), centerPath: `/assets/heroes/${definition.asset}.png`, tagPaths: getTagPaths(tags), tagBaseColors: getTagBaseColors(tags), tagGlyphScales: getTagGlyphScales(tags), bounds });
     return new Hero({ profession: definition.profession, name: definition.name, tags, chip, maximums, stamina });
   }
 }

@@ -7,7 +7,7 @@ import ItemPickupController from '../game/ItemPickupController.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, getPreparationSubareaBounds, WORLD_SIZE } from '../game/GameAreas.js';
 import { HERO_PREPARATION_IMAGE_SIZE, PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
-import { getTagBaseColors, getTagFramePaths, getTagGlyphScales, TAGS } from '../game/TagCatalog.js';
+import { getTagBaseColors, getTagGlyphScales, TAGS } from '../game/TagCatalog.js';
 import HeroItemInteractionController from '../game/HeroItemInteractionController.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
 import GameClock from '../game/GameClock.js';
@@ -43,7 +43,6 @@ const STATUS_DEFINITIONS = Object.freeze([
   { key: 'stamina', label: 'スタミナ', frameColor: '#3d4d62' },
 ]);
 const TAG_ORDER = Object.freeze(Object.keys(TAGS));
-const TAG_FRAME_PATH = '/assets/tags/frame.png';
 
 function getStaminaGaugeColor(value) {
   if (value <= 2) return '#db5b5b';
@@ -75,18 +74,25 @@ function drawTextAtVisualCenter(context, text, x, centerY) {
   context.fillText(text, x, centerY + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2);
 }
 
-function drawFramedTag(context, assets, tagPath, framePath, baseColor, glyphScale = 1, x, y, size) {
-  if (baseColor) {
-    context.fillStyle = baseColor;
-    context.beginPath();
-    context.arc(x + size / 2, y + size / 2, size * 0.42, 0, Math.PI * 2);
-    context.fill();
-  }
+function drawFramedTag(context, assets, tagPath, baseColor, glyphScale = 1, x, y, size) {
+  const centerX = x + size / 2;
+  const centerY = y + size / 2;
+  context.fillStyle = '#17253d';
+  context.beginPath();
+  context.arc(centerX, centerY, size * 0.5, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = baseColor ?? '#e1e8f0';
+  context.beginPath();
+  context.arc(centerX, centerY, size * 0.43, 0, Math.PI * 2);
+  context.fill();
   const icon = assets.load(tagPath);
   const glyphSize = size * glyphScale;
   if (icon.complete && icon.naturalWidth > 0) context.drawImage(icon, x + (size - glyphSize) / 2, y + (size - glyphSize) / 2, glyphSize, glyphSize);
-  const frame = assets.load(framePath ?? TAG_FRAME_PATH);
-  if (frame.complete && frame.naturalWidth > 0) context.drawImage(frame, x, y, size, size);
+  context.lineWidth = Math.max(1, size * 0.035);
+  context.strokeStyle = 'rgba(255, 255, 255, 0.78)';
+  context.beginPath();
+  context.arc(centerX, centerY, size * 0.43 - context.lineWidth / 2, 0, Math.PI * 2);
+  context.stroke();
 }
 
 function drawTagList(context, assets, hero, x, y) {
@@ -105,7 +111,7 @@ function drawTagList(context, assets, hero, x, y) {
     context.roundRect(badgeX, badgeY, 20, PREPARATION_LAYOUT.tagBadgeHeight, 6);
     context.fill();
     context.stroke();
-    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagFramePaths([tag])[0], getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], badgeCenterX - PREPARATION_LAYOUT.tagIconSize / 2, badgeY + 3, PREPARATION_LAYOUT.tagIconSize);
+    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], badgeCenterX - PREPARATION_LAYOUT.tagIconSize / 2, badgeY + 3, PREPARATION_LAYOUT.tagIconSize);
     context.fillStyle = '#24334d';
     drawTextAtVisualCenter(context, String(count), badgeCenterX, badgeY + 31);
   });
@@ -133,7 +139,7 @@ function drawItemSlot(context, assets, item, slotX, slotY) {
   const tagStartX = slotX + (slotSize - tagWidth) / 2;
   item.chip.tagPaths.forEach((tagPath, tagIndex) => {
     const tagX = tagStartX + tagIndex * (PREPARATION_LAYOUT.equipmentTagIconSize + PREPARATION_LAYOUT.equipmentTagGap);
-    drawFramedTag(context, assets, tagPath, item.chip.tagFramePaths[tagIndex], item.chip.tagBaseColors[tagIndex], item.chip.tagGlyphScales[tagIndex], tagX, slotY + 2, PREPARATION_LAYOUT.equipmentTagIconSize);
+    drawFramedTag(context, assets, tagPath, item.chip.tagBaseColors[tagIndex], item.chip.tagGlyphScales[tagIndex], tagX, slotY + 2, PREPARATION_LAYOUT.equipmentTagIconSize);
   });
 }
 
@@ -171,7 +177,7 @@ function drawShopPanel(context, assets, shop, bag, transaction) {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillText(label, panelCenterX, y + 26);
-    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagFramePaths([tag])[0], getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], panelCenterX - 24, y + 44, 48);
+    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], panelCenterX - 24, y + 44, 48);
   };
   drawTrend('SALE FOR', shop.saleTag, layout.saleBoards.sale);
   drawTrend('NEXT', shop.nextTag, layout.saleBoards.next);

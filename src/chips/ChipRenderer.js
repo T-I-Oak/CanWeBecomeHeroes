@@ -1,22 +1,27 @@
 const DEFAULT_TAG_SLOT_COUNT = 8;
 export const CENTER_IMAGE_SCALE = 0.85;
 const CHIP_RIM_WIDTH_RATIO = 0.065;
-const TAG_FRAME_PATH = '/assets/tags/frame.png';
 
 function drawImageCover(context, image, x, y, size) {
   if (!image.complete || image.naturalWidth === 0) return;
   context.drawImage(image, x - size / 2, y - size / 2, size, size);
 }
 
-function drawFramedTag(context, assets, path, framePath, baseColor, glyphScale = 1, x, y, size) {
-  if (baseColor) {
-    context.fillStyle = baseColor;
-    context.beginPath();
-    context.arc(x, y, size * 0.42, 0, Math.PI * 2);
-    context.fill();
-  }
+function drawFramedTag(context, assets, path, baseColor, glyphScale = 1, x, y, size) {
+  context.fillStyle = '#17253d';
+  context.beginPath();
+  context.arc(x, y, size * 0.5, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = baseColor ?? '#e1e8f0';
+  context.beginPath();
+  context.arc(x, y, size * 0.43, 0, Math.PI * 2);
+  context.fill();
   drawImageCover(context, assets.load(path), x, y, size * glyphScale);
-  drawImageCover(context, assets.load(framePath ?? TAG_FRAME_PATH), x, y, size);
+  context.lineWidth = Math.max(1, size * 0.035);
+  context.strokeStyle = 'rgba(255, 255, 255, 0.78)';
+  context.beginPath();
+  context.arc(x, y, size * 0.43 - context.lineWidth / 2, 0, Math.PI * 2);
+  context.stroke();
 }
 
 export function createTagAngles(count, tagSlotCount) {
@@ -164,7 +169,7 @@ export default class ChipRenderer {
       const y = Math.sin(angle) * tagRadius;
       context.save();
       context.translate(x, y);
-      drawFramedTag(context, this.assets, path, chip.tagFramePaths[index], chip.tagBaseColors[index], chip.tagGlyphScales[index], 0, 0, iconSize);
+      drawFramedTag(context, this.assets, path, chip.tagBaseColors[index], chip.tagGlyphScales[index], 0, 0, iconSize);
       context.restore();
     });
   }
