@@ -105,28 +105,30 @@ body {
   z-index: 10;
   top: 68px;
   right: 20px;
-  display: grid;
-  justify-items: end;
-  gap: 6px;
+  --toast-gap: 4px;
+  display: block;
   width: min(360px, calc(100vw - 40px));
   pointer-events: none;
 }
 
 .Toast {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 100%;
   opacity: 0;
-  transform: translateX(calc(100% + 24px));
+  transform: translate(calc(100% + 24px), var(--toast-stack-offset, 0px));
   transition: transform 260ms ease-out, opacity 260ms ease-out;
 }
 
 .Toast.state-visible {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate(0, var(--toast-stack-offset, 0px));
 }
 
 .Toast.state-leaving {
   opacity: 0;
-  transform: translateY(calc(-1 * var(--toast-exit-distance, 36px)));
+  transform: translate(0, calc(var(--toast-stack-offset, 0px) - var(--toast-exit-distance, 36px)));
 }
 
 .Toast__Message {

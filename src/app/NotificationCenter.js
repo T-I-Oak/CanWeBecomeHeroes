@@ -2,7 +2,7 @@ const DISPLAY_DURATION_MS = 4200;
 const EXIT_DURATION_MS = 260;
 
 function getToastGap(container) {
-  return Number.parseFloat(window.getComputedStyle(container).rowGap) || 0;
+  return Number.parseFloat(window.getComputedStyle(container).getPropertyValue('--toast-gap')) || 0;
 }
 
 export default class NotificationCenter {
@@ -32,8 +32,18 @@ export default class NotificationCenter {
     element.append(messageElement);
     this.container.append(element);
     this.notifications.push(element);
+    this.layout();
     requestAnimationFrame(() => element.classList.add('state-visible'));
     window.setTimeout(() => this.dismiss(element), DISPLAY_DURATION_MS);
+  }
+
+  layout() {
+    let offsetY = 0;
+    const gap = getToastGap(this.container);
+    this.notifications.forEach((notification) => {
+      notification.style.setProperty('--toast-stack-offset', `${offsetY}px`);
+      offsetY += notification.getBoundingClientRect().height + gap;
+    });
   }
 
   dismiss(element) {
@@ -43,23 +53,10 @@ export default class NotificationCenter {
     element.classList.remove('state-visible');
     element.classList.add('state-leaving');
     window.setTimeout(() => {
-      const previousPositions = new Map(this.notifications
-        .filter((notification) => notification !== element)
-        .map((notification) => [notification, notification.getBoundingClientRect().top]));
       const index = this.notifications.indexOf(element);
       if (index >= 0) this.notifications.splice(index, 1);
       element.remove();
-      this.notifications.forEach((notification) => {
-        const previousTop = previousPositions.get(notification);
-        const offset = previousTop - notification.getBoundingClientRect().top;
-        if (!offset) return;
-        notification.style.transition = 'none';
-        notification.style.transform = `translateY(${offset}px)`;
-        requestAnimationFrame(() => {
-          notification.style.transition = '';
-          notification.style.transform = '';
-        });
-      });
+      this.layout();
     }, EXIT_DURATION_MS);
   }
 }
