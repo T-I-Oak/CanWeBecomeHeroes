@@ -1,7 +1,7 @@
 export const CHIP_RADIUS = Object.freeze({ hero: 96, item: 37.5 });
 
 export default class Chip {
-  constructor({ id, type, x, y, weight, centerPath, tagPaths, tagFramePaths = [], tagBaseColors = [], radius = null, bounds = null, fillColor = '#ffffff', borderColor = '#d7dce4' }) {
+  constructor({ id, type, x, y, weight, centerPath, tagPaths, tagFramePaths = [], tagBaseColors = [], tagGlyphScales = [], radius = null, bounds = null, fillColor = '#ffffff', borderColor = '#d7dce4' }) {
     this.id = id;
     this.type = type;
     this.x = x;
@@ -13,6 +13,7 @@ export default class Chip {
     this.tagPaths = tagPaths;
     this.tagFramePaths = tagFramePaths;
     this.tagBaseColors = tagBaseColors;
+    this.tagGlyphScales = tagGlyphScales;
     this.bounds = bounds;
     this.fillColor = fillColor;
     this.fillColors = null;

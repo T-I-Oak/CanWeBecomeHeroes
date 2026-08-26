@@ -1,4 +1,4 @@
-import { getStatusValue, getTagBaseColors, getTagFramePaths, getTagPaths, getTagWeight } from './TagCatalog.js';
+import { getStatusValue, getTagBaseColors, getTagFramePaths, getTagGlyphScales, getTagPaths, getTagWeight } from './TagCatalog.js';
 import { getLuckDegree } from './Luck.js';
 
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
@@ -76,6 +76,7 @@ export default class Enemy {
     this.chip.tagPaths = getTagPaths(this.tags);
     this.chip.tagFramePaths = getTagFramePaths(this.tags);
     this.chip.tagBaseColors = getTagBaseColors(this.tags);
+    this.chip.tagGlyphScales = getTagGlyphScales(this.tags);
     this.chip.attributeValues = this.attributes;
     this.chip.physicalDamageReduction = this.physicalDamageReduction;
   }

@@ -8,14 +8,14 @@ function drawImageCover(context, image, x, y, size) {
   context.drawImage(image, x - size / 2, y - size / 2, size, size);
 }
 
-function drawFramedTag(context, assets, path, framePath, baseColor, x, y, size) {
+function drawFramedTag(context, assets, path, framePath, baseColor, glyphScale = 1, x, y, size) {
   if (baseColor) {
     context.fillStyle = baseColor;
     context.beginPath();
     context.arc(x, y, size * 0.42, 0, Math.PI * 2);
     context.fill();
   }
-  drawImageCover(context, assets.load(path), x, y, size);
+  drawImageCover(context, assets.load(path), x, y, size * glyphScale);
   drawImageCover(context, assets.load(framePath ?? TAG_FRAME_PATH), x, y, size);
 }
 
@@ -164,7 +164,7 @@ export default class ChipRenderer {
       const y = Math.sin(angle) * tagRadius;
       context.save();
       context.translate(x, y);
-      drawFramedTag(context, this.assets, path, chip.tagFramePaths[index], chip.tagBaseColors[index], 0, 0, iconSize);
+      drawFramedTag(context, this.assets, path, chip.tagFramePaths[index], chip.tagBaseColors[index], chip.tagGlyphScales[index], 0, 0, iconSize);
       context.restore();
     });
   }
