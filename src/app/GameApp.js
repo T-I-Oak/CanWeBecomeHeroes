@@ -85,19 +85,19 @@ function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeCo
 }
 
 function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
-  if (!hero || !presentation) return;
   const area = GAME_AREAS.training;
   const slotOrigin = getFacilitySlotOrigin('training');
   const x = slotOrigin.x + HERO_SLOT_SIZE + 24;
   const y = area.y + (area.height - PREPARATION_LAYOUT.statusGaugeHeight) / 2;
   const highlightsByStat = new Map();
-  presentation.gainedCells.forEach(({ stat, value }) => {
+  presentation?.gainedCells.forEach(({ stat, value }) => {
     const cells = highlightsByStat.get(stat) ?? [];
     cells.push(value);
     highlightsByStat.set(stat, cells);
   });
   STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-    const value = key === 'stamina' ? Math.floor(hero.stamina) : Math.floor(hero.getStatus(key));
+    const value = hero ? (key === 'stamina' ? Math.floor(hero.stamina) : Math.floor(hero.getStatus(key))) : 0;
+    const maximum = hero ? hero.maximums[key] : 0;
     drawStatusGauge(
       context,
       assets,
@@ -105,7 +105,7 @@ function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
       x + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
       y,
       value,
-      hero.maximums[key],
+      maximum,
       key === 'stamina' ? getStaminaGaugeColor(value) : '#54c96b',
       { highlightedCells: highlightsByStat.get(key) ?? [], highlightPhase: time / 180 },
     );
