@@ -11,7 +11,7 @@ function getSlotOrigin(areaName) {
   const area = GAME_AREAS[areaName];
   if (areaName === 'shop') return getShopLayout(area).heroSlot;
   return {
-    x: area.x + (area.width - HERO_SLOT_SIZE) / 2,
+    x: area.x + (area.width / 2 - HERO_SLOT_SIZE) / 2,
     y: area.y + (area.height - HERO_SLOT_SIZE) / 2,
   };
 }
