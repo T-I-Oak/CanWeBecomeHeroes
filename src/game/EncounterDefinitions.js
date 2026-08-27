@@ -12,8 +12,8 @@ export const COMBINATION_PATTERNS = Object.freeze({
 
 const DEMO_ROLES = Object.freeze({
   main: Object.freeze({ count: 2, slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget: 0 }),
-  support1: Object.freeze({ count: 0, slotPositions: Object.freeze([]), weaponCount: 0, totalTagBudget: 0 }),
-  support2: Object.freeze({ count: 0, slotPositions: Object.freeze([]), weaponCount: 0, totalTagBudget: 0 }),
+  support1: Object.freeze({ count: 0, slotPositions: Object.freeze([2, 5]), weaponCount: 0, totalTagBudget: 0 }),
+  support2: Object.freeze({ count: 0, slotPositions: Object.freeze([1, 6]), weaponCount: 0, totalTagBudget: 0 }),
 });
 
 export const DIFFICULTIES = Object.freeze({

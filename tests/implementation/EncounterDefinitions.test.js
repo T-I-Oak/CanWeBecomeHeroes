@@ -18,6 +18,8 @@ test('difficulty keeps the kind and level function interface while reproducing t
   const later = DIFFICULTIES.normal(99);
   assert.deepEqual(first, later);
   assert.deepEqual(first.roles.main.slotPositions, [3, 4]);
+  assert.deepEqual(first.roles.support1.slotPositions, [2, 5]);
+  assert.deepEqual(first.roles.support2.slotPositions, [1, 6]);
   assert.equal(first.roles.main.weaponCount, 2);
   assert.equal(first.roles.main.totalTagBudget, 0);
 
