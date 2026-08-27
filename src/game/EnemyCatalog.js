@@ -58,6 +58,12 @@ export const ENEMY_CATALOG = Object.freeze({
   'small-dexterity': Object.freeze({ id: 'small-dexterity', size: 'small', tagAffinity: 'dexterity', nameKey: 'enemy.smallDexterity', nameJa: 'コボルト', assetPath: '/assets/enemies/small-dexterity.png', intrinsicTags: Object.freeze(['dexterity']), baseHp: 2, baseContributionPoints: 10 }),
   'small-feather': Object.freeze({ id: 'small-feather', size: 'small', tagAffinity: 'feather', nameKey: 'enemy.smallFeather', nameJa: 'ハーピー', assetPath: '/assets/enemies/small-feather.png', intrinsicTags: Object.freeze(['feather']), baseHp: 2, baseContributionPoints: 10 }),
   'small-gem': Object.freeze({ id: 'small-gem', size: 'small', tagAffinity: 'gem', nameKey: 'enemy.smallGem', nameJa: 'ミミック', assetPath: '/assets/enemies/small-gem.png', intrinsicTags: Object.freeze(['gem']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-blessing': Object.freeze({ id: 'small-blessing', size: 'small', tagAffinity: 'blessing', nameKey: 'enemy.smallBlessing', nameJa: 'インプ', assetPath: '/assets/enemies/small-blessing.png', intrinsicTags: Object.freeze(['blessing']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-fortune': Object.freeze({ id: 'small-fortune', size: 'small', tagAffinity: 'fortune', nameKey: 'enemy.smallFortune', nameJa: 'ピクシー', assetPath: '/assets/enemies/small-fortune.png', intrinsicTags: Object.freeze(['fortune']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-fire': Object.freeze({ id: 'small-fire', size: 'small', tagAffinity: 'fire', nameKey: 'enemy.smallFire', nameJa: 'サラマンダー', assetPath: '/assets/enemies/small-fire.png', intrinsicTags: Object.freeze(['fire']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-water': Object.freeze({ id: 'small-water', size: 'small', tagAffinity: 'water', nameKey: 'enemy.smallWater', nameJa: '半魚人', assetPath: '/assets/enemies/small-water.png', intrinsicTags: Object.freeze(['water']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-vitality': Object.freeze({ id: 'small-vitality', size: 'small', tagAffinity: 'vitality', nameKey: 'enemy.smallVitality', nameJa: 'マンドラゴラ', assetPath: '/assets/enemies/small-vitality.png', intrinsicTags: Object.freeze(['vitality']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-area': Object.freeze({ id: 'small-area', size: 'small', tagAffinity: 'area', nameKey: 'enemy.smallArea', nameJa: 'ケルベロス', assetPath: '/assets/enemies/small-area.png', intrinsicTags: Object.freeze(['area']), baseHp: 2, baseContributionPoints: 10 }),
 });
 
 export function getEnemyDefinition({ size, tagAffinity }) {
