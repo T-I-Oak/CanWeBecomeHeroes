@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import BattleSystem from '../../src/game/BattleSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import EnemySpawnSystem from '../../src/game/EnemySpawnSystem.js';
+import ShopState from '../../src/game/ShopState.js';
 import StageController, { getStageBaseLevel, rollStageLevel } from '../../src/game/StageController.js';
 
 test('stage one has base level three and rolls within two levels', () => {
@@ -11,6 +12,30 @@ test('stage one has base level three and rolls within two levels', () => {
   assert.equal(rollStageLevel(1, () => 0), 1);
   assert.equal(rollStageLevel(1, () => 0.5), 3);
   assert.equal(rollStageLevel(1, () => 0.999), 5);
+});
+
+test('stage controller prepares three frozen route choices and starts only the selected choice', () => {
+  const added = [];
+  const enemySpawn = new EnemySpawnSystem({ add: (enemy) => added.push(enemy) });
+  const battleSystem = new BattleSystem({ chips: [] }, { controller: {}, itemFactory: {} });
+  const shop = new ShopState({ saleTag: 'valor', nextTag: 'iron' });
+  const stages = new StageController({ enemySpawn, battleSystem, enemyFactory: new EnemyFactory(), shopState: shop, random: () => 0.5 });
+
+  const choices = stages.createNormalStageChoices({ stageNumber: 1 });
+
+  assert.equal(stages.state, 'selecting');
+  assert.equal(choices.length, 3);
+  assert.equal(added.length, 0);
+  assert.ok(choices.every((choice) => choice.enemies.length === 2 && choice.shopTrends.saleTag));
+  const stage = stages.selectStage(choices[1].id, { tick: 500 });
+  assert.equal(stage.id, choices[1].id);
+  assert.equal(stages.state, 'spawning');
+  assert.equal(shop.saleTag, choices[1].shopTrends.saleTag);
+  assert.equal(shop.nextTag, choices[1].shopTrends.nextTag);
+  enemySpawn.update(699);
+  assert.equal(added.length, 0);
+  enemySpawn.update(700);
+  assert.equal(added.length, 1);
 });
 
 test('stage controller creates and schedules a normal stage from its rolled level', () => {

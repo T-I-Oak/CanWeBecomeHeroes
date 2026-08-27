@@ -111,6 +111,156 @@ body {
   pointer-events: none;
 }
 
+.StageSelection {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(18 27 41 / 62%);
+}
+
+.StageSelection[hidden] {
+  display: none;
+}
+
+.StageSelection__Dialog {
+  width: min(920px, 100%);
+  max-height: calc(100dvh - 48px);
+  padding: 22px;
+  overflow-y: auto;
+  color: #f4ead2;
+  background: linear-gradient(145deg, #263b2a, #172a20);
+  border: 4px solid #9b7142;
+  border-radius: 14px;
+  box-shadow: 0 18px 54px rgb(0 0 0 / 45%);
+}
+
+.StageSelection__Title,
+.StageSelection__Subtitle {
+  margin: 0;
+  text-align: center;
+}
+
+.StageSelection__Title {
+  font-size: 26px;
+}
+
+.StageSelection__Subtitle {
+  margin-top: 4px;
+  color: #d8cba8;
+  font-size: 14px;
+}
+
+.StageSelection__Options {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.StageSelection__Option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  color: inherit;
+  text-align: initial;
+  background: rgb(255 255 255 / 7%);
+  border: 2px solid #b08a52;
+  border-radius: 10px;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.StageSelection .state-clickable {
+  cursor: pointer;
+}
+
+.StageSelection .state-clickable:hover,
+.StageSelection .state-clickable:focus-visible {
+  background: rgb(255 244 205 / 16%);
+  border-color: #f0cb79;
+  outline: none;
+  transform: translateX(4px);
+}
+
+.StageSelection__EnemyLine {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(56px, 1fr));
+  gap: 4px;
+  min-width: 0;
+}
+
+.StageSelection__EnemySlot {
+  display: grid;
+  place-items: center;
+  min-height: 118px;
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.StageSelection__EnemySlot.state-empty {
+  min-height: 104px;
+  border: 1px dashed rgb(239 224 188 / 24%);
+}
+
+.StageSelection__ChipPreview {
+  display: block;
+  width: min(100%, 104px);
+  height: auto;
+}
+
+.StageSelection__EnemyName {
+  max-width: 100%;
+  overflow: hidden;
+  color: #f4ead2;
+  font-size: 12px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.StageSelection__Trends {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 8px;
+}
+
+.StageSelection__Trend {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 72px;
+  padding: 7px 5px;
+  background: #172a20;
+  border: 1px solid #b08a52;
+  border-radius: 7px;
+}
+
+.StageSelection__TrendLabel {
+  color: #d8cba8;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.StageSelection__TrendIcon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  background: var(--stage-selection-tag-color);
+  border: 3px solid #17253d;
+  border-radius: 50%;
+}
+
+.StageSelection__TrendIcon img {
+  width: 30px;
+  height: 30px;
+}
+
 .Toast {
   position: absolute;
   top: 0;
@@ -218,5 +368,40 @@ body {
   .GuideText {
     width: 100%;
     margin-left: 0;
+  }
+
+  .StageSelection {
+    padding: 10px;
+  }
+
+  .StageSelection__Dialog {
+    max-height: calc(100dvh - 20px);
+    padding: 14px;
+  }
+
+  .StageSelection__Option {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .StageSelection__EnemyLine {
+    grid-template-columns: repeat(6, minmax(42px, 1fr));
+  }
+
+  .StageSelection__EnemySlot {
+    min-height: 80px;
+  }
+
+  .StageSelection__EnemySlot.state-empty {
+    min-height: 70px;
+  }
+
+  .StageSelection__EnemyName {
+    display: none;
+  }
+
+  .StageSelection__Trends {
+    justify-content: center;
   }
 }

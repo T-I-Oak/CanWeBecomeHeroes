@@ -33,6 +33,7 @@ import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
 import EnemyFactory from '../game/EnemyFactory.js';
+import StageSelectionModal from './StageSelectionModal.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -322,8 +323,14 @@ export function startGame({ scenario }) {
   const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), gameLog });
   const combatEffects = new CombatEffectSystem();
   const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem, effects: combatEffects, gameLog });
-  const stageController = new StageController({ enemySpawn, battleSystem, enemyFactory: new EnemyFactory(), random });
-  stageController.startNormalStage({ stageNumber: 1, tick: clock.tick });
+  const stageController = new StageController({
+    enemySpawn,
+    battleSystem,
+    enemyFactory: new EnemyFactory(),
+    shopState: shop,
+    hasActiveShopHero: () => controller.getHeroes().some((hero) => hero.currentArea === 'shop'),
+    random,
+  });
   const guildSystem = new GuildSystem(returnSystem, {
     getContributionPoints: () => battleSystem.contributionPoints,
     setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
@@ -334,6 +341,22 @@ export function startGame({ scenario }) {
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const assets = new AssetLoader();
   const renderer = new ChipRenderer(context, assets);
+  const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
+    assets,
+    onSelect: (choiceId) => {
+      stageController.selectStage(choiceId, { tick: clock.tick });
+      stageSelection.hide();
+      clock.resume('stage-selection');
+    },
+  });
+
+  function openStageSelection(stageNumber = stageController.stageNumber + 1) {
+    const choices = stageController.createNormalStageChoices({ stageNumber });
+    clock.pause('stage-selection');
+    stageSelection.show({ stageNumber, choices });
+  }
+
+  openStageSelection(1);
 
   function resizeCanvas() {
     const bounds = canvas.getBoundingClientRect();
@@ -457,6 +480,7 @@ export function startGame({ scenario }) {
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
       stageController.update();
+      if (stageController.state === 'complete') openStageSelection();
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
     });
     controller.updateVisuals();

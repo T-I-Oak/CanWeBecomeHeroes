@@ -6,7 +6,12 @@ export default class GameClock {
   constructor({ speed = 1, paused = false } = {}) {
     this.speed = speed;
     this.paused = paused;
+    this.pauseReasons = new Set();
     this.tick = 0;
+  }
+
+  get isPaused() {
+    return this.paused || this.pauseReasons.size > 0;
   }
 
   setSpeed(speed) {
@@ -19,8 +24,16 @@ export default class GameClock {
     return this.paused;
   }
 
+  pause(reason) {
+    this.pauseReasons.add(reason);
+  }
+
+  resume(reason) {
+    this.pauseReasons.delete(reason);
+  }
+
   advance(wallDeltaSeconds, update) {
-    if (this.paused) return 0;
+    if (this.isPaused) return 0;
     let remaining = Math.min(MAX_WALL_DELTA_SECONDS, Math.max(0, wallDeltaSeconds)) * this.speed;
     let steps = 0;
     while (remaining > 0.000000001) {
@@ -28,6 +41,7 @@ export default class GameClock {
       const tickDelta = deltaSeconds * 60;
       this.tick += tickDelta;
       update(deltaSeconds, tickDelta);
+      if (this.isPaused) break;
       remaining = Math.max(0, remaining - deltaSeconds);
       steps += 1;
     }
