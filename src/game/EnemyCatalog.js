@@ -54,6 +54,10 @@ export const ENEMY_CATALOG = Object.freeze({
     baseHp: 2,
     baseContributionPoints: 10,
   }),
+  'small-cloth': Object.freeze({ id: 'small-cloth', size: 'small', tagAffinity: 'cloth', nameKey: 'enemy.smallCloth', nameJa: 'ミイラ', assetPath: '/assets/enemies/small-cloth.png', intrinsicTags: Object.freeze(['cloth']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-dexterity': Object.freeze({ id: 'small-dexterity', size: 'small', tagAffinity: 'dexterity', nameKey: 'enemy.smallDexterity', nameJa: 'コボルト', assetPath: '/assets/enemies/small-dexterity.png', intrinsicTags: Object.freeze(['dexterity']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-feather': Object.freeze({ id: 'small-feather', size: 'small', tagAffinity: 'feather', nameKey: 'enemy.smallFeather', nameJa: 'ハーピー', assetPath: '/assets/enemies/small-feather.png', intrinsicTags: Object.freeze(['feather']), baseHp: 2, baseContributionPoints: 10 }),
+  'small-gem': Object.freeze({ id: 'small-gem', size: 'small', tagAffinity: 'gem', nameKey: 'enemy.smallGem', nameJa: 'ミミック', assetPath: '/assets/enemies/small-gem.png', intrinsicTags: Object.freeze(['gem']), baseHp: 2, baseContributionPoints: 10 }),
 });
 
 export function getEnemyDefinition({ size, tagAffinity }) {
