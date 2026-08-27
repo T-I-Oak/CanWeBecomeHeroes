@@ -4,9 +4,9 @@ import BattleSystem from '../../src/game/BattleSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import EnemySpawnSystem from '../../src/game/EnemySpawnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
-import StageController, { getStageBaseLevel, rollStageLevel } from '../../src/game/StageController.js';
+import StageController, { getStageBaseLevel, REGULAR_STAGE_KIND, rollStageLevel } from '../../src/game/StageController.js';
 
-test('stage one has base level three and rolls within two levels', () => {
+test('stage one rolls a level from one through five', () => {
   assert.equal(getStageBaseLevel(1), 3);
   assert.equal(getStageBaseLevel(7), 9);
   assert.equal(rollStageLevel(1, () => 0), 1);
@@ -21,10 +21,11 @@ test('stage controller prepares three frozen route choices and starts only the s
   const shop = new ShopState({ saleTag: 'valor', nextTag: 'iron' });
   const stages = new StageController({ enemySpawn, battleSystem, enemyFactory: new EnemyFactory(), shopState: shop, random: () => 0.5 });
 
-  const choices = stages.createNormalStageChoices({ stageNumber: 1 });
+  const choices = stages.createStageChoices({ stageNumber: 1 });
 
   assert.equal(stages.state, 'selecting');
   assert.equal(choices.length, 3);
+  assert.ok(choices.every((choice) => choice.kind === REGULAR_STAGE_KIND));
   assert.equal(added.length, 0);
   assert.ok(choices.every((choice) => choice.enemies.length === 2 && choice.shopTrends.saleTag));
   const stage = stages.selectStage(choices[1].id, { tick: 500 });
@@ -38,13 +39,13 @@ test('stage controller prepares three frozen route choices and starts only the s
   assert.equal(added.length, 1);
 });
 
-test('stage controller creates and schedules a normal stage from its rolled level', () => {
+test('stage controller creates and schedules a regular stage from its rolled level', () => {
   const added = [];
   const enemySpawn = new EnemySpawnSystem({ add: (enemy) => added.push(enemy) });
   const battleSystem = new BattleSystem({ chips: [] }, { controller: {}, itemFactory: {} });
   const stages = new StageController({ enemySpawn, battleSystem, enemyFactory: new EnemyFactory(), random: () => 0.5 });
 
-  const stage = stages.startNormalStage({ stageNumber: 1, tick: 1000 });
+  const stage = stages.startStage({ stageNumber: 1, tick: 1000 });
 
   assert.equal(stage.baseLevel, 3);
   assert.equal(stage.level, 3);

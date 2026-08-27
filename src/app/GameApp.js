@@ -351,7 +351,7 @@ export function startGame({ scenario }) {
   });
 
   function openStageSelection(stageNumber = stageController.stageNumber + 1) {
-    const choices = stageController.createNormalStageChoices({ stageNumber });
+    const choices = stageController.createStageChoices({ stageNumber });
     clock.pause('stage-selection');
     stageSelection.show({ stageNumber, choices });
   }

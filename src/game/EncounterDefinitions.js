@@ -1,7 +1,7 @@
 import { ENEMY_CATALOG } from './EnemyCatalog.js';
 
 export const COMBINATION_PATTERNS = Object.freeze({
-  normal: Object.freeze([
+  regular: Object.freeze([
     Object.freeze({ main: 'small-valor', support1: 'small-iron', support2: 'small-arcane' }),
     Object.freeze({ main: 'small-iron', support1: 'small-arcane', support2: 'small-valor' }),
     Object.freeze({ main: 'small-arcane', support1: 'small-valor', support2: 'small-iron' }),
@@ -32,7 +32,7 @@ const PLACEHOLDER_ROLES = Object.freeze({
 });
 
 export const DIFFICULTIES = Object.freeze({
-  normal: (level) => Object.freeze({ roles: createNormalRoles(level) }),
+  regular: (level) => Object.freeze({ roles: createNormalRoles(level) }),
   encounter: (_level) => Object.freeze({ roles: PLACEHOLDER_ROLES }),
   boss: (_level) => Object.freeze({ roles: PLACEHOLDER_ROLES }),
 });

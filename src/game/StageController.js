@@ -5,6 +5,7 @@ import { TAGS } from './TagCatalog.js';
 export const STAGE_LEVEL_OFFSET = 2;
 export const STAGE_LEVEL_VARIATION = 2;
 export const STAGE_CHOICE_COUNT = 3;
+export const REGULAR_STAGE_KIND = 'regular';
 
 const TAG_KEYS = Object.freeze(Object.keys(TAGS));
 
@@ -28,18 +29,18 @@ export default class StageController {
     this.choices = Object.freeze([]);
   }
 
-  createNormalStageChoices({ stageNumber = this.stageNumber + 1, choiceCount = STAGE_CHOICE_COUNT } = {}) {
+  createStageChoices({ stageNumber = this.stageNumber + 1, choiceCount = STAGE_CHOICE_COUNT } = {}) {
     if (!['idle', 'complete'].includes(this.state)) throw new Error(`Cannot start a stage while state is ${this.state}.`);
     if (!Number.isInteger(choiceCount) || choiceCount < 1) throw new RangeError('Stage choice count must be at least one.');
-    const patterns = COMBINATION_PATTERNS.normal;
+    const patterns = COMBINATION_PATTERNS[REGULAR_STAGE_KIND];
     this.choices = Object.freeze(Array.from({ length: choiceCount }, (_, index) => {
       const level = rollStageLevel(stageNumber, this.random);
       const pattern = patterns[Math.floor(this.random() * patterns.length)];
-      const enemies = createEncounterEnemies({ kind: 'normal', level, pattern, enemyFactory: this.enemyFactory, random: this.random });
+      const enemies = createEncounterEnemies({ kind: REGULAR_STAGE_KIND, level, pattern, enemyFactory: this.enemyFactory, random: this.random });
       return Object.freeze({
         id: `stage-${stageNumber}-choice-${index + 1}`,
         number: stageNumber,
-        kind: 'normal',
+        kind: REGULAR_STAGE_KIND,
         baseLevel: getStageBaseLevel(stageNumber),
         level,
         enemies: Object.freeze([...enemies]),
@@ -69,8 +70,8 @@ export default class StageController {
     return this.currentStage;
   }
 
-  startNormalStage({ stageNumber = this.stageNumber + 1, tick = 0 } = {}) {
-    const [choice] = this.createNormalStageChoices({ stageNumber, choiceCount: 1 });
+  startStage({ stageNumber = this.stageNumber + 1, tick = 0 } = {}) {
+    const [choice] = this.createStageChoices({ stageNumber, choiceCount: 1 });
     return this.selectStage(choice.id, { tick });
   }
 
