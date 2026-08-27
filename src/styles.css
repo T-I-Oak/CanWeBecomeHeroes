@@ -207,19 +207,19 @@ body {
 .StageSelection__EnemySlot {
   display: grid;
   place-items: center;
-  min-height: 118px;
+  min-height: 164px;
   padding: 2px;
   border-radius: 8px;
 }
 
 .StageSelection__EnemySlot.state-empty {
-  min-height: 104px;
+  min-height: 144px;
   border: 1px dashed rgb(239 224 188 / 24%);
 }
 
 .StageSelection__ChipPreview {
   display: block;
-  width: min(100%, 104px);
+  width: min(100%, 144px);
   height: auto;
 }
 
@@ -401,11 +401,11 @@ body {
   }
 
   .StageSelection__EnemySlot {
-    min-height: 80px;
+    min-height: 120px;
   }
 
   .StageSelection__EnemySlot.state-empty {
-    min-height: 70px;
+    min-height: 104px;
   }
 
   .StageSelection__EnemyName {

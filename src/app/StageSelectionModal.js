@@ -2,8 +2,10 @@ import ChipRenderer from '../chips/ChipRenderer.js';
 import { getTagBaseColors } from '../game/TagCatalog.js';
 
 const SLOT_COUNT = 6;
-const PREVIEW_SIZE = 104;
-const PREVIEW_RADIUS = 43;
+// 進路選択では実戦と同じ小:中:大 = 1:1.5:3 の比率を維持する。
+// 大型Enemyのタグまで収めるため、最大半径192pxを53.76pxへ縮小して描く。
+const PREVIEW_SIZE = 144;
+const PREVIEW_SCALE = 0.28;
 
 function createElement(tagName, className, text = null) {
   const element = document.createElement(tagName);
@@ -17,7 +19,7 @@ function createPreviewChip(chip) {
     ...chip,
     x: PREVIEW_SIZE / 2,
     y: PREVIEW_SIZE / 2,
-    radius: Math.min(chip.radius, PREVIEW_RADIUS),
+    radius: chip.radius * PREVIEW_SCALE,
     height: 0,
     scale: 1,
     tilt: 0,
