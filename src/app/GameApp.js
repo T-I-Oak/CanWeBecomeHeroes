@@ -31,6 +31,8 @@ import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
+import StageController from '../game/StageController.js';
+import EnemyFactory from '../game/EnemyFactory.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -313,14 +315,15 @@ export function startGame({ scenario }) {
   const gameLog = new GameLog();
   new NotificationCenter(document.querySelector('#notification-center'), gameLog);
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog), gameLog);
-  const { preparationHeroes, shop, enemies } = scenario.initialize({ controller });
+  const { preparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
   const enemySpawn = new EnemySpawnSystem(controller);
-  enemySpawn.schedule(enemies);
   const returnSystem = new FacilityReturnSystem(board, slotManager, { onItemReturned: (item) => controller.addToWarehouse(item) });
   const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem });
   const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), gameLog });
   const combatEffects = new CombatEffectSystem();
   const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem, effects: combatEffects, gameLog });
+  const stageController = new StageController({ enemySpawn, battleSystem, enemyFactory: new EnemyFactory(), random });
+  stageController.startNormalStage({ stageNumber: 1, tick: clock.tick });
   const guildSystem = new GuildSystem(returnSystem, {
     getContributionPoints: () => battleSystem.contributionPoints,
     setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
@@ -456,6 +459,7 @@ export function startGame({ scenario }) {
       guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
+      stageController.update();
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
     });
     controller.updateVisuals();

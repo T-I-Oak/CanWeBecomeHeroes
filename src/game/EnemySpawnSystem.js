@@ -8,11 +8,11 @@ export default class EnemySpawnSystem {
     this.pending = [];
   }
 
-  schedule(enemies) {
+  schedule(enemies, { startTick = 0 } = {}) {
     this.pending = enemies.map((enemy) => {
       const order = ENEMY_SPAWN_SLOT_ORDER.indexOf(enemy.slotPosition);
       if (order < 0) throw new RangeError(`Unsupported enemy slot position: ${enemy.slotPosition}`);
-      return { enemy, spawnTick: order * this.intervalTicks };
+      return { enemy, spawnTick: startTick + order * this.intervalTicks };
     }).toSorted((first, second) => first.spawnTick - second.spawnTick);
   }
 

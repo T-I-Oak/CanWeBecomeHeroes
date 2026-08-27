@@ -4,9 +4,7 @@ import ItemFactory, { DESTINATION_TYPES } from '../game/ItemFactory.js';
 import { GAME_AREAS, getPreparationSubareaBounds } from '../game/GameAreas.js';
 import { PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH } from '../game/PreparationLayout.js';
 import ShopState from '../game/ShopState.js';
-import EnemyFactory from '../game/EnemyFactory.js';
 import { createTrendEquipmentSet } from '../game/TrendEquipmentGenerator.js';
-import { COMBINATION_PATTERNS, createEncounterEnemies } from '../game/EncounterDefinitions.js';
 
 function randomWarehousePosition(radius = CHIP_RADIUS.item, random = Math.random) {
   return {
@@ -23,7 +21,6 @@ function selectRandomProfessions(random) {
 export function createDemoScenario({ random = Math.random } = {}) {
   const heroFactory = new HeroFactory();
   const itemFactory = new ItemFactory();
-  const enemyFactory = new EnemyFactory({ itemFactory });
   return Object.freeze({
     initialize({ controller }) {
       const preparationHeroes = selectRandomProfessions(random).map((profession, index) => {
@@ -52,10 +49,7 @@ export function createDemoScenario({ random = Math.random } = {}) {
         const { x, y } = randomWarehousePosition(CHIP_RADIUS.item, random);
         controller.addToWarehouse(itemFactory.createDestination({ destination, x, y }));
       });
-      const patterns = COMBINATION_PATTERNS.normal;
-      const pattern = patterns[Math.floor(random() * patterns.length)];
-      const enemies = createEncounterEnemies({ kind: 'normal', level: 3, pattern, enemyFactory, random });
-      return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), enemies });
+      return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), random });
     },
     addItem({ controller }) {
       const { x, y } = randomWarehousePosition();

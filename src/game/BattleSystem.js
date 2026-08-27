@@ -37,6 +37,7 @@ export default class BattleSystem {
     this.stageCompleteTick = null;
     this.victoryDelayTicks = 0;
     this.hasEncounteredEnemy = false;
+    this.attributeTicks = 0;
   }
   hasStageVictory() { return this.victoryTick !== null; }
   isStageComplete() { return this.stageCompleteTick !== null; }
