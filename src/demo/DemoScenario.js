@@ -51,9 +51,5 @@ export function createDemoScenario({ random = Math.random } = {}) {
       });
       return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), random });
     },
-    addItem({ controller }) {
-      const { x, y } = randomWarehousePosition();
-      controller.addToWarehouse(itemFactory.createRandomEquipment({ x, y }));
-    },
   });
 }

@@ -344,9 +344,6 @@ export function startGame({ scenario }) {
     camera.setViewport(bounds.width, bounds.height);
   }
 
-  document.querySelector('#add-chip').addEventListener('click', () => {
-    scenario.addItem({ controller });
-  });
   const pauseButton = document.querySelector('#pause-game');
   pauseButton.addEventListener('click', () => {
     pauseButton.textContent = clock.togglePaused() ? '再開' : '一時停止';
