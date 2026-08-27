@@ -63,9 +63,7 @@ export default class StageSelectionModal {
   }
 
   createOption(choice) {
-    const option = createElement('button', 'StageSelection__Option state-clickable');
-    option.type = 'button';
-    option.addEventListener('click', () => this.onSelect(choice.id));
+    const option = createElement('article', 'StageSelection__Option');
 
     const enemyLine = createElement('div', 'StageSelection__EnemyLine');
     for (let slotPosition = 1; slotPosition <= SLOT_COUNT; slotPosition += 1) {
@@ -78,7 +76,10 @@ export default class StageSelectionModal {
       this.createTrend('今回の店', choice.shopTrends.saleTag),
       this.createTrend('次回の店', choice.shopTrends.nextTag),
     );
-    option.append(enemyLine, trends);
+    const selectButton = createElement('button', 'StageSelection__SelectButton state-clickable', 'この進路へ');
+    selectButton.type = 'button';
+    selectButton.addEventListener('click', () => this.onSelect(choice.id));
+    option.append(enemyLine, trends, selectButton);
     return option;
   }
 

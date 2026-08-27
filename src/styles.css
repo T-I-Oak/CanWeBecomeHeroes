@@ -161,7 +161,7 @@ body {
 
 .StageSelection__Option {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 18px;
   align-items: center;
   width: 100%;
@@ -171,19 +171,30 @@ body {
   background: rgb(255 255 255 / 7%);
   border: 2px solid #b08a52;
   border-radius: 10px;
-  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
 }
 
 .StageSelection .state-clickable {
   cursor: pointer;
 }
 
-.StageSelection .state-clickable:hover,
-.StageSelection .state-clickable:focus-visible {
-  background: rgb(255 244 205 / 16%);
-  border-color: #f0cb79;
+.StageSelection__SelectButton {
+  min-width: 112px;
+  min-height: 44px;
+  padding: 8px 12px;
+  color: #fff3d0;
+  font-weight: 700;
+  background: linear-gradient(#bd8b3b, #825019);
+  border: 2px solid #f0cb79;
+  border-radius: 7px;
+  box-shadow: inset 0 1px rgb(255 244 205 / 35%), 0 2px 4px rgb(0 0 0 / 30%);
+  transition: filter 140ms ease, transform 140ms ease;
+}
+
+.StageSelection__SelectButton:hover,
+.StageSelection__SelectButton:focus-visible {
+  filter: brightness(1.18);
   outline: none;
-  transform: translateX(4px);
+  transform: translateY(-1px);
 }
 
 .StageSelection__EnemyLine {
@@ -403,5 +414,10 @@ body {
 
   .StageSelection__Trends {
     justify-content: center;
+  }
+
+  .StageSelection__SelectButton {
+    justify-self: center;
+    width: min(220px, 100%);
   }
 }
