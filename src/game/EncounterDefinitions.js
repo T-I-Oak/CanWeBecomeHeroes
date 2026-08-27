@@ -10,16 +10,25 @@ export const COMBINATION_PATTERNS = Object.freeze({
   boss: Object.freeze([]),
 });
 
-const DEMO_ROLES = Object.freeze({
+function createNormalRoles(level) {
+  const totalTagBudget = Math.max(0, Math.floor(level) + 3);
+  return Object.freeze({
+    main: Object.freeze({ count: 2, slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget }),
+    support1: Object.freeze({ count: 0, slotPositions: Object.freeze([2, 5]), weaponCount: 0, totalTagBudget }),
+    support2: Object.freeze({ count: 0, slotPositions: Object.freeze([1, 6]), weaponCount: 0, totalTagBudget }),
+  });
+}
+
+const PLACEHOLDER_ROLES = Object.freeze({
   main: Object.freeze({ count: 2, slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget: 0 }),
   support1: Object.freeze({ count: 0, slotPositions: Object.freeze([2, 5]), weaponCount: 0, totalTagBudget: 0 }),
   support2: Object.freeze({ count: 0, slotPositions: Object.freeze([1, 6]), weaponCount: 0, totalTagBudget: 0 }),
 });
 
 export const DIFFICULTIES = Object.freeze({
-  normal: (_level) => Object.freeze({ roles: DEMO_ROLES }),
-  encounter: (_level) => Object.freeze({ roles: DEMO_ROLES }),
-  boss: (_level) => Object.freeze({ roles: DEMO_ROLES }),
+  normal: (level) => Object.freeze({ roles: createNormalRoles(level) }),
+  encounter: (_level) => Object.freeze({ roles: PLACEHOLDER_ROLES }),
+  boss: (_level) => Object.freeze({ roles: PLACEHOLDER_ROLES }),
 });
 
 export function createEncounterEnemies({ kind, level, pattern, enemyFactory, random = Math.random }) {
