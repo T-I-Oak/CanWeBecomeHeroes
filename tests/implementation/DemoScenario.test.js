@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createDemoScenario } from '../../src/demo/DemoScenario.js';
-import { HERO_SLOT_SIZE } from '../../src/game/HeroSlotLayout.js';
 
 test('demo starts two distinct heroes with four five-item trend sets in the warehouse', () => {
   const entities = [];
@@ -23,8 +22,7 @@ test('demo starts two distinct heroes with four five-item trend sets in the ware
   });
   assert.equal(warehouseItems.filter((item) => item.category === 'destination').length, 3);
   assert.equal(entities.length, 2);
-  assert.equal(result.enemies[0].definition.nameJa, result.enemies[1].definition.nameJa);
-  assert.equal(result.enemies[0].mainTag, result.enemies[1].mainTag);
+  assert.equal(result.enemies.length, 1);
   assert.ok(['valor', 'iron', 'arcane'].includes(result.enemies[0].mainTag));
-  assert.equal(result.enemies[1].chip.x - result.enemies[0].chip.x, HERO_SLOT_SIZE);
+  assert.equal(result.enemies[0].slotPosition, 3);
 });

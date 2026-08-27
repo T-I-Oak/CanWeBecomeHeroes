@@ -12,10 +12,16 @@ export const COMBINATION_PATTERNS = Object.freeze({
 
 function createNormalRoles(level) {
   const totalTagBudget = Math.max(0, Math.floor(level) + 3);
+  let remainingCount = Math.min(Math.ceil(Math.max(0, level) * 2 / 3), 6);
+  const allocateCount = (capacity) => {
+    const count = Math.min(remainingCount, capacity);
+    remainingCount -= count;
+    return count;
+  };
   return Object.freeze({
-    main: Object.freeze({ count: 2, slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget }),
-    support1: Object.freeze({ count: 0, slotPositions: Object.freeze([2, 5]), weaponCount: 0, totalTagBudget }),
-    support2: Object.freeze({ count: 0, slotPositions: Object.freeze([1, 6]), weaponCount: 0, totalTagBudget }),
+    main: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget }),
+    support1: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([2, 5]), weaponCount: 2, totalTagBudget }),
+    support2: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([1, 6]), weaponCount: 2, totalTagBudget }),
   });
 }
 

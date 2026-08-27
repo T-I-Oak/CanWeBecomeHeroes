@@ -13,7 +13,7 @@ test('normal encounter definitions provide complete concrete patterns for the av
   });
 });
 
-test('normal difficulty derives each enemy tag budget from its level', () => {
+test('normal difficulty derives enemy count and each enemy tag budget from its level', () => {
   const first = DIFFICULTIES.normal(1);
   const later = DIFFICULTIES.normal(99);
   assert.deepEqual(first.roles.main.slotPositions, [3, 4]);
@@ -22,6 +22,10 @@ test('normal difficulty derives each enemy tag budget from its level', () => {
   assert.equal(first.roles.main.weaponCount, 2);
   assert.equal(first.roles.main.totalTagBudget, 4);
   assert.equal(later.roles.main.totalTagBudget, 102);
+  assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8].map((level) => {
+    const { roles } = DIFFICULTIES.normal(level);
+    return roles.main.count + roles.support1.count + roles.support2.count;
+  }), [1, 2, 2, 3, 4, 4, 5, 6]);
 
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const enemies = createEncounterEnemies({
@@ -29,9 +33,9 @@ test('normal difficulty derives each enemy tag budget from its level', () => {
   });
   enemies.forEach((enemy) => board.addChip(enemy.chip));
 
-  assert.equal(enemies.length, 2);
+  assert.equal(enemies.length, 1);
   assert.ok(enemies.every((enemy) => enemy.definition.id === 'small-iron'));
-  assert.deepEqual(enemies.map((enemy) => enemy.slotPosition), [3, 4]);
+  assert.deepEqual(enemies.map((enemy) => enemy.slotPosition), [3]);
   assert.ok(enemies.every((enemy) => enemy.equipment.length === 5));
   assert.ok(enemies.every((enemy) => enemy.equipment.filter((item) => item.category === 'weapon').length === 2));
   assert.ok(enemies.every((enemy) => enemy.equipment.flatMap((item) => item.tags).length === 4));
