@@ -40,9 +40,9 @@ test('an invalid target clears an item-to-bag selection', () => {
   controller.add(item);
   controller.add(invalidItem);
 
-  controller.tap(item.chip.x, item.chip.y);
+  controller.beginSelection(item);
   assert.equal(controller.hasSelectionSource(), true);
-  assert.equal(controller.tap(invalidItem.chip.x, invalidItem.chip.y), false);
+  assert.equal(controller.completeSelectionAt(invalidItem.chip.x, invalidItem.chip.y), false);
   assert.equal(controller.hasSelectionSource(), false);
 });
 
@@ -56,11 +56,21 @@ test('an empty endpoint or invalid item clears a hero selection', () => {
   controller.add(hero);
   controller.add(item);
 
-  controller.tap(hero.chip.x, hero.chip.y);
-  assert.equal(controller.tap(item.chip.x, item.chip.y), false);
+  controller.beginSelection(hero);
+  assert.equal(controller.completeSelectionAt(item.chip.x, item.chip.y), false);
   assert.equal(controller.hasSelectionSource(), false);
 
-  controller.tap(item.chip.x, item.chip.y);
-  assert.equal(controller.tap(0, 0), false);
+  controller.beginSelection(item);
+  assert.equal(controller.completeSelectionAt(0, 0), false);
+  assert.equal(controller.hasSelectionSource(), false);
+});
+
+test('a tap only identifies an entity and does not begin a selection', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
+  const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700, stamina: 3 });
+  controller.add(hero);
+
+  assert.equal(controller.tap(hero.chip.x, hero.chip.y), hero);
   assert.equal(controller.hasSelectionSource(), false);
 });

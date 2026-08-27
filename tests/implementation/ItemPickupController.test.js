@@ -90,8 +90,8 @@ test('a ready hero starts moving when one item is selected', () => {
   controller.add(hero);
   controller.add(item);
 
-  controller.tap(hero.chip.x, hero.chip.y);
-  controller.tap(item.chip.x, item.chip.y);
+  controller.beginSelection(hero);
+  controller.completeSelectionAt(item.chip.x, item.chip.y);
 
   assert.equal(controller.activeHero, null);
   assert.equal(pickupController.states.get(hero).item, item);
@@ -105,8 +105,8 @@ test('a stamina-five hero starts moving after selecting one item', () => {
   const firstItem = new ItemFactory().createWeapon({ weapon: 'staff', tags: [], x: 800, y: 700 });
   [hero, firstItem].forEach((entity) => controller.add(entity));
 
-  controller.tap(hero.chip.x, hero.chip.y);
-  controller.tap(firstItem.chip.x, firstItem.chip.y);
+  controller.beginSelection(hero);
+  controller.completeSelectionAt(firstItem.chip.x, firstItem.chip.y);
   assert.equal(pickupController.states.get(hero).item, firstItem);
   assert.deepEqual(pickupController.states.get(hero).selectedItems, []);
 });

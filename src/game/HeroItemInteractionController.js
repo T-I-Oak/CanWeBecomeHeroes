@@ -84,7 +84,7 @@ export default class HeroItemInteractionController {
       if (this.selection.source) this.clearSelection();
       return false;
     }
-    if (!this.selection.source) return this.beginSelection(target);
+    if (!this.selection.source) return false;
     if (target === this.selection.source) {
       this.clearSelection();
       return true;
@@ -105,10 +105,7 @@ export default class HeroItemInteractionController {
   }
 
   tap(x, y) {
-    const entity = this.getEntityAt(x, y);
-    if (!entity) return this.completeSelectionAt(x, y);
-    if (!this.selection.source) return this.beginSelection(entity);
-    return this.completeSelectionAt(x, y);
+    return this.getEntityAt(x, y);
   }
 
   getSelectionAction(source, target) {

@@ -424,21 +424,22 @@ export function startGame({ scenario }) {
     const bounds = canvas.getBoundingClientRect();
     const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
     const entity = controller.getEntityAt(point.x, point.y);
-    const startedSelection = Boolean(entity && !controller.hasSelectionSource() && controller.beginSelection(entity));
     drag = {
       pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastY: event.clientY,
-      moved: false, entity, startedSelection,
+      moved: false, entity, startedSelection: false,
     };
-    controller.updateSelectionHover(point.x, point.y);
     canvas.setPointerCapture(event.pointerId);
   }, { passive: false });
   canvas.addEventListener('pointermove', (event) => {
     const bounds = canvas.getBoundingClientRect();
     const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    controller.updateSelectionHover(point.x, point.y);
     if (!drag || drag.pointerId !== event.pointerId) return;
     const totalDistance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
-    if (totalDistance > 6) drag.moved = true;
+    if (totalDistance > 6 && !drag.moved) {
+      drag.moved = true;
+      drag.startedSelection = Boolean(drag.entity && !controller.hasSelectionSource() && controller.beginSelection(drag.entity));
+    }
+    if (drag.startedSelection) controller.updateSelectionHover(point.x, point.y);
     if (drag.moved && !drag.entity) camera.panByScreen(event.clientX - drag.lastX, event.clientY - drag.lastY);
     drag.lastX = event.clientX;
     drag.lastY = event.clientY;
@@ -447,17 +448,16 @@ export function startGame({ scenario }) {
     if (!drag || drag.pointerId !== event.pointerId) return;
     const bounds = canvas.getBoundingClientRect();
     const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    controller.updateSelectionHover(point.x, point.y);
-    if (drag.entity && drag.moved) {
+    if (drag.startedSelection) {
+      controller.updateSelectionHover(point.x, point.y);
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
-    } else if (drag.entity && !drag.startedSelection) {
-      controller.completeSelectionAt(point.x, point.y);
-    } else if (!drag.entity && !drag.moved && controller.hasSelectionSource()) {
-      controller.completeSelectionAt(point.x, point.y);
     }
     drag = null;
   });
-  canvas.addEventListener('pointercancel', () => { drag = null; });
+  canvas.addEventListener('pointercancel', () => {
+    if (drag?.startedSelection) controller.clearSelection();
+    drag = null;
+  });
   canvas.addEventListener('wheel', (event) => {
     event.preventDefault();
     const bounds = canvas.getBoundingClientRect();
