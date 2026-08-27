@@ -258,18 +258,9 @@ body {
 }
 
 .StageSelection__TrendIcon {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 38px;
   height: 38px;
-  background: var(--stage-selection-tag-color);
-  border: 3px solid #17253d;
-  border-radius: 50%;
-}
-
-.StageSelection__TrendIcon img {
-  width: 30px;
-  height: 30px;
 }
 
 .Toast {

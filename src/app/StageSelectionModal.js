@@ -1,11 +1,12 @@
-import ChipRenderer from '../chips/ChipRenderer.js';
-import { getTagBaseColors } from '../game/TagCatalog.js';
+import ChipRenderer, { drawFramedTag } from '../chips/ChipRenderer.js';
+import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 
 const SLOT_COUNT = 6;
 // 進路選択では実戦と同じ小:中:大 = 1:1.5:3 の比率を維持する。
 // 大型Enemyのタグまで収めるため、最大半径192pxを53.76pxへ縮小して描く。
 const PREVIEW_SIZE = 144;
 const PREVIEW_SCALE = 0.28;
+const TREND_TAG_SIZE = 38;
 
 function createElement(tagName, className, text = null) {
   const element = document.createElement(tagName);
@@ -100,15 +101,35 @@ export default class StageSelectionModal {
 
   createTrend(label, tag) {
     const trend = createElement('div', 'StageSelection__Trend');
-    const color = getTagBaseColors([tag])[0];
-    const tagIcon = createElement('span', 'StageSelection__TrendIcon');
-    tagIcon.style.setProperty('--stage-selection-tag-color', color);
-    const image = document.createElement('img');
-    image.src = `/assets/tags/${tag}.png`;
-    image.alt = '';
-    tagIcon.append(image);
+    const tagIcon = document.createElement('canvas');
+    tagIcon.className = 'StageSelection__TrendIcon';
+    tagIcon.width = TREND_TAG_SIZE;
+    tagIcon.height = TREND_TAG_SIZE;
+    tagIcon.setAttribute('aria-label', tag);
+    this.drawTrendTag(tagIcon, tag);
     trend.append(createElement('span', 'StageSelection__TrendLabel', label), tagIcon);
     return trend;
+  }
+
+  drawTrendTag(canvas, tag) {
+    const context = canvas.getContext('2d');
+    const path = `/assets/tags/${tag}.png`;
+    const draw = () => {
+      context.clearRect(0, 0, TREND_TAG_SIZE, TREND_TAG_SIZE);
+      drawFramedTag(
+        context,
+        this.assets,
+        path,
+        getTagBaseColors([tag])[0],
+        getTagGlyphScales([tag])[0],
+        TREND_TAG_SIZE / 2,
+        TREND_TAG_SIZE / 2,
+        TREND_TAG_SIZE,
+      );
+    };
+    draw();
+    const image = this.assets.load(path);
+    if (!image.complete) image.addEventListener('load', draw, { once: true });
   }
 
   drawChipPreview(canvas, chip) {

@@ -7,7 +7,7 @@ function drawImageCover(context, image, x, y, size) {
   context.drawImage(image, x - size / 2, y - size / 2, size, size);
 }
 
-function drawFramedTag(context, assets, path, baseColor, glyphScale = 1, x, y, size) {
+export function drawFramedTag(context, assets, path, baseColor, glyphScale = 1, x, y, size) {
   context.fillStyle = '#17253d';
   context.beginPath();
   context.arc(x, y, size * 0.5, 0, Math.PI * 2);
