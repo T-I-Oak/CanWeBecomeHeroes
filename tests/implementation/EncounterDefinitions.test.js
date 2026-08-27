@@ -5,7 +5,7 @@ import EnemyFactory from '../../src/game/EnemyFactory.js';
 import { COMBINATION_PATTERNS, createEncounterEnemies, DIFFICULTIES } from '../../src/game/EncounterDefinitions.js';
 
 test('regular encounter definitions provide complete concrete patterns for the available enemy types', () => {
-  assert.equal(COMBINATION_PATTERNS.regular.length, 3);
+  assert.equal(COMBINATION_PATTERNS.regular.length, 15);
   COMBINATION_PATTERNS.regular.forEach((pattern) => {
     assert.ok(pattern.main);
     assert.ok(pattern.support1);
