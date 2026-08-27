@@ -54,7 +54,7 @@ export function createDemoScenario({ random = Math.random } = {}) {
       });
       const patterns = COMBINATION_PATTERNS.normal;
       const pattern = patterns[Math.floor(random() * patterns.length)];
-      const enemies = createEncounterEnemies({ kind: 'normal', level: 1, pattern, enemyFactory, random });
+      const enemies = createEncounterEnemies({ kind: 'normal', level: 3, pattern, enemyFactory, random });
       return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), enemies });
     },
     addItem({ controller }) {

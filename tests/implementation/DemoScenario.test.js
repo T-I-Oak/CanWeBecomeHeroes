@@ -22,7 +22,9 @@ test('demo starts two distinct heroes with four five-item trend sets in the ware
   });
   assert.equal(warehouseItems.filter((item) => item.category === 'destination').length, 3);
   assert.equal(entities.length, 2);
-  assert.equal(result.enemies.length, 1);
+  assert.equal(result.enemies.length, 2);
+  assert.equal(result.enemies[0].definition.nameJa, result.enemies[1].definition.nameJa);
   assert.ok(['valor', 'iron', 'arcane'].includes(result.enemies[0].mainTag));
-  assert.equal(result.enemies[0].slotPosition, 3);
+  assert.deepEqual(result.enemies.map((enemy) => enemy.slotPosition), [3, 4]);
+  assert.ok(result.enemies.every((enemy) => enemy.equipment.flatMap((item) => item.tags).length === 6));
 });
