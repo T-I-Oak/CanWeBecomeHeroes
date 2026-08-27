@@ -3,8 +3,8 @@ import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 
 const SLOT_COUNT = 6;
 // 進路選択では実戦と同じ小:中:大 = 1:1.5:3 の比率を維持する。
-// 大型Enemyのタグまで収めるため、最大半径192pxを53.76pxへ縮小して描く。
-const PREVIEW_SIZE = 144;
+// 大型Enemyは横2スロットを占有するため、プレビューCanvasも2枠分を使う。
+const PREVIEW_SLOT_SIZE = 84;
 const PREVIEW_SCALE = 0.28;
 const TREND_TAG_SIZE = 38;
 
@@ -15,11 +15,15 @@ function createElement(tagName, className, text = null) {
   return element;
 }
 
-function createPreviewChip(chip) {
+function getEnemySlotSpan(enemy) {
+  return enemy?.definition.size === 'large' ? 2 : 1;
+}
+
+function createPreviewChip(chip, previewSize) {
   return {
     ...chip,
-    x: PREVIEW_SIZE / 2,
-    y: PREVIEW_SIZE / 2,
+    x: previewSize / 2,
+    y: previewSize / 2,
     radius: chip.radius * PREVIEW_SCALE,
     height: 0,
     scale: 1,
@@ -68,10 +72,21 @@ export default class StageSelectionModal {
   createOption(choice) {
     const option = createElement('article', 'StageSelection__Option');
 
-    const enemyLine = createElement('div', 'StageSelection__EnemyLine');
+    const hasLargeEnemy = choice.enemies.some((enemy) => enemy.definition.size === 'large');
+    const enemyLine = createElement('div', `StageSelection__EnemyLine${hasLargeEnemy ? ' state-has-large' : ''}`);
+    const occupiedPositions = new Set();
     for (let slotPosition = 1; slotPosition <= SLOT_COUNT; slotPosition += 1) {
+      if (occupiedPositions.has(slotPosition)) continue;
       const enemy = choice.enemies.find((candidate) => candidate.slotPosition === slotPosition);
-      enemyLine.append(this.createEnemySlot(enemy));
+      const span = getEnemySlotSpan(enemy);
+      if (span > 1) {
+        const coveredPosition = slotPosition + 1;
+        if (coveredPosition > SLOT_COUNT || choice.enemies.some((candidate) => candidate.slotPosition === coveredPosition)) {
+          throw new RangeError(`Large enemy at slot ${slotPosition} requires the following enemy slot to be empty.`);
+        }
+        occupiedPositions.add(coveredPosition);
+      }
+      enemyLine.append(this.createEnemySlot(enemy, { slotPosition, span }));
     }
 
     const trends = createElement('div', 'StageSelection__Trends');
@@ -86,16 +101,19 @@ export default class StageSelectionModal {
     return option;
   }
 
-  createEnemySlot(enemy) {
+  createEnemySlot(enemy, { slotPosition, span }) {
     const slot = createElement('div', `StageSelection__EnemySlot${enemy ? '' : ' state-empty'}`);
+    slot.style.gridColumn = `${slotPosition} / span ${span}`;
     if (!enemy) return slot;
+    const previewSize = PREVIEW_SLOT_SIZE * span;
     const canvas = createElement('canvas', 'StageSelection__ChipPreview');
-    canvas.width = PREVIEW_SIZE;
-    canvas.height = PREVIEW_SIZE;
+    if (span > 1) canvas.classList.add('state-large');
+    canvas.width = previewSize;
+    canvas.height = previewSize;
     canvas.setAttribute('aria-label', enemy.definition.nameJa);
     const label = createElement('span', 'StageSelection__EnemyName', enemy.definition.nameJa);
     slot.append(canvas, label);
-    this.drawChipPreview(canvas, enemy.chip);
+    this.drawChipPreview(canvas, enemy.chip, previewSize);
     return slot;
   }
 
@@ -132,11 +150,11 @@ export default class StageSelectionModal {
     if (!image.complete) image.addEventListener('load', draw, { once: true });
   }
 
-  drawChipPreview(canvas, chip) {
+  drawChipPreview(canvas, chip, previewSize) {
     const context = canvas.getContext('2d');
-    const preview = createPreviewChip(chip);
+    const preview = createPreviewChip(chip, previewSize);
     const draw = () => {
-      context.clearRect(0, 0, PREVIEW_SIZE, PREVIEW_SIZE);
+      context.clearRect(0, 0, previewSize, previewSize);
       new ChipRenderer(context, this.assets).draw(preview, 0);
     };
     draw();

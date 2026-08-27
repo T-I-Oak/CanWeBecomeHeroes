@@ -198,29 +198,38 @@ body {
 }
 
 .StageSelection__EnemyLine {
+  --stage-selection-enemy-line-height: 164px;
   display: grid;
   grid-template-columns: repeat(6, minmax(56px, 1fr));
   gap: 4px;
   min-width: 0;
 }
 
+.StageSelection__EnemyLine.state-has-large {
+  --stage-selection-enemy-line-height: 328px;
+}
+
 .StageSelection__EnemySlot {
   display: grid;
   place-items: center;
-  min-height: 164px;
+  min-height: var(--stage-selection-enemy-line-height);
   padding: 2px;
   border-radius: 8px;
 }
 
 .StageSelection__EnemySlot.state-empty {
-  min-height: 144px;
+  min-height: var(--stage-selection-enemy-line-height);
   border: 1px dashed rgb(239 224 188 / 24%);
 }
 
 .StageSelection__ChipPreview {
   display: block;
-  width: min(100%, 144px);
+  width: min(84px, 100%);
   height: auto;
+}
+
+.StageSelection__ChipPreview.state-large {
+  width: min(168px, 100%);
 }
 
 .StageSelection__EnemyName {
@@ -235,7 +244,7 @@ body {
 
 .StageSelection__Trends {
   display: grid;
-  grid-template-columns: repeat(2, auto);
+  grid-template-columns: auto;
   gap: 8px;
 }
 
@@ -388,15 +397,12 @@ body {
   }
 
   .StageSelection__EnemyLine {
+    --stage-selection-enemy-line-height: 120px;
     grid-template-columns: repeat(6, minmax(42px, 1fr));
   }
 
-  .StageSelection__EnemySlot {
-    min-height: 120px;
-  }
-
-  .StageSelection__EnemySlot.state-empty {
-    min-height: 104px;
+  .StageSelection__EnemyLine.state-has-large {
+    --stage-selection-enemy-line-height: 240px;
   }
 
   .StageSelection__EnemyName {
