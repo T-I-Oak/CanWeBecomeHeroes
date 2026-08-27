@@ -11,7 +11,7 @@ export const COMBINATION_PATTERNS = Object.freeze({
 });
 
 function createNormalRoles(level) {
-  const totalTagBudget = Math.max(0, Math.floor(level) + 3);
+  const totalTagBudget = Math.max(0, Math.floor(level) + 2);
   let remainingCount = Math.min(Math.ceil(Math.max(0, level) * 2 / 3), 6);
   const allocateCount = (capacity) => {
     const count = Math.min(remainingCount, capacity);
