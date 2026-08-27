@@ -6,7 +6,7 @@ import { getEnemyDefinition, getEnemyDefinitionById } from './EnemyCatalog.js';
 import Enemy from './Enemy.js';
 import ItemFactory from './ItemFactory.js';
 import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagWeight } from './TagCatalog.js';
-import { createTrendEquipmentItem, createTrendProductTags, distributeTagCounts } from './TrendEquipmentGenerator.js';
+import { createTrendEquipmentItem, createTrendProductTags, reduceTagCounts } from './TrendEquipmentGenerator.js';
 
 export const ENEMY_CONTRIBUTION_POINTS = Object.freeze({ regular: 10, midBoss: 50, boss: 250 });
 const RANK_BY_SIZE = Object.freeze({ small: 'regular', medium: 'midBoss', large: 'boss' });
@@ -49,7 +49,7 @@ export default class EnemyFactory {
     });
     const productTags = createTrendProductTags(mainTag, random);
     const equipmentParts = ['head', 'torso', 'feet', ...Array.from({ length: weaponCount }, () => 'weapon')];
-    const tagCounts = distributeTagCounts(totalTagCount, random, equipmentParts);
+    const tagCounts = reduceTagCounts(totalTagCount, random, equipmentParts);
     const equipment = equipmentParts.map((part, index) => createTrendEquipmentItem({
       part, count: tagCounts[index], productTags, itemFactory: this.itemFactory, random,
     }));

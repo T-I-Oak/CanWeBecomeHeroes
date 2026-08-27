@@ -28,11 +28,12 @@ function pickTags(tags, count, random) {
   return Array.from({ length: Math.min(count, pool.length) }, () => pool.splice(Math.floor(random() * pool.length), 1)[0]);
 }
 
-export function distributeTagCounts(tagBudget, random, parts = EQUIPMENT_PARTS) {
-  const counts = Array(parts.length).fill(0);
-  for (let index = 0; index < tagBudget; index += 1) {
-    const eligible = counts.map((count, position) => ({ count, position })).filter(({ count }) => count < 3);
-    counts[randomFrom(eligible, random).position] += 1;
+export function reduceTagCounts(tagBudget, random, parts = EQUIPMENT_PARTS) {
+  const counts = Array(parts.length).fill(3);
+  const removalCount = Math.max(0, counts.length * 3 - Math.max(0, tagBudget));
+  for (let index = 0; index < removalCount; index += 1) {
+    const eligible = counts.map((count, position) => ({ count, position })).filter(({ count }) => count > 0);
+    counts[randomFrom(eligible, random).position] -= 1;
   }
   return counts;
 }
@@ -51,7 +52,7 @@ export function createTrendEquipmentItem({ part, count, productTags, itemFactory
 
 export function createTrendEquipmentSet({ trendTag, tagBudget, itemFactory, random = Math.random, placePart = () => ({}), modifyTagCount = ({ count }) => ({ count }) }) {
   const productTags = createTrendProductTags(trendTag, random);
-  const counts = distributeTagCounts(tagBudget, random);
+  const counts = reduceTagCounts(tagBudget, random);
   return EQUIPMENT_PARTS.map((part, index) => {
     const adjustment = modifyTagCount({ part, index, count: counts[index], productTags });
     const position = placePart({ part, index });
