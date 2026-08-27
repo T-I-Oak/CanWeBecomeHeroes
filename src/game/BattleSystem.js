@@ -107,18 +107,26 @@ export default class BattleSystem {
     const coefficients = RANGE[actor.getTagCount('area')]; const foes = participants.filter((c) => isHero(c) !== isHero(actor) && onBoard(this.board, c)).toSorted((a, b) => a.chip.x - b.chip.x); const at = foes.indexOf(target); const center = Math.floor(coefficients.length / 2);
     return coefficients.map((coefficient, index) => ({ target: foes[at + index - center], coefficient })).filter(({ target: t }) => t);
   }
+  isAttackMiss(actor, target) {
+    const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * 0.1);
+    const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * 0.1 * (1 - actor.getTagSkillLevel('cloth') * 0.1));
+    return evade > accuracy;
+  }
+  applyAttributes(actor, target, coefficient) {
+    ['fire', 'water', 'lightning'].forEach((tag) => {
+      const tagCount = actor.getTagCount(tag);
+      if (!tagCount || this.isAttackMiss(actor, target)) return;
+      const value = tagCount * coefficient * getRandomModifier(this.random);
+      if (value > target.attributes[tag]) {
+        target.attributes[tag] = value;
+        target.attributeSources[tag] = actor;
+      }
+      target.chip.attributeValues = target.attributes;
+    });
+  }
   resolveAction(actor, target, participants) {
     const targets = this.rangeTargets(actor, target, participants); this.actionLogResults = new Map(); this.effects?.attack(actor, actor.getTagCount('area')); this.effects?.beginAction(actor);
-    targets.forEach(({ target: t, coefficient }) => ['fire', 'water', 'lightning'].forEach((tag) => {
-      const tagCount = actor.getTagCount(tag);
-      if (!tagCount) return;
-      const value = tagCount * coefficient * getRandomModifier(this.random);
-      if (value > t.attributes[tag]) {
-        t.attributes[tag] = value;
-        t.attributeSources[tag] = actor;
-      }
-      t.chip.attributeValues = t.attributes;
-    }));
+    targets.forEach(({ target: t, coefficient }) => this.applyAttributes(actor, t, coefficient));
     this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants));
     this.resolveVitality(actor);
     this.effects?.endAction(); this.flushActionLogs(); actor.luckBonus = 0;
@@ -147,8 +155,7 @@ export default class BattleSystem {
     if (type === 'banner') this.applyBanner(actor, participants);
     if (type === 'holy-symbol') this.applyHolySymbol(actor, participants);
     if (type === 'tarot-cards') this.applyTarotCards(actor, participants);
-    const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * .1); const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * .1 * (1 - actor.getTagSkillLevel('cloth') * .1));
-    if (evade > accuracy) { this.effects?.miss(target); this.recordMiss(actor, target); return; }
+    if (this.isAttackMiss(actor, target)) { this.effects?.miss(target); this.recordMiss(actor, target); return; }
     const attack = ATTACKS[type];
     this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
       const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const skillLevel = actor.getTagSkillLevel(statTag); const crit = skillLevel > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * getRandomModifier(this.random) * (crit ? 1 + skillLevel ** 2 * .1 : 1);
