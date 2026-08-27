@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
-import BattleSystem, { getActionGaugeMaximum, getAttackDamage, getRandomModifier } from '../../src/game/BattleSystem.js';
+import BattleSystem, { BATTLE_VICTORY_DELAY_TICKS, getActionGaugeMaximum, getAttackDamage, getRandomModifier } from '../../src/game/BattleSystem.js';
 import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
@@ -57,6 +57,32 @@ test('a full action gauge resolves basic damage, awards contribution, drops an i
   assert.equal(battle.getElapsedTicks(1), 1);
   assert.match(records[0], /【剣士・アヴェリー】 -> 【ゴブリン】/);
   assert.match(records[0], /damage/);
+});
+
+test('enemy wipe locks the stage victory before completing it after the victory delay', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter();
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 3 });
+  hero.currentArea = 'battle';
+  hero.chip.height = 0;
+  enemy.chip.height = 0;
+  board.addChip(hero.chip);
+  board.addChip(enemy.chip);
+  const records = [];
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, logger: { info: () => {} }, gameLog: { log: (message, options) => records.push({ message, options }) } });
+
+  battle.update({ heroes: [hero], enemies: [enemy], tick: 0, tickDelta: 1 });
+  board.removeChip(enemy.chip);
+  battle.update({ heroes: [hero], enemies: [enemy], tick: 1, tickDelta: 1 });
+
+  assert.equal(battle.hasStageVictory(), true);
+  assert.equal(battle.isStageComplete(), false);
+  assert.equal(battle.defeatTick, 1);
+  assert.deepEqual(records, [{ message: '敵を全滅させた。', options: { subject: 'system', level: 'info' } }]);
+  battle.update({ heroes: [hero], enemies: [enemy], tick: 1 + BATTLE_VICTORY_DELAY_TICKS, tickDelta: BATTLE_VICTORY_DELAY_TICKS });
+  assert.equal(battle.isStageComplete(), true);
+  assert.equal(battle.stageCompleteTick, 1 + BATTLE_VICTORY_DELAY_TICKS);
 });
 
 test('enemy rank determines the number and tag budgets of dropped equipment sets', () => {

@@ -11,6 +11,7 @@ const ATTACKS = { sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power',
 const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
 const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
 const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
+export const BATTLE_VICTORY_DELAY_TICKS = 200;
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
@@ -27,18 +28,43 @@ export function getActionGaugeMaximum(actor) {
 export default class BattleSystem {
   constructor(board, { controller, itemFactory, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, returnSystem, effects, gameLog, random, logger, onDamage });
-    this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.attributeTicks = 0;
+    this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.attributeTicks = 0;
   }
+  resetStageState() {
+    this.battleStartTick = null;
+    this.defeatTick = null;
+    this.victoryTick = null;
+    this.stageCompleteTick = null;
+    this.victoryDelayTicks = 0;
+    this.hasEncounteredEnemy = false;
+  }
+  hasStageVictory() { return this.victoryTick !== null; }
+  isStageComplete() { return this.stageCompleteTick !== null; }
   update({ heroes, enemies, tick, tickDelta }) {
     [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => { a.chip.actionGauge = null; a.chip.actionGaugeMaximum = null; a.chip.actionGaugeBaseMaximum = null; });
     const activeEnemies = enemies.filter((e) => onBoard(this.board, e));
+    if (activeEnemies.length > 0) this.hasEncounteredEnemy = true;
     if (this.battleStartTick === null && activeEnemies.some((e) => e.chip.isSettled)) this.battleStartTick = tick;
     if (this.battleStartTick === null) return;
+    if (this.hasStageVictory()) {
+      this.updateVictoryDelay(tickDelta, tick);
+      heroes.forEach((h) => this.returnSystem?.update(h));
+      return;
+    }
     const participants = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && onBoard(this.board, h) && h.chip.isSettled), ...activeEnemies.filter((e) => e.chip.isSettled)];
     this.updateAttributes(participants, tickDelta);
     participants.forEach((a) => this.updateActor(a, participants, tickDelta));
-    if (enemies.every((e) => !onBoard(this.board, e)) && this.defeatTick === null) this.defeatTick = tick;
+    if (this.hasEncounteredEnemy && enemies.every((e) => !onBoard(this.board, e)) && this.defeatTick === null) {
+      this.defeatTick = tick;
+      this.victoryTick = tick;
+      this.gameLog?.log('敵を全滅させた。', { subject: 'system', level: 'info' });
+    }
     heroes.forEach((h) => this.returnSystem?.update(h));
+  }
+  updateVictoryDelay(delta, tick) {
+    if (this.stageCompleteTick !== null) return;
+    this.victoryDelayTicks += delta;
+    if (this.victoryDelayTicks >= BATTLE_VICTORY_DELAY_TICKS) this.stageCompleteTick = tick;
   }
   updateAttributes(participants, delta) {
     this.attributeTicks += delta;
