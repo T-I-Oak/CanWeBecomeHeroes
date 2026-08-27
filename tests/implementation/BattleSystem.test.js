@@ -209,6 +209,25 @@ test('attribute values are applied by maximum and decay every sixty ticks', () =
   assert.equal(hero.chip.attributeValues, hero.attributes);
 });
 
+test('lightning propagates only through contiguous opponent slots', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const enemyFactory = new EnemyFactory();
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 500, y: 500, stamina: 10, maximums: { stamina: 10 } });
+  hero.currentArea = 'battle';
+  hero.currentSlotId = 'battle-2';
+  const target = enemyFactory.createInitialEncounter({ slotPosition: 3, maximumHp: 10 });
+  const adjacent = enemyFactory.createInitialEncounter({ slotPosition: 4, maximumHp: 10 });
+  const separated = enemyFactory.createInitialEncounter({ slotPosition: 6, maximumHp: 10 });
+  target.attributes.lightning = 3;
+  [hero, target, adjacent, separated].forEach((entity) => board.addChip(entity.chip));
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  battle.propagate(hero, target, 'sword', 1, [hero, target, adjacent, separated]);
+
+  assert.equal(adjacent.hp, 9.4);
+  assert.equal(separated.hp, 10);
+});
+
 test('vitality recovers a fixed 0.2 per tag after a successful luck check', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();

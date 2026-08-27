@@ -14,6 +14,11 @@ const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
+const getBattleSlotPosition = (actor) => {
+  if (Number.isInteger(actor.slotPosition)) return actor.slotPosition;
+  const match = /^battle-(\d+)$/.exec(actor.currentSlotId ?? '');
+  return match ? Number(match[1]) : null;
+};
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 export function getRandomModifier(random = Math.random) { return 0.8 + random() * 0.4; }
 export function getActionGaugeBaseMaximum(actor) { return 15 - actor.getStatus('speed'); }
@@ -246,9 +251,32 @@ export default class BattleSystem {
     actor.addEquipment(item);
     this.updateActionGaugeMaximum(actor);
   }
+  getLightningTargets(target, participants, value) {
+    const targetSlotPosition = getBattleSlotPosition(target);
+    if (targetSlotPosition === null) return [];
+    const opponentsBySlot = new Map(participants
+      .filter((candidate) => candidate !== target && isHero(candidate) === isHero(target) && onBoard(this.board, candidate))
+      .map((candidate) => [getBattleSlotPosition(candidate), candidate])
+      .filter(([slotPosition]) => slotPosition !== null));
+    const maximumDistance = Math.floor(value);
+    return [-1, 1].flatMap((direction) => {
+      const targets = [];
+      for (let distance = 1; distance <= maximumDistance; distance += 1) {
+        const candidate = opponentsBySlot.get(targetSlotPosition + direction * distance);
+        if (!candidate) break;
+        targets.push({ target: candidate, distance });
+      }
+      return targets;
+    }).toSorted((first, second) => first.distance - second.distance || first.target.chip.x - second.target.chip.x);
+  }
   propagate(actor, target, type, damage, participants) {
     const value = target.attributes.lightning; if (!value || damage < .01) return;
-    participants.filter((c) => isHero(c) !== isHero(actor) && c !== target && onBoard(this.board, c)).toSorted((a, b) => Math.abs(a.chip.x - target.chip.x) - Math.abs(b.chip.x - target.chip.x)).slice(0, Math.floor(value)).forEach((other, index) => { const dealt = damage * (1 - target.getTagSkillLevel('cloth') * .1) * (value * .1 + .3) ** (index + 1); this.effects?.lightningPropagation(target, other); this.effects?.lightningHit(other); this.applyDamage(actor, other, type, dealt, false); });
+    this.getLightningTargets(target, participants, value).forEach(({ target: other, distance }) => {
+      const dealt = damage * (1 - target.getTagSkillLevel('cloth') * .1) * (value * .1 + .3) ** distance;
+      this.effects?.lightningPropagation(target, other);
+      this.effects?.lightningHit(other);
+      this.applyDamage(actor, other, type, dealt, false);
+    });
   }
   applyDamage(actor, target, type, damage, critical = false) {
     if (damage < .01) return 0; this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
