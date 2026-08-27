@@ -164,19 +164,32 @@ test('stealing a bow immediately refreshes the affected action gauge maximum', (
   assert.equal(enemy.chip.actionGaugeMaximum, 15 - enemy.getStatus('speed'));
 });
 
-test('leaving the battle area clears an actor action gauge', () => {
+test('leaving the battle area clears all temporary battle state', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
   hero.currentArea = 'battle';
   hero.targetArea = 'preparation';
   hero.chip.actionGauge = 4;
   hero.chip.actionGaugeMaximum = 15;
+  hero.chip.actionGaugeBaseMaximum = 15;
+  hero.attributes = { fire: 3, water: 2, lightning: 1 };
+  hero.attributeSources = { fire: hero, water: hero, lightning: hero };
+  hero.physicalDamageReduction = 0.5;
+  hero.chip.attributeValues = hero.attributes;
+  hero.chip.physicalDamageReduction = hero.physicalDamageReduction;
+  hero.luckBonus = 0.25;
   const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
 
   battle.update({ heroes: [hero], enemies: [], tick: 1, tickDelta: 1 });
 
   assert.equal(hero.chip.actionGauge, null);
   assert.equal(hero.chip.actionGaugeMaximum, null);
+  assert.equal(hero.chip.actionGaugeBaseMaximum, null);
+  assert.deepEqual(hero.attributes, { fire: 0, water: 0, lightning: 0 });
+  assert.deepEqual(hero.attributeSources, { fire: null, water: null, lightning: null });
+  assert.equal(hero.physicalDamageReduction, 0);
+  assert.equal(hero.chip.physicalDamageReduction, 0);
+  assert.equal(hero.luckBonus, 0);
 });
 
 test('attribute values are applied by maximum and decay every sixty ticks', () => {

@@ -79,6 +79,18 @@ export default class Hero {
     return getHeroStepDistance(this.getCarriedWeight());
   }
 
+  clearBattleState() {
+    this.attributes = { fire: 0, water: 0, lightning: 0 };
+    this.attributeSources = { fire: null, water: null, lightning: null };
+    this.physicalDamageReduction = 0;
+    this.luckBonus = 0;
+    this.chip.actionGauge = null;
+    this.chip.actionGaugeMaximum = null;
+    this.chip.actionGaugeBaseMaximum = null;
+    this.chip.attributeValues = this.attributes;
+    this.chip.physicalDamageReduction = 0;
+  }
+
   clearEquipment() {
     const equippedItems = Object.values(this.equipment).filter(Boolean);
     Object.keys(this.equipment).forEach((slot) => { this.equipment[slot] = null; });

@@ -13,6 +13,7 @@ export default class FacilityReturnSystem {
     const target = hero.preparationReturn;
     if (!target) throw new Error('Facility return requires a preparation return position.');
     this.slotManager.release(hero);
+    hero.clearBattleState?.();
     hero.clearEquipment().filter((item) => item.category === 'destination').forEach((item) => {
       const area = GAME_AREAS.warehouse;
       item.chip.x = area.x + item.chip.radius + this.random() * (area.width - item.chip.radius * 2);

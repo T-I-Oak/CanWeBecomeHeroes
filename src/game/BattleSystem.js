@@ -41,7 +41,7 @@ export default class BattleSystem {
   hasStageVictory() { return this.victoryTick !== null; }
   isStageComplete() { return this.stageCompleteTick !== null; }
   update({ heroes, enemies, tick, tickDelta }) {
-    [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => { a.chip.actionGauge = null; a.chip.actionGaugeMaximum = null; a.chip.actionGaugeBaseMaximum = null; });
+    [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => a.clearBattleState?.());
     const activeEnemies = enemies.filter((e) => onBoard(this.board, e));
     if (activeEnemies.length > 0) this.hasEncounteredEnemy = true;
     if (this.battleStartTick === null && activeEnemies.some((e) => e.chip.isSettled)) this.battleStartTick = tick;
