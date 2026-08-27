@@ -86,9 +86,9 @@ function drawTimelineLegend(context, { x, y, width }) {
   context.fillText(label, labelX, y);
 }
 
-export function drawGuildPanel(context, { tick, contributionPoints, timelineHours }) {
+export function drawGuildPanel(context, { tick, contributionPoints, extensionHours, extensionRate, timelineHours }) {
   const panel = getPanelBounds();
-  const status = getGuildTimeStatus({ tick, contributionPoints, timelineHours });
+  const status = getGuildTimeStatus({ tick, contributionPoints, extensionHours, extensionRate, timelineHours });
   const contentX = panel.x + 16;
   const contentWidth = panel.width - 32;
   context.save();

@@ -30,6 +30,7 @@ import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
+import GuildSystem from '../game/GuildSystem.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -320,6 +321,11 @@ export function startGame({ scenario }) {
   const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), gameLog });
   const combatEffects = new CombatEffectSystem();
   const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem, effects: combatEffects, gameLog });
+  const guildSystem = new GuildSystem(returnSystem, {
+    getContributionPoints: () => battleSystem.contributionPoints,
+    setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
+    gameLog,
+  });
   const staminaRecovery = new StaminaRecoverySystem();
   const facilitySwing = new FacilitySwingSystem();
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
@@ -447,6 +453,7 @@ export function startGame({ scenario }) {
       controller.update(simulationDeltaSeconds);
       staminaRecovery.update(controller.getHeroes(), simulationDeltaSeconds);
       training.update(controller.getHeroes(), simulationDeltaSeconds);
+      guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
@@ -465,6 +472,8 @@ export function startGame({ scenario }) {
     guildTimelineHours = drawGuildPanel(context, {
       tick: clock.tick,
       contributionPoints: battleSystem.contributionPoints,
+      extensionHours: guildSystem.getExtensionHours(),
+      extensionRate: guildSystem.getEstimatedRate(controller.getHeroes().find((hero) => hero.currentArea === 'guild')),
       timelineHours: guildTimelineHours,
     }).timelineHours;
     const trainingHero = controller.getHeroes().find((hero) => hero.currentArea === 'training');
