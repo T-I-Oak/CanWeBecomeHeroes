@@ -2,13 +2,14 @@ import Chip from '../chips/Chip.js';
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, ENEMY_CHIP_DIAMETER, HERO_SLOT_SIZE } from './HeroSlotLayout.js';
-import { getEnemyDefinition } from './EnemyCatalog.js';
+import { getEnemyDefinition, getEnemyDefinitionById } from './EnemyCatalog.js';
 import Enemy from './Enemy.js';
 import ItemFactory from './ItemFactory.js';
 import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagWeight } from './TagCatalog.js';
-import { EQUIPMENT_PARTS, createTrendEquipmentItem, createTrendProductTags, distributeTagCounts } from './TrendEquipmentGenerator.js';
+import { createTrendEquipmentItem, createTrendProductTags, distributeTagCounts } from './TrendEquipmentGenerator.js';
 
 export const ENEMY_CONTRIBUTION_POINTS = Object.freeze({ regular: 10, midBoss: 50, boss: 250 });
+const RANK_BY_SIZE = Object.freeze({ small: 'regular', medium: 'midBoss', large: 'boss' });
 
 function getSlot(slotPosition) {
   const area = GAME_AREAS.battle;
@@ -26,7 +27,7 @@ export default class EnemyFactory {
     this.itemFactory = itemFactory;
   }
 
-  create({ size, tagAffinity, slotPosition, maximumHp, totalTagCount, maximums, rank = 'regular', contributionPoints = ENEMY_CONTRIBUTION_POINTS[rank], mainTag = tagAffinity, subTags = [], random = Math.random }) {
+  create({ size, tagAffinity, slotPosition, maximumHp, totalTagCount, maximums, rank = 'regular', contributionPoints = ENEMY_CONTRIBUTION_POINTS[rank], mainTag = tagAffinity, subTags = [], weaponCount = 2, random = Math.random }) {
     const definition = getEnemyDefinition({ size, tagAffinity: mainTag });
     if (!definition) throw new Error(`Missing enemy definition: ${size}-${tagAffinity}`);
     const slot = getSlot(slotPosition);
@@ -47,11 +48,32 @@ export default class EnemyFactory {
       fillColor: AREA_THEME.battle.chipFill,
     });
     const productTags = createTrendProductTags(mainTag, random);
-    const tagCounts = distributeTagCounts(totalTagCount, random);
-    const equipment = EQUIPMENT_PARTS.map((part, index) => createTrendEquipmentItem({
+    const equipmentParts = ['head', 'torso', 'feet', ...Array.from({ length: weaponCount }, () => 'weapon')];
+    const tagCounts = distributeTagCounts(totalTagCount, random, equipmentParts);
+    const equipment = equipmentParts.map((part, index) => createTrendEquipmentItem({
       part, count: tagCounts[index], productTags, itemFactory: this.itemFactory, random,
     }));
     return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums, rank, mainTag, subTags, slotPosition });
+  }
+
+  createFromDefinition({ enemyDefinitionId, slotPosition, weaponCount, totalTagCount, maximums, random = Math.random }) {
+    const definition = getEnemyDefinitionById(enemyDefinitionId);
+    if (!definition) throw new Error(`Missing enemy definition: ${enemyDefinitionId}`);
+    const [mainTag, ...subTags] = definition.intrinsicTags;
+    return this.create({
+      size: definition.size,
+      tagAffinity: definition.tagAffinity,
+      slotPosition,
+      maximumHp: definition.baseHp,
+      totalTagCount,
+      maximums,
+      rank: RANK_BY_SIZE[definition.size],
+      contributionPoints: definition.baseContributionPoints,
+      mainTag,
+      subTags,
+      weaponCount,
+      random,
+    });
   }
 
   createInitialEncounter(options = {}) {

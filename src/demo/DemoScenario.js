@@ -6,12 +6,7 @@ import { PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH } from '../game/Preparation
 import ShopState from '../game/ShopState.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import { createTrendEquipmentSet } from '../game/TrendEquipmentGenerator.js';
-
-const DEMO_ENEMY_TYPES = Object.freeze([
-  Object.freeze({ size: 'small', tagAffinity: 'valor' }),
-  Object.freeze({ size: 'small', tagAffinity: 'iron' }),
-  Object.freeze({ size: 'small', tagAffinity: 'arcane' }),
-]);
+import { COMBINATION_PATTERNS, createEncounterEnemies } from '../game/EncounterDefinitions.js';
 
 function randomWarehousePosition(radius = CHIP_RADIUS.item, random = Math.random) {
   return {
@@ -57,10 +52,9 @@ export function createDemoScenario({ random = Math.random } = {}) {
         const { x, y } = randomWarehousePosition(CHIP_RADIUS.item, random);
         controller.addToWarehouse(itemFactory.createDestination({ destination, x, y }));
       });
-      const enemyType = DEMO_ENEMY_TYPES[Math.floor(random() * DEMO_ENEMY_TYPES.length)];
-      const enemies = [3, 4].map((slotPosition) => enemyFactory.create({
-        ...enemyType, slotPosition, maximumHp: 2, contributionPoints: 10, totalTagCount: 0, random,
-      }));
+      const patterns = COMBINATION_PATTERNS.normal;
+      const pattern = patterns[Math.floor(random() * patterns.length)];
+      const enemies = createEncounterEnemies({ kind: 'normal', level: 1, pattern, enemyFactory, random });
       return Object.freeze({ preparationHeroes, shop: ShopState.createRandom(), enemies });
     },
     addItem({ controller }) {

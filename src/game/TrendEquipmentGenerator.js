@@ -28,8 +28,8 @@ function pickTags(tags, count, random) {
   return Array.from({ length: Math.min(count, pool.length) }, () => pool.splice(Math.floor(random() * pool.length), 1)[0]);
 }
 
-export function distributeTagCounts(tagBudget, random) {
-  const counts = Array(EQUIPMENT_PARTS.length).fill(0);
+export function distributeTagCounts(tagBudget, random, parts = EQUIPMENT_PARTS) {
+  const counts = Array(parts.length).fill(0);
   for (let index = 0; index < tagBudget; index += 1) {
     const eligible = counts.map((count, position) => ({ count, position })).filter(({ count }) => count < 3);
     counts[randomFrom(eligible, random).position] += 1;
