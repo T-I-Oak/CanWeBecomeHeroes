@@ -6,6 +6,7 @@ import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
+import { getEnemyDefinition } from '../../src/game/EnemyCatalog.js';
 
 test('initial enemy has five tagless equipment items and its affinity as an intrinsic tag', () => {
   const enemy = new EnemyFactory().createInitialEncounter();
@@ -18,12 +19,37 @@ test('initial enemy has five tagless equipment items and its affinity as an intr
   assert.equal(enemy.chip.radius, 64);
 });
 
-test('small arcane enemy resolves to the wisp catalog entry', () => {
+test('small arcane enemy resolves to the ghost catalog entry', () => {
   const enemy = new EnemyFactory().create({ size: 'small', tagAffinity: 'arcane', slotPosition: 4, maximumHp: 2, contributionPoints: 2, totalTagCount: 0 });
 
-  assert.equal(enemy.definition.nameJa, 'ウィスプ');
+  assert.equal(enemy.definition.nameJa, 'ゴースト');
   assert.equal(enemy.chip.centerPath, '/assets/enemies/small-arcane.png');
   assert.deepEqual(enemy.tags, ['arcane']);
+});
+
+test('new small enemy catalog entries resolve their names and assets', () => {
+  assert.deepEqual(getEnemyDefinition({ size: 'small', tagAffinity: 'reputation' }), {
+    id: 'small-reputation',
+    size: 'small',
+    tagAffinity: 'reputation',
+    nameKey: 'enemy.smallReputation',
+    nameJa: 'ドワーフ',
+    assetPath: '/assets/enemies/small-reputation.png',
+    intrinsicTags: ['reputation'],
+    baseHp: 2,
+    baseContributionPoints: 10,
+  });
+  assert.deepEqual(getEnemyDefinition({ size: 'small', tagAffinity: 'lightning' }), {
+    id: 'small-lightning',
+    size: 'small',
+    tagAffinity: 'lightning',
+    nameKey: 'enemy.smallLightning',
+    nameJa: '雷狼',
+    assetPath: '/assets/enemies/small-lightning.png',
+    intrinsicTags: ['lightning'],
+    baseHp: 2,
+    baseContributionPoints: 10,
+  });
 });
 
 test('a full action gauge resolves basic damage, awards contribution, drops an item, and records elapsed ticks', () => {
