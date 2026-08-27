@@ -2,9 +2,9 @@ import { ENEMY_CATALOG } from './EnemyCatalog.js';
 
 export const COMBINATION_PATTERNS = Object.freeze({
   normal: Object.freeze([
-    Object.freeze({ id: 'goblin', main: 'small-valor', support1: 'small-iron', support2: 'small-arcane' }),
-    Object.freeze({ id: 'living-armor', main: 'small-iron', support1: 'small-arcane', support2: 'small-valor' }),
-    Object.freeze({ id: 'wisp', main: 'small-arcane', support1: 'small-valor', support2: 'small-iron' }),
+    Object.freeze({ main: 'small-valor', support1: 'small-iron', support2: 'small-arcane' }),
+    Object.freeze({ main: 'small-iron', support1: 'small-arcane', support2: 'small-valor' }),
+    Object.freeze({ main: 'small-arcane', support1: 'small-valor', support2: 'small-iron' }),
   ]),
   encounter: Object.freeze([]),
   boss: Object.freeze([]),
