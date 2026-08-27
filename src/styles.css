@@ -200,8 +200,9 @@ body {
 .StageSelection__EnemyLine {
   --stage-selection-enemy-line-height: 164px;
   display: grid;
-  grid-template-columns: repeat(6, minmax(56px, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(6, 100px);
+  gap: 0;
+  justify-content: start;
   min-width: 0;
 }
 
@@ -224,12 +225,12 @@ body {
 
 .StageSelection__ChipPreview {
   display: block;
-  width: min(84px, 100%);
+  width: min(100px, 100%);
   height: auto;
 }
 
 .StageSelection__ChipPreview.state-large {
-  width: min(168px, 100%);
+  width: min(200px, 100%);
 }
 
 .StageSelection__EnemyName {
@@ -398,7 +399,7 @@ body {
 
   .StageSelection__EnemyLine {
     --stage-selection-enemy-line-height: 120px;
-    grid-template-columns: repeat(6, minmax(42px, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   .StageSelection__EnemyLine.state-has-large {

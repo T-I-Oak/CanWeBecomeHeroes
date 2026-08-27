@@ -1,11 +1,13 @@
 import ChipRenderer, { drawFramedTag } from '../chips/ChipRenderer.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
+import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 
 const SLOT_COUNT = 6;
 // 進路選択では実戦と同じ小:中:大 = 1:1.5:3 の比率を維持する。
 // 大型Enemyは横2スロットを占有するため、プレビューCanvasも2枠分を使う。
-const PREVIEW_SLOT_SIZE = 84;
-const PREVIEW_SCALE = 0.28;
+// 戦闘エリアの224pxスロットを、モーダル内の100pxスロットへ等倍縮尺する。
+const PREVIEW_SLOT_SIZE = 100;
+const PREVIEW_SCALE = PREVIEW_SLOT_SIZE / HERO_SLOT_SIZE;
 const TREND_TAG_SIZE = 38;
 
 function createElement(tagName, className, text = null) {
