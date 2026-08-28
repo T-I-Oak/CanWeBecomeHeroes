@@ -3,6 +3,9 @@ import { getTagDetail } from '../game/TagDetailCatalog.js';
 import { getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
 import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { getStatusDetail } from '../game/StatusDetailCatalog.js';
+import { getItemDetail } from '../game/ItemDetailCatalog.js';
+
+const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 
 function createElement(tagName, className, text = null) {
   const element = document.createElement(tagName);
@@ -39,6 +42,15 @@ function createStatusIcon(status, sizeClass = '') {
   return icon;
 }
 
+function createChipImage(path) {
+  const image = createElement('span', 'InformationWindow__ChipImage');
+  const asset = document.createElement('img');
+  asset.src = path;
+  asset.alt = '';
+  image.append(asset);
+  return image;
+}
+
 export default class InformationWindowLayer {
   constructor(element, manager) {
     this.element = element;
@@ -56,6 +68,8 @@ export default class InformationWindowLayer {
     window.dataset.informationWindowId = entry.id;
     if (entry.type === 'tag') window.append(this.#renderTagDetail(entry));
     if (entry.type === 'status') window.append(this.#renderStatusDetail(entry));
+    if (entry.type === 'entity') window.append(this.#renderEntityDetail(entry));
+    if (entry.type === 'item') window.append(this.#renderItemDetail(entry));
     return window;
   }
 
@@ -114,6 +128,84 @@ export default class InformationWindowLayer {
     body.append(createElement('p', 'InformationWindow__Description', detail.description));
     content.append(body);
     return content;
+  }
+
+  #renderEntityDetail(entry) {
+    const { entity } = entry.data;
+    const isEnemy = entity.chip.type === 'enemy';
+    const displayName = isEnemy ? entity.definition.nameJa : `【${entity.profession}・${entity.name.ja}】`;
+    const content = document.createDocumentFragment();
+    const title = createElement('header', 'InformationWindow__Title');
+    title.append(createChipImage(entity.chip.centerPath), createElement('h2', 'InformationWindow__Name', displayName));
+    content.append(title);
+
+    const body = createElement('div', 'InformationWindow__Body');
+    const statusGrid = createElement('div', 'InformationWindow__EntityStatusGrid');
+    const statusKeys = isEnemy ? ['hp', ...ENTITY_STATUS_KEYS] : [...ENTITY_STATUS_KEYS, 'stamina'];
+    statusKeys.forEach((status) => {
+      const current = status === 'hp' ? entity.hp : status === 'stamina' ? entity.stamina : entity.getStatus(status);
+      const maximum = status === 'hp' ? entity.maximumHp : entity.maximums[status];
+      const statusButton = createElement('button', 'InformationWindow__EntityStatus state-clickable');
+      statusButton.type = 'button';
+      statusButton.append(createStatusIcon(status), createElement('span', 'InformationWindow__EntityStatusValue', `${Math.floor(current)} / ${Math.floor(maximum)}`));
+      statusButton.addEventListener('click', (event) => this.manager.open({
+        type: 'status', parentId: entry.id, data: { status, current, maximum }, anchor: { x: event.clientX, y: event.clientY },
+      }));
+      statusGrid.append(statusButton);
+    });
+    body.append(statusGrid);
+
+    const tagList = createElement('div', 'InformationWindow__EntityTagList');
+    [...new Set(entity.getTags())].forEach((tag) => {
+      const count = entity.getTagCount(tag);
+      const tagButton = createElement('button', 'InformationWindow__EntityTag state-clickable');
+      tagButton.type = 'button';
+      applyTagSkillVisual(tagButton, count);
+      tagButton.append(createTagIcon(tag, 'InformationWindow__TagIcon--small'), createElement('span', 'InformationWindow__SkillRequirement', String(count)));
+      tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
+      tagList.append(tagButton);
+    });
+    body.append(tagList);
+
+    const equipmentList = createElement('div', 'InformationWindow__EquipmentList');
+    const equipment = isEnemy ? entity.equipment : Object.values(entity.equipment);
+    equipment.filter(Boolean).forEach((item) => equipmentList.append(this.#createEquipmentButton(item, entry.id)));
+    if (equipmentList.childElementCount > 0) body.append(equipmentList);
+    content.append(body);
+    return content;
+  }
+
+  #renderItemDetail(entry) {
+    const { item } = entry.data;
+    const detail = getItemDetail(item.type);
+    const content = document.createDocumentFragment();
+    const title = createElement('header', 'InformationWindow__Title');
+    title.append(createChipImage(item.chip.centerPath), createElement('h2', 'InformationWindow__Name', detail.name));
+    content.append(title);
+    const body = createElement('div', 'InformationWindow__Body');
+    if (detail.description) body.append(createElement('p', 'InformationWindow__Description', detail.description));
+    const tagList = createElement('div', 'InformationWindow__EntityTagList');
+    [...new Set(item.tags)].forEach((tag) => {
+      const count = item.tags.filter((current) => current === tag).length;
+      const tagButton = createElement('button', 'InformationWindow__EntityTag state-clickable');
+      tagButton.type = 'button';
+      applyTagSkillVisual(tagButton, count);
+      tagButton.append(createTagIcon(tag, 'InformationWindow__TagIcon--small'), createElement('span', 'InformationWindow__SkillRequirement', String(count)));
+      tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
+      tagList.append(tagButton);
+    });
+    if (tagList.childElementCount > 0) body.append(tagList);
+    content.append(body);
+    return content;
+  }
+
+  #createEquipmentButton(item, parentId) {
+    const button = createElement('button', 'InformationWindow__Equipment state-clickable');
+    button.type = 'button';
+    button.append(createChipImage(item.chip.centerPath));
+    item.tags.forEach((tag) => button.append(createTagIcon(tag, 'InformationWindow__TagIcon--small')));
+    button.addEventListener('click', (event) => this.manager.open({ type: 'item', parentId, data: { item }, anchor: { x: event.clientX, y: event.clientY } }));
+    return button;
   }
 
   #positionWindow(windowElement, anchor) {

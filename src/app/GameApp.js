@@ -631,8 +631,10 @@ export function startGame({ scenario }) {
         ?? getPreparationItemTagAtPoint(point, preparationHeroes)
         ?? getShopTagAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction())
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
+      const entity = controller.getEntityAt(point.x, point.y);
       if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
       else if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
+      else if (entity) informationWindows.open({ type: entity.chip.type === 'item' ? 'item' : 'entity', data: entity.chip.type === 'item' ? { item: entity } : { entity }, anchor: { x: event.clientX, y: event.clientY } });
     }
     drag = null;
   });

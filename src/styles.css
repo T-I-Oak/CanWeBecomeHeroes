@@ -229,6 +229,24 @@ body {
   object-fit: contain;
 }
 
+.InformationWindow__ChipImage {
+  display: grid;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 3px solid #c6d0df;
+  border-radius: 50%;
+}
+
+.InformationWindow__ChipImage img {
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+}
+
 .InformationWindow__TagIcon--small {
   flex-basis: 24px;
   width: 24px;
@@ -263,6 +281,101 @@ body {
   min-width: 18px;
   place-items: center;
   font-variant-numeric: tabular-nums;
+}
+
+.InformationWindow__EntityStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.InformationWindow__EntityStatus,
+.InformationWindow__EntityTag,
+.InformationWindow__Equipment {
+  font: inherit;
+}
+
+.InformationWindow__EntityStatus {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: center;
+  min-height: 42px;
+  padding: 4px 6px;
+  color: #24334d;
+  background: #eaf0f7;
+  border: 1px solid #9eacc0;
+  border-radius: 8px;
+}
+
+.InformationWindow__EntityStatus .InformationWindow__StatusIcon {
+  flex-basis: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.InformationWindow__EntityStatusValue {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.InformationWindow__EntityTagList,
+.InformationWindow__EquipmentList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.InformationWindow__EntityTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 54px;
+  min-height: 30px;
+  padding: 3px 5px;
+  color: var(--tag-skill-text);
+  background: var(--tag-skill-fill);
+  border: 2px solid var(--tag-skill-border);
+  border-radius: 8px;
+}
+
+.InformationWindow__Equipment {
+  display: inline-flex;
+  align-items: flex-start;
+  min-width: 52px;
+  min-height: 52px;
+  padding: 3px;
+  background: #f2f5f9;
+  border: 2px solid #aab7cb;
+  border-radius: 9px;
+}
+
+.InformationWindow__Equipment .InformationWindow__ChipImage {
+  flex-basis: 42px;
+  width: 42px;
+  height: 42px;
+  border-width: 0;
+}
+
+.InformationWindow__Equipment .InformationWindow__TagIcon {
+  margin-left: -9px;
+}
+
+.InformationWindow__EntityStatus.state-clickable,
+.InformationWindow__EntityTag.state-clickable,
+.InformationWindow__Equipment.state-clickable {
+  cursor: pointer;
+}
+
+.InformationWindow__EntityStatus.state-clickable:hover,
+.InformationWindow__EntityTag.state-clickable:hover,
+.InformationWindow__Equipment.state-clickable:hover,
+.InformationWindow__EntityStatus.state-clickable:focus-visible,
+.InformationWindow__EntityTag.state-clickable:focus-visible,
+.InformationWindow__Equipment.state-clickable:focus-visible {
+  filter: brightness(1.08);
+  outline: 2px solid #24334d;
+  outline-offset: 2px;
 }
 
 .StageSelection {
