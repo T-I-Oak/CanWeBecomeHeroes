@@ -160,7 +160,7 @@ export default class InformationWindowLayer {
     const body = createElement('div', 'InformationWindow__EntityPanel');
     const information = createElement('section', 'InformationWindow__EntityInformation');
     const statusGrid = createElement('div', 'InformationWindow__EntityStatusGrid');
-    const statusKeys = isEnemy ? ['hp', ...ENTITY_STATUS_KEYS] : [...ENTITY_STATUS_KEYS, 'stamina'];
+    const statusKeys = [...ENTITY_STATUS_KEYS, isEnemy ? 'hp' : 'stamina'];
     statusKeys.forEach((status) => {
       const current = status === 'hp' ? entity.hp : status === 'stamina' ? entity.stamina : entity.getStatus(status);
       const maximum = status === 'hp' ? entity.maximumHp : entity.maximums[status];
