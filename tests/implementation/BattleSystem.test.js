@@ -235,8 +235,8 @@ test('attribute values are applied by maximum and decay every sixty ticks', () =
   assert.equal(hero.chip.attributeValues, hero.attributes);
 });
 
-test('each attribute has its own hit check before being applied', () => {
-  const randomValues = [1, 0, 0, 1, 0.5, 0, 1, 0.5];
+test('each attribute uses the attacker luck roll to determine its application rate', () => {
+  const randomValues = [0.25, 0.5, 0, 0.5];
   const battle = new BattleSystem(new ChipBoard({ width: 3000, height: 2000 }), {
     controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} }, random: () => randomValues.shift(),
   });
@@ -250,14 +250,15 @@ test('each attribute has its own hit check before being applied', () => {
     attributes: { fire: 0, water: 0, lightning: 0 },
     attributeSources: { fire: null, water: null, lightning: null },
     chip: {},
-    getLuckDegree: () => 0.5,
-    getTagSkillLevel: () => 0,
+    getLuckDegree: () => 0.95,
+    getTagSkillLevel: () => 4,
   };
 
   battle.applyAttributes(actor, target, 1);
 
-  assert.equal(target.attributes.fire, 0);
+  assert.equal(target.attributes.fire, 0.5);
   assert.equal(target.attributes.water, 1);
+  assert.equal(target.attributeSources.fire, actor);
   assert.equal(target.attributeSources.water, actor);
 });
 

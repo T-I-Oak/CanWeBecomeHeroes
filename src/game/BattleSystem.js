@@ -115,8 +115,11 @@ export default class BattleSystem {
   applyAttributes(actor, target, coefficient) {
     ['fire', 'water', 'lightning'].forEach((tag) => {
       const tagCount = actor.getTagCount(tag);
-      if (!tagCount || this.isAttackMiss(actor, target)) return;
-      const value = tagCount * coefficient * getRandomModifier(this.random);
+      if (!tagCount) return;
+      const luckDegree = Math.max(0, actor.getLuckDegree());
+      const luckRoll = this.random();
+      const applicationRate = luckDegree > 0 ? 1 - Math.min(luckRoll / luckDegree, 1) : 0;
+      const value = tagCount * coefficient * applicationRate * getRandomModifier(this.random);
       if (value > target.attributes[tag]) {
         target.attributes[tag] = value;
         target.attributeSources[tag] = actor;
