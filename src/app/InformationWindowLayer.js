@@ -2,6 +2,7 @@ import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { getTagDetail } from '../game/TagDetailCatalog.js';
 import { getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
 import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
+import { getStatusDetail } from '../game/StatusDetailCatalog.js';
 
 function createElement(tagName, className, text = null) {
   const element = document.createElement(tagName);
@@ -29,6 +30,15 @@ function createTagIcon(tag, sizeClass = '') {
   return icon;
 }
 
+function createStatusIcon(status, sizeClass = '') {
+  const icon = createElement('span', `InformationWindow__StatusIcon ${sizeClass}`.trim());
+  const image = document.createElement('img');
+  image.src = STATUS_VISUALS[status].iconPath;
+  image.alt = '';
+  icon.append(image);
+  return icon;
+}
+
 export default class InformationWindowLayer {
   constructor(element, manager) {
     this.element = element;
@@ -46,6 +56,7 @@ export default class InformationWindowLayer {
     window.dataset.informationWindowId = entry.id;
     if (entry.type === 'tag') window.append(this.#renderTagDetail(entry));
     if (entry.type === 'tag-skill') window.append(this.#renderTagSkillDetail(entry));
+    if (entry.type === 'status') window.append(this.#renderStatusDetail(entry));
     return window;
   }
 
@@ -101,6 +112,22 @@ export default class InformationWindowLayer {
     applyTagSkillVisual(requirement, requiredCount);
     requirement.append(createTagIcon(tag, 'InformationWindow__TagIcon--small'), createElement('span', 'InformationWindow__SkillRequirement', String(requiredCount)));
     body.append(requirement, createElement('p', 'InformationWindow__Description', `${tagName}タグを${requiredCount}個以上持つと発動する。`), createElement('p', 'InformationWindow__Description', `${effect}を高めるタグスキル。`));
+    content.append(body);
+    return content;
+  }
+
+  #renderStatusDetail(entry) {
+    const { status, current, maximum } = entry.data;
+    const detail = getStatusDetail(status);
+    const content = document.createDocumentFragment();
+    const title = createElement('header', 'InformationWindow__Title');
+    title.append(createStatusIcon(status), createElement('h2', 'InformationWindow__Name', detail.name));
+    content.append(title);
+    const body = createElement('div', 'InformationWindow__Body');
+    body.append(
+      createElement('p', 'InformationWindow__Effect', `現在値 ${Math.floor(current)} / ${Math.floor(maximum)}`),
+      createElement('p', 'InformationWindow__Description', detail.description),
+    );
     content.append(body);
     return content;
   }

@@ -196,6 +196,29 @@ function getPreparationTagAtPoint(point, heroes) {
   return null;
 }
 
+function getPreparationStatusAtPoint(point, heroes) {
+  const { statusGaugeHeight, statusColumnWidth, statusColumnGap, statusGaugeWidth, statusIconSize, statusIconTopPadding, topPadding } = PREPARATION_LAYOUT;
+  for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
+    const hero = heroes[heroIndex];
+    const bounds = getPreparationSubareaBounds(heroIndex);
+    const informationX = bounds.x + topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
+    const gaugeY = bounds.y + topPadding;
+    for (let statusIndex = 0; statusIndex < STATUS_DEFINITIONS.length; statusIndex += 1) {
+      const { key } = STATUS_DEFINITIONS[statusIndex];
+      const gaugeX = informationX + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2;
+      const iconX = gaugeX + (statusGaugeWidth - statusIconSize) / 2;
+      const iconY = gaugeY + statusIconTopPadding;
+      if (!isPointInRect(point, iconX, iconY, statusIconSize, statusIconSize)) continue;
+      return {
+        status: key,
+        current: key === 'stamina' ? hero.stamina : hero.getStatus(key),
+        maximum: hero.maximums[key],
+      };
+    }
+  }
+  return null;
+}
+
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
   if (!chip || tags.length === 0) return null;
@@ -570,11 +593,13 @@ export function startGame({ scenario }) {
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
     }
     if (!drag.moved) {
+      const status = getPreparationStatusAtPoint(point, preparationHeroes);
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
         ?? getPreparationItemTagAtPoint(point, preparationHeroes)
         ?? getShopTagAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction())
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
-      if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
+      if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
+      else if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
     }
     drag = null;
   });
