@@ -11,9 +11,9 @@ const ATTACKS = { sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power',
 const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
 const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
 const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
-const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 36;
-const KNOCKBACK_TILT_MIN_RADIANS = Math.PI / 24;
-const KNOCKBACK_TILT_RANGE_RADIANS = Math.PI / 9;
+const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 12;
+const KNOCKBACK_TILT_MIN_RADIANS = Math.PI / 48;
+const KNOCKBACK_TILT_RANGE_RADIANS = Math.PI / 18;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);

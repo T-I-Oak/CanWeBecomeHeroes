@@ -275,8 +275,8 @@ test('damage leaves a random knockback tilt that each action gradually restores'
   battle.applyDamage(null, target, 'sword', 1);
   battle.updateActor(actor, [], 1000);
 
-  assert.ok(target.chip.tilt < 0);
-  assert.ok(Math.abs(actor.chip.tilt) < 0.4);
+  assert.equal(target.chip.tilt, -Math.PI / 48);
+  assert.equal(actor.chip.tilt, -0.4 + Math.PI / 12);
 });
 
 test('lightning propagates only through contiguous opponent slots', () => {
