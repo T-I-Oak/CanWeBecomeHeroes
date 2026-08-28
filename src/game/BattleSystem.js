@@ -12,8 +12,8 @@ const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, ta
 const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
 const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
 const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 36;
-const KNOCKBACK_TILT_MIN_RADIANS = Math.PI / 72;
-const KNOCKBACK_TILT_RANGE_RADIANS = Math.PI / 24;
+const KNOCKBACK_TILT_MIN_RADIANS = Math.PI / 24;
+const KNOCKBACK_TILT_RANGE_RADIANS = Math.PI / 9;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
