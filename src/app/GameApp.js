@@ -92,11 +92,27 @@ function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeCo
   }
 }
 
-function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
+function getTrainingStatusPanelLayout() {
   const area = GAME_AREAS.training;
   const slotOrigin = getFacilitySlotOrigin('training');
-  const x = slotOrigin.x + HERO_SLOT_SIZE + 24;
-  const y = area.y + (area.height - PREPARATION_LAYOUT.statusGaugeHeight) / 2;
+  return {
+    x: slotOrigin.x + HERO_SLOT_SIZE + 24,
+    y: area.y + (area.height - PREPARATION_LAYOUT.statusGaugeHeight) / 2,
+  };
+}
+
+function getTrainingStatusGaugeBounds(statusIndex) {
+  const panel = getTrainingStatusPanelLayout();
+  const { statusColumnWidth, statusColumnGap, statusGaugeWidth, statusGaugeHeight } = PREPARATION_LAYOUT;
+  return {
+    x: panel.x + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2,
+    y: panel.y,
+    width: statusGaugeWidth,
+    height: statusGaugeHeight,
+  };
+}
+
+function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
   const highlightsByStat = new Map();
   presentation?.gainedCells.forEach(({ stat, value }) => {
     const cells = highlightsByStat.get(stat) ?? [];
@@ -106,12 +122,13 @@ function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
   STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
     const value = hero ? (key === 'stamina' ? Math.floor(hero.stamina) : Math.floor(hero.getStatus(key))) : 0;
     const maximum = hero ? hero.maximums[key] : 0;
+    const bounds = getTrainingStatusGaugeBounds(statIndex);
     drawStatusGauge(
       context,
       assets,
       visual,
-      x + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
-      y,
+      bounds.x,
+      bounds.y,
       value,
       maximum,
       key === 'stamina' ? getStaminaGaugeColor(value) : '#54c96b',
@@ -220,19 +237,15 @@ function getPreparationStatusAtPoint(point, heroes) {
 }
 
 function getTrainingStatusAtPoint(point, hero) {
-  if (!hero) return null;
-  const area = GAME_AREAS.training;
-  const slotOrigin = getFacilitySlotOrigin('training');
-  const startX = slotOrigin.x + HERO_SLOT_SIZE + 24;
-  const gaugeY = area.y + (area.height - PREPARATION_LAYOUT.statusGaugeHeight) / 2;
-  const { statusColumnWidth, statusColumnGap, statusGaugeWidth, statusIconSize, statusIconTopPadding } = PREPARATION_LAYOUT;
   for (let statusIndex = 0; statusIndex < STATUS_DEFINITIONS.length; statusIndex += 1) {
     const { key } = STATUS_DEFINITIONS[statusIndex];
-    const gaugeX = startX + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2;
-    const iconX = gaugeX + (statusGaugeWidth - statusIconSize) / 2;
-    const iconY = gaugeY + statusIconTopPadding;
-    if (!isPointInRect(point, iconX, iconY, statusIconSize, statusIconSize)) continue;
-    return { status: key, current: key === 'stamina' ? hero.stamina : hero.getStatus(key), maximum: hero.maximums[key] };
+    const bounds = getTrainingStatusGaugeBounds(statusIndex);
+    // The icon is intentionally small.  The whole gauge is the interaction target,
+    // so training status remains usable with both mouse and touch input.
+    if (!isPointInRect(point, bounds.x, bounds.y, bounds.width, bounds.height)) continue;
+    return hero
+      ? { status: key, current: key === 'stamina' ? hero.stamina : hero.getStatus(key), maximum: hero.maximums[key] }
+      : { status: key };
   }
   return null;
 }
