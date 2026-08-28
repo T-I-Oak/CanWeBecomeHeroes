@@ -34,7 +34,9 @@ export default class InformationWindowManager {
       return;
     }
     const retained = new Set(this.#getAncestorIds(id));
-    this.windows = this.windows.filter((entry) => retained.has(entry.id));
+    const next = this.windows.filter((entry) => retained.has(entry.id));
+    if (next.length === this.windows.length) return;
+    this.windows = next;
     this.#notify();
   }
 

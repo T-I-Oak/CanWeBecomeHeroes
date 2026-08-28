@@ -28,6 +28,19 @@ test('opening a sibling replaces the previous child branch', () => {
   assert.deepEqual(manager.entries.map((entry) => entry.id), [parent.id, replacement.id]);
 });
 
+test('focusing the current leaf does not notify or replace an unchanged window branch', () => {
+  let changes = 0;
+  const manager = new InformationWindowManager({ onChange: () => { changes += 1; } });
+  const parent = manager.open({ type: 'tag', data: { tag: 'valor' } });
+  const child = manager.open({ type: 'tag-skill', parentId: parent.id, data: { name: '勘所' } });
+  changes = 0;
+
+  manager.focus(child.id);
+
+  assert.equal(changes, 0);
+  assert.deepEqual(manager.entries.map((entry) => entry.id), [parent.id, child.id]);
+});
+
 test('information window pause reason composes with other game clock pauses', () => {
   const clock = new GameClock();
   const manager = new InformationWindowManager({ clock });
