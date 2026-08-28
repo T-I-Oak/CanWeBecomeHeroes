@@ -295,7 +295,13 @@ body {
 }
 
 .InformationWindow__EntityTitle {
-  min-height: 104px;
+  min-height: 180px;
+}
+
+.InformationWindow__EntityTitle > .InformationWindow__ChipImage {
+  flex-basis: 156px;
+  width: 156px;
+  height: 156px;
 }
 
 .InformationWindow__EntityInformation {
