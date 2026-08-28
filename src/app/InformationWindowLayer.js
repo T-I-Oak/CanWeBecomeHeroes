@@ -55,7 +55,6 @@ export default class InformationWindowLayer {
     const window = createElement('section', 'InformationWindow');
     window.dataset.informationWindowId = entry.id;
     if (entry.type === 'tag') window.append(this.#renderTagDetail(entry));
-    if (entry.type === 'tag-skill') window.append(this.#renderTagSkillDetail(entry));
     if (entry.type === 'status') window.append(this.#renderStatusDetail(entry));
     return window;
   }
@@ -90,37 +89,15 @@ export default class InformationWindowLayer {
 
       const skillList = createElement('div', 'InformationWindow__SkillList');
       detail.skills.forEach((skill) => {
-        const skillButton = createElement('button', 'InformationWindow__Skill state-clickable');
-        skillButton.type = 'button';
-        applyTagSkillVisual(skillButton, skill.requiredCount);
+        const skillBadge = createElement('div', 'InformationWindow__Skill');
+        applyTagSkillVisual(skillBadge, skill.requiredCount);
         const requirement = createElement('span', 'InformationWindow__SkillRequirement', String(skill.requiredCount));
         const name = createElement('span', 'InformationWindow__SkillName', skill.name);
-        skillButton.append(requirement, name);
-        skillButton.addEventListener('click', (event) => this.manager.open({
-          type: 'tag-skill',
-          parentId: entry.id,
-          data: { tag, tagName: detail.name, effect: detail.effect, ...skill },
-          anchor: { x: event.clientX, y: event.clientY },
-        }));
-        skillList.append(skillButton);
+        skillBadge.append(requirement, name);
+        skillList.append(skillBadge);
       });
       body.append(skillList);
     } else body.append(createElement('p', 'InformationWindow__Description', detail.description));
-    content.append(body);
-    return content;
-  }
-
-  #renderTagSkillDetail(entry) {
-    const { tag, tagName, effect, requiredCount, name } = entry.data;
-    const content = document.createDocumentFragment();
-    const title = createElement('header', 'InformationWindow__Title');
-    title.append(createTagIcon(tag), createElement('h2', 'InformationWindow__Name', name));
-    content.append(title);
-    const body = createElement('div', 'InformationWindow__Body');
-    const requirement = createElement('div', 'InformationWindow__SkillDetailRequirement');
-    applyTagSkillVisual(requirement, requiredCount);
-    requirement.append(createTagIcon(tag, 'InformationWindow__TagIcon--small'), createElement('span', 'InformationWindow__SkillRequirement', String(requiredCount)));
-    body.append(requirement, createElement('p', 'InformationWindow__Description', `${tagName}タグを${requiredCount}個以上持つと発動する。`), createElement('p', 'InformationWindow__Description', `${effect}を高めるタグスキル。`));
     content.append(body);
     return content;
   }
