@@ -132,6 +132,10 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.InformationWindow:has(.InformationWindow__EntityPanel) {
+  width: min(760px, calc(100vw - 32px));
+}
+
 .InformationWindow__Title {
   display: flex;
   align-items: center;
@@ -283,10 +287,40 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.InformationWindow__EntityPanel {
+  display: grid;
+  grid-template-columns: 168px 304px 232px;
+  gap: 8px;
+  padding: 12px;
+}
+
+.InformationWindow__EntityCharacter {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 12px;
+}
+
+.InformationWindow__EntityName {
+  margin: 0;
+  color: #24334d;
+  font-size: 18px;
+}
+
+.InformationWindow__EntityCharacter > .InformationWindow__ChipImage {
+  width: 156px;
+  height: 156px;
+}
+
+.InformationWindow__EntityInformation {
+  display: grid;
+  gap: 8px;
+}
+
 .InformationWindow__EntityStatusGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
+  grid-template-columns: repeat(6, 44px);
+  gap: 8px;
 }
 
 .InformationWindow__EntityStatus,
@@ -297,14 +331,14 @@ body {
 
 .InformationWindow__EntityStatus {
   display: grid;
-  grid-template-columns: 30px 1fr;
-  align-items: center;
-  min-height: 42px;
-  padding: 4px 6px;
+  grid-template-rows: 24px 1fr;
+  justify-items: center;
+  min-height: 124px;
+  padding: 3px 2px 4px;
   color: #24334d;
-  background: #eaf0f7;
-  border: 1px solid #9eacc0;
-  border-radius: 8px;
+  background: var(--status-frame-color);
+  border: 0;
+  border-radius: 9px;
 }
 
 .InformationWindow__EntityStatus .InformationWindow__StatusIcon {
@@ -313,26 +347,52 @@ body {
   height: 28px;
 }
 
-.InformationWindow__EntityStatusValue {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  text-align: center;
+.InformationWindow__EntityStatusSegments {
+  display: grid;
+  align-content: end;
+  width: 100%;
+  padding: 0 1px;
+  gap: 2px;
+}
+
+.InformationWindow__EntityStatusSegment {
+  height: 11px;
+  background: #46536a;
+  border-radius: 4px;
+}
+
+.InformationWindow__EntityStatusSegment.is-available {
+  background: #9da9ba;
+}
+
+.InformationWindow__EntityStatusSegment.is-active {
+  background: #54c96b;
 }
 
 .InformationWindow__EntityTagList,
 .InformationWindow__EquipmentList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
+  display: grid;
+}
+
+.InformationWindow__EntityTagList {
+  grid-template-columns: repeat(5, 44px);
+  gap: 8px;
+}
+
+.InformationWindow__EquipmentList {
+  grid-template-columns: repeat(3, 72px);
+  grid-template-rows: repeat(3, 72px);
+  align-content: start;
+  gap: 8px;
 }
 
 .InformationWindow__EntityTag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-width: 54px;
-  min-height: 30px;
-  padding: 3px 5px;
+  min-width: 44px;
+  min-height: 28px;
+  padding: 3px;
   color: var(--tag-skill-text);
   background: var(--tag-skill-fill);
   border: 2px solid var(--tag-skill-border);
@@ -342,8 +402,8 @@ body {
 .InformationWindow__Equipment {
   display: inline-flex;
   align-items: flex-start;
-  min-width: 52px;
-  min-height: 52px;
+  min-width: 72px;
+  min-height: 72px;
   padding: 3px;
   background: #f2f5f9;
   border: 2px solid #aab7cb;
@@ -351,15 +411,21 @@ body {
 }
 
 .InformationWindow__Equipment .InformationWindow__ChipImage {
-  flex-basis: 42px;
-  width: 42px;
-  height: 42px;
+  flex-basis: 64px;
+  width: 64px;
+  height: 64px;
   border-width: 0;
 }
 
 .InformationWindow__Equipment .InformationWindow__TagIcon {
   margin-left: -9px;
 }
+
+.InformationWindow__Equipment[data-slot='head'] { grid-column: 2; grid-row: 1; }
+.InformationWindow__Equipment[data-slot='rightHand'] { grid-column: 1; grid-row: 2; }
+.InformationWindow__Equipment[data-slot='torso'] { grid-column: 2; grid-row: 2; }
+.InformationWindow__Equipment[data-slot='leftHand'] { grid-column: 3; grid-row: 2; }
+.InformationWindow__Equipment[data-slot='feet'] { grid-column: 2; grid-row: 3; }
 
 .InformationWindow__EntityStatus.state-clickable,
 .InformationWindow__EntityTag.state-clickable,

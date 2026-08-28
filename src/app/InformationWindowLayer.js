@@ -6,6 +6,11 @@ import { getStatusDetail } from '../game/StatusDetailCatalog.js';
 import { getItemDetail } from '../game/ItemDetailCatalog.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
+const TAG_GRID = Object.freeze([
+  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'fortune']),
+  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'blessing']),
+  Object.freeze(['fire', 'water', 'lightning', 'vitality', 'area']),
+]);
 
 function createElement(tagName, className, text = null) {
   const element = document.createElement(tagName);
@@ -135,28 +140,22 @@ export default class InformationWindowLayer {
     const isEnemy = entity.chip.type === 'enemy';
     const displayName = isEnemy ? entity.definition.nameJa : `【${entity.profession}・${entity.name.ja}】`;
     const content = document.createDocumentFragment();
-    const title = createElement('header', 'InformationWindow__Title');
-    title.append(createChipImage(entity.chip.centerPath), createElement('h2', 'InformationWindow__Name', displayName));
-    content.append(title);
-
-    const body = createElement('div', 'InformationWindow__Body');
+    const body = createElement('div', 'InformationWindow__EntityPanel');
+    const character = createElement('section', 'InformationWindow__EntityCharacter');
+    character.append(createElement('h2', 'InformationWindow__EntityName', displayName), createChipImage(entity.chip.centerPath));
+    body.append(character);
+    const information = createElement('section', 'InformationWindow__EntityInformation');
     const statusGrid = createElement('div', 'InformationWindow__EntityStatusGrid');
     const statusKeys = isEnemy ? ['hp', ...ENTITY_STATUS_KEYS] : [...ENTITY_STATUS_KEYS, 'stamina'];
     statusKeys.forEach((status) => {
       const current = status === 'hp' ? entity.hp : status === 'stamina' ? entity.stamina : entity.getStatus(status);
       const maximum = status === 'hp' ? entity.maximumHp : entity.maximums[status];
-      const statusButton = createElement('button', 'InformationWindow__EntityStatus state-clickable');
-      statusButton.type = 'button';
-      statusButton.append(createStatusIcon(status), createElement('span', 'InformationWindow__EntityStatusValue', `${Math.floor(current)} / ${Math.floor(maximum)}`));
-      statusButton.addEventListener('click', (event) => this.manager.open({
-        type: 'status', parentId: entry.id, data: { status, current, maximum }, anchor: { x: event.clientX, y: event.clientY },
-      }));
-      statusGrid.append(statusButton);
+      statusGrid.append(this.#createEntityStatusGauge({ entry, status, current, maximum }));
     });
-    body.append(statusGrid);
+    information.append(statusGrid);
 
     const tagList = createElement('div', 'InformationWindow__EntityTagList');
-    [...new Set(entity.getTags())].forEach((tag) => {
+    TAG_GRID.flat().forEach((tag) => {
       const count = entity.getTagCount(tag);
       const tagButton = createElement('button', 'InformationWindow__EntityTag state-clickable');
       tagButton.type = 'button';
@@ -165,14 +164,34 @@ export default class InformationWindowLayer {
       tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
       tagList.append(tagButton);
     });
-    body.append(tagList);
+    information.append(tagList);
+    body.append(information);
 
     const equipmentList = createElement('div', 'InformationWindow__EquipmentList');
-    const equipment = isEnemy ? entity.equipment : Object.values(entity.equipment);
-    equipment.filter(Boolean).forEach((item) => equipmentList.append(this.#createEquipmentButton(item, entry.id)));
-    if (equipmentList.childElementCount > 0) body.append(equipmentList);
+    const equipment = isEnemy ? entity.equipment.map((item, index) => [String(index), item]) : Object.entries(entity.equipment);
+    equipment.filter(([, item]) => !isEnemy || Boolean(item)).forEach(([slot, item]) => equipmentList.append(this.#createEquipmentButton(item, entry.id, isEnemy ? null : slot)));
+    body.append(equipmentList);
     content.append(body);
     return content;
+  }
+
+  #createEntityStatusGauge({ entry, status, current, maximum }) {
+    const gauge = createElement('button', 'InformationWindow__EntityStatus state-clickable');
+    gauge.type = 'button';
+    gauge.style.setProperty('--status-frame-color', STATUS_VISUALS[status].gaugeFrameColor);
+    gauge.append(createStatusIcon(status));
+    const segments = createElement('span', 'InformationWindow__EntityStatusSegments');
+    for (let index = 1; index <= 7; index += 1) {
+      const segment = createElement('span', 'InformationWindow__EntityStatusSegment');
+      if (index <= current) segment.classList.add('is-active');
+      else if (index <= maximum) segment.classList.add('is-available');
+      segments.append(segment);
+    }
+    gauge.append(segments);
+    gauge.addEventListener('click', (event) => this.manager.open({
+      type: 'status', parentId: entry.id, data: { status, current, maximum }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    return gauge;
   }
 
   #renderItemDetail(entry) {
@@ -199,9 +218,14 @@ export default class InformationWindowLayer {
     return content;
   }
 
-  #createEquipmentButton(item, parentId) {
-    const button = createElement('button', 'InformationWindow__Equipment state-clickable');
+  #createEquipmentButton(item, parentId, slot = null) {
+    const button = createElement('button', `InformationWindow__Equipment${item ? ' state-clickable' : ''}`);
     button.type = 'button';
+    if (slot) button.dataset.slot = slot;
+    if (!item) {
+      button.disabled = true;
+      return button;
+    }
     button.append(createChipImage(item.chip.centerPath));
     item.tags.forEach((tag) => button.append(createTagIcon(tag, 'InformationWindow__TagIcon--small')));
     button.addEventListener('click', (event) => this.manager.open({ type: 'item', parentId, data: { item }, anchor: { x: event.clientX, y: event.clientY } }));
