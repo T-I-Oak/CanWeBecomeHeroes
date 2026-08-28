@@ -1,6 +1,6 @@
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { getTagDetail } from '../game/TagDetailCatalog.js';
-import { getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
+import { getTagBadgeVisual, getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
 import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { getStatusDetail } from '../game/StatusDetailCatalog.js';
 import { getItemDetail } from '../game/ItemDetailCatalog.js';
@@ -23,8 +23,8 @@ function createElement(tagName, className, text = null) {
   return element;
 }
 
-function applyTagSkillVisual(element, count) {
-  const visual = getTagSkillVisual(count);
+function applyTagSkillVisual(element, count, tag = null) {
+  const visual = tag ? getTagBadgeVisual(tag, count) : getTagSkillVisual(count);
   element.style.setProperty('--tag-skill-fill', visual.fill);
   element.style.setProperty('--tag-skill-border', visual.border);
   element.style.setProperty('--tag-skill-text', visual.text);
@@ -173,7 +173,7 @@ export default class InformationWindowLayer {
       const count = entity.getTagCount(tag);
       const tagButton = createElement('button', 'InformationWindow__EntityTag state-clickable');
       tagButton.type = 'button';
-      applyTagSkillVisual(tagButton, count);
+      applyTagSkillVisual(tagButton, count, tag);
       tagButton.append(createTagIcon(tag, 'InformationWindow__TagIcon--small'), createElement('span', 'InformationWindow__SkillRequirement', String(count)));
       tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
       tagList.append(tagButton);
@@ -222,7 +222,7 @@ export default class InformationWindowLayer {
       const count = item.tags.filter((current) => current === tag).length;
       const tagButton = createElement('button', 'InformationWindow__EntityTag state-clickable');
       tagButton.type = 'button';
-      applyTagSkillVisual(tagButton, count);
+      applyTagSkillVisual(tagButton, count, tag);
       tagButton.append(createTagIcon(tag, 'InformationWindow__TagIcon--small'), createElement('span', 'InformationWindow__SkillRequirement', String(count)));
       tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
       tagList.append(tagButton);

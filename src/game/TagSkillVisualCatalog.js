@@ -1,3 +1,5 @@
+import { TAGS } from './TagCatalog.js';
+
 export const TAG_SKILL_THRESHOLDS = Object.freeze([1, 3, 5, 7]);
 
 export const TAG_SKILL_VISUALS = Object.freeze({
@@ -15,4 +17,10 @@ export function getTagSkillLevelForCount(count) {
 
 export function getTagSkillVisual(count) {
   return TAG_SKILL_VISUALS[getTagSkillLevelForCount(count)];
+}
+
+export function getTagBadgeVisual(tag, count) {
+  if (!TAGS[tag]) throw new RangeError(`Unknown tag: ${tag}`);
+  // 属性タグはタグスキルを持たないため、未所持と所持の2段階だけを示す。
+  return getTagSkillVisual(TAGS[tag].group === 'attribute' && count > 0 ? 1 : count);
 }

@@ -36,7 +36,7 @@ import EnemyFactory from '../game/EnemyFactory.js';
 import StageSelectionModal from './StageSelectionModal.js';
 import InformationWindowManager from './InformationWindowManager.js';
 import InformationWindowLayer from './InformationWindowLayer.js';
-import { getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
+import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -173,7 +173,7 @@ function drawTagList(context, assets, hero, x, y) {
       const cellX = x + columnIndex * (statusColumnWidth + statusColumnGap);
       const badgeX = cellX + (statusColumnWidth - tagBadgeWidth) / 2;
       const badgeY = y + rowIndex * (tagBadgeHeight + tagRowGap);
-      const visual = getTagSkillVisual(count);
+      const visual = getTagBadgeVisual(tag, count);
       context.fillStyle = visual.fill;
       context.strokeStyle = visual.border;
       context.lineWidth = 1;
