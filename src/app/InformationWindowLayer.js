@@ -36,14 +36,14 @@ export default class InformationWindowLayer {
   }
 
   render(entries) {
-    this.element.replaceChildren(...entries.map((entry, index) => this.#renderWindow(entry, index)));
+    const windows = entries.map((entry) => this.#renderWindow(entry));
+    this.element.replaceChildren(...windows);
+    windows.forEach((window, index) => this.#positionWindow(window, entries[index].anchor));
   }
 
-  #renderWindow(entry, depth) {
+  #renderWindow(entry) {
     const window = createElement('section', 'InformationWindow');
     window.dataset.informationWindowId = entry.id;
-    window.style.setProperty('--information-window-offset-x', `${depth * 32}px`);
-    window.style.setProperty('--information-window-offset-y', `${depth * 24}px`);
     if (entry.type === 'tag') window.append(this.#renderTagDetail(entry));
     if (entry.type === 'tag-skill') window.append(this.#renderTagSkillDetail(entry));
     return window;
@@ -60,10 +60,11 @@ export default class InformationWindowLayer {
     const body = createElement('div', 'InformationWindow__Body');
     if (detail.status) {
       const status = createElement('p', 'InformationWindow__Effect');
-      const statusIcon = document.createElement('img');
-      statusIcon.className = 'InformationWindow__StatusIcon';
-      statusIcon.src = STATUS_VISUALS[detail.status].iconPath;
-      statusIcon.alt = '';
+      const statusIcon = createElement('span', 'InformationWindow__InlineIcon');
+      const image = document.createElement('img');
+      image.src = STATUS_VISUALS[detail.status].iconPath;
+      image.alt = '';
+      statusIcon.append(image);
       status.append('このタグを持つItemを装備すると', statusIcon, `${detail.statusName}が増える。`);
       body.append(status, createElement('p', 'InformationWindow__Description', `${detail.effect}が上がる。`));
 
@@ -75,10 +76,11 @@ export default class InformationWindowLayer {
         const requirement = createElement('span', 'InformationWindow__SkillRequirement', String(skill.requiredCount));
         const name = createElement('span', 'InformationWindow__SkillName', skill.name);
         skillButton.append(requirement, name);
-        skillButton.addEventListener('click', () => this.manager.open({
+        skillButton.addEventListener('click', (event) => this.manager.open({
           type: 'tag-skill',
           parentId: entry.id,
           data: { tag, tagName: detail.name, effect: detail.effect, ...skill },
+          anchor: { x: event.clientX, y: event.clientY },
         }));
         skillList.append(skillButton);
       });
@@ -101,5 +103,27 @@ export default class InformationWindowLayer {
     body.append(requirement, createElement('p', 'InformationWindow__Description', `${tagName}タグを${requiredCount}個以上持つと発動する。`), createElement('p', 'InformationWindow__Description', `${effect}を高めるタグスキル。`));
     content.append(body);
     return content;
+  }
+
+  #positionWindow(windowElement, anchor) {
+    if (!anchor) {
+      windowElement.style.left = '50%';
+      windowElement.style.top = '50%';
+      windowElement.style.transform = 'translate(-50%, -50%)';
+      return;
+    }
+    const margin = 12;
+    const gap = 16;
+    const bounds = windowElement.getBoundingClientRect();
+    const viewportWidth = globalThis.innerWidth;
+    const viewportHeight = globalThis.innerHeight;
+    let x = anchor.x + gap;
+    if (x + bounds.width > viewportWidth - margin) x = anchor.x - gap - bounds.width;
+    x = Math.max(margin, Math.min(x, viewportWidth - bounds.width - margin));
+    let y = anchor.y - 24;
+    y = Math.max(margin, Math.min(y, viewportHeight - bounds.height - margin));
+    windowElement.style.left = `${x}px`;
+    windowElement.style.top = `${y}px`;
+    windowElement.style.transform = 'none';
   }
 }

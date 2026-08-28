@@ -18,11 +18,11 @@ export default class InformationWindowManager {
     this.#notify();
   }
 
-  open({ type, data, parentId = null }) {
+  open({ type, data, parentId = null, anchor = null }) {
     if (parentId !== null && !this.windows.some((entry) => entry.id === parentId)) parentId = null;
     if (parentId === null) this.windows = [];
     else this.windows = this.windows.filter((entry) => !this.#isDescendantOf(entry.id, parentId));
-    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId });
+    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor });
     this.windows.push(entry);
     this.#notify();
     return entry;

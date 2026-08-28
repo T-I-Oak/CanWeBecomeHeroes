@@ -120,8 +120,8 @@ body {
 
 .InformationWindow {
   position: absolute;
-  top: calc(50% + var(--information-window-offset-y));
-  left: calc(50% + var(--information-window-offset-x));
+  top: 50%;
+  left: 50%;
   width: min(360px, calc(100vw - 32px));
   color: #24334d;
   background: #f8fafc;
@@ -163,15 +163,21 @@ body {
 }
 
 .InformationWindow__Effect {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   font-weight: 700;
 }
 
-.InformationWindow__StatusIcon {
-  width: 24px;
-  height: 24px;
+.InformationWindow__InlineIcon {
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+  margin: 0 .2em;
+  vertical-align: -.3em;
+}
+
+.InformationWindow__InlineIcon img {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 

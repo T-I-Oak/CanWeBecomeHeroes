@@ -511,7 +511,7 @@ export function startGame({ scenario }) {
     if (!drag.moved) {
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
-      if (tag) informationWindows.open({ type: 'tag', data: { tag } });
+      if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
     }
     drag = null;
   });
