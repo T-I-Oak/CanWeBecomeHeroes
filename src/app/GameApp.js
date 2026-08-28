@@ -50,7 +50,7 @@ const STATUS_DEFINITIONS = Object.freeze([
 const TAG_GRID = Object.freeze([
   Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'fortune']),
   Object.freeze(['iron', 'cloth', 'feather', 'gem', 'blessing']),
-  Object.freeze(['fire', 'water', 'lightning', 'vitality', 'area']),
+  Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
 ]);
 
 function getStaminaGaugeColor(value) {

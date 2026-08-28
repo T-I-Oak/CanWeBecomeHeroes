@@ -17,8 +17,8 @@ const ATTRIBUTE_DETAILS = Object.freeze({
   fire: Object.freeze({ name: '炎', description: '継続ダメージを付与する。タグ数が多いほど継続時間が増える。' }),
   water: Object.freeze({ name: '水', description: '攻撃失敗率を上げる。タグ数が多いほど失敗率が増える。' }),
   lightning: Object.freeze({ name: '雷', description: '物理・魔法攻撃を連続した範囲へ伝搬させる。タグ数が多いほど伝搬量が増える。' }),
-  vitality: Object.freeze({ name: '活力', description: '行動終了後、運によりスタミナ（EnemyはHP）を回復する。タグ数が多いほど回復量が増える。' }),
   area: Object.freeze({ name: '範囲', description: '攻撃と属性付与の範囲を広げる。タグ数が多いほど範囲と効果が増える。' }),
+  vitality: Object.freeze({ name: '活力', description: '行動終了後、運によりスタミナ（EnemyはHP）を回復する。タグ数が多いほど回復量が増える。' }),
 });
 
 export const TAG_DETAILS = Object.freeze({ ...STATUS_DETAILS, ...ATTRIBUTE_DETAILS });

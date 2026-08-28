@@ -14,9 +14,11 @@ export const TAGS = Object.freeze({
   fire: { group: 'attribute', weight: 2, price: 2 },
   water: { group: 'attribute', weight: 2, price: 2 },
   lightning: { group: 'attribute', weight: 2, price: 3 },
-  vitality: { group: 'attribute', weight: 1, price: 3 },
   area: { group: 'attribute', weight: 3, price: 3 },
+  vitality: { group: 'attribute', weight: 1, price: 3 },
 });
+
+export const ATTRIBUTE_TAGS = Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']);
 
 export const STATUS_TAGS = Object.freeze({
   power: Object.freeze(['valor', 'iron']),

@@ -1,6 +1,6 @@
 import Chip from '../chips/Chip.js';
 import Item from './Item.js';
-import { TAGS, getTagBaseColors, getTagGlyphScales, getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
+import { ATTRIBUTE_TAGS, TAGS, getTagBaseColors, getTagGlyphScales, getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
 
@@ -13,9 +13,8 @@ const DESTINATIONS = Object.freeze({
 });
 export const DESTINATION_TYPES = Object.freeze(Object.keys(DESTINATIONS));
 const SLOT_BY_STAT = Object.freeze({ power: 1, magic: 2, speed: 3, negotiation: 4, luck: 5 });
-const SLOT_BY_ATTRIBUTE = Object.freeze({ fire: 1, water: 2, lightning: 3, vitality: 4, area: 5 });
+const SLOT_BY_ATTRIBUTE = Object.freeze({ fire: 1, water: 2, lightning: 3, area: 5, vitality: 4 });
 const TAG_PATTERNS = Object.freeze([[0, 0], [1, 0], [0, 1], [2, 0], [1, 1], [0, 2], [1, 2], [2, 1]]);
-const ATTRIBUTE_TAGS = Object.freeze(['fire', 'water', 'lightning', 'vitality', 'area']);
 const STATUS_TAGS = Object.freeze(Object.keys(TAGS).filter((tag) => TAGS[tag].group === 'status'));
 
 function assetPaths(tags) {

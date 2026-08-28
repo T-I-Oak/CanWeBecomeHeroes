@@ -6,6 +6,11 @@ import ItemFactory from '../../src/game/ItemFactory.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import Enemy from '../../src/game/Enemy.js';
 import { AREA_THEME } from '../../src/game/AreaTheme.js';
+import { ATTRIBUTE_TAGS } from '../../src/game/TagCatalog.js';
+
+test('attribute tags use the shared fire water lightning area vitality order', () => {
+  assert.deepEqual(ATTRIBUTE_TAGS, ['fire', 'water', 'lightning', 'area', 'vitality']);
+});
 
 test('hero factory creates a profession chip with its two fixed tags', () => {
   const hero = new HeroFactory().create({ profession: 'mage', x: 100, y: 200 });
