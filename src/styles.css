@@ -348,8 +348,9 @@ body {
 }
 
 .InformationWindow__EntityStatusSegments {
-  display: grid;
-  align-content: end;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
   width: 100%;
   padding: 0 1px;
   gap: 2px;
@@ -389,10 +390,10 @@ body {
 .InformationWindow__EntityTag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 1px;
   min-width: 44px;
   min-height: 28px;
-  padding: 3px;
+  padding: 2px;
   color: var(--tag-skill-text);
   background: var(--tag-skill-fill);
   border: 2px solid var(--tag-skill-border);
@@ -408,6 +409,7 @@ body {
   background: #f2f5f9;
   border: 2px solid #aab7cb;
   border-radius: 9px;
+  position: relative;
 }
 
 .InformationWindow__Equipment .InformationWindow__ChipImage {
@@ -417,8 +419,25 @@ body {
   border-width: 0;
 }
 
-.InformationWindow__Equipment .InformationWindow__TagIcon {
-  margin-left: -9px;
+.InformationWindow__EntityTag .InformationWindow__TagIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+.InformationWindow__EntityTag .InformationWindow__SkillRequirement {
+  min-width: 12px;
+  font-size: 13px;
+}
+
+.InformationWindow__EquipmentTags {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  display: inline-flex;
+  gap: 2px;
+  transform: translateX(-50%);
 }
 
 .InformationWindow__Equipment[data-slot='head'] { grid-column: 2; grid-row: 1; }

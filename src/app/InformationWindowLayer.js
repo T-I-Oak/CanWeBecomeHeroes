@@ -227,7 +227,9 @@ export default class InformationWindowLayer {
       return button;
     }
     button.append(createChipImage(item.chip.centerPath));
-    item.tags.forEach((tag) => button.append(createTagIcon(tag, 'InformationWindow__TagIcon--small')));
+    const tags = createElement('span', 'InformationWindow__EquipmentTags');
+    item.tags.forEach((tag) => tags.append(createTagIcon(tag, 'InformationWindow__TagIcon--small')));
+    button.append(tags);
     button.addEventListener('click', (event) => this.manager.open({ type: 'item', parentId, data: { item }, anchor: { x: event.clientX, y: event.clientY } }));
     return button;
   }
