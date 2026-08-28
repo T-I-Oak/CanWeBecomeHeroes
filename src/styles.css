@@ -181,6 +181,17 @@ body {
   object-fit: contain;
 }
 
+.InformationWindow__InlineIcon.state-clickable {
+  cursor: pointer;
+}
+
+.InformationWindow__InlineIcon.state-clickable:hover,
+.InformationWindow__InlineIcon.state-clickable:focus-visible {
+  filter: brightness(1.12);
+  outline: 2px solid #24334d;
+  outline-offset: 2px;
+}
+
 .InformationWindow__TagIcon {
   display: grid;
   flex: 0 0 44px;

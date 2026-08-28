@@ -219,6 +219,24 @@ function getPreparationStatusAtPoint(point, heroes) {
   return null;
 }
 
+function getTrainingStatusAtPoint(point, hero) {
+  if (!hero) return null;
+  const area = GAME_AREAS.training;
+  const slotOrigin = getFacilitySlotOrigin('training');
+  const startX = slotOrigin.x + HERO_SLOT_SIZE + 24;
+  const gaugeY = area.y + (area.height - PREPARATION_LAYOUT.statusGaugeHeight) / 2;
+  const { statusColumnWidth, statusColumnGap, statusGaugeWidth, statusIconSize, statusIconTopPadding } = PREPARATION_LAYOUT;
+  for (let statusIndex = 0; statusIndex < STATUS_DEFINITIONS.length; statusIndex += 1) {
+    const { key } = STATUS_DEFINITIONS[statusIndex];
+    const gaugeX = startX + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2;
+    const iconX = gaugeX + (statusGaugeWidth - statusIconSize) / 2;
+    const iconY = gaugeY + statusIconTopPadding;
+    if (!isPointInRect(point, iconX, iconY, statusIconSize, statusIconSize)) continue;
+    return { status: key, current: key === 'stamina' ? hero.stamina : hero.getStatus(key), maximum: hero.maximums[key] };
+  }
+  return null;
+}
+
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
   if (!chip || tags.length === 0) return null;
@@ -473,6 +491,7 @@ export function startGame({ scenario }) {
     clock,
     onChange: (entries) => informationLayer.render(entries),
   });
+  informationLayer.manager = informationWindows;
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
     onSelect: (choiceId) => {
@@ -593,7 +612,8 @@ export function startGame({ scenario }) {
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
     }
     if (!drag.moved) {
-      const status = getPreparationStatusAtPoint(point, preparationHeroes);
+      const status = getPreparationStatusAtPoint(point, preparationHeroes)
+        ?? getTrainingStatusAtPoint(point, controller.getHeroes().find((hero) => hero.currentArea === 'training'));
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
         ?? getPreparationItemTagAtPoint(point, preparationHeroes)
         ?? getShopTagAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction())

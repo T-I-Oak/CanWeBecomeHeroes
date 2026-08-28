@@ -76,6 +76,15 @@ export default class InformationWindowLayer {
       image.src = STATUS_VISUALS[detail.status].iconPath;
       image.alt = '';
       statusIcon.append(image);
+      statusIcon.tabIndex = 0;
+      statusIcon.classList.add('state-clickable');
+      const openStatusDetail = (event) => this.manager.open({
+        type: 'status', parentId: entry.id, data: { status: detail.status }, anchor: { x: event.clientX, y: event.clientY },
+      });
+      statusIcon.addEventListener('click', openStatusDetail);
+      statusIcon.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openStatusDetail(event); }
+      });
       status.append('このタグを持つItemを装備すると', statusIcon, `${detail.statusName}が増える。`);
       body.append(status, createElement('p', 'InformationWindow__Description', `${detail.effect}が上がる。`));
 
@@ -124,10 +133,8 @@ export default class InformationWindowLayer {
     title.append(createStatusIcon(status), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
-    body.append(
-      createElement('p', 'InformationWindow__Effect', `現在値 ${Math.floor(current)} / ${Math.floor(maximum)}`),
-      createElement('p', 'InformationWindow__Description', detail.description),
-    );
+    if (Number.isFinite(current) && Number.isFinite(maximum)) body.append(createElement('p', 'InformationWindow__Effect', `現在値 ${Math.floor(current)} / ${Math.floor(maximum)}`));
+    body.append(createElement('p', 'InformationWindow__Description', detail.description));
     content.append(body);
     return content;
   }
