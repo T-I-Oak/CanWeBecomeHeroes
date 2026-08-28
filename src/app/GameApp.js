@@ -1,7 +1,7 @@
 import '../styles.css';
 import AssetLoader from '../chips/AssetLoader.js';
 import ChipBoard from '../chips/ChipBoard.js';
-import ChipRenderer, { getCenterImagePlacement } from '../chips/ChipRenderer.js';
+import ChipRenderer, { createTagAngles, getCenterImagePlacement } from '../chips/ChipRenderer.js';
 import ItemPickupController from '../game/ItemPickupController.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, getPreparationSubareaBounds, WORLD_SIZE } from '../game/GameAreas.js';
@@ -34,6 +34,10 @@ import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import StageSelectionModal from './StageSelectionModal.js';
+import InformationWindowManager from './InformationWindowManager.js';
+import InformationWindowLayer from './InformationWindowLayer.js';
+import { getTagDetail } from '../game/TagDetailCatalog.js';
+import { getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -153,8 +157,9 @@ function drawTagList(context, assets, hero, x, y) {
       const cellX = x + columnIndex * (statusColumnWidth + statusColumnGap);
       const badgeX = cellX + (statusColumnWidth - tagBadgeWidth) / 2;
       const badgeY = y + rowIndex * (tagBadgeHeight + tagRowGap);
-      context.fillStyle = count === 0 ? '#dce2eb' : '#f8fafc';
-      context.strokeStyle = count === 0 ? '#b8c1d0' : '#53627c';
+      const visual = getTagDetail(tag).skills ? getTagSkillVisual(count) : getTagSkillVisual(0);
+      context.fillStyle = visual.fill;
+      context.strokeStyle = visual.border;
       context.lineWidth = 1;
       context.beginPath();
       context.roundRect(badgeX, badgeY, tagBadgeWidth, tagBadgeHeight, 6);
@@ -162,12 +167,51 @@ function drawTagList(context, assets, hero, x, y) {
       context.stroke();
       const tagY = badgeY + (tagBadgeHeight - tagIconSize) / 2;
       drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], badgeX + 3, tagY, tagIconSize);
-      context.fillStyle = '#24334d';
+      context.fillStyle = visual.text;
       drawTextAtVisualCenter(context, String(count), badgeX + tagBadgeWidth - 9 - tagIconNumberGap, badgeY + tagBadgeHeight / 2);
     });
   });
   context.textAlign = 'start';
   context.textBaseline = 'alphabetic';
+}
+
+function isPointInRect(point, x, y, width, height) {
+  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
+}
+
+function getPreparationTagAtPoint(point, heroes) {
+  const { statusGaugeHeight, sectionGap, statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagRowGap, topPadding } = PREPARATION_LAYOUT;
+  for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
+    const bounds = getPreparationSubareaBounds(heroIndex);
+    const informationX = bounds.x + topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
+    const tagStartY = bounds.y + topPadding + statusGaugeHeight + sectionGap;
+    for (let rowIndex = 0; rowIndex < TAG_GRID.length; rowIndex += 1) {
+      for (let columnIndex = 0; columnIndex < TAG_GRID[rowIndex].length; columnIndex += 1) {
+        const badgeX = informationX + columnIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - tagBadgeWidth) / 2;
+        const badgeY = tagStartY + rowIndex * (tagBadgeHeight + tagRowGap);
+        if (isPointInRect(point, badgeX, badgeY, tagBadgeWidth, tagBadgeHeight)) return TAG_GRID[rowIndex][columnIndex];
+      }
+    }
+  }
+  return null;
+}
+
+function getChipTagAtPoint(entity, point) {
+  const { chip, tags = [] } = entity;
+  if (!chip || tags.length === 0) return null;
+  const visualX = chip.x + (chip.effectOffsetX ?? 0);
+  const visualY = chip.y - chip.height + (chip.effectOffsetY ?? 0);
+  const rotation = chip.tilt + chip.poseTilt + (chip.effectRotation ?? 0);
+  const scale = chip.scale || 1;
+  const translatedX = (point.x - visualX) / scale;
+  const translatedY = (point.y - visualY) / scale;
+  const localX = translatedX * Math.cos(rotation) + translatedY * Math.sin(rotation);
+  const localY = -translatedX * Math.sin(rotation) + translatedY * Math.cos(rotation);
+  const iconSize = chip.radius * 0.42;
+  const tagRadius = chip.radius * 0.7;
+  const angles = createTagAngles(tags.length, 8);
+  const tagIndex = angles.findIndex((angle) => Math.hypot(localX - Math.cos(angle) * tagRadius, localY - Math.sin(angle) * tagRadius) <= iconSize * 0.55);
+  return tagIndex >= 0 ? tags[tagIndex] : null;
 }
 
 function drawItemSlot(context, assets, item, slotX, slotY) {
@@ -341,6 +385,11 @@ export function startGame({ scenario }) {
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const assets = new AssetLoader();
   const renderer = new ChipRenderer(context, assets);
+  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'));
+  const informationWindows = new InformationWindowManager({
+    clock,
+    onChange: (entries) => informationLayer.render(entries),
+  });
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
     onSelect: (choiceId) => {
@@ -373,6 +422,13 @@ export function startGame({ scenario }) {
   });
   document.querySelector('#game-speed').addEventListener('change', (event) => {
     clock.setSpeed(Number(event.currentTarget.value));
+  });
+  const pauseOnInformation = document.querySelector('#pause-on-information');
+  informationWindows.setPauseOnOpen(pauseOnInformation.checked);
+  pauseOnInformation.addEventListener('change', (event) => informationWindows.setPauseOnOpen(event.currentTarget.checked));
+  document.addEventListener('pointerdown', (event) => {
+    const windowElement = event.target.closest?.('.InformationWindow');
+    informationWindows.focus(windowElement?.dataset.informationWindowId ?? null);
   });
   let drag = null;
 
@@ -451,6 +507,11 @@ export function startGame({ scenario }) {
     if (drag.startedSelection) {
       controller.updateSelectionHover(point.x, point.y);
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
+    }
+    if (!drag.moved) {
+      const tag = getPreparationTagAtPoint(point, preparationHeroes)
+        ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
+      if (tag) informationWindows.open({ type: 'tag', data: { tag } });
     }
     drag = null;
   });
