@@ -7,6 +7,9 @@ import { getItemDetail } from '../game/ItemDetailCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
+// The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
+// this same world-size ratio instead of being normalized to the hero size.
+const ENTITY_PORTRAIT_SCALE = 156 / 192;
 const TAG_GRID = Object.freeze([
   Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'fortune']),
   Object.freeze(['iron', 'cloth', 'feather', 'gem', 'blessing']),
@@ -151,6 +154,7 @@ export default class InformationWindowLayer {
     const displayName = isEnemy ? entity.definition.nameJa : `【${entity.profession}・${entity.name.ja}】`;
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title InformationWindow__EntityTitle');
+    title.style.setProperty('--entity-portrait-size', `${entity.chip.radius * 2 * ENTITY_PORTRAIT_SCALE}px`);
     title.append(createChipImage(entity.chip.centerPath), createElement('h2', 'InformationWindow__Name', displayName));
     content.append(title);
     const body = createElement('div', 'InformationWindow__EntityPanel');
