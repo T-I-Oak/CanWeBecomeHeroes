@@ -397,6 +397,7 @@ export function startGame({ scenario }) {
       stageSelection.hide();
       clock.resume('stage-selection');
     },
+    onTagSelect: (tag, anchor) => informationWindows.open({ type: 'tag', data: { tag }, anchor }),
   });
 
   function openStageSelection(stageNumber = stageController.stageNumber + 1) {

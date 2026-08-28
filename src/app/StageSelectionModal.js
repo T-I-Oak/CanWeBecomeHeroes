@@ -1,4 +1,4 @@
-import ChipRenderer, { drawFramedTag } from '../chips/ChipRenderer.js';
+import ChipRenderer, { createTagAngles, drawFramedTag } from '../chips/ChipRenderer.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 
@@ -40,12 +40,28 @@ function createPreviewChip(chip, previewSize) {
   };
 }
 
+export function getPreviewTagAtPoint(enemy, canvas, clientX, clientY) {
+  const bounds = canvas.getBoundingClientRect();
+  const point = {
+    x: (clientX - bounds.left) * canvas.width / bounds.width,
+    y: (clientY - bounds.top) * canvas.height / bounds.height,
+  };
+  const preview = createPreviewChip(enemy.chip, canvas.width);
+  const iconSize = preview.radius * 0.42;
+  const tagRadius = preview.radius * 0.7;
+  const tagIndex = createTagAngles(enemy.tags.length, 8).findIndex((angle) => (
+    Math.hypot(point.x - (preview.x + Math.cos(angle) * tagRadius), point.y - (preview.y + Math.sin(angle) * tagRadius)) <= iconSize * 0.55
+  ));
+  return tagIndex >= 0 ? enemy.tags[tagIndex] : null;
+}
+
 export default class StageSelectionModal {
-  constructor(container, { assets, onSelect = () => {} } = {}) {
+  constructor(container, { assets, onSelect = () => {}, onTagSelect = () => {} } = {}) {
     if (!container || !assets) throw new Error('Stage selection modal requires a container and assets.');
     this.container = container;
     this.assets = assets;
     this.onSelect = onSelect;
+    this.onTagSelect = onTagSelect;
   }
 
   show({ stageNumber, choices }) {
@@ -116,6 +132,10 @@ export default class StageSelectionModal {
     const label = createElement('span', 'StageSelection__EnemyName', enemy.definition.nameJa);
     slot.append(canvas, label);
     this.drawChipPreview(canvas, enemy.chip, previewSize);
+    canvas.addEventListener('click', (event) => {
+      const tag = getPreviewTagAtPoint(enemy, canvas, event.clientX, event.clientY);
+      if (tag) this.onTagSelect(tag, { x: event.clientX, y: event.clientY });
+    });
     return slot;
   }
 
@@ -128,6 +148,7 @@ export default class StageSelectionModal {
     tagIcon.setAttribute('aria-label', tag);
     this.drawTrendTag(tagIcon, tag);
     trend.append(createElement('span', 'StageSelection__TrendLabel', label), tagIcon);
+    tagIcon.addEventListener('click', (event) => this.onTagSelect(tag, { x: event.clientX, y: event.clientY }));
     return trend;
   }
 
