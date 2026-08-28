@@ -389,9 +389,10 @@ body {
 .InformationWindow__Equipment {
   display: inline-flex;
   align-items: flex-start;
-  min-width: 72px;
-  min-height: 72px;
-  padding: 3px;
+  box-sizing: border-box;
+  width: 72px;
+  height: 72px;
+  padding: 0;
   background: var(--equipment-fill, #f2f5f9);
   border: 2px solid #aab7cb;
   border-radius: 9px;
@@ -399,7 +400,9 @@ body {
 }
 
 .InformationWindow__EquipmentImage {
-  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 4px;
   width: 64px;
   height: 64px;
 }
