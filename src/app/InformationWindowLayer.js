@@ -4,6 +4,7 @@ import { getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
 import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { getStatusDetail } from '../game/StatusDetailCatalog.js';
 import { getItemDetail } from '../game/ItemDetailCatalog.js';
+import { AREA_THEME } from '../game/AreaTheme.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 const TAG_GRID = Object.freeze([
@@ -49,6 +50,15 @@ function createStatusIcon(status, sizeClass = '') {
 
 function createChipImage(path) {
   const image = createElement('span', 'InformationWindow__ChipImage');
+  const asset = document.createElement('img');
+  asset.src = path;
+  asset.alt = '';
+  image.append(asset);
+  return image;
+}
+
+function createEquipmentImage(path) {
+  const image = createElement('span', 'InformationWindow__EquipmentImage');
   const asset = document.createElement('img');
   asset.src = path;
   asset.alt = '';
@@ -140,10 +150,10 @@ export default class InformationWindowLayer {
     const isEnemy = entity.chip.type === 'enemy';
     const displayName = isEnemy ? entity.definition.nameJa : `【${entity.profession}・${entity.name.ja}】`;
     const content = document.createDocumentFragment();
+    const title = createElement('header', 'InformationWindow__Title InformationWindow__EntityTitle');
+    title.append(createChipImage(entity.chip.centerPath), createElement('h2', 'InformationWindow__Name', displayName));
+    content.append(title);
     const body = createElement('div', 'InformationWindow__EntityPanel');
-    const character = createElement('section', 'InformationWindow__EntityCharacter');
-    character.append(createElement('h2', 'InformationWindow__EntityName', displayName), createChipImage(entity.chip.centerPath));
-    body.append(character);
     const information = createElement('section', 'InformationWindow__EntityInformation');
     const statusGrid = createElement('div', 'InformationWindow__EntityStatusGrid');
     const statusKeys = isEnemy ? ['hp', ...ENTITY_STATUS_KEYS] : [...ENTITY_STATUS_KEYS, 'stamina'];
@@ -222,11 +232,12 @@ export default class InformationWindowLayer {
     const button = createElement('button', `InformationWindow__Equipment${item ? ' state-clickable' : ''}`);
     button.type = 'button';
     if (slot) button.dataset.slot = slot;
+    if (item?.category === 'destination') button.style.setProperty('--equipment-fill', AREA_THEME[item.destination].chipFill);
     if (!item) {
       button.disabled = true;
       return button;
     }
-    button.append(createChipImage(item.chip.centerPath));
+    button.append(createEquipmentImage(item.chip.centerPath));
     const tags = createElement('span', 'InformationWindow__EquipmentTags');
     item.tags.forEach((tag) => tags.append(createTagIcon(tag, 'InformationWindow__TagIcon--small')));
     button.append(tags);
