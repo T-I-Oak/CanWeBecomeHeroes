@@ -5,6 +5,7 @@ const SETTLE_HEIGHT = 0.2;
 const GROUND_SEPARATION_SPEED = 360;
 const MOVE_STEP_DURATION_SECONDS = 0.38;
 const COLLISION_HEIGHT_RATIO = 0.25;
+const hasPhysicalTilt = (chip) => chip.type === 'item';
 
 function distanceBetween(first, second) {
   return Math.hypot(first.x - second.x, first.y - second.y);
@@ -65,8 +66,12 @@ export default class ChipBoard {
     this.chips.forEach((chip) => {
       this.updateFall(chip, deltaSeconds);
       this.updateStep(chip, deltaSeconds);
-      chip.tilt += chip.tiltVelocity * deltaSeconds;
-      chip.tiltVelocity *= Math.pow(0.001, deltaSeconds);
+      if (hasPhysicalTilt(chip)) {
+        chip.tilt += chip.tiltVelocity * deltaSeconds;
+        chip.tiltVelocity *= Math.pow(0.001, deltaSeconds);
+      } else {
+        chip.tiltVelocity = 0;
+      }
       chip.impact = Math.max(0, chip.impact - deltaSeconds * 4);
     });
     this.resolveGroundOverlaps(deltaSeconds);
@@ -124,14 +129,14 @@ export default class ChipBoard {
 
     chip.verticalVelocity += GRAVITY * deltaSeconds;
     chip.height -= chip.verticalVelocity * deltaSeconds;
-    chip.tiltVelocity += (chip.weight / 15) * 7 * deltaSeconds;
+    if (hasPhysicalTilt(chip)) chip.tiltVelocity += (chip.weight / 15) * 7 * deltaSeconds;
 
     if (chip.height <= 0) {
       const impactVelocity = chip.verticalVelocity;
       chip.height = 0;
       const bounceVelocity = impactVelocity * (0.22 + (15 - chip.weight) * 0.008);
       chip.verticalVelocity = bounceVelocity < 120 ? 0 : -bounceVelocity;
-      chip.tiltVelocity = chip.verticalVelocity === 0 ? 0 : chip.tiltVelocity * -0.62;
+      chip.tiltVelocity = hasPhysicalTilt(chip) && chip.verticalVelocity !== 0 ? chip.tiltVelocity * -0.62 : 0;
       chip.impact = Math.min(1, impactVelocity / 900);
       this.applyImpact(chip, impactVelocity);
     }
@@ -147,7 +152,7 @@ export default class ChipBoard {
     chip.x = step.startX + (step.targetX - step.startX) * Math.min(1, steppedProgress);
     chip.y = step.startY + (step.targetY - step.startY) * Math.min(1, steppedProgress);
     chip.height = Math.max(chip.height, Math.sin(progress * Math.PI * step.stepCount) * chip.radius * 0.12);
-    chip.tiltVelocity += (step.targetX - step.startX) * 0.00025;
+    if (hasPhysicalTilt(chip)) chip.tiltVelocity += (step.targetX - step.startX) * 0.00025;
     this.pushOverlaps(chip, chip.radius * 0.22);
     if (progress >= 1) chip.step = null;
   }
@@ -169,7 +174,7 @@ export default class ChipBoard {
       chip.y = position.y;
       chip.height = Math.max(chip.height, strength * ratio * chip.radius * 0.5);
       chip.verticalVelocity = Math.min(chip.verticalVelocity, -strength * ratio * 260);
-      chip.tiltVelocity += (dx / length) * strength * 3;
+      if (hasPhysicalTilt(chip)) chip.tiltVelocity += (dx / length) * strength * 3;
     });
   }
 

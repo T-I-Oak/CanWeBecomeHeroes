@@ -262,6 +262,23 @@ test('each attribute uses the attacker luck roll to determine its application ra
   assert.equal(target.attributeSources.water, actor);
 });
 
+test('damage leaves a random knockback tilt that each action gradually restores', () => {
+  const battle = new BattleSystem(new ChipBoard({ width: 3000, height: 2000 }), {
+    controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} }, random: () => 0,
+  });
+  const target = { chip: { type: 'hero', tilt: 0 }, stamina: 3 };
+  const actor = {
+    chip: { type: 'hero', actionGauge: 0, tilt: -0.4 }, equipment: {},
+    getStatus: () => 0, getCarriedWeight: () => 0,
+  };
+
+  battle.applyDamage(null, target, 'sword', 1);
+  battle.updateActor(actor, [], 1000);
+
+  assert.ok(target.chip.tilt < 0);
+  assert.ok(Math.abs(actor.chip.tilt) < 0.4);
+});
+
 test('lightning propagates only through contiguous opponent slots', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const enemyFactory = new EnemyFactory();

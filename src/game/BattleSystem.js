@@ -11,6 +11,9 @@ const ATTACKS = { sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power',
 const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
 const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
 const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
+const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 36;
+const KNOCKBACK_TILT_MIN_RADIANS = Math.PI / 72;
+const KNOCKBACK_TILT_RANGE_RADIANS = Math.PI / 24;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
@@ -89,8 +92,21 @@ export default class BattleSystem {
     actor.chip.actionGauge = (actor.chip.actionGauge ?? 0) + ACTION_GAUGE_BASE_RATE / (1 + (actor.getCarriedWeight() / ACTION_GAUGE_WEIGHT_SCALE) ** 2) * delta;
     if (actor.chip.actionGauge < max) return;
     actor.chip.actionGauge = 0;
+    this.restoreActionTilt(actor);
     const target = this.findTarget(actor, participants);
     if (target) this.resolveAction(actor, target, participants);
+  }
+  restoreActionTilt(actor) {
+    const { chip } = actor;
+    if (Math.abs(chip.tilt) <= ACTION_TILT_RECOVERY_RADIANS) {
+      chip.tilt = 0;
+      return;
+    }
+    chip.tilt -= Math.sign(chip.tilt) * ACTION_TILT_RECOVERY_RADIANS;
+  }
+  applyKnockbackTilt(target) {
+    const amount = KNOCKBACK_TILT_MIN_RADIANS + this.random() * KNOCKBACK_TILT_RANGE_RADIANS;
+    target.chip.tilt += this.random() < 0.5 ? -amount : amount;
   }
   updateActionGaugeMaximum(actor) {
     const maximum = getActionGaugeMaximum(actor);
@@ -289,7 +305,7 @@ export default class BattleSystem {
     });
   }
   applyDamage(actor, target, type, damage, critical = false) {
-    if (damage < .01) return 0; this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
+    if (damage < .01) return 0; this.applyKnockbackTilt(target); this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
     if (isHero(target)) {
       target.stamina = Math.max(0, target.stamina - damage);
       this.onDamage?.({ actor, target, type, damage, critical });

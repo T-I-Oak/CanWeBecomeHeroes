@@ -83,6 +83,18 @@ test('a chip stops rotating once its small landing bounce is settled', () => {
   assert.equal(chip.tiltVelocity, 0);
 });
 
+test('a hero landing does not gain a physical tilt', () => {
+  const board = new ChipBoard({ width: 800, height: 600 });
+  const hero = addChip(board, 'hero', 300, 300, 15);
+  hero.height = 2;
+  hero.verticalVelocity = 500;
+
+  board.update(0.02);
+
+  assert.equal(hero.tilt, 0);
+  assert.equal(hero.tiltVelocity, 0);
+});
+
 test('chips with greater height are rendered after ground chips', () => {
   const board = new ChipBoard({ width: 800, height: 600 });
   const groundChip = addChip(board, 'hero', 300, 300);
