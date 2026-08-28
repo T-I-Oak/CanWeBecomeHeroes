@@ -47,11 +47,10 @@ export default class EnemyFactory {
       bounds: slot.bounds,
       fillColor: AREA_THEME.battle.chipFill,
     });
-    const productTags = createTrendProductTags(mainTag, random);
     const equipmentParts = ['head', 'torso', 'feet', ...Array.from({ length: weaponCount }, () => 'weapon')];
     const tagCounts = reduceTagCounts(totalTagCount, random, equipmentParts);
     const equipment = equipmentParts.map((part, index) => createTrendEquipmentItem({
-      part, count: tagCounts[index], productTags, itemFactory: this.itemFactory, random,
+      part, count: tagCounts[index], productTags: createTrendProductTags(mainTag, random), itemFactory: this.itemFactory, random,
     }));
     return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums, rank, mainTag, subTags, slotPosition });
   }

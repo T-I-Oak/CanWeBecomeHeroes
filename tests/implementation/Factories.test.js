@@ -78,6 +78,22 @@ test('enemy maximums can cap its status independently of the default maximum', (
   assert.equal(enemy.getStatus('power'), 3);
 });
 
+test('enemy equipment independently rolls each item three-tag candidate set', () => {
+  let seed = 7;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 2 ** 32;
+  };
+  const enemy = new EnemyFactory().create({
+    size: 'small', tagAffinity: 'valor', slotPosition: 3, maximumHp: 3, contributionPoints: 0, totalTagCount: 15, random,
+  });
+  const bodyCandidates = enemy.equipment
+    .filter((item) => item.category !== 'weapon')
+    .map((item) => [...item.tags].sort().join(','));
+
+  assert.ok(new Set(bodyCandidates).size > 1);
+});
+
 test('item factory calculates tag weight, price, and equipment assets', () => {
   const item = new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor', 'fire'], x: 100, y: 200 });
   assert.equal(item.chip.weight, 5);
