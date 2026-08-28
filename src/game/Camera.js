@@ -3,7 +3,7 @@ export default class Camera {
     this.world = world;
     this.minZoom = minZoom;
     this.maxZoom = maxZoom;
-    this.zoom = 1;
+    this.zoom = minZoom;
     this.x = 0;
     this.y = 0;
   }
