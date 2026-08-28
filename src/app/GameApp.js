@@ -238,6 +238,16 @@ function drawItemSlot(context, assets, item, slotX, slotY) {
   });
 }
 
+function getItemSlotTagAtPoint(point, item, slotX, slotY) {
+  if (!item) return null;
+  const tagSize = PREPARATION_LAYOUT.equipmentTagIconSize;
+  const tagGap = PREPARATION_LAYOUT.equipmentTagGap;
+  const tagWidth = item.chip.tagPaths.length * tagSize + Math.max(0, item.chip.tagPaths.length - 1) * tagGap;
+  const tagStartX = slotX + (PREPARATION_LAYOUT.equipmentSlotSize - tagWidth) / 2;
+  const tagIndex = item.tags.findIndex((tag, index) => isPointInRect(point, tagStartX + index * (tagSize + tagGap), slotY + 2, tagSize, tagSize));
+  return tagIndex >= 0 ? item.tags[tagIndex] : null;
+}
+
 function drawEquipmentGrid(context, assets, hero, x, y) {
   const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
   const gap = PREPARATION_LAYOUT.equipmentGap;
@@ -254,6 +264,28 @@ function drawEquipmentGrid(context, assets, hero, x, y) {
     const slotY = y + row * (slotSize + gap);
     drawItemSlot(context, assets, hero.equipment[slot], slotX, slotY);
   });
+}
+
+function getPreparationItemTagAtPoint(point, heroes) {
+  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
+  const gap = PREPARATION_LAYOUT.equipmentGap;
+  const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
+  for (let index = 0; index < heroes.length; index += 1) {
+    const hero = heroes[index];
+    const bounds = getPreparationSubareaBounds(index);
+    const startX = bounds.x
+      + PREPARATION_LAYOUT.topPadding
+      + PREPARATION_LAYOUT.characterAreaWidth
+      + PREPARATION_LAYOUT.areaGap
+      + PREPARATION_LAYOUT.informationAreaWidth
+      + PREPARATION_LAYOUT.areaGap;
+    for (const slot of EQUIPMENT_SLOTS) {
+      const [column, row] = positions[slot];
+      const tag = getItemSlotTagAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), bounds.y + PREPARATION_LAYOUT.topPadding + row * (slotSize + gap));
+      if (tag) return tag;
+    }
+  }
+  return null;
 }
 
 function drawShopPanel(context, assets, shop, bag, transaction) {
@@ -314,6 +346,34 @@ function drawShopPanel(context, assets, shop, bag, transaction) {
   context.stroke();
   context.textAlign = 'start';
   context.textBaseline = 'alphabetic';
+}
+
+function getShopTagAtPoint(point, shop, bag, transaction) {
+  if (!shop) return null;
+  const layout = getShopLayout(GAME_AREAS.shop);
+  const trendSize = 48;
+  const trendTag = [
+    { tag: shop.saleTag, board: layout.saleBoards.sale },
+    { tag: shop.nextTag, board: layout.saleBoards.next },
+  ].find(({ board }) => isPointInRect(point, board.x + board.width / 2 - trendSize / 2, board.y + 44, trendSize, trendSize));
+  if (trendTag) return trendTag.tag;
+
+  const { slotSize, gap, top, sellItemsTop, sellX, purchaseX } = layout.transaction;
+  const soldItems = Array.from({ length: 3 }, (_, index) => transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null);
+  for (let index = 0; index < soldItems.length; index += 1) {
+    const tag = getItemSlotTagAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
+    if (tag) return tag;
+  }
+  const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
+  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
+  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
+  for (let index = 0; index < purchaseSlots.length; index += 1) {
+    if (index >= revealedInSet) continue;
+    const [column, row] = purchaseSlots[index];
+    const tag = getItemSlotTagAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
+    if (tag) return tag;
+  }
+  return null;
 }
 
 function drawTiledBackground(context, assets, imagePath, bounds) {
@@ -511,6 +571,8 @@ export function startGame({ scenario }) {
     }
     if (!drag.moved) {
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
+        ?? getPreparationItemTagAtPoint(point, preparationHeroes)
+        ?? getShopTagAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction())
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
       if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
     }
