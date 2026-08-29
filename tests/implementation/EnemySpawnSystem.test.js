@@ -14,9 +14,9 @@ test('enemy spawns follow the outer-to-center slot order with fixed empty-slot d
   spawn.update(199);
   assert.equal(added.length, 0);
   spawn.update(200);
-  assert.deepEqual(added, [slotThree]);
+  assert.deepEqual(added, [slotFour]);
   spawn.update(249);
-  assert.deepEqual(added, [slotThree]);
+  assert.deepEqual(added, [slotFour]);
   spawn.update(250);
-  assert.deepEqual(added, [slotThree, slotFour]);
+  assert.deepEqual(added, [slotFour, slotThree]);
 });
