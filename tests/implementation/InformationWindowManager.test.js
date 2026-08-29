@@ -38,6 +38,14 @@ test('opening an already visible target focuses it instead of creating a duplica
   assert.deepEqual(manager.entries.map((entry) => entry.id), [tag.id]);
 });
 
+test('facility help windows use their facility identity to avoid duplicates', () => {
+  const manager = new InformationWindowManager();
+  const shop = manager.open({ type: 'facility', data: { facility: 'shop' } });
+  const repeated = manager.open({ type: 'facility', data: { facility: 'shop' } });
+  assert.equal(repeated.id, shop.id);
+  assert.equal(manager.entries.length, 1);
+});
+
 test('focusing the current leaf does not notify or replace an unchanged window branch', () => {
   let changes = 0;
   const manager = new InformationWindowManager({ onChange: () => { changes += 1; } });

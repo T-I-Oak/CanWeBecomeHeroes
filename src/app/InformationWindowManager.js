@@ -76,6 +76,7 @@ export default class InformationWindowManager {
     if (type === 'status') return entry.data.status === data.status;
     if (type === 'entity') return entry.data.entity === data.entity;
     if (type === 'item') return entry.data.item === data.item;
+    if (type === 'facility') return entry.data.facility === data.facility;
     return entry.data === data;
   }
 

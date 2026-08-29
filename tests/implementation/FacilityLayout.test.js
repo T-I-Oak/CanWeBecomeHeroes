@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GAME_AREAS } from '../../src/game/GameAreas.js';
-import { FACILITY_LAYOUT, getFacilityNameplateBounds, getFacilitySlotOrigin } from '../../src/game/FacilityLayout.js';
+import { FACILITY_LAYOUT, getFacilityNameplateAtPoint, getFacilityNameplateBounds, getFacilitySlotOrigin } from '../../src/game/FacilityLayout.js';
 import HeroSlotManager from '../../src/game/HeroSlotManager.js';
 
 test('facility hero slots share a 24px left alignment and named facilities leave room for the plaque', () => {
@@ -22,6 +22,12 @@ test('facility nameplates use the shared 3:1 bounds at the upper left', () => {
     width: 144,
     height: 48,
   });
+});
+
+test('facility nameplate hit testing returns only the clicked facility', () => {
+  const bounds = getFacilityNameplateBounds('guild');
+  assert.equal(getFacilityNameplateAtPoint({ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }), 'guild');
+  assert.equal(getFacilityNameplateAtPoint({ x: bounds.x - 1, y: bounds.y }), null);
 });
 
 test('facility slot manager targets use the same origins as the rendered slots', () => {

@@ -29,7 +29,7 @@ import { drawGuildPanel } from './GuildPanel.js';
 import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
-import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
+import { getFacilityNameplateAtPoint, getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
 import EnemyFactory from '../game/EnemyFactory.js';
@@ -625,6 +625,7 @@ export function startGame({ scenario }) {
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
     }
     if (!drag.moved) {
+      const facility = getFacilityNameplateAtPoint(point);
       const status = getPreparationStatusAtPoint(point, preparationHeroes)
         ?? getTrainingStatusAtPoint(point, controller.getHeroes().find((hero) => hero.currentArea === 'training'));
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
@@ -632,7 +633,8 @@ export function startGame({ scenario }) {
         ?? getShopTagAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction())
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
       const entity = controller.getEntityAt(point.x, point.y);
-      if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
+      if (facility) informationWindows.open({ type: 'facility', data: { facility }, anchor: { x: event.clientX, y: event.clientY } });
+      else if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
       else if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
       else if (entity) informationWindows.open({ type: entity.chip.type === 'item' ? 'item' : 'entity', data: entity.chip.type === 'item' ? { item: entity } : { entity }, anchor: { x: event.clientX, y: event.clientY } });
     }

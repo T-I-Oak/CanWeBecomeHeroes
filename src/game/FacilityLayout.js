@@ -28,3 +28,11 @@ export function getFacilityNameplateBounds(areaName) {
     height: FACILITY_LAYOUT.nameplateHeight,
   });
 }
+
+export function getFacilityNameplateAtPoint(point) {
+  return ['shop', 'guild', 'training'].find((areaName) => {
+    const bounds = getFacilityNameplateBounds(areaName);
+    return point.x >= bounds.x && point.x <= bounds.x + bounds.width
+      && point.y >= bounds.y && point.y <= bounds.y + bounds.height;
+  }) ?? null;
+}
