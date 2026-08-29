@@ -74,7 +74,7 @@ export default class TrainingSystem {
     hero.stamina -= staminaCost;
     hero.maximums[selected.stat] = Math.min(MAXIMUM_STAT_VALUE, hero.maximums[selected.stat] + 1);
     state.gainedCells.push(Object.freeze({ stat: selected.stat, value: hero.maximums[selected.stat] }));
-    this.gameLog?.log(`${hero.profession}・${hero.name.ja}は${STAT_LABELS[selected.stat]}を強化した。`, { subject: 'hero', level: isLucky ? 'luck' : 'info' });
+    this.gameLog?.log(`${hero.profession}・${hero.name.ja}は${STAT_LABELS[selected.stat]}を強化した。`, { subject: 'hero', level: isLucky ? 'luck' : 'info', channel: 'training' });
   }
 
   beginReturn(hero, state) {

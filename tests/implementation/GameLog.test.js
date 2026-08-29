@@ -10,6 +10,7 @@ test('game log keeps records in memory and notifies subscribers', () => {
   assert.deepEqual(log.getRecords(), [record]);
   assert.equal(record.timestamp, 1234);
   assert.equal(record.subject, 'hero');
+  assert.equal(record.channel, 'event');
   assert.equal(received[0].definitions.subject.label, 'キャラクター');
   assert.equal(received[0].definitions.level.label, '情報');
 });
@@ -18,8 +19,10 @@ test('game log accepts future log levels and can suppress a notification', () =>
   const log = new GameLog();
   log.defineLevel('warning', { label: '注意' });
   log.defineSubject('inventory', { label: '倉庫' });
-  const record = log.log('在庫が少なくなりました。', { subject: 'inventory', level: 'warning', notify: false });
+  log.defineChannel('inventory', { label: '倉庫' });
+  const record = log.log('在庫が少なくなりました。', { subject: 'inventory', level: 'warning', channel: 'inventory', notify: false });
   assert.equal(record.subject, 'inventory');
   assert.equal(record.level, 'warning');
   assert.equal(record.notify, false);
+  assert.equal(record.channel, 'inventory');
 });

@@ -65,7 +65,7 @@ export default class ShopSystem {
       const purchase = state.purchases[state.revealed];
       state.revealed += 1;
       if (purchase.enhanced) {
-        this.gameLog?.log(`${hero.profession}・${hero.name.ja}は買った${PART_LABELS[purchase.part]}の隠れた能力を見つけた。`, { subject: 'hero', level: 'luck' });
+        this.gameLog?.log(`${hero.profession}・${hero.name.ja}は買った${PART_LABELS[purchase.part]}の隠れた能力を見つけた。`, { subject: 'hero', level: 'luck', channel: 'shop' });
       }
     }
   }
@@ -77,7 +77,7 @@ export default class ShopSystem {
     if (state.deliveredSets < SHOP_SET_COUNT) return;
     if (state.bag) state.bag.storedItems.length = 0;
     this.shopState.advance(this.random);
-    this.gameLog?.log(`${hero.profession}・${hero.name.ja}はショップで買い物をした。`, { subject: 'hero', level: 'info' });
+    this.gameLog?.log(`${hero.profession}・${hero.name.ja}はショップで買い物をした。`, { subject: 'hero', level: 'info', channel: 'shop' });
     hero.stamina = 0;
     state.returning = true;
     this.returnSystem.begin(hero);

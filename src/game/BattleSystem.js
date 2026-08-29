@@ -66,7 +66,7 @@ export default class BattleSystem {
     if (this.hasEncounteredEnemy && enemies.every((e) => !onBoard(this.board, e)) && this.defeatTick === null) {
       this.defeatTick = tick;
       this.victoryTick = tick;
-      this.gameLog?.log('敵を全滅させた。', { subject: 'system', level: 'info' });
+      this.gameLog?.log('敵を全滅させた。', { subject: 'system', level: 'info', channel: 'event' });
     }
     heroes.forEach((h) => this.returnSystem?.update(h));
   }
@@ -339,13 +339,13 @@ export default class BattleSystem {
     this.actionLogResults.forEach((targets) => targets.forEach((result) => {
       const { actor, target, damage, critical, miss, defeated } = result;
       const subject = isHero(actor) ? 'hero' : 'enemy'; const actorLabel = this.getEntityLabel(actor); const targetLabel = this.getEntityLabel(target);
-      if (defeated) this.gameLog?.log(`${actorLabel}は${targetLabel}を倒した。`, { subject, level: 'info' });
+      if (defeated) this.gameLog?.log(`${actorLabel}は${targetLabel}を倒した。`, { subject, level: 'info', channel: 'battle' });
       else if (damage >= .01) {
         const message = critical
           ? `${actorLabel}は${targetLabel}に会心ダメージ${Math.round(damage * 100)}を与えた。`
           : `${actorLabel}は${targetLabel}にダメージ${Math.round(damage * 100)}を与えた。`;
-        this.gameLog?.log(message, { subject, level: critical ? 'luck' : 'info' });
-      } else if (miss) this.gameLog?.log(`${actorLabel}の${targetLabel}への攻撃は外れた。`, { subject, level: 'unluck' });
+        this.gameLog?.log(message, { subject, level: critical ? 'luck' : 'info', channel: 'battle' });
+      } else if (miss) this.gameLog?.log(`${actorLabel}の${targetLabel}への攻撃は外れた。`, { subject, level: 'unluck', channel: 'battle' });
     }));
     this.actionLogResults = null;
   }

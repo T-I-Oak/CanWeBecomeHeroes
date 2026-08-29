@@ -9,6 +9,7 @@
   --color-level-info: #64748b;
   --color-level-luck: #bd7b00;
   --color-level-unluck: #a64b61;
+  --color-level-warning: #c46a10;
 }
 
 * {
@@ -100,14 +101,10 @@ body {
   -webkit-touch-callout: none;
 }
 
-.NotificationCenter {
+.FlowLog {
   position: fixed;
   z-index: 10;
-  top: 68px;
-  right: 20px;
-  --toast-gap: 4px;
-  display: block;
-  width: min(360px, calc(100vw - 40px));
+  inset: 0;
   pointer-events: none;
 }
 
@@ -639,103 +636,95 @@ body {
   cursor: pointer;
 }
 
-.Toast {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  opacity: 0;
-  transform: translate(calc(100% + 24px), var(--toast-stack-offset, 0px));
-  transition: transform 260ms ease-out, opacity 260ms ease-out;
+.FlowLog__Entry {
+  --flow-subject-color: var(--color-subject-system);
+  --flow-level-color: var(--color-level-info);
+  --flow-duration: 6s;
+  position: fixed;
+  top: var(--flow-lane-y, 62%);
+  left: 0;
+  width: max-content;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-.Toast.state-visible {
-  opacity: 1;
-  transform: translate(0, var(--toast-stack-offset, 0px));
+.FlowLog__Entry.state-running {
+  visibility: visible;
+  animation: flow-log-right-to-left var(--flow-duration, 6s) linear var(--flow-delay, 0ms) backwards;
 }
 
-.Toast.state-leaving {
-  opacity: 0;
-  transform: translate(0, calc(var(--toast-stack-offset, 0px) - var(--toast-exit-distance, 36px)));
-}
-
-.Toast__Message {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 9px;
-  width: 100%;
-  min-height: 52px;
-  padding: 10px 12px;
-  overflow: hidden;
-  color: #24334d;
-  background: color-mix(in srgb, var(--toast-level-color) 12%, #ffffff);
-  border: 1px solid var(--toast-level-color);
-  border-left: 5px solid var(--toast-subject-color);
-  border-radius: 8px;
-  box-shadow: 0 8px 22px #24334d2b;
-}
-
-.Toast .hero.info {
-  --toast-subject-color: var(--color-subject-hero);
-  --toast-level-color: var(--color-level-info);
-}
-
-.Toast .hero.luck {
-  --toast-subject-color: var(--color-subject-hero);
-  --toast-level-color: var(--color-level-luck);
-}
-
-.Toast .hero.unluck {
-  --toast-subject-color: var(--color-subject-hero);
-  --toast-level-color: var(--color-level-unluck);
-}
-
-.Toast .enemy.info {
-  --toast-subject-color: var(--color-subject-enemy);
-  --toast-level-color: var(--color-level-info);
-}
-
-.Toast .enemy.luck {
-  --toast-subject-color: var(--color-subject-enemy);
-  --toast-level-color: var(--color-level-luck);
-}
-
-.Toast .enemy.unluck {
-  --toast-subject-color: var(--color-subject-enemy);
-  --toast-level-color: var(--color-level-unluck);
-}
-
-.Toast .system.info {
-  --toast-subject-color: var(--color-subject-system);
-  --toast-level-color: var(--color-level-info);
-}
-
-.Toast .system.luck {
-  --toast-subject-color: var(--color-subject-system);
-  --toast-level-color: var(--color-level-luck);
-}
-
-.Toast .system.unluck {
-  --toast-subject-color: var(--color-subject-system);
-  --toast-level-color: var(--color-level-unluck);
-}
-
-.Toast__Level {
-  padding: 3px 6px;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.2;
-  white-space: nowrap;
-  background: var(--toast-level-color);
-  border-radius: 999px;
-}
-
-.Toast__Text {
+.FlowLog__Message {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.45;
+  color: var(--flow-subject-color);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, 0 0 6px var(--flow-level-color);
+  white-space: nowrap;
+}
+
+.FlowLog__Entry.hero.info,
+.FlowLog__Entry.hero.luck,
+.FlowLog__Entry.hero.unluck {
+  --flow-subject-color: var(--color-subject-hero);
+}
+
+.FlowLog__Entry.enemy.info,
+.FlowLog__Entry.enemy.luck,
+.FlowLog__Entry.enemy.unluck {
+  --flow-subject-color: var(--color-subject-enemy);
+}
+
+.FlowLog__Entry.system.info,
+.FlowLog__Entry.system.luck,
+.FlowLog__Entry.system.unluck,
+.FlowLog__Entry.system.warning {
+  --flow-subject-color: var(--color-subject-system);
+}
+
+.FlowLog__Entry.hero.info,
+.FlowLog__Entry.enemy.info,
+.FlowLog__Entry.system.info {
+  --flow-level-color: var(--color-level-info);
+  --flow-duration: 6s;
+}
+
+.FlowLog__Entry.hero.luck,
+.FlowLog__Entry.enemy.luck,
+.FlowLog__Entry.system.luck {
+  --flow-level-color: var(--color-level-luck);
+  --flow-duration: 9s;
+  font-size: 21px;
+}
+
+.FlowLog__Entry.hero.unluck,
+.FlowLog__Entry.enemy.unluck,
+.FlowLog__Entry.system.unluck {
+  --flow-level-color: var(--color-level-unluck);
+  --flow-duration: 7s;
+  font-size: 18px;
+}
+
+.FlowLog__Entry.system.warning {
+  --flow-level-color: var(--color-level-warning);
+  --flow-duration: 10s;
+  color: var(--color-level-warning);
+  font-size: 23px;
+}
+
+.FlowLog__Entry.system.warning .FlowLog__Text {
+  display: inline-block;
+  animation: flow-log-warning-pulse 900ms ease-in-out infinite alternate;
+}
+
+@keyframes flow-log-right-to-left {
+  from { transform: translateX(calc(100vw + 24px)); }
+  to { transform: translateX(calc(-100% - 24px)); }
+}
+
+@keyframes flow-log-warning-pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
 }
 
 @media (max-width: 640px) {

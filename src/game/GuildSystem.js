@@ -47,6 +47,7 @@ export default class GuildSystem {
     this.gameLog?.log(this.getApplicationMessage(hero, { reputationSkillLevel, isLucky, extensionHours: result.extensionHours }), {
       subject: 'hero',
       level: isLucky ? 'luck' : 'info',
+      channel: 'guild',
     });
     state.returning = true;
     this.returnSystem.begin(hero);

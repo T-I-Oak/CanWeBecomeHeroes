@@ -105,7 +105,7 @@ test('enemy wipe locks the stage victory before completing it after the victory 
   assert.equal(battle.hasStageVictory(), true);
   assert.equal(battle.isStageComplete(), false);
   assert.equal(battle.defeatTick, 1);
-  assert.deepEqual(records, [{ message: '敵を全滅させた。', options: { subject: 'system', level: 'info' } }]);
+  assert.deepEqual(records, [{ message: '敵を全滅させた。', options: { subject: 'system', level: 'info', channel: 'event' } }]);
   battle.update({ heroes: [hero], enemies: [enemy], tick: 1 + BATTLE_VICTORY_DELAY_TICKS, tickDelta: BATTLE_VICTORY_DELAY_TICKS });
   assert.equal(battle.isStageComplete(), true);
   assert.equal(battle.stageCompleteTick, 1 + BATTLE_VICTORY_DELAY_TICKS);
@@ -462,7 +462,7 @@ test('one action records one visible battle log per actor and target', () => {
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】は【ゴブリン】に会心ダメージ30を与えた。',
-    options: { subject: 'hero', level: 'luck' },
+    options: { subject: 'hero', level: 'luck', channel: 'battle' },
   }]);
 });
 
@@ -479,7 +479,7 @@ test('a missed action records a visible unlucky battle log', () => {
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】の【ゴブリン】への攻撃は外れた。',
-    options: { subject: 'hero', level: 'unluck' },
+    options: { subject: 'hero', level: 'unluck', channel: 'battle' },
   }]);
 });
 
@@ -497,7 +497,7 @@ test('a defeat replaces the action damage log with a visible defeat log', () => 
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】は【ゴブリン】を倒した。',
-    options: { subject: 'hero', level: 'info' },
+    options: { subject: 'hero', level: 'info', channel: 'battle' },
   }]);
 });
 

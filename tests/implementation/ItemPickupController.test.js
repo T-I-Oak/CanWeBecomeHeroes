@@ -54,7 +54,7 @@ test('pickup controller logs the facility when a hero starts for a reserved dest
 
   controller.moveToDestinationSlot(controller.states.get(hero));
 
-  assert.deepEqual(messages, [{ message: '【僧侶・ダーシー】は戦闘に向かって出発した。', options: { subject: 'hero', level: 'info' } }]);
+  assert.deepEqual(messages, [{ message: '【僧侶・ダーシー】は戦闘に向かって出発した。', options: { subject: 'hero', level: 'info', channel: 'battle' } }]);
 });
 
 test('a hero fills an equipped shopping bag with nearby normal items before going to the shop', () => {

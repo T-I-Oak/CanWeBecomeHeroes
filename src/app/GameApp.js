@@ -15,7 +15,7 @@ import { AREA_THEME } from '../game/AreaTheme.js';
 import StaminaRecoverySystem from '../game/StaminaRecoverySystem.js';
 import FacilitySwingSystem from '../game/FacilitySwingSystem.js';
 import GameLog from '../game/GameLog.js';
-import NotificationCenter from './NotificationCenter.js';
+import FlowLog from './FlowLog.js';
 import TrainingSystem from '../game/TrainingSystem.js';
 import { getShopLayout, SHOP_TRANSACTION_ARROW_WIDTH } from '../game/ShopLayout.js';
 import FacilityReturnSystem from '../game/FacilityReturnSystem.js';
@@ -471,7 +471,7 @@ export function startGame({ scenario }) {
   const clock = new GameClock();
   const slotManager = new HeroSlotManager();
   const gameLog = new GameLog();
-  new NotificationCenter(document.querySelector('#notification-center'), gameLog);
+  new FlowLog(document.querySelector('#flow-log'), gameLog);
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog), gameLog);
   const { preparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
   const enemySpawn = new EnemySpawnSystem(controller);

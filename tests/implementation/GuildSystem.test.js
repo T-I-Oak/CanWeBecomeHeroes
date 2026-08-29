@@ -38,6 +38,6 @@ test('guild completes after six hundred ticks using completion-time points and r
   assert.deepEqual(returned, [hero]);
   assert.deepEqual(logs, [{
     message: '【魔法使い・ケイシー】はギルドとの巧みな交渉で好条件を引き出し、試験期限を14.4時間延長した。',
-    options: { subject: 'hero', level: 'luck' },
+    options: { subject: 'hero', level: 'luck', channel: 'guild' },
   }]);
 });

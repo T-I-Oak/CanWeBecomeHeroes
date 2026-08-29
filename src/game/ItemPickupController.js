@@ -113,6 +113,6 @@ export default class ItemPickupController {
     }
     state.destinationSlot = slot;
     this.board.moveTo(state.hero.chip, slot.x, slot.y, { stepDistance: state.hero.getStepDistance() });
-    this.gameLog?.log(`【${state.hero.profession}・${state.hero.name.ja}】は${DESTINATION_LABELS[area]}に向かって出発した。`, { subject: 'hero', level: 'info' });
+    this.gameLog?.log(`【${state.hero.profession}・${state.hero.name.ja}】は${DESTINATION_LABELS[area]}に向かって出発した。`, { subject: 'hero', level: 'info', channel: area });
   }
 }
