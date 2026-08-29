@@ -23,11 +23,7 @@ export const COMBINATION_PATTERNS = Object.freeze({
   boss: Object.freeze([Object.freeze({ main: 'large-vitality', support1: 'small-iron', support2: 'small-fortune' })]),
 });
 
-const ROLE_SLOT_PREFERENCES = Object.freeze({
-  main: Object.freeze({ small: Object.freeze([3, 4, 2, 5, 1, 6]), large: Object.freeze([3, 1, 5]) }),
-  support1: Object.freeze({ small: Object.freeze([2, 5, 3, 4, 1, 6]), large: Object.freeze([1, 3, 5]) }),
-  support2: Object.freeze({ small: Object.freeze([1, 6, 2, 5, 3, 4]), large: Object.freeze([1, 3, 5]) }),
-});
+const CENTER_OUT_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
 
 function createSharedSettings(level) {
   const totalTagBudget = Math.max(0, Math.floor(level) + 2);
@@ -82,11 +78,10 @@ function getSlotSpan(definition) {
   return definition.size === 'large' ? 2 : 1;
 }
 
-function allocateRoleSlots({ roleName, definition, count, occupied }) {
+function allocateRoleSlots({ definition, count, occupied }) {
   const span = getSlotSpan(definition);
-  const preferences = ROLE_SLOT_PREFERENCES[roleName][span === 2 ? 'large' : 'small'];
   const slots = [];
-  preferences.forEach((slotPosition) => {
+  CENTER_OUT_SLOT_ORDER.forEach((slotPosition) => {
     if (slots.length >= count) return;
     const coveredSlots = Array.from({ length: span }, (_, index) => slotPosition + index);
     if (coveredSlots.some((slot) => slot > 6 || occupied.has(slot))) return;
@@ -105,7 +100,7 @@ export function createEncounterEnemies({ kind, level, pattern, enemyFactory, ran
     if (!enemyDefinitionId || settings.count === 0) return [];
     const definition = ENEMY_CATALOG[enemyDefinitionId];
     if (!definition) throw new Error(`Unknown enemy definition: ${enemyDefinitionId}`);
-    return allocateRoleSlots({ roleName, definition, count: settings.count, occupied: occupiedSlots }).map((slotPosition) => enemyFactory.createFromDefinition({
+    return allocateRoleSlots({ definition, count: settings.count, occupied: occupiedSlots }).map((slotPosition) => enemyFactory.createFromDefinition({
       enemyDefinitionId,
       slotPosition,
       weaponCount: settings.weaponCount,

@@ -61,3 +61,12 @@ test('slot allocation keeps main roles first and reserves two slots for each lar
     ['large', 3], ['small', 2], ['small', 5], ['small', 1], ['small', 6],
   ]);
 });
+
+test('slot allocation fills from the center across roles without role-specific slot preferences', () => {
+  const enemies = createEncounterEnemies({
+    kind: 'elite', level: 6, pattern: COMBINATION_PATTERNS.elite[0], enemyFactory: new EnemyFactory(), random: () => 0,
+  });
+  assert.deepEqual(enemies.map(({ definition, slotPosition }) => [definition.size, slotPosition]), [
+    ['medium', 3], ['small', 4], ['small', 2],
+  ]);
+});
