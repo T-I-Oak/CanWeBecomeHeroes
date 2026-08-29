@@ -365,7 +365,7 @@ body {
 }
 
 .InformationWindow__EntityTagList {
-  grid-template-columns: repeat(5, 44px);
+  grid-template-columns: repeat(6, 44px);
   gap: 8px;
 }
 
@@ -448,6 +448,72 @@ body {
   height: 16px;
   border-width: 1px;
 }
+
+.InformationWindow__UniqueSkill {
+  display: grid;
+  grid-column: 6;
+  grid-row: 1 / span 3;
+  grid-template-rows: 1fr auto;
+  place-items: center;
+  min-width: 44px;
+  padding: 6px 2px 4px;
+  color: #fff;
+  background: #341c45;
+  border: 3px solid #7c3d8e;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgb(255 214 255 / 22%), 0 2px 4px rgb(20 4 25 / 45%);
+}
+
+.InformationWindow__UniqueSkill.level-2 {
+  background: #4a1429;
+  border-color: #b23258;
+  box-shadow: inset 0 0 0 1px rgb(255 206 218 / 28%), 0 2px 5px rgb(42 0 13 / 58%);
+}
+
+.InformationWindow__UniqueSkill .InformationWindow__TagIcon {
+  flex-basis: 36px;
+  width: 36px;
+  height: 36px;
+}
+
+.InformationWindow__UniqueSkillMark {
+  padding: 1px 5px 2px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .03em;
+  color: #fff3dc;
+  background: rgb(16 5 24 / 72%);
+  border: 1px solid currentColor;
+  border-radius: 5px;
+}
+
+.InformationWindow__UniqueSkillTitle.level-1 { background: #25132f; }
+.InformationWindow__UniqueSkillTitle.level-2 { background: #3d1021; }
+
+.InformationWindow__UniqueSkillLevelList {
+  display: grid;
+  gap: 6px;
+}
+
+.InformationWindow__UniqueSkillLevel {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  color: #fff;
+  background: #341c45;
+  border: 2px solid #7c3d8e;
+  border-radius: 7px;
+}
+
+.InformationWindow__UniqueSkillLevel.level-2 {
+  background: #4a1429;
+  border-color: #b23258;
+}
+
+.InformationWindow__UniqueSkillLevelName { font-weight: 800; }
 
 .InformationWindow__Equipment[data-slot='head'] { grid-column: 2; grid-row: 1; }
 .InformationWindow__Equipment[data-slot='rightHand'] { grid-column: 1; grid-row: 2; }

@@ -64,6 +64,14 @@ export const ENEMY_CATALOG = Object.freeze({
   'small-water': Object.freeze({ id: 'small-water', size: 'small', tagAffinity: 'water', nameKey: 'enemy.smallWater', nameJa: '半魚人', assetPath: '/assets/enemies/small-water.png', intrinsicTags: Object.freeze(['water']), baseHp: 2, baseContributionPoints: 10 }),
   'small-vitality': Object.freeze({ id: 'small-vitality', size: 'small', tagAffinity: 'vitality', nameKey: 'enemy.smallVitality', nameJa: 'マンドラゴラ', assetPath: '/assets/enemies/small-vitality.png', intrinsicTags: Object.freeze(['vitality']), baseHp: 2, baseContributionPoints: 10 }),
   'small-area': Object.freeze({ id: 'small-area', size: 'small', tagAffinity: 'area', nameKey: 'enemy.smallArea', nameJa: 'ケルベロス', assetPath: '/assets/enemies/small-area.png', intrinsicTags: Object.freeze(['area']), baseHp: 2, baseContributionPoints: 10 }),
+  'medium-vitality': Object.freeze({
+    id: 'medium-vitality', size: 'medium', tagAffinity: 'vitality', nameKey: 'enemy.mediumVitality', nameJa: 'トレント', assetPath: '/assets/enemies/medium-vitality.png', intrinsicTags: Object.freeze(['vitality']), baseHp: 2, baseContributionPoints: 50,
+    uniqueSkill: Object.freeze({ id: 'vitality-summon', level: 1 }),
+  }),
+  'large-vitality': Object.freeze({
+    id: 'large-vitality', size: 'large', tagAffinity: 'vitality', nameKey: 'enemy.largeVitality', nameJa: '歩く世界樹', assetPath: '/assets/enemies/large-vitality.png', intrinsicTags: Object.freeze(['vitality']), baseHp: 2, baseContributionPoints: 250,
+    uniqueSkill: Object.freeze({ id: 'vitality-summon', level: 2 }),
+  }),
 });
 
 export function getEnemyDefinition({ size, tagAffinity }) {

@@ -78,6 +78,7 @@ export default class InformationWindowManager {
     if (type === 'item') return entry.data.item === data.item;
     if (type === 'facility') return entry.data.facility === data.facility;
     if (type === 'area') return entry.data.area === data.area;
+    if (type === 'unique-skill') return entry.data.uniqueSkill.id === data.uniqueSkill.id && entry.data.uniqueSkill.level === data.uniqueSkill.level;
     return entry.data === data;
   }
 

@@ -481,11 +481,12 @@ export function startGame({ scenario }) {
   const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem });
   const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), gameLog });
   const combatEffects = new CombatEffectSystem();
-  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), returnSystem, effects: combatEffects, gameLog });
+  const enemyFactory = new EnemyFactory();
+  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), enemyFactory, returnSystem, effects: combatEffects, gameLog });
   const stageController = new StageController({
     enemySpawn,
     battleSystem,
-    enemyFactory: new EnemyFactory(),
+    enemyFactory,
     shopState: shop,
     hasActiveShopHero: () => controller.getHeroes().some((hero) => hero.currentArea === 'shop'),
     random,

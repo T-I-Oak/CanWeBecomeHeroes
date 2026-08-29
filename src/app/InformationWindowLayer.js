@@ -7,6 +7,7 @@ import { getItemDetail } from '../game/ItemDetailCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
 import { getFacilityDetail } from '../game/FacilityDetailCatalog.js';
 import { getAreaDetail } from '../game/AreaDetailCatalog.js';
+import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
@@ -92,6 +93,7 @@ export default class InformationWindowLayer {
     if (entry.type === 'item') window.append(this.#renderItemDetail(entry));
     if (entry.type === 'facility') window.append(this.#renderFacilityDetail(entry));
     if (entry.type === 'area') window.append(this.#renderAreaDetail(entry));
+    if (entry.type === 'unique-skill') window.append(this.#renderUniqueSkillDetail(entry));
     return window;
   }
 
@@ -182,6 +184,7 @@ export default class InformationWindowLayer {
       tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
       tagList.append(tagButton);
     });
+    if (isEnemy && entity.uniqueSkill) tagList.append(this.#createUniqueSkillButton(entity.uniqueSkill, entry.id));
     information.append(tagList);
     body.append(information);
 
@@ -189,6 +192,37 @@ export default class InformationWindowLayer {
     const equipment = isEnemy ? entity.equipment.map((item, index) => [String(index), item]) : Object.entries(entity.equipment);
     equipment.filter(([, item]) => !isEnemy || Boolean(item)).forEach(([slot, item]) => equipmentList.append(this.#createEquipmentButton(item, entry.id, isEnemy ? null : slot)));
     body.append(equipmentList);
+    content.append(body);
+    return content;
+  }
+
+  #createUniqueSkillButton(uniqueSkill, parentId) {
+    const detail = getUniqueSkillDetail(uniqueSkill.id);
+    const button = createElement('button', `InformationWindow__UniqueSkill state-clickable level-${uniqueSkill.level}`);
+    button.type = 'button';
+    button.append(createTagIcon(detail.affinityTag), createElement('span', 'InformationWindow__UniqueSkillMark', 'Ex'));
+    button.addEventListener('click', (event) => this.manager.open({
+      type: 'unique-skill', parentId, data: { uniqueSkill }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    return button;
+  }
+
+  #renderUniqueSkillDetail(entry) {
+    const { uniqueSkill } = entry.data;
+    const detail = getUniqueSkillDetail(uniqueSkill.id);
+    const content = document.createDocumentFragment();
+    const title = createElement('header', `InformationWindow__Title InformationWindow__UniqueSkillTitle level-${uniqueSkill.level}`);
+    title.append(createTagIcon(detail.affinityTag), createElement('h2', 'InformationWindow__Name', detail.name));
+    content.append(title);
+    const body = createElement('div', 'InformationWindow__Body');
+    body.append(createElement('p', 'InformationWindow__Description', detail.description));
+    const levels = createElement('div', 'InformationWindow__UniqueSkillLevelList');
+    Object.entries(detail.levels).forEach(([level, levelDetail]) => {
+      const item = createElement('div', `InformationWindow__UniqueSkillLevel level-${level}`);
+      item.append(createElement('span', 'InformationWindow__UniqueSkillLevelName', `Lv${level}`), createElement('span', 'InformationWindow__UniqueSkillLevelEffect', levelDetail.description));
+      levels.append(item);
+    });
+    body.append(levels);
     content.append(body);
     return content;
   }

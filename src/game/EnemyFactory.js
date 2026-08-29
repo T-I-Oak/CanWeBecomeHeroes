@@ -27,7 +27,7 @@ export default class EnemyFactory {
     this.itemFactory = itemFactory;
   }
 
-  create({ size, tagAffinity, slotPosition, maximumHp, totalTagCount, maximums, rank = 'regular', contributionPoints = ENEMY_CONTRIBUTION_POINTS[rank], mainTag = tagAffinity, subTags = [], weaponCount = 2, random = Math.random }) {
+  create({ size, tagAffinity, slotPosition, maximumHp, totalTagCount, maximums, rank = 'regular', contributionPoints = ENEMY_CONTRIBUTION_POINTS[rank], contributionMultiplier = 1, mainTag = tagAffinity, subTags = [], weaponCount = 2, random = Math.random }) {
     const definition = getEnemyDefinition({ size, tagAffinity: mainTag });
     if (!definition) throw new Error(`Missing enemy definition: ${size}-${tagAffinity}`);
     const slot = getSlot(slotPosition);
@@ -52,7 +52,7 @@ export default class EnemyFactory {
     const equipment = equipmentParts.map((part, index) => createTrendEquipmentItem({
       part, count: tagCounts[index], productTags: createTrendProductTags(mainTag, random), itemFactory: this.itemFactory, random,
     }));
-    return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums, rank, mainTag, subTags, slotPosition });
+    return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums, rank, mainTag, subTags, slotPosition, totalTagCount, weaponCount, contributionMultiplier });
   }
 
   createFromDefinition({ enemyDefinitionId, slotPosition, weaponCount, totalTagCount, maximumHp, maximums, contributionMultiplier = 1, random = Math.random }) {
@@ -68,6 +68,7 @@ export default class EnemyFactory {
       maximums,
       rank: RANK_BY_SIZE[definition.size],
       contributionPoints: Math.ceil(definition.baseContributionPoints * contributionMultiplier),
+      contributionMultiplier,
       mainTag,
       subTags,
       weaponCount,

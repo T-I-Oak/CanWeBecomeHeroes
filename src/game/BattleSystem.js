@@ -1,6 +1,8 @@
 import { GAME_AREAS } from './GameAreas.js';
 import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
 import { createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
+import EnemyFactory from './EnemyFactory.js';
+import UniqueSkillSystem from './UniqueSkillSystem.js';
 
 const TICKS_PER_SECOND = 60;
 const ACTION_GAUGE_BASE_RATE = 13 / 300;
@@ -34,8 +36,9 @@ export function getActionGaugeMaximum(actor) {
 }
 
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console, onDamage = null } = {}) {
-    Object.assign(this, { board, controller, itemFactory, returnSystem, effects, gameLog, random, logger, onDamage });
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console, onDamage = null } = {}) {
+    Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, random, logger, onDamage });
+    this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.attributeTicks = 0;
   }
   resetStageState() {
@@ -51,7 +54,8 @@ export default class BattleSystem {
   isStageComplete() { return this.stageCompleteTick !== null; }
   update({ heroes, enemies, tick, tickDelta }) {
     [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => a.clearBattleState?.());
-    const activeEnemies = enemies.filter((e) => onBoard(this.board, e));
+    const stageEnemies = this.controller?.getEnemies?.() ?? enemies;
+    const activeEnemies = stageEnemies.filter((e) => onBoard(this.board, e));
     if (activeEnemies.length > 0) this.hasEncounteredEnemy = true;
     if (this.battleStartTick === null && activeEnemies.some((e) => e.chip.isSettled)) this.battleStartTick = tick;
     if (this.battleStartTick === null) return;
@@ -63,7 +67,8 @@ export default class BattleSystem {
     const participants = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && onBoard(this.board, h) && h.chip.isSettled), ...activeEnemies.filter((e) => e.chip.isSettled)];
     this.updateAttributes(participants, tickDelta);
     participants.forEach((a) => this.updateActor(a, participants, tickDelta));
-    if (this.hasEncounteredEnemy && enemies.every((e) => !onBoard(this.board, e)) && this.defeatTick === null) {
+    const remainingEnemies = this.controller?.getEnemies?.() ?? stageEnemies;
+    if (this.hasEncounteredEnemy && remainingEnemies.every((e) => !onBoard(this.board, e)) && this.defeatTick === null) {
       this.defeatTick = tick;
       this.victoryTick = tick;
       this.gameLog?.log('敵を全滅させた。', { subject: 'system', level: 'info', channel: 'event' });
@@ -371,10 +376,16 @@ export default class BattleSystem {
   }
   defeatEnemy(enemy) {
     if (!onBoard(this.board, enemy)) return;
+    const { skill, summons } = this.uniqueSkillSystem.resolveOnDefeated(enemy);
     this.board.removeChip(enemy.chip);
     this.controller?.remove(enemy);
     this.contributionPoints += enemy.contributionPoints;
     this.createEnemyDrops(enemy).forEach((item) => this.controller?.addToWarehouse(item));
+    summons.forEach((summon) => {
+      summon.chip.beginDrop();
+      this.controller?.add(summon);
+    });
+    if (skill && summons.length > 0) this.gameLog?.log(`${this.getEntityLabel(enemy)}は${skill.name}で${this.getEntityLabel(summons[0])}を${summons.length}体召喚した。`, { subject: 'enemy', level: 'info', channel: 'battle' });
   }
   getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }
 }

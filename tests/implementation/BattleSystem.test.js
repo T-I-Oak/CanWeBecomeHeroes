@@ -52,6 +52,42 @@ test('new small enemy catalog entries resolve their names and assets', () => {
   });
 });
 
+test('vitality mid-boss and boss catalog entries carry the shared unique skill at their respective levels', () => {
+  assert.deepEqual(getEnemyDefinition({ size: 'medium', tagAffinity: 'vitality' }).uniqueSkill, { id: 'vitality-summon', level: 1 });
+  assert.deepEqual(getEnemyDefinition({ size: 'large', tagAffinity: 'vitality' }).uniqueSkill, { id: 'vitality-summon', level: 2 });
+});
+
+test('last sprout summons into the inner available slots and inherits the defeated enemy battle parameters', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const parent = enemyFactory.createFromDefinition({
+    enemyDefinitionId: 'medium-vitality', slotPosition: 3, maximumHp: 5, totalTagCount: 7,
+    maximums: { power: 4, magic: 3, speed: 2, negotiation: 1, luck: 5 }, weaponCount: 3, contributionMultiplier: 1.5, random: () => 0,
+  });
+  const blockers = [1, 2, 4, 5, 6].map((slotPosition) => enemyFactory.createInitialEncounter({ slotPosition }));
+  const entities = [parent, ...blockers];
+  entities.forEach((entity) => board.addChip(entity.chip));
+  const controller = {
+    getEnemies: () => entities,
+    remove: (entity) => { const index = entities.indexOf(entity); if (index >= 0) entities.splice(index, 1); },
+    add: (entity) => { entities.push(entity); board.addChip(entity.chip); },
+    addToWarehouse: () => {},
+  };
+  const battle = new BattleSystem(board, { controller, itemFactory, enemyFactory, random: () => 0, logger: { info: () => {} } });
+
+  battle.defeatEnemy(parent);
+
+  const summons = entities.filter((entity) => entity.definition.id === 'small-vitality');
+  assert.equal(summons.length, 1);
+  assert.equal(summons[0].slotPosition, 3);
+  assert.equal(summons[0].maximumHp, 5);
+  assert.equal(summons[0].totalTagCount, 7);
+  assert.equal(summons[0].weaponCount, 3);
+  assert.deepEqual(summons[0].maximums, parent.maximums);
+  assert.equal(summons[0].contributionMultiplier, 1.5);
+});
+
 test('a full action gauge resolves basic damage, awards contribution, drops an item, and records elapsed ticks', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
