@@ -4,7 +4,7 @@ import BattleSystem from '../../src/game/BattleSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import EnemySpawnSystem from '../../src/game/EnemySpawnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
-import StageController, { getStageBaseLevel, REGULAR_STAGE_KIND, rollStageLevel } from '../../src/game/StageController.js';
+import StageController, { getStageBaseLevel, rollStageLevel } from '../../src/game/StageController.js';
 
 test('stage one rolls a level from one through five', () => {
   assert.equal(getStageBaseLevel(1), 3);
@@ -25,7 +25,8 @@ test('stage controller prepares three frozen route choices and starts only the s
 
   assert.equal(stages.state, 'selecting');
   assert.equal(choices.length, 3);
-  assert.ok(choices.every((choice) => choice.kind === REGULAR_STAGE_KIND));
+  assert.ok(choices.every((choice) => choice.kind === 'regular'));
+  assert.deepEqual([...new Set(choices.map((choice) => choice.route))].toSorted(), ['route1', 'route2', 'route3']);
   assert.equal(added.length, 0);
   assert.ok(choices.every((choice) => choice.enemies.length === 2 && choice.shopTrends.saleTag));
   const stage = stages.selectStage(choices[1].id, { tick: 500 });

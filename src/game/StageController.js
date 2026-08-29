@@ -1,12 +1,11 @@
 import EnemyFactory from './EnemyFactory.js';
 import { COMBINATION_PATTERNS, createEncounterEnemies } from './EncounterDefinitions.js';
 import { TAGS } from './TagCatalog.js';
+import { createStageRouteKinds } from './StageKindDistribution.js';
 
 export const STAGE_LEVEL_OFFSET = 2;
 export const STAGE_LEVEL_VARIATION = 2;
 export const STAGE_CHOICE_COUNT = 3;
-export const REGULAR_STAGE_KIND = 'regular';
-
 const TAG_KEYS = Object.freeze(Object.keys(TAGS));
 
 export function getStageBaseLevel(stageNumber) {
@@ -24,23 +23,27 @@ export default class StageController {
     if (!enemySpawn || !battleSystem) throw new Error('Stage controller requires enemy spawning and battle systems.');
     Object.assign(this, { enemySpawn, battleSystem, enemyFactory, shopState, hasActiveShopHero, random });
     this.stageNumber = 0;
+    this.joinedCount = 0;
     this.state = 'idle';
     this.currentStage = null;
     this.choices = Object.freeze([]);
   }
 
-  createStageChoices({ stageNumber = this.stageNumber + 1, choiceCount = STAGE_CHOICE_COUNT } = {}) {
+  createStageChoices({ stageNumber = this.stageNumber + 1, choiceCount = STAGE_CHOICE_COUNT, joinedCount = this.joinedCount } = {}) {
     if (!['idle', 'complete'].includes(this.state)) throw new Error(`Cannot start a stage while state is ${this.state}.`);
     if (!Number.isInteger(choiceCount) || choiceCount < 1) throw new RangeError('Stage choice count must be at least one.');
-    const patterns = COMBINATION_PATTERNS[REGULAR_STAGE_KIND];
+    const routeKinds = createStageRouteKinds({ stageNumber, joinedCount, random: this.random });
     this.choices = Object.freeze(Array.from({ length: choiceCount }, (_, index) => {
+      const { route, kind } = routeKinds[index % routeKinds.length];
       const level = rollStageLevel(stageNumber, this.random);
+      const patterns = COMBINATION_PATTERNS[kind];
       const pattern = patterns[Math.floor(this.random() * patterns.length)];
-      const enemies = createEncounterEnemies({ kind: REGULAR_STAGE_KIND, level, pattern, enemyFactory: this.enemyFactory, random: this.random });
+      const enemies = createEncounterEnemies({ kind, level, pattern, enemyFactory: this.enemyFactory, random: this.random });
       return Object.freeze({
         id: `stage-${stageNumber}-choice-${index + 1}`,
         number: stageNumber,
-        kind: REGULAR_STAGE_KIND,
+        route,
+        kind,
         baseLevel: getStageBaseLevel(stageNumber),
         level,
         enemies: Object.freeze([...enemies]),
@@ -52,6 +55,11 @@ export default class StageController {
     }));
     this.state = 'selecting';
     return this.choices;
+  }
+
+  setJoinedCount(joinedCount) {
+    if (!Number.isInteger(joinedCount) || joinedCount < 0 || joinedCount > 2) throw new RangeError('Joined count must be an integer between zero and two.');
+    this.joinedCount = joinedCount;
   }
 
   selectStage(choiceId, { tick = 0 } = {}) {

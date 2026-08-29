@@ -19,33 +19,54 @@ export const COMBINATION_PATTERNS = Object.freeze({
     Object.freeze({ main: 'small-vitality', support1: 'small-iron', support2: 'small-fortune' }),
     Object.freeze({ main: 'small-area', support1: 'small-vitality', support2: 'small-lightning' }),
   ]),
-  encounter: Object.freeze([]),
-  boss: Object.freeze([]),
+  elite: Object.freeze([Object.freeze({ main: 'medium-vitality', support1: 'small-iron', support2: 'small-fortune' })]),
+  boss: Object.freeze([Object.freeze({ main: 'large-vitality', support1: 'small-iron', support2: 'small-fortune' })]),
 });
 
-function createNormalRoles(level) {
+const ROLE_SLOT_PREFERENCES = Object.freeze({
+  main: Object.freeze({ small: Object.freeze([3, 4, 2, 5, 1, 6]), large: Object.freeze([3, 1, 5]) }),
+  support1: Object.freeze({ small: Object.freeze([2, 5, 3, 4, 1, 6]), large: Object.freeze([1, 3, 5]) }),
+  support2: Object.freeze({ small: Object.freeze([1, 6, 2, 5, 3, 4]), large: Object.freeze([1, 3, 5]) }),
+});
+
+function createSharedSettings(level) {
   const totalTagBudget = Math.max(0, Math.floor(level) + 2);
   const maximum = level / 3;
   const contributionMultiplier = (level + 9) / 12;
   const maximums = Object.freeze(Object.fromEntries(STATUS_KEYS.map((stat) => [stat, maximum])));
+  return Object.freeze({ weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier });
+}
+
+function role(count, shared) {
+  return Object.freeze({ count, ...shared });
+}
+
+function createNormalRoles(level) {
+  const shared = createSharedSettings(level);
   let remainingCount = Math.min(Math.ceil(Math.max(0, level) * 2 / 3), 6);
   const allocateCount = (capacity) => {
     const count = Math.min(remainingCount, capacity);
     remainingCount -= count;
     return count;
   };
+  return Object.freeze({ main: role(allocateCount(2), shared), support1: role(allocateCount(2), shared), support2: role(allocateCount(2), shared) });
+}
+
+function createEliteRoles(level) {
+  const shared = createSharedSettings(level);
   return Object.freeze({
-    main: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier }),
-    support1: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([2, 5]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier }),
-    support2: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([1, 6]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier }),
+    main: role(Math.ceil(level / 7), shared),
+    support1: role(Math.ceil(level / 14), shared),
+    support2: role(Math.max(1, Math.ceil((level - 7) / 14)), shared),
   });
 }
 
-const PLACEHOLDER_ROLES = Object.freeze({
-  main: Object.freeze({ count: 2, slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }), contributionMultiplier: 1 }),
-  support1: Object.freeze({ count: 0, slotPositions: Object.freeze([2, 5]), weaponCount: 0, totalTagBudget: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }), contributionMultiplier: 1 }),
-  support2: Object.freeze({ count: 0, slotPositions: Object.freeze([1, 6]), weaponCount: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }), contributionMultiplier: 1 }),
-});
+function createBossRoles(level) {
+  const shared = createSharedSettings(level);
+  // Boss scaling is intentionally deferred. The current baseline is one boss
+  // with four supporting regular enemies, while allocation still guards spans.
+  return Object.freeze({ main: role(1, shared), support1: role(2, shared), support2: role(2, shared) });
+}
 
 export function normalizeEnemyMaximum(value) {
   return Math.min(7, Math.max(0, Math.ceil(value)));
@@ -53,20 +74,40 @@ export function normalizeEnemyMaximum(value) {
 
 export const DIFFICULTIES = Object.freeze({
   regular: (level) => Object.freeze({ roles: createNormalRoles(level) }),
-  encounter: (_level) => Object.freeze({ roles: PLACEHOLDER_ROLES }),
-  boss: (_level) => Object.freeze({ roles: PLACEHOLDER_ROLES }),
+  elite: (level) => Object.freeze({ roles: createEliteRoles(level) }),
+  boss: (level) => Object.freeze({ roles: createBossRoles(level) }),
 });
+
+function getSlotSpan(definition) {
+  return definition.size === 'large' ? 2 : 1;
+}
+
+function allocateRoleSlots({ roleName, definition, count, occupied }) {
+  const span = getSlotSpan(definition);
+  const preferences = ROLE_SLOT_PREFERENCES[roleName][span === 2 ? 'large' : 'small'];
+  const slots = [];
+  preferences.forEach((slotPosition) => {
+    if (slots.length >= count) return;
+    const coveredSlots = Array.from({ length: span }, (_, index) => slotPosition + index);
+    if (coveredSlots.some((slot) => slot > 6 || occupied.has(slot))) return;
+    coveredSlots.forEach((slot) => occupied.add(slot));
+    slots.push(slotPosition);
+  });
+  return slots;
+}
 
 export function createEncounterEnemies({ kind, level, pattern, enemyFactory, random = Math.random }) {
   const difficulty = DIFFICULTIES[kind]?.(level);
   if (!difficulty) throw new RangeError(`Unknown encounter difficulty kind: ${kind}`);
-  return Object.entries(difficulty.roles).flatMap(([role, settings]) => {
-    const enemyDefinitionId = pattern[role];
+  const occupiedSlots = new Set();
+  return Object.entries(difficulty.roles).flatMap(([roleName, settings]) => {
+    const enemyDefinitionId = pattern[roleName];
     if (!enemyDefinitionId || settings.count === 0) return [];
-    if (!ENEMY_CATALOG[enemyDefinitionId]) throw new Error(`Unknown enemy definition: ${enemyDefinitionId}`);
-    return Array.from({ length: settings.count }, (_, index) => enemyFactory.createFromDefinition({
+    const definition = ENEMY_CATALOG[enemyDefinitionId];
+    if (!definition) throw new Error(`Unknown enemy definition: ${enemyDefinitionId}`);
+    return allocateRoleSlots({ roleName, definition, count: settings.count, occupied: occupiedSlots }).map((slotPosition) => enemyFactory.createFromDefinition({
       enemyDefinitionId,
-      slotPosition: settings.slotPositions[index],
+      slotPosition,
       weaponCount: settings.weaponCount,
       totalTagCount: settings.totalTagBudget,
       maximumHp: normalizeEnemyMaximum(settings.maximumHp),

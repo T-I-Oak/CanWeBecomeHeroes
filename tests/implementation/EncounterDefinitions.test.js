@@ -16,9 +16,6 @@ test('regular encounter definitions provide complete concrete patterns for the a
 test('regular difficulty derives enemy count and each enemy tag budget from its level', () => {
   const first = DIFFICULTIES.regular(1);
   const later = DIFFICULTIES.regular(99);
-  assert.deepEqual(first.roles.main.slotPositions, [3, 4]);
-  assert.deepEqual(first.roles.support1.slotPositions, [2, 5]);
-  assert.deepEqual(first.roles.support2.slotPositions, [1, 6]);
   assert.equal(first.roles.main.weaponCount, 2);
   assert.equal(first.roles.main.totalTagBudget, 3);
   assert.equal(DIFFICULTIES.regular(3).roles.main.contributionMultiplier, 1);
@@ -47,4 +44,20 @@ test('regular difficulty derives enemy count and each enemy tag budget from its 
   assert.ok(enemies.every((enemy) => enemy.maximums.power === 1));
   assert.ok(enemies.every((enemy) => enemy.contributionPoints === 9));
   assert.equal(normalizeEnemyMaximum(19 / 3), 7);
+});
+
+test('elite roles add main and support enemies at their separate level intervals', () => {
+  assert.deepEqual(Object.values(DIFFICULTIES.elite(6).roles).map(({ count }) => count), [1, 1, 1]);
+  assert.deepEqual(Object.values(DIFFICULTIES.elite(8).roles).map(({ count }) => count), [2, 1, 1]);
+  assert.deepEqual(Object.values(DIFFICULTIES.elite(15).roles).map(({ count }) => count), [3, 2, 1]);
+  assert.deepEqual(Object.values(DIFFICULTIES.elite(22).roles).map(({ count }) => count), [4, 2, 2]);
+});
+
+test('slot allocation keeps main roles first and reserves two slots for each large boss', () => {
+  const enemies = createEncounterEnemies({
+    kind: 'boss', level: 9, pattern: COMBINATION_PATTERNS.boss[0], enemyFactory: new EnemyFactory(), random: () => 0,
+  });
+  assert.deepEqual(enemies.map(({ definition, slotPosition }) => [definition.size, slotPosition]), [
+    ['large', 3], ['small', 2], ['small', 5], ['small', 1], ['small', 6],
+  ]);
 });
