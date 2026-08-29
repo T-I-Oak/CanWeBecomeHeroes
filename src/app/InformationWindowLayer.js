@@ -6,6 +6,7 @@ import { getStatusDetail } from '../game/StatusDetailCatalog.js';
 import { getItemDetail } from '../game/ItemDetailCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
 import { getFacilityDetail } from '../game/FacilityDetailCatalog.js';
+import { getAreaDetail } from '../game/AreaDetailCatalog.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
@@ -90,6 +91,7 @@ export default class InformationWindowLayer {
     if (entry.type === 'entity') window.append(this.#renderEntityDetail(entry));
     if (entry.type === 'item') window.append(this.#renderItemDetail(entry));
     if (entry.type === 'facility') window.append(this.#renderFacilityDetail(entry));
+    if (entry.type === 'area') window.append(this.#renderAreaDetail(entry));
     return window;
   }
 
@@ -236,6 +238,18 @@ export default class InformationWindowLayer {
 
   #renderFacilityDetail(entry) {
     const detail = getFacilityDetail(entry.data.facility);
+    const content = document.createDocumentFragment();
+    const title = createElement('header', 'InformationWindow__Title');
+    title.append(createElement('h2', 'InformationWindow__Name', detail.name));
+    content.append(title);
+    const body = createElement('div', 'InformationWindow__Body');
+    body.append(createElement('p', 'InformationWindow__Description', detail.description));
+    content.append(body);
+    return content;
+  }
+
+  #renderAreaDetail(entry) {
+    const detail = getAreaDetail(entry.data.area);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
     title.append(createElement('h2', 'InformationWindow__Name', detail.name));

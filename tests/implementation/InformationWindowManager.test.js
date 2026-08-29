@@ -46,6 +46,14 @@ test('facility help windows use their facility identity to avoid duplicates', ()
   assert.equal(manager.entries.length, 1);
 });
 
+test('area help windows use their area identity to avoid duplicates', () => {
+  const manager = new InformationWindowManager();
+  const home = manager.open({ type: 'area', data: { area: 'preparation' } });
+  const repeated = manager.open({ type: 'area', data: { area: 'preparation' } });
+  assert.equal(repeated.id, home.id);
+  assert.equal(manager.entries.length, 1);
+});
+
 test('focusing the current leaf does not notify or replace an unchanged window branch', () => {
   let changes = 0;
   const manager = new InformationWindowManager({ onChange: () => { changes += 1; } });

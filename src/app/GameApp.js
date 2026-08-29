@@ -30,6 +30,7 @@ import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 import { drawAreaNameplates } from './AreaNameplateRenderer.js';
+import { getAreaNameplateAtPoint } from '../game/AreaNameplateLayout.js';
 import { getFacilityNameplateAtPoint, getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
@@ -627,6 +628,7 @@ export function startGame({ scenario }) {
     }
     if (!drag.moved) {
       const facility = getFacilityNameplateAtPoint(point);
+      const area = getAreaNameplateAtPoint(point);
       const status = getPreparationStatusAtPoint(point, preparationHeroes)
         ?? getTrainingStatusAtPoint(point, controller.getHeroes().find((hero) => hero.currentArea === 'training'));
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
@@ -635,6 +637,7 @@ export function startGame({ scenario }) {
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
       const entity = controller.getEntityAt(point.x, point.y);
       if (facility) informationWindows.open({ type: 'facility', data: { facility }, anchor: { x: event.clientX, y: event.clientY } });
+      else if (area) informationWindows.open({ type: 'area', data: { area }, anchor: { x: event.clientX, y: event.clientY } });
       else if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
       else if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
       else if (entity) informationWindows.open({ type: entity.chip.type === 'item' ? 'item' : 'entity', data: entity.chip.type === 'item' ? { item: entity } : { entity }, anchor: { x: event.clientX, y: event.clientY } });
