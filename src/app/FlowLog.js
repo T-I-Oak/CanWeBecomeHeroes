@@ -1,7 +1,7 @@
 const FALLBACK_DURATION_MS = 6000;
-const LANE_POSITIONS = Object.freeze({
-  battle: Object.freeze([16, 28, 40]),
-  other: Object.freeze([62, 74, 86]),
+const FLOW_Y_RANGES = Object.freeze({
+  battle: Object.freeze({ min: 12, max: 44 }),
+  other: Object.freeze({ min: 56, max: 88 }),
 });
 
 function getAnimationDurationMs(element) {
@@ -12,21 +12,17 @@ function getAnimationDurationMs(element) {
 }
 
 export default class FlowLog {
-  constructor(container, gameLog) {
+  constructor(container, gameLog, { random = Math.random } = {}) {
     this.container = container;
-    this.lanes = Object.fromEntries(Object.entries(LANE_POSITIONS).map(([channel, positions]) => [
-      channel,
-      positions.map((position) => ({ position, availableAt: 0 })),
-    ]));
+    this.random = random;
     this.unsubscribe = gameLog.subscribe((record, definitions) => {
       if (record.notify) this.show(record, definitions);
     });
   }
 
-  getLane(channel, now) {
-    const laneGroup = channel === 'battle' ? 'battle' : 'other';
-    const lanes = this.lanes[laneGroup];
-    return lanes.reduce((earliest, lane) => (lane.availableAt < earliest.availableAt ? lane : earliest));
+  getFlowY(channel) {
+    const range = channel === 'battle' ? FLOW_Y_RANGES.battle : FLOW_Y_RANGES.other;
+    return range.min + (range.max - range.min) * this.random();
   }
 
   show(record) {
@@ -44,13 +40,10 @@ export default class FlowLog {
     entry.append(message);
     this.container.append(entry);
 
-    const now = performance.now();
     const duration = getAnimationDurationMs(entry);
-    const lane = this.getLane(record.channel, now);
-    const delay = Math.max(0, lane.availableAt - now);
-    lane.availableAt = now + delay + duration;
-    entry.style.setProperty('--flow-lane-y', `${lane.position}%`);
-    entry.style.setProperty('--flow-delay', `${delay}ms`);
+    const adjustedDuration = duration * (0.85 + this.random() * 0.3);
+    entry.style.setProperty('--flow-y', `${this.getFlowY(record.channel)}%`);
+    entry.style.setProperty('--flow-duration-adjusted', `${adjustedDuration}ms`);
     entry.addEventListener('animationend', (event) => {
       if (event.target === entry && event.animationName === 'flow-log-right-to-left') entry.remove();
     });

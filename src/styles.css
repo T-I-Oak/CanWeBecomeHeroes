@@ -641,7 +641,7 @@ body {
   --flow-level-color: var(--color-level-info);
   --flow-duration: 6s;
   position: fixed;
-  top: var(--flow-lane-y, 62%);
+  top: var(--flow-y, 62%);
   left: 0;
   width: max-content;
   visibility: hidden;
@@ -650,7 +650,7 @@ body {
 
 .FlowLog__Entry.state-running {
   visibility: visible;
-  animation: flow-log-right-to-left var(--flow-duration, 6s) linear var(--flow-delay, 0ms) backwards;
+  animation: flow-log-right-to-left var(--flow-duration-adjusted, var(--flow-duration, 6s)) linear backwards;
 }
 
 .FlowLog__Message {
