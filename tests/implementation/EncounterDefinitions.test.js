@@ -21,6 +21,8 @@ test('regular difficulty derives enemy count and each enemy tag budget from its 
   assert.deepEqual(first.roles.support2.slotPositions, [1, 6]);
   assert.equal(first.roles.main.weaponCount, 2);
   assert.equal(first.roles.main.totalTagBudget, 3);
+  assert.equal(DIFFICULTIES.regular(3).roles.main.contributionMultiplier, 1);
+  assert.equal(DIFFICULTIES.regular(9).roles.main.contributionMultiplier, 1.5);
   assert.equal(first.roles.main.maximumHp, 1 / 3);
   assert.deepEqual(first.roles.main.maximums, { power: 1 / 3, magic: 1 / 3, speed: 1 / 3, negotiation: 1 / 3, luck: 1 / 3 });
   assert.equal(later.roles.main.totalTagBudget, 101);
@@ -43,5 +45,6 @@ test('regular difficulty derives enemy count and each enemy tag budget from its 
   assert.ok(enemies.every((enemy) => enemy.equipment.flatMap((item) => item.tags).length === 3));
   assert.ok(enemies.every((enemy) => enemy.maximumHp === 1));
   assert.ok(enemies.every((enemy) => enemy.maximums.power === 1));
+  assert.ok(enemies.every((enemy) => enemy.contributionPoints === 9));
   assert.equal(normalizeEnemyMaximum(19 / 3), 7);
 });

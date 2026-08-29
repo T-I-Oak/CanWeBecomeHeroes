@@ -26,6 +26,7 @@ export const COMBINATION_PATTERNS = Object.freeze({
 function createNormalRoles(level) {
   const totalTagBudget = Math.max(0, Math.floor(level) + 2);
   const maximum = level / 3;
+  const contributionMultiplier = (level + 9) / 12;
   const maximums = Object.freeze(Object.fromEntries(STATUS_KEYS.map((stat) => [stat, maximum])));
   let remainingCount = Math.min(Math.ceil(Math.max(0, level) * 2 / 3), 6);
   const allocateCount = (capacity) => {
@@ -34,16 +35,16 @@ function createNormalRoles(level) {
     return count;
   };
   return Object.freeze({
-    main: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums }),
-    support1: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([2, 5]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums }),
-    support2: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([1, 6]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums }),
+    main: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier }),
+    support1: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([2, 5]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier }),
+    support2: Object.freeze({ count: allocateCount(2), slotPositions: Object.freeze([1, 6]), weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier }),
   });
 }
 
 const PLACEHOLDER_ROLES = Object.freeze({
-  main: Object.freeze({ count: 2, slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }) }),
-  support1: Object.freeze({ count: 0, slotPositions: Object.freeze([2, 5]), weaponCount: 0, totalTagBudget: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }) }),
-  support2: Object.freeze({ count: 0, slotPositions: Object.freeze([1, 6]), weaponCount: 0, totalTagBudget: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }) }),
+  main: Object.freeze({ count: 2, slotPositions: Object.freeze([3, 4]), weaponCount: 2, totalTagBudget: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }), contributionMultiplier: 1 }),
+  support1: Object.freeze({ count: 0, slotPositions: Object.freeze([2, 5]), weaponCount: 0, totalTagBudget: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }), contributionMultiplier: 1 }),
+  support2: Object.freeze({ count: 0, slotPositions: Object.freeze([1, 6]), weaponCount: 0, maximumHp: 1, maximums: Object.freeze({ power: 1, magic: 1, speed: 1, negotiation: 1, luck: 1 }), contributionMultiplier: 1 }),
 });
 
 export function normalizeEnemyMaximum(value) {
@@ -70,6 +71,7 @@ export function createEncounterEnemies({ kind, level, pattern, enemyFactory, ran
       totalTagCount: settings.totalTagBudget,
       maximumHp: normalizeEnemyMaximum(settings.maximumHp),
       maximums: Object.fromEntries(Object.entries(settings.maximums).map(([stat, value]) => [stat, normalizeEnemyMaximum(value)])),
+      contributionMultiplier: settings.contributionMultiplier,
       random,
     }));
   });
