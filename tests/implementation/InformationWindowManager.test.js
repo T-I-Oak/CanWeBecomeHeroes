@@ -28,6 +28,16 @@ test('opening a sibling replaces the previous child branch', () => {
   assert.deepEqual(manager.entries.map((entry) => entry.id), [parent.id, replacement.id]);
 });
 
+test('opening an already visible target focuses it instead of creating a duplicate window', () => {
+  const manager = new InformationWindowManager();
+  const tag = manager.open({ type: 'tag', data: { tag: 'valor' } });
+  manager.open({ type: 'status', parentId: tag.id, data: { status: 'power' } });
+  const repeated = manager.open({ type: 'tag', data: { tag: 'valor' } });
+
+  assert.equal(repeated.id, tag.id);
+  assert.deepEqual(manager.entries.map((entry) => entry.id), [tag.id]);
+});
+
 test('focusing the current leaf does not notify or replace an unchanged window branch', () => {
   let changes = 0;
   const manager = new InformationWindowManager({ onChange: () => { changes += 1; } });

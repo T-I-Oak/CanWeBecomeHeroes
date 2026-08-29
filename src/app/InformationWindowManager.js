@@ -19,6 +19,11 @@ export default class InformationWindowManager {
   }
 
   open({ type, data, parentId = null, anchor = null }) {
+    const existing = this.windows.find((entry) => this.#isSameTarget(entry, type, data));
+    if (existing) {
+      this.focus(existing.id);
+      return existing;
+    }
     if (parentId !== null && !this.windows.some((entry) => entry.id === parentId)) parentId = null;
     if (parentId === null) this.windows = [];
     else this.windows = this.windows.filter((entry) => !this.#isDescendantOf(entry.id, parentId));
@@ -63,6 +68,15 @@ export default class InformationWindowManager {
       currentId = this.windows.find((entry) => entry.id === currentId)?.parentId ?? null;
     }
     return false;
+  }
+
+  #isSameTarget(entry, type, data) {
+    if (entry.type !== type) return false;
+    if (type === 'tag') return entry.data.tag === data.tag;
+    if (type === 'status') return entry.data.status === data.status;
+    if (type === 'entity') return entry.data.entity === data.entity;
+    if (type === 'item') return entry.data.item === data.item;
+    return entry.data === data;
   }
 
   #notify() {
