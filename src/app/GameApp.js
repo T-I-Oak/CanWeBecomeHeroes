@@ -29,6 +29,7 @@ import { drawGuildPanel } from './GuildPanel.js';
 import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
+import { drawAreaNameplates } from './AreaNameplateRenderer.js';
 import { getFacilityNameplateAtPoint, getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
@@ -678,6 +679,7 @@ export function startGame({ scenario }) {
     preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
     drawBattleSlotGround(context, assets);
     drawFacilityNameplates(context, assets);
+    drawAreaNameplates(context, assets);
     drawFacilitySlots(context);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction());
     guildTimelineHours = drawGuildPanel(context, {
