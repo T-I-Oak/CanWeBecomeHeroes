@@ -56,12 +56,13 @@ export function getPreviewTagAtPoint(enemy, canvas, clientX, clientY) {
 }
 
 export default class StageSelectionModal {
-  constructor(container, { assets, onSelect = () => {}, onTagSelect = () => {} } = {}) {
+  constructor(container, { assets, onSelect = () => {}, onTagSelect = () => {}, onEnemySelect = () => {} } = {}) {
     if (!container || !assets) throw new Error('Stage selection modal requires a container and assets.');
     this.container = container;
     this.assets = assets;
     this.onSelect = onSelect;
     this.onTagSelect = onTagSelect;
+    this.onEnemySelect = onEnemySelect;
   }
 
   show({ stageNumber, choices }) {
@@ -135,6 +136,7 @@ export default class StageSelectionModal {
     canvas.addEventListener('click', (event) => {
       const tag = getPreviewTagAtPoint(enemy, canvas, event.clientX, event.clientY);
       if (tag) this.onTagSelect(tag, { x: event.clientX, y: event.clientY });
+      else this.onEnemySelect(enemy, { x: event.clientX, y: event.clientY });
     });
     return slot;
   }

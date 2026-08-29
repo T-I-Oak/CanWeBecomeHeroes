@@ -512,6 +512,7 @@ export function startGame({ scenario }) {
       clock.resume('stage-selection');
     },
     onTagSelect: (tag, anchor) => informationWindows.open({ type: 'tag', data: { tag }, anchor }),
+    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'entity', data: { entity: enemy }, anchor }),
   });
 
   function openStageSelection(stageNumber = stageController.stageNumber + 1) {
