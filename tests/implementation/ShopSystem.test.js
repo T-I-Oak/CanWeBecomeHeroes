@@ -66,8 +66,9 @@ test('shop pricing and gem skill tiers follow the sale rules', () => {
 
 test('shop creates a valid three-tag product before selecting each equipment item from it', () => {
   const productTags = createTrendProductTags('water', () => 0.75);
-  assert.equal(productTags.filter((tag) => tag === 'water').length, 2);
-  assert.equal(productTags.filter((tag) => ['fire', 'water', 'lightning', 'vitality', 'area'].includes(tag)).length, 2);
+  assert.equal(productTags.filter((tag) => tag === 'water').length, 1);
+  assert.equal(productTags.filter((tag) => ['valor', 'arcane', 'dexterity', 'reputation', 'blessing', 'iron', 'cloth', 'feather', 'gem', 'fortune'].includes(tag)).length, 1);
+  assert.equal(productTags.filter((tag) => ['fire', 'water', 'lightning', 'area', 'vitality'].includes(tag)).length, 2);
 
   const set = createTrendEquipmentSet({
     trendTag: 'water',
@@ -87,7 +88,7 @@ test('trend equipment starts with three candidate tags per part and discards exc
 });
 
 test('hero exposes the highest unlocked tag-skill level', () => {
-  const hero = new HeroFactory().create({ profession: 'merchant', x: 0, y: 0 });
+  const hero = new HeroFactory().create({ profession: 'merchant', x: 0, y: 0, maximums: { negotiation: 7 } });
   assert.equal(hero.getTagSkillLevel('gem'), 1);
   hero.tags.push('gem', 'gem', 'gem', 'gem');
   assert.equal(hero.getTagSkillLevel('gem'), 3);

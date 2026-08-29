@@ -1,4 +1,4 @@
-import { getStatusValue, getTagBaseColors, getTagGlyphScales, getTagPaths, getTagWeight } from './TagCatalog.js';
+import { getEffectiveTagCount, getStatusValue, getTagBaseColors, getTagGlyphScales, getTagPaths, getTagWeight } from './TagCatalog.js';
 import { getLuckDegree } from './Luck.js';
 
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
@@ -31,7 +31,7 @@ export default class Enemy {
   }
 
   getTagCount(tag) {
-    return Math.min(7, this.getTags().filter((current) => current === tag).length);
+    return getEffectiveTagCount(this.getTags(), tag, this.maximums);
   }
 
   getTagSkillLevel(tag) {

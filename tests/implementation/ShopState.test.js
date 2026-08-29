@@ -9,7 +9,7 @@ test('shop state keeps the current sale tag and one upcoming tag', () => {
   shop.advance(() => 0.5);
   assert.equal(shop.saleTag, 'valor');
   assert.equal(shop.nextTag, 'valor');
-  assert.equal(shop.laterTag, 'gem');
+  assert.equal(shop.laterTag, 'feather');
 });
 
 test('route trends preserve the current sale while a hero is shopping', () => {

@@ -1,31 +1,25 @@
-import { TAGS } from './TagCatalog.js';
+import { ATTRIBUTE_TAGS, TAGS, sortTags } from './TagCatalog.js';
 
 // 装備グリッドの描画順: 上段=頭、中段=右手・胴・左手、下段=脚。
 export const EQUIPMENT_PARTS = Object.freeze(['head', 'weapon', 'torso', 'weapon', 'feet']);
 const WEAPON_FOR_STATUS = Object.freeze({ valor: 'sword', iron: 'shield', arcane: 'staff', cloth: 'holy-book', dexterity: 'claw', feather: 'bow', reputation: 'banner', gem: 'orb', blessing: 'holy-symbol', fortune: 'tarot-cards' });
 const TAG_KEYS = Object.freeze(Object.keys(TAGS));
+const STATUS_TAG_KEYS = Object.freeze(TAG_KEYS.filter((tag) => TAGS[tag].group === 'status'));
 
 export function randomFrom(values, random) {
   return values[Math.floor(random() * values.length)];
 }
 
 export function createTrendProductTags(trendTag, random) {
-  const tags = [trendTag];
-  while (tags.length < 3) {
-    const statusTags = tags.filter((tag) => TAGS[tag].group === 'status');
-    const attributeTags = tags.filter((tag) => TAGS[tag].group === 'attribute');
-    const candidates = TAG_KEYS.filter((tag) => {
-      if (TAGS[tag].group === 'attribute') return attributeTags.length < 2 && attributeTags.filter((current) => current === tag).length < 2;
-      return statusTags.length === 0 || (statusTags.length === 1 && statusTags[0] === tag);
-    });
-    tags.push(randomFrom(candidates, random));
-  }
-  return tags;
+  if (!TAGS[trendTag]) throw new RangeError(`Unknown trend tag: ${trendTag}`);
+  const statusTag = TAGS[trendTag].group === 'status' ? trendTag : randomFrom(STATUS_TAG_KEYS, random);
+  const attributeTag = randomFrom(ATTRIBUTE_TAGS, random);
+  return sortTags([trendTag, statusTag, attributeTag]);
 }
 
 function pickTags(tags, count, random) {
   const pool = [...tags];
-  return Array.from({ length: Math.min(count, pool.length) }, () => pool.splice(Math.floor(random() * pool.length), 1)[0]);
+  return sortTags(Array.from({ length: Math.min(count, pool.length) }, () => pool.splice(Math.floor(random() * pool.length), 1)[0]));
 }
 
 export function reduceTagCounts(tagBudget, random, parts = EQUIPMENT_PARTS) {
@@ -51,9 +45,9 @@ export function createTrendEquipmentItem({ part, count, productTags, itemFactory
 }
 
 export function createTrendEquipmentSet({ trendTag, tagBudget, itemFactory, random = Math.random, placePart = () => ({}), modifyTagCount = ({ count }) => ({ count }) }) {
-  const productTags = createTrendProductTags(trendTag, random);
   const counts = reduceTagCounts(tagBudget, random);
   return EQUIPMENT_PARTS.map((part, index) => {
+    const productTags = createTrendProductTags(trendTag, random);
     const adjustment = modifyTagCount({ part, index, count: counts[index], productTags });
     const position = placePart({ part, index });
     return {

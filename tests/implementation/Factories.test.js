@@ -6,10 +6,15 @@ import ItemFactory from '../../src/game/ItemFactory.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import Enemy from '../../src/game/Enemy.js';
 import { AREA_THEME } from '../../src/game/AreaTheme.js';
-import { ATTRIBUTE_TAGS } from '../../src/game/TagCatalog.js';
+import { ATTRIBUTE_TAGS, TAG_ORDER } from '../../src/game/TagCatalog.js';
 
 test('attribute tags use the shared fire water lightning area vitality order', () => {
   assert.deepEqual(ATTRIBUTE_TAGS, ['fire', 'water', 'lightning', 'area', 'vitality']);
+  assert.deepEqual(TAG_ORDER, [
+    'valor', 'arcane', 'dexterity', 'reputation', 'blessing',
+    'iron', 'cloth', 'feather', 'gem', 'fortune',
+    'fire', 'water', 'lightning', 'area', 'vitality',
+  ]);
 });
 
 test('hero factory creates a profession chip with its two fixed tags', () => {
@@ -83,6 +88,19 @@ test('enemy maximums can cap its status independently of the default maximum', (
   assert.equal(enemy.getStatus('power'), 3);
 });
 
+test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
+  const hero = new Hero({
+    profession: 'test', name: {}, chip: { weight: 0 },
+    maximums: { power: 3, magic: 7, speed: 7, negotiation: 7, luck: 7 },
+    tags: ['valor', 'valor', 'valor', 'valor', 'iron', 'iron', 'iron', 'iron', 'fire', 'fire', 'fire', 'fire'],
+  });
+  assert.equal(hero.getTagCount('valor'), 3);
+  assert.equal(hero.getTagCount('iron'), 3);
+  assert.equal(hero.getTagCount('fire'), 3);
+  assert.equal(hero.getTagSkillLevel('valor'), 2);
+  assert.equal(hero.getTags().filter((tag) => tag === 'fire').length, 4);
+});
+
 test('enemy equipment independently rolls each item three-tag candidate set', () => {
   let seed = 7;
   const random = () => {
@@ -109,6 +127,13 @@ test('item factory calculates tag weight, price, and equipment assets', () => {
   assert.deepEqual(item.chip.tagGlyphScales, [0.72, 0.72]);
 });
 
+test('body equipment variation follows the first sorted tag in the shared tag order', () => {
+  const factory = new ItemFactory();
+  assert.equal(factory.createBodyItem({ part: 'head', tags: ['vitality'], x: 0, y: 0 }).type, 'head-5');
+  assert.equal(factory.createBodyItem({ part: 'head', tags: ['area'], x: 0, y: 0 }).type, 'head-4');
+  assert.equal(factory.createBodyItem({ part: 'head', tags: ['water', 'cloth'], x: 0, y: 0 }).type, 'head-2');
+});
+
 test('tagless items have weight one, price one, and a selectable base asset', () => {
   const item = new ItemFactory().createWeapon({ weapon: 'staff', tags: [], x: 100, y: 200 });
   assert.equal(item.chip.weight, 1);
@@ -118,8 +143,8 @@ test('tagless items have weight one, price one, and a selectable base asset', ()
 
 test('random body items receive tags and select their image from those tags', () => {
   const item = new ItemFactory().createRandomBodyItem({ part: 'head', x: 100, y: 200, random: () => 0.4 });
-  assert.deepEqual(item.tags, ['dexterity', 'dexterity']);
-  assert.equal(item.chip.centerPath, '/assets/items/head-3.png');
+  assert.deepEqual(item.tags, ['blessing', 'blessing']);
+  assert.equal(item.chip.centerPath, '/assets/items/head-5.png');
   assert.equal(item.chip.weight, 2);
 });
 

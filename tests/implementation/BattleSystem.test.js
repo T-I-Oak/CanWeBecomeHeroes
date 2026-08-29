@@ -178,7 +178,7 @@ test('bows shorten the action gauge by ten percent per weapon up to five weapons
 test('stealing a bow immediately refreshes the affected action gauge maximum', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
-  const hero = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3 });
+  const hero = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3, maximums: { speed: 7 } });
   const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
   const bow = itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 });
   enemy.equipment = [bow];
@@ -386,7 +386,7 @@ test('holy symbol and tarot cards support only other allies', () => {
 test('claw steals the highest available eligible item tier for heroes and enemies', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
-  const hero = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3 });
+  const hero = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3, maximums: { speed: 7 } });
   hero.tags.push('dexterity', 'dexterity', 'dexterity');
   const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
   const enemyItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor', 'valor', 'fire'], x: 0, y: 0 });

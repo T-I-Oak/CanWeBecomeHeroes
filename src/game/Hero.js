@@ -1,4 +1,4 @@
-import { getStatusValue, getTagWeight } from './TagCatalog.js';
+import { getEffectiveTagCount, getStatusValue, getTagWeight } from './TagCatalog.js';
 import { getHeroStepDistance } from './MovementSettings.js';
 import { getLuckDegree } from './Luck.js';
 
@@ -63,7 +63,7 @@ export default class Hero {
   }
 
   getTagCount(tag) {
-    return Math.min(7, this.getTags().filter((current) => current === tag).length);
+    return getEffectiveTagCount(this.getTags(), tag, this.maximums);
   }
 
   getTagSkillLevel(tag) {

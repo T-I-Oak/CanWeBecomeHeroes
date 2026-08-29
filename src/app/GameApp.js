@@ -48,8 +48,8 @@ const STATUS_DEFINITIONS = Object.freeze([
   { key: 'stamina', visual: STATUS_VISUALS.stamina },
 ]);
 const TAG_GRID = Object.freeze([
-  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'fortune']),
-  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'blessing']),
+  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'blessing']),
+  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
   Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
 ]);
 

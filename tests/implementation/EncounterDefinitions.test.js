@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
-import { COMBINATION_PATTERNS, createEncounterEnemies, DIFFICULTIES } from '../../src/game/EncounterDefinitions.js';
+import { COMBINATION_PATTERNS, createEncounterEnemies, DIFFICULTIES, normalizeEnemyMaximum } from '../../src/game/EncounterDefinitions.js';
 
 test('regular encounter definitions provide complete concrete patterns for the available enemy types', () => {
   assert.equal(COMBINATION_PATTERNS.regular.length, 15);
@@ -21,6 +21,8 @@ test('regular difficulty derives enemy count and each enemy tag budget from its 
   assert.deepEqual(first.roles.support2.slotPositions, [1, 6]);
   assert.equal(first.roles.main.weaponCount, 2);
   assert.equal(first.roles.main.totalTagBudget, 3);
+  assert.equal(first.roles.main.maximumHp, 1 / 3);
+  assert.deepEqual(first.roles.main.maximums, { power: 1 / 3, magic: 1 / 3, speed: 1 / 3, negotiation: 1 / 3, luck: 1 / 3 });
   assert.equal(later.roles.main.totalTagBudget, 101);
   assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8].map((level) => {
     const { roles } = DIFFICULTIES.regular(level);
@@ -39,4 +41,7 @@ test('regular difficulty derives enemy count and each enemy tag budget from its 
   assert.ok(enemies.every((enemy) => enemy.equipment.length === 5));
   assert.ok(enemies.every((enemy) => enemy.equipment.filter((item) => item.category === 'weapon').length === 2));
   assert.ok(enemies.every((enemy) => enemy.equipment.flatMap((item) => item.tags).length === 3));
+  assert.ok(enemies.every((enemy) => enemy.maximumHp === 1));
+  assert.ok(enemies.every((enemy) => enemy.maximums.power === 1));
+  assert.equal(normalizeEnemyMaximum(19 / 3), 7);
 });

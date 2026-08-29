@@ -1,6 +1,6 @@
 import Chip from '../chips/Chip.js';
 import Item from './Item.js';
-import { ATTRIBUTE_TAGS, TAGS, getTagBaseColors, getTagGlyphScales, getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
+import { ATTRIBUTE_TAGS, TAGS, getTagBaseColors, getTagGlyphScales, getTagIndex, getTagPaths, getTagPrice, getTagWeight, sortTags } from './TagCatalog.js';
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
 
@@ -12,15 +12,12 @@ const DESTINATIONS = Object.freeze({
   'shopping-bag': 'shop', 'hero-license': 'training', 'renewal-form': 'guild',
 });
 export const DESTINATION_TYPES = Object.freeze(Object.keys(DESTINATIONS));
-const SLOT_BY_STAT = Object.freeze({ power: 1, magic: 2, speed: 3, negotiation: 4, luck: 5 });
-const SLOT_BY_ATTRIBUTE = Object.freeze({ fire: 1, water: 2, lightning: 3, area: 5, vitality: 4 });
 const TAG_PATTERNS = Object.freeze([[0, 0], [1, 0], [0, 1], [2, 0], [1, 1], [0, 2], [1, 2], [2, 1]]);
 const STATUS_TAGS = Object.freeze(Object.keys(TAGS).filter((tag) => TAGS[tag].group === 'status'));
 
 function assetPaths(tags) {
-  const statusTag = tags.find((tag) => TAGS[tag].group === 'status');
-  const attributeTag = tags.find((tag) => TAGS[tag].group === 'attribute');
-  const slot = statusTag ? SLOT_BY_STAT[TAGS[statusTag].stat] : attributeTag ? SLOT_BY_ATTRIBUTE[attributeTag] : 1;
+  const firstTag = sortTags(tags)[0];
+  const slot = firstTag ? getTagIndex(firstTag) % 5 + 1 : 1;
   return Object.freeze({ head: `/assets/items/head-${slot}.png`, torso: `/assets/items/torso-${slot}.png`, feet: `/assets/items/feet-${slot}.png` });
 }
 
@@ -55,9 +52,10 @@ export default class ItemFactory {
   }
 
   createWeapon({ weapon, tags, x, y }) {
-    const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(tags)), centerPath: `/assets/items/hand-${weapon}.png`, tagPaths: getTagPaths(tags), tagBaseColors: getTagBaseColors(tags), tagGlyphScales: getTagGlyphScales(tags), bounds: GAME_AREAS.warehouse });
-    const item = new Item({ type: weapon, category: 'weapon', tags, chip, equipmentAssets: assetPaths(tags) });
-    item.price = getTagPrice(tags);
+    const orderedTags = sortTags(tags);
+    const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(orderedTags)), centerPath: `/assets/items/hand-${weapon}.png`, tagPaths: getTagPaths(orderedTags), tagBaseColors: getTagBaseColors(orderedTags), tagGlyphScales: getTagGlyphScales(orderedTags), bounds: GAME_AREAS.warehouse });
+    const item = new Item({ type: weapon, category: 'weapon', tags: orderedTags, chip, equipmentAssets: assetPaths(orderedTags) });
+    item.price = getTagPrice(orderedTags);
     item.fixedStatusTag = WEAPONS[weapon];
     return item;
   }
@@ -82,10 +80,11 @@ export default class ItemFactory {
   }
 
   createBodyItem({ part, tags = [], x, y, random = Math.random }) {
-    const imageNumber = tags.length === 0 ? 1 + Math.floor(random() * 5) : Number(assetPaths(tags)[part].match(/-(\d+)\.png$/)[1]);
-    const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(tags)), centerPath: `/assets/items/${part}-${imageNumber}.png`, tagPaths: getTagPaths(tags), tagBaseColors: getTagBaseColors(tags), tagGlyphScales: getTagGlyphScales(tags), bounds: GAME_AREAS.warehouse });
-    const item = new Item({ type: `${part}-${imageNumber}`, category: part, tags, chip, equipmentAssets: assetPaths(tags) });
-    item.price = getTagPrice(tags);
+    const orderedTags = sortTags(tags);
+    const imageNumber = orderedTags.length === 0 ? 1 + Math.floor(random() * 5) : Number(assetPaths(orderedTags)[part].match(/-(\d+)\.png$/)[1]);
+    const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(orderedTags)), centerPath: `/assets/items/${part}-${imageNumber}.png`, tagPaths: getTagPaths(orderedTags), tagBaseColors: getTagBaseColors(orderedTags), tagGlyphScales: getTagGlyphScales(orderedTags), bounds: GAME_AREAS.warehouse });
+    const item = new Item({ type: `${part}-${imageNumber}`, category: part, tags: orderedTags, chip, equipmentAssets: assetPaths(orderedTags) });
+    item.price = getTagPrice(orderedTags);
     return item;
   }
 }

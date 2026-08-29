@@ -11,8 +11,8 @@ const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiatio
 // this same world-size ratio instead of being normalized to the hero size.
 const ENTITY_PORTRAIT_SCALE = 156 / 192;
 const TAG_GRID = Object.freeze([
-  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'fortune']),
-  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'blessing']),
+  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'blessing']),
+  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
   Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
 ]);
 

@@ -55,7 +55,7 @@ export default class EnemyFactory {
     return new Enemy({ definition, tags, chip, maximumHp, contributionPoints, equipment, maximums, rank, mainTag, subTags, slotPosition });
   }
 
-  createFromDefinition({ enemyDefinitionId, slotPosition, weaponCount, totalTagCount, maximums, random = Math.random }) {
+  createFromDefinition({ enemyDefinitionId, slotPosition, weaponCount, totalTagCount, maximumHp, maximums, random = Math.random }) {
     const definition = getEnemyDefinitionById(enemyDefinitionId);
     if (!definition) throw new Error(`Missing enemy definition: ${enemyDefinitionId}`);
     const [mainTag, ...subTags] = definition.intrinsicTags;
@@ -63,7 +63,7 @@ export default class EnemyFactory {
       size: definition.size,
       tagAffinity: definition.tagAffinity,
       slotPosition,
-      maximumHp: definition.baseHp,
+      maximumHp: maximumHp ?? definition.baseHp,
       totalTagCount,
       maximums,
       rank: RANK_BY_SIZE[definition.size],
