@@ -240,6 +240,8 @@ test('leaving the battle area clears all temporary battle state', () => {
   hero.chip.attributeValues = hero.attributes;
   hero.chip.physicalDamageReduction = hero.physicalDamageReduction;
   hero.luckBonus = 0.25;
+  hero.chip.tilt = 0.2;
+  hero.chip.poseTilt = 0.1;
   const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
 
   battle.update({ heroes: [hero], enemies: [], tick: 1, tickDelta: 1 });
@@ -251,6 +253,8 @@ test('leaving the battle area clears all temporary battle state', () => {
   assert.deepEqual(hero.attributeSources, { fire: null, water: null, lightning: null });
   assert.equal(hero.physicalDamageReduction, 0);
   assert.equal(hero.chip.physicalDamageReduction, 0);
+  assert.equal(hero.chip.tilt, 0);
+  assert.equal(hero.chip.poseTilt, 0);
   assert.equal(hero.luckBonus, 0);
 });
 
@@ -311,8 +315,12 @@ test('damage leaves a random knockback tilt that each action gradually restores'
   battle.applyDamage(null, target, 'sword', 1);
   battle.updateActor(actor, [], 1000);
 
-  assert.equal(target.chip.tilt, -Math.PI / 30);
+  assert.equal(target.chip.tilt, -Math.PI / 12);
   assert.equal(actor.chip.tilt, -0.4 + Math.PI / 24);
+
+  target.chip.tilt = 0;
+  battle.applyDamage(null, target, 'sword', 0.25);
+  assert.equal(target.chip.tilt, -Math.PI / 48);
 });
 
 test('lightning propagates only through contiguous opponent slots', () => {

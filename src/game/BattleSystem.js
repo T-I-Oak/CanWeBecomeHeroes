@@ -14,8 +14,7 @@ const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, ta
 const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
 const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
 const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 24;
-const KNOCKBACK_TILT_MIN_RADIANS = Math.PI / 30;
-const KNOCKBACK_TILT_RANGE_RADIANS = Math.PI / 20;
+const KNOCKBACK_TILT_MAX_RADIANS = Math.PI / 12;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 const isHero = (actor) => actor.chip.type === 'hero';
 const onBoard = (board, entity) => board.chips.includes(entity.chip);
@@ -109,8 +108,8 @@ export default class BattleSystem {
     }
     chip.tilt -= Math.sign(chip.tilt) * ACTION_TILT_RECOVERY_RADIANS;
   }
-  applyKnockbackTilt(target) {
-    const amount = KNOCKBACK_TILT_MIN_RADIANS + this.random() * KNOCKBACK_TILT_RANGE_RADIANS;
+  applyKnockbackTilt(target, damage) {
+    const amount = Math.min(damage * 100, 100) / 100 * KNOCKBACK_TILT_MAX_RADIANS;
     target.chip.tilt += this.random() < 0.5 ? -amount : amount;
   }
   updateActionGaugeMaximum(actor) {
@@ -310,7 +309,7 @@ export default class BattleSystem {
     });
   }
   applyDamage(actor, target, type, damage, critical = false) {
-    if (damage < .01) return 0; this.applyKnockbackTilt(target); this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
+    if (damage < .01) return 0; this.applyKnockbackTilt(target, damage); this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
     if (isHero(target)) {
       target.stamina = Math.max(0, target.stamina - damage);
       this.onDamage?.({ actor, target, type, damage, critical });

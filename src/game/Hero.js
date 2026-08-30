@@ -87,6 +87,11 @@ export default class Hero {
     this.chip.actionGauge = null;
     this.chip.actionGaugeMaximum = null;
     this.chip.actionGaugeBaseMaximum = null;
+    this.chip.tilt = 0;
+    this.chip.poseTilt = 0;
+    this.chip.effectOffsetX = 0;
+    this.chip.effectOffsetY = 0;
+    this.chip.effectRotation = 0;
     this.chip.attributeValues = this.attributes;
     this.chip.physicalDamageReduction = 0;
   }
