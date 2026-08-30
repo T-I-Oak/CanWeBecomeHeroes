@@ -227,11 +227,7 @@ function getPreparationStatusAtPoint(point, heroes) {
       const iconX = gaugeX + (statusGaugeWidth - statusIconSize) / 2;
       const iconY = gaugeY + statusIconTopPadding;
       if (!isPointInRect(point, iconX, iconY, statusIconSize, statusIconSize)) continue;
-      return {
-        status: key,
-        current: key === 'stamina' ? hero.stamina : hero.getStatus(key),
-        maximum: hero.maximums[key],
-      };
+      return { status: key };
     }
   }
   return null;
@@ -244,9 +240,7 @@ function getTrainingStatusAtPoint(point, hero) {
     // The icon is intentionally small.  The whole gauge is the interaction target,
     // so training status remains usable with both mouse and touch input.
     if (!isPointInRect(point, bounds.x, bounds.y, bounds.width, bounds.height)) continue;
-    return hero
-      ? { status: key, current: key === 'stamina' ? hero.stamina : hero.getStatus(key), maximum: hero.maximums[key] }
-      : { status: key };
+    return { status: key };
   }
   return null;
 }
@@ -670,6 +664,8 @@ export function startGame({ scenario }) {
       guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
+      informationWindows.closeDefeatedEnemies();
+      informationWindows.refreshDynamicEntries();
       stageController.update();
       if (stageController.state === 'complete') openStageSelection();
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);

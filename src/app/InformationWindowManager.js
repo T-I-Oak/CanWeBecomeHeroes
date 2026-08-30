@@ -7,6 +7,7 @@ export default class InformationWindowManager {
     this.pauseOnOpen = false;
     this.windows = [];
     this.nextId = 1;
+    this.isDragging = false;
   }
 
   get entries() {
@@ -20,14 +21,11 @@ export default class InformationWindowManager {
 
   open({ type, data, parentId = null, anchor = null }) {
     const existing = this.windows.find((entry) => this.#isSameTarget(entry, type, data));
-    if (existing) {
-      this.focus(existing.id);
-      return existing;
-    }
+    if (existing) return existing;
     if (parentId !== null && !this.windows.some((entry) => entry.id === parentId)) parentId = null;
-    if (parentId === null) this.windows = [];
-    else this.windows = this.windows.filter((entry) => !this.#isDescendantOf(entry.id, parentId));
-    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor });
+    if (parentId === null) this.windows = this.windows.filter((entry) => entry.pinned);
+    else this.windows = this.windows.filter((entry) => entry.pinned || !this.#isDescendantOf(entry.id, parentId));
+    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor, position: null, pinned: false });
     this.windows.push(entry);
     this.#notify();
     return entry;
@@ -39,15 +37,57 @@ export default class InformationWindowManager {
       return;
     }
     const retained = new Set(this.#getAncestorIds(id));
-    const next = this.windows.filter((entry) => retained.has(entry.id));
+    const next = this.windows.filter((entry) => entry.pinned || retained.has(entry.id));
     if (next.length === this.windows.length) return;
     this.windows = next;
     this.#notify();
   }
 
-  clear() {
-    if (this.windows.length === 0) return;
-    this.windows = [];
+  clear({ includePinned = false } = {}) {
+    const next = includePinned ? [] : this.windows.filter((entry) => entry.pinned);
+    if (next.length === this.windows.length) return;
+    this.windows = next;
+    this.#notify();
+  }
+
+  togglePin(id) {
+    const index = this.windows.findIndex((entry) => entry.id === id);
+    if (index < 0) return null;
+    const entry = this.windows[index];
+    const next = Object.freeze({ ...entry, pinned: !entry.pinned });
+    this.windows.splice(index, 1, next);
+    this.#notify();
+    return next;
+  }
+
+  setPosition(id, position) {
+    const index = this.windows.findIndex((entry) => entry.id === id);
+    if (index < 0) return null;
+    const entry = this.windows[index];
+    const next = Object.freeze({ ...entry, position: { x: position.x, y: position.y } });
+    this.windows.splice(index, 1, next);
+    this.#notify();
+    return next;
+  }
+
+  setDragging(active) {
+    this.isDragging = Boolean(active);
+  }
+
+  refreshDynamicEntries() {
+    if (this.isDragging || !this.windows.some((entry) => entry.type === 'entity')) return;
+    this.onChange?.(this.entries);
+  }
+
+  closeDefeatedEnemies() {
+    const defeated = this.windows.filter((entry) => (
+      entry.type === 'entity'
+      && entry.data.entity?.chip?.type === 'enemy'
+      && entry.data.entity.hp <= 0
+    ));
+    if (defeated.length === 0) return;
+    const ids = new Set(defeated.map((entry) => entry.id));
+    this.windows = this.windows.filter((entry) => !ids.has(entry.id));
     this.#notify();
   }
 
@@ -84,7 +124,7 @@ export default class InformationWindowManager {
 
   #notify() {
     if (this.clock) {
-      if (this.pauseOnOpen && this.windows.length > 0) this.clock.pause(PAUSE_REASON);
+      if (this.pauseOnOpen && this.windows.some((entry) => !entry.pinned)) this.clock.pause(PAUSE_REASON);
       else this.clock.resume(PAUSE_REASON);
     }
     this.onChange?.(this.entries);

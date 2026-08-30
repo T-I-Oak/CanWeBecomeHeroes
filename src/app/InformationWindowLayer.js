@@ -81,7 +81,7 @@ export default class InformationWindowLayer {
   render(entries) {
     const windows = entries.map((entry) => this.#renderWindow(entry));
     this.element.replaceChildren(...windows);
-    windows.forEach((window, index) => this.#positionWindow(window, entries[index].anchor));
+    windows.forEach((window, index) => this.#positionWindow(window, entries[index]));
   }
 
   #renderWindow(entry) {
@@ -94,7 +94,48 @@ export default class InformationWindowLayer {
     if (entry.type === 'facility') window.append(this.#renderFacilityDetail(entry));
     if (entry.type === 'area') window.append(this.#renderAreaDetail(entry));
     if (entry.type === 'unique-skill') window.append(this.#renderUniqueSkillDetail(entry));
+    this.#addWindowControls(window, entry);
     return window;
+  }
+
+  #addWindowControls(windowElement, entry) {
+    const title = windowElement.querySelector('.InformationWindow__Title');
+    if (!title) return;
+    const pin = createElement('button', `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`);
+    pin.type = 'button';
+    pin.title = entry.pinned ? 'ピン止めを外す' : 'ピン止めする';
+    pin.setAttribute('aria-label', pin.title);
+    pin.textContent = '📌';
+    pin.addEventListener('pointerdown', (event) => event.stopPropagation());
+    pin.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.manager.togglePin(entry.id);
+    });
+    title.append(pin);
+
+    title.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0 || event.target.closest('.InformationWindow__Pin')) return;
+      const bounds = windowElement.getBoundingClientRect();
+      const offset = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+      const move = (moveEvent) => {
+        const position = this.#constrainPosition(windowElement, moveEvent.clientX - offset.x, moveEvent.clientY - offset.y);
+        windowElement.style.left = `${position.x}px`;
+        windowElement.style.top = `${position.y}px`;
+        windowElement.style.transform = 'none';
+      };
+      const finish = (upEvent) => {
+        windowElement.removeEventListener('pointermove', move);
+        windowElement.removeEventListener('pointerup', finish);
+        this.manager.setDragging(false);
+        const position = this.#constrainPosition(windowElement, upEvent.clientX - offset.x, upEvent.clientY - offset.y);
+        this.manager.setPosition(entry.id, position);
+      };
+      this.manager.setDragging(true);
+      windowElement.setPointerCapture(event.pointerId);
+      windowElement.addEventListener('pointermove', move);
+      windowElement.addEventListener('pointerup', finish, { once: true });
+      event.preventDefault();
+    });
   }
 
   #renderTagDetail(entry) {
@@ -141,14 +182,13 @@ export default class InformationWindowLayer {
   }
 
   #renderStatusDetail(entry) {
-    const { status, current, maximum } = entry.data;
+    const { status } = entry.data;
     const detail = getStatusDetail(status);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
     title.append(createStatusIcon(status), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
-    if (Number.isFinite(current) && Number.isFinite(maximum)) body.append(createElement('p', 'InformationWindow__Effect', `現在値 ${Math.floor(current)} / ${Math.floor(maximum)}`));
     body.append(createElement('p', 'InformationWindow__Description', detail.description));
     content.append(body);
     return content;
@@ -241,7 +281,7 @@ export default class InformationWindowLayer {
     }
     gauge.append(segments);
     gauge.addEventListener('click', (event) => this.manager.open({
-      type: 'status', parentId: entry.id, data: { status, current, maximum }, anchor: { x: event.clientX, y: event.clientY },
+      type: 'status', parentId: entry.id, data: { status }, anchor: { x: event.clientX, y: event.clientY },
     }));
     return gauge;
   }
@@ -311,7 +351,14 @@ export default class InformationWindowLayer {
     return button;
   }
 
-  #positionWindow(windowElement, anchor) {
+  #positionWindow(windowElement, entry) {
+    if (entry.position) {
+      windowElement.style.left = `${entry.position.x}px`;
+      windowElement.style.top = `${entry.position.y}px`;
+      windowElement.style.transform = 'none';
+      return;
+    }
+    const { anchor } = entry;
     if (!anchor) {
       windowElement.style.left = '50%';
       windowElement.style.top = '50%';
@@ -331,5 +378,14 @@ export default class InformationWindowLayer {
     windowElement.style.left = `${x}px`;
     windowElement.style.top = `${y}px`;
     windowElement.style.transform = 'none';
+  }
+
+  #constrainPosition(windowElement, x, y) {
+    const margin = 12;
+    const bounds = windowElement.getBoundingClientRect();
+    return {
+      x: Math.max(margin, Math.min(x, globalThis.innerWidth - bounds.width - margin)),
+      y: Math.max(margin, Math.min(y, globalThis.innerHeight - bounds.height - margin)),
+    };
   }
 }

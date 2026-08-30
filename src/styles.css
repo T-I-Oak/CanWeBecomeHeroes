@@ -145,6 +145,27 @@ body {
   border-radius: 10px 10px 0 0;
 }
 
+.InformationWindow__Pin {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  color: #f7edcf;
+  font-size: 17px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  place-items: center;
+}
+
+.InformationWindow__Pin:hover,
+.InformationWindow__Pin:focus-visible,
+.InformationWindow__Pin.is-pinned {
+  background: #765124;
+  border-color: #e6b960;
+}
+
 .InformationWindow__Name {
   margin: 0;
   font-size: 22px;
