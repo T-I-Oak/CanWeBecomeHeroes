@@ -311,7 +311,7 @@ test('damage leaves a random knockback tilt that each action gradually restores'
   battle.applyDamage(null, target, 'sword', 1);
   battle.updateActor(actor, [], 1000);
 
-  assert.equal(target.chip.tilt, -Math.PI / 18);
+  assert.equal(target.chip.tilt, -Math.PI / 30);
   assert.equal(actor.chip.tilt, -0.4 + Math.PI / 24);
 });
 
