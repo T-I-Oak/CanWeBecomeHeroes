@@ -49,6 +49,7 @@ export default class GuildSystem {
       level: isLucky ? 'luck' : 'info',
       channel: 'guild',
     });
+    hero.stamina = 0;
     state.returning = true;
     this.returnSystem.begin(hero);
   }
