@@ -5,7 +5,7 @@ const SETTLE_HEIGHT = 0.2;
 const GROUND_SEPARATION_SPEED = 360;
 const MOVE_STEP_DURATION_SECONDS = 0.38;
 const COLLISION_HEIGHT_RATIO = 0.25;
-const IMPACT_LIFT_SCALE = 2;
+const IMPACT_LIFT_SCALE = 20;
 const hasPhysicalTilt = (chip) => chip.type === 'item';
 
 function distanceBetween(first, second) {
