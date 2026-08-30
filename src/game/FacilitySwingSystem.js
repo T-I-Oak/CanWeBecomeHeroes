@@ -24,8 +24,10 @@ export default class FacilitySwingSystem {
     heroes.forEach((hero) => {
       const frequency = getHeroSwingFrequency(hero, activeHero);
       const targetTilt = frequency ? Math.sin(this.time * frequency) * SWING_ANGLE_RADIANS : 0;
-      const currentTilt = hero.chip.tilt + hero.chip.poseTilt;
-      hero.chip.poseTilt += (targetTilt - currentTilt) * followRatio;
+      // Pose motion is independent from battle knockback tilt.  Following the
+      // combined rotation here would visually cancel a hit as soon as this
+      // idle animation updates.
+      hero.chip.poseTilt += (targetTilt - hero.chip.poseTilt) * followRatio;
     });
   }
 }

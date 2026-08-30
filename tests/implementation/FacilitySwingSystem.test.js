@@ -16,12 +16,11 @@ test('ready preparation heroes swing without using a color blink', () => {
   assert.equal(getHeroSwingFrequency(readyHero, null), HERO_STATE_SWING_ANGULAR_FREQUENCY.preparationReady);
 });
 
-test('facility swing smoothly moves a hero pose toward an area swing target', () => {
+test('facility swing moves only the hero pose and preserves battle knockback tilt', () => {
   const system = new FacilitySwingSystem();
   const trainingHero = hero('training');
   trainingHero.chip.tilt = Math.PI / 2;
   system.update([trainingHero], 0.2);
-  const totalTilt = trainingHero.chip.tilt + trainingHero.chip.poseTilt;
-  assert.ok(trainingHero.chip.poseTilt < 0);
-  assert.ok(Math.abs(totalTilt) < Math.PI / 2);
+  assert.ok(trainingHero.chip.poseTilt > 0);
+  assert.equal(trainingHero.chip.tilt, Math.PI / 2);
 });
