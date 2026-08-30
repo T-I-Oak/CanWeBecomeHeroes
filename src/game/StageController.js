@@ -38,7 +38,7 @@ export default class StageController {
       const level = rollStageLevel(stageNumber, this.random);
       const patterns = COMBINATION_PATTERNS[kind];
       const pattern = patterns[Math.floor(this.random() * patterns.length)];
-      const enemies = createEncounterEnemies({ kind, level, pattern, enemyFactory: this.enemyFactory, random: this.random });
+      const enemies = createEncounterEnemies({ kind, level, stageNumber, pattern, enemyFactory: this.enemyFactory, random: this.random });
       return Object.freeze({
         id: `stage-${stageNumber}-choice-${index + 1}`,
         number: stageNumber,

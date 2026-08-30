@@ -55,11 +55,17 @@ test('elite roles add main and support enemies at their separate level intervals
 
 test('slot allocation keeps main roles first and reserves two slots for each large boss', () => {
   const enemies = createEncounterEnemies({
-    kind: 'boss', level: 9, pattern: COMBINATION_PATTERNS.boss[0], enemyFactory: new EnemyFactory(), random: () => 0,
+    kind: 'boss', level: 9, stageNumber: 7, pattern: COMBINATION_PATTERNS.boss[0], enemyFactory: new EnemyFactory(), random: () => 0,
   });
   assert.deepEqual(enemies.map(({ definition, slotPosition }) => [definition.size, slotPosition]), [
     ['large', 3], ['small', 2], ['small', 5], ['small', 1], ['small', 6],
   ]);
+});
+
+test('boss roles scale their main count by stage while keeping both supports fixed', () => {
+  assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 7 }).roles).map(({ count }) => count), [1, 2, 2]);
+  assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 14 }).roles).map(({ count }) => count), [1, 2, 2]);
+  assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 15 }).roles).map(({ count }) => count), [2, 2, 2]);
 });
 
 test('slot allocation fills from the center across roles without role-specific slot preferences', () => {

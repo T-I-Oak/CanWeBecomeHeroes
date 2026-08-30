@@ -57,11 +57,9 @@ function createEliteRoles(level) {
   });
 }
 
-function createBossRoles(level) {
+function createBossRoles(level, stageNumber) {
   const shared = createSharedSettings(level);
-  // Boss scaling is intentionally deferred. The current baseline is one boss
-  // with four supporting regular enemies, while allocation still guards spans.
-  return Object.freeze({ main: role(1, shared), support1: role(2, shared), support2: role(2, shared) });
+  return Object.freeze({ main: role(Math.ceil(stageNumber / 14), shared), support1: role(2, shared), support2: role(2, shared) });
 }
 
 export function normalizeEnemyMaximum(value) {
@@ -71,7 +69,10 @@ export function normalizeEnemyMaximum(value) {
 export const DIFFICULTIES = Object.freeze({
   regular: (level) => Object.freeze({ roles: createNormalRoles(level) }),
   elite: (level) => Object.freeze({ roles: createEliteRoles(level) }),
-  boss: (level) => Object.freeze({ roles: createBossRoles(level) }),
+  boss: (level, { stageNumber } = {}) => {
+    if (!Number.isInteger(stageNumber) || stageNumber < 1) throw new RangeError('Boss difficulty requires a positive integer stage number.');
+    return Object.freeze({ roles: createBossRoles(level, stageNumber) });
+  },
 });
 
 function getSlotSpan(definition) {
@@ -91,8 +92,8 @@ function allocateRoleSlots({ definition, count, occupied }) {
   return slots;
 }
 
-export function createEncounterEnemies({ kind, level, pattern, enemyFactory, random = Math.random }) {
-  const difficulty = DIFFICULTIES[kind]?.(level);
+export function createEncounterEnemies({ kind, level, stageNumber, pattern, enemyFactory, random = Math.random }) {
+  const difficulty = DIFFICULTIES[kind]?.(level, { stageNumber });
   if (!difficulty) throw new RangeError(`Unknown encounter difficulty kind: ${kind}`);
   const occupiedSlots = new Set();
   return Object.entries(difficulty.roles).flatMap(([roleName, settings]) => {
