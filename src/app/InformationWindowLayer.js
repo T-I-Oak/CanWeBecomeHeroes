@@ -79,7 +79,7 @@ export default class InformationWindowLayer {
     this.element.addEventListener('pointerdown', (event) => {
       if (event.target.closest?.('.InformationWindow')) this.manager.setInteracting(true);
     }, true);
-    this.element.addEventListener('click', () => this.manager.setInteracting(false));
+    this.element.addEventListener('pointerup', () => this.manager.setInteracting(false), true);
     this.element.addEventListener('pointercancel', () => this.manager.setInteracting(false));
   }
 
