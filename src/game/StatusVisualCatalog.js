@@ -13,3 +13,9 @@ export function getStatusVisual(key) {
   if (!visual) throw new RangeError(`Unknown status visual: ${key}`);
   return visual;
 }
+
+export function getVitalGaugeColor(value) {
+  if (value <= 1) return '#db5b5b';
+  if (value <= 2) return '#e59a3f';
+  return '#54c96b';
+}

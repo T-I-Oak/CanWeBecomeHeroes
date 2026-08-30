@@ -7,7 +7,7 @@ import Camera from '../game/Camera.js';
 import { GAME_AREAS, getPreparationSubareaBounds, WORLD_SIZE } from '../game/GameAreas.js';
 import { HERO_PREPARATION_IMAGE_SIZE, PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH } from '../game/PreparationLayout.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
-import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
+import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import HeroItemInteractionController from '../game/HeroItemInteractionController.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
 import GameClock from '../game/GameClock.js';
@@ -54,12 +54,6 @@ const TAG_GRID = Object.freeze([
   Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
   Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
 ]);
-
-function getStaminaGaugeColor(value) {
-  if (value <= 2) return '#db5b5b';
-  if (value <= 4) return '#e59a3f';
-  return '#54c96b';
-}
 
 function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeColor = '#54c96b', { highlightedCells = [], highlightPhase = 0 } = {}) {
   const { statusGaugeWidth: width, statusGaugeHeight: height, statusIconSize, statusIconTopPadding, statusIconSegmentGap, statusGaugeHorizontalPadding: inset, statusGaugeBottomPadding, statusSegmentHeight, statusSegmentGap: gap } = PREPARATION_LAYOUT;
@@ -121,7 +115,7 @@ function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
     highlightsByStat.set(stat, cells);
   });
   STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-    const value = hero ? (key === 'stamina' ? Math.floor(hero.stamina) : Math.floor(hero.getStatus(key))) : 0;
+    const value = hero ? (key === 'stamina' ? Math.ceil(hero.stamina) : Math.floor(hero.getStatus(key))) : 0;
     const maximum = hero ? hero.maximums[key] : 0;
     const bounds = getTrainingStatusGaugeBounds(statIndex);
     drawStatusGauge(
@@ -132,7 +126,7 @@ function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
       bounds.y,
       value,
       maximum,
-      key === 'stamina' ? getStaminaGaugeColor(value) : '#54c96b',
+      key === 'stamina' ? getVitalGaugeColor(value) : '#54c96b',
       { highlightedCells: highlightsByStat.get(key) ?? [], highlightPhase: time / 180 },
     );
   });
@@ -718,7 +712,7 @@ export function startGame({ scenario }) {
       context.fillText(`【${hero.profession}・${hero.name.ja}】`, characterX + PREPARATION_LAYOUT.characterAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
       context.textAlign = 'start';
       STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-        const value = key === 'stamina' ? Math.floor(hero.stamina) : Math.floor(hero.getStatus(key));
+        const value = key === 'stamina' ? Math.ceil(hero.stamina) : Math.floor(hero.getStatus(key));
         drawStatusGauge(
           context,
           assets,
@@ -727,7 +721,7 @@ export function startGame({ scenario }) {
           y + PREPARATION_LAYOUT.topPadding,
           value,
           hero.maximums[key],
-          key === 'stamina' ? getStaminaGaugeColor(value) : '#54c96b',
+          key === 'stamina' ? getVitalGaugeColor(value) : '#54c96b',
         );
       });
       context.textBaseline = 'alphabetic';

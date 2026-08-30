@@ -1,7 +1,7 @@
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { getTagDetail } from '../game/TagDetailCatalog.js';
 import { getTagBadgeVisual, getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
-import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
+import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { getStatusDetail } from '../game/StatusDetailCatalog.js';
 import { getItemDetail } from '../game/ItemDetailCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
@@ -276,11 +276,13 @@ export default class InformationWindowLayer {
     const gauge = createElement('button', 'InformationWindow__EntityStatus state-clickable');
     gauge.type = 'button';
     gauge.style.setProperty('--status-frame-color', STATUS_VISUALS[status].gaugeFrameColor);
+    const displayedCurrent = ['stamina', 'hp'].includes(status) ? Math.ceil(current) : current;
+    gauge.style.setProperty('--status-active-color', ['stamina', 'hp'].includes(status) ? getVitalGaugeColor(displayedCurrent) : '#54c96b');
     gauge.append(createStatusIcon(status));
     const segments = createElement('span', 'InformationWindow__EntityStatusSegments');
     for (let index = 1; index <= 7; index += 1) {
       const segment = createElement('span', 'InformationWindow__EntityStatusSegment');
-      if (index <= current) segment.classList.add('is-active');
+      if (index <= displayedCurrent) segment.classList.add('is-active');
       else if (index <= maximum) segment.classList.add('is-available');
       segments.append(segment);
     }

@@ -147,6 +147,7 @@ body {
 
 .InformationWindow__Pin {
   display: grid;
+  align-self: flex-start;
   width: 32px;
   height: 32px;
   margin-left: auto;
@@ -377,7 +378,7 @@ body {
 }
 
 .InformationWindow__EntityStatusSegment.is-active {
-  background: #54c96b;
+  background: var(--status-active-color, #54c96b);
 }
 
 .InformationWindow__EntityTagList,
