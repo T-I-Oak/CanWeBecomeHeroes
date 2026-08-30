@@ -47,6 +47,8 @@ test('regular difficulty derives enemy count and each enemy tag budget from its 
 });
 
 test('elite roles add main and support enemies at their separate level intervals', () => {
+  assert.equal(DIFFICULTIES.elite(3).roles.main.maximumHp, 2.5);
+  assert.deepEqual(DIFFICULTIES.elite(3).roles.main.maximums, { power: 2.5, magic: 2.5, speed: 2.5, negotiation: 2.5, luck: 2.5 });
   assert.deepEqual(Object.values(DIFFICULTIES.elite(6).roles).map(({ count }) => count), [1, 1, 1]);
   assert.deepEqual(Object.values(DIFFICULTIES.elite(8).roles).map(({ count }) => count), [2, 1, 1]);
   assert.deepEqual(Object.values(DIFFICULTIES.elite(15).roles).map(({ count }) => count), [3, 2, 1]);
@@ -63,6 +65,8 @@ test('slot allocation keeps main roles first and reserves two slots for each lar
 });
 
 test('boss roles scale their main count by stage while keeping both supports fixed', () => {
+  assert.equal(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.main.maximumHp, 4);
+  assert.deepEqual(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.main.maximums, { power: 4, magic: 4, speed: 4, negotiation: 4, luck: 4 });
   assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 7 }).roles).map(({ count }) => count), [1, 2, 2]);
   assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 14 }).roles).map(({ count }) => count), [1, 2, 2]);
   assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 15 }).roles).map(({ count }) => count), [2, 2, 2]);

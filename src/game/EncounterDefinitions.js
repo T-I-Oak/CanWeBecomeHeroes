@@ -25,9 +25,16 @@ export const COMBINATION_PATTERNS = Object.freeze({
 
 const CENTER_OUT_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
 
-function createSharedSettings(level) {
+function maximumHpFor(kind, level) {
+  const base = level / 3;
+  const bonus = { regular: 0, elite: 1.5, boss: 3 }[kind];
+  if (bonus === undefined) throw new Error(`Unknown encounter kind: ${kind}`);
+  return base + bonus;
+}
+
+function createSharedSettings(kind, level) {
   const totalTagBudget = Math.max(0, Math.floor(level) + 2);
-  const maximum = level / 3;
+  const maximum = maximumHpFor(kind, level);
   const contributionMultiplier = (level + 9) / 12;
   const maximums = Object.freeze(Object.fromEntries(STATUS_KEYS.map((stat) => [stat, maximum])));
   return Object.freeze({ weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier });
@@ -38,7 +45,7 @@ function role(count, shared) {
 }
 
 function createNormalRoles(level) {
-  const shared = createSharedSettings(level);
+  const shared = createSharedSettings('regular', level);
   let remainingCount = Math.min(Math.ceil(Math.max(0, level) * 2 / 3), 6);
   const allocateCount = (capacity) => {
     const count = Math.min(remainingCount, capacity);
@@ -49,7 +56,7 @@ function createNormalRoles(level) {
 }
 
 function createEliteRoles(level) {
-  const shared = createSharedSettings(level);
+  const shared = createSharedSettings('elite', level);
   return Object.freeze({
     main: role(Math.ceil(level / 7), shared),
     support1: role(Math.ceil(level / 14), shared),
@@ -58,7 +65,7 @@ function createEliteRoles(level) {
 }
 
 function createBossRoles(level, stageNumber) {
-  const shared = createSharedSettings(level);
+  const shared = createSharedSettings('boss', level);
   return Object.freeze({ main: role(Math.ceil(stageNumber / 14), shared), support1: role(2, shared), support2: role(2, shared) });
 }
 
