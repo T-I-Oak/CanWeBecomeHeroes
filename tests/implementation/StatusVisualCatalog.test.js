@@ -12,8 +12,10 @@ test('status tags and status gauges share the status visual catalog', () => {
   assert.equal(STATUS_VISUALS.luck.gaugeFrameColor, '#8d3f68');
 });
 
-test('vital gauges use red at one, orange at two, and green from three', () => {
+test('vital gauges use completed segments for red, orange, and green thresholds', () => {
+  assert.equal(getVitalGaugeColor(0.1), '#db5b5b');
   assert.equal(getVitalGaugeColor(1), '#db5b5b');
   assert.equal(getVitalGaugeColor(2), '#e59a3f');
+  assert.equal(getVitalGaugeColor(2.1), '#e59a3f');
   assert.equal(getVitalGaugeColor(3), '#54c96b');
 });

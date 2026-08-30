@@ -68,10 +68,22 @@ function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeCo
   }
   for (let index = 0; index < capacity; index += 1) {
     const segmentY = y + height - statusGaugeBottomPadding - statusSegmentHeight - index * (statusSegmentHeight + gap);
-    context.fillStyle = index < value ? activeColor : index < maximum ? '#9da9ba' : '#46536a';
+    const fillRatio = Math.max(0, Math.min(1, value - index));
+    context.fillStyle = index < maximum ? '#9da9ba' : '#46536a';
     context.beginPath();
     context.roundRect(x + inset, segmentY, width - inset * 2, statusSegmentHeight, 4);
     context.fill();
+    if (fillRatio > 0) {
+      context.save();
+      context.beginPath();
+      context.rect(x + inset, segmentY, (width - inset * 2) * fillRatio, statusSegmentHeight);
+      context.clip();
+      context.fillStyle = activeColor;
+      context.beginPath();
+      context.roundRect(x + inset, segmentY, width - inset * 2, statusSegmentHeight, 4);
+      context.fill();
+      context.restore();
+    }
     if (highlightedCells.includes(index + 1)) {
       const glow = 0.55 + Math.sin(highlightPhase) * 0.25;
       context.save();
@@ -115,7 +127,7 @@ function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
     highlightsByStat.set(stat, cells);
   });
   STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-    const value = hero ? (key === 'stamina' ? Math.ceil(hero.stamina) : Math.floor(hero.getStatus(key))) : 0;
+    const value = hero ? (key === 'stamina' ? hero.stamina : Math.floor(hero.getStatus(key))) : 0;
     const maximum = hero ? hero.maximums[key] : 0;
     const bounds = getTrainingStatusGaugeBounds(statIndex);
     drawStatusGauge(
@@ -712,7 +724,7 @@ export function startGame({ scenario }) {
       context.fillText(`【${hero.profession}・${hero.name.ja}】`, characterX + PREPARATION_LAYOUT.characterAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
       context.textAlign = 'start';
       STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-        const value = key === 'stamina' ? Math.ceil(hero.stamina) : Math.floor(hero.getStatus(key));
+        const value = key === 'stamina' ? hero.stamina : Math.floor(hero.getStatus(key));
         drawStatusGauge(
           context,
           assets,

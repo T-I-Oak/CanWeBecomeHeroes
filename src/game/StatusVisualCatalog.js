@@ -15,7 +15,7 @@ export function getStatusVisual(key) {
 }
 
 export function getVitalGaugeColor(value) {
-  if (value <= 1) return '#db5b5b';
-  if (value <= 2) return '#e59a3f';
+  if (value < 2) return '#db5b5b';
+  if (value < 3) return '#e59a3f';
   return '#54c96b';
 }

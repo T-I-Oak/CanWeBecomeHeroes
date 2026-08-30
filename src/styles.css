@@ -368,9 +368,11 @@ body {
 }
 
 .InformationWindow__EntityStatusSegment {
+  position: relative;
   height: 11px;
   background: #46536a;
   border-radius: 4px;
+  overflow: hidden;
 }
 
 .InformationWindow__EntityStatusSegment.is-available {
@@ -378,6 +380,14 @@ body {
 }
 
 .InformationWindow__EntityStatusSegment.is-active {
+  background: #9da9ba;
+}
+
+.InformationWindow__EntityStatusSegment.is-active::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--status-segment-fill, 100%);
+  content: '';
   background: var(--status-active-color, #54c96b);
 }
 
