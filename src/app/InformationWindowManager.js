@@ -8,6 +8,7 @@ export default class InformationWindowManager {
     this.windows = [];
     this.nextId = 1;
     this.isDragging = false;
+    this.isInteracting = false;
   }
 
   get entries() {
@@ -74,8 +75,12 @@ export default class InformationWindowManager {
     this.isDragging = Boolean(active);
   }
 
+  setInteracting(active) {
+    this.isInteracting = Boolean(active);
+  }
+
   refreshDynamicEntries() {
-    if (this.isDragging || !this.windows.some((entry) => entry.type === 'entity')) return;
+    if (this.isDragging || this.isInteracting || !this.windows.some((entry) => entry.type === 'entity')) return;
     this.onChange?.(this.entries);
   }
 

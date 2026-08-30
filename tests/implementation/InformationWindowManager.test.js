@@ -127,6 +127,10 @@ test('dynamic entity entries refresh unless a window is being dragged', () => {
   manager.setDragging(true);
   manager.refreshDynamicEntries();
   assert.equal(changes, 1);
+  manager.setDragging(false);
+  manager.setInteracting(true);
+  manager.refreshDynamicEntries();
+  assert.equal(changes, 1);
 });
 
 test('defeated enemy information windows close even when pinned', () => {
