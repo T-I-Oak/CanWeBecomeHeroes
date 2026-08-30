@@ -21,6 +21,7 @@ export default class Chip {
     this.scale = 1;
     this.height = this.radius * 2.8;
     this.verticalVelocity = 0;
+    this.impactOnLanding = true;
     this.tilt = 0;
     this.poseTilt = 0;
     this.tiltVelocity = 0;
@@ -47,6 +48,7 @@ export default class Chip {
     this.scale = 1;
     this.height = this.radius * 2.8;
     this.verticalVelocity = 0;
+    this.impactOnLanding = true;
     this.tilt = 0;
     this.poseTilt = 0;
     this.tiltVelocity = 0;

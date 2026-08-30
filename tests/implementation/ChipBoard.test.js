@@ -66,7 +66,30 @@ test('a landing heavy chip affects a nearby chip', () => {
   board.update(0.02);
 
   assert.ok(neighbor.x > 410);
-  assert.ok(neighbor.height > 0);
+  assert.ok(neighbor.height > 18);
+  assert.equal(neighbor.impactOnLanding, false);
+});
+
+test('a dropped chip emits a landing impact only once across its own bounces', () => {
+  const board = new ChipBoard({ width: 800, height: 600 });
+  const source = addChip(board, 'hero', 300, 300, 15);
+  const neighbor = addChip(board, 'item', 410, 300, 1);
+  source.height = 2;
+  source.verticalVelocity = 900;
+  neighbor.height = 0;
+  neighbor.verticalVelocity = 0;
+  neighbor.impactOnLanding = false;
+  let impactCount = 0;
+  const applyImpact = board.applyImpact.bind(board);
+  board.applyImpact = (chip, velocity) => {
+    impactCount += 1;
+    applyImpact(chip, velocity);
+  };
+
+  for (let index = 0; index < 120; index += 1) board.update(1 / 60);
+
+  assert.equal(impactCount, 1);
+  assert.equal(source.impactOnLanding, false);
 });
 
 test('a chip stops rotating once its small landing bounce is settled', () => {

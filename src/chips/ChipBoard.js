@@ -5,6 +5,7 @@ const SETTLE_HEIGHT = 0.2;
 const GROUND_SEPARATION_SPEED = 360;
 const MOVE_STEP_DURATION_SECONDS = 0.38;
 const COLLISION_HEIGHT_RATIO = 0.25;
+const IMPACT_LIFT_SCALE = 2;
 const hasPhysicalTilt = (chip) => chip.type === 'item';
 
 function distanceBetween(first, second) {
@@ -138,7 +139,10 @@ export default class ChipBoard {
       chip.verticalVelocity = bounceVelocity < 120 ? 0 : -bounceVelocity;
       chip.tiltVelocity = hasPhysicalTilt(chip) && chip.verticalVelocity !== 0 ? chip.tiltVelocity * -0.62 : 0;
       chip.impact = Math.min(1, impactVelocity / 900);
-      this.applyImpact(chip, impactVelocity);
+      if (chip.impactOnLanding) {
+        chip.impactOnLanding = false;
+        this.applyImpact(chip, impactVelocity);
+      }
     }
   }
 
@@ -172,8 +176,9 @@ export default class ChipBoard {
       const position = this.constrainPosition(chip, chip.x + (dx / length) * displacement, chip.y + (dy / length) * displacement);
       chip.x = position.x;
       chip.y = position.y;
-      chip.height = Math.max(chip.height, strength * ratio * chip.radius * 0.5);
+      chip.height = Math.max(chip.height, strength * ratio * chip.radius * IMPACT_LIFT_SCALE);
       chip.verticalVelocity = Math.min(chip.verticalVelocity, -strength * ratio * 260);
+      chip.impactOnLanding = false;
       if (hasPhysicalTilt(chip)) chip.tiltVelocity += (dx / length) * strength * 3;
     });
   }
@@ -209,6 +214,7 @@ export default class ChipBoard {
         lift.height = Math.max(lift.height, getCollisionLiftHeight(current.chip, chip), current.force * 0.6);
         lift.verticalVelocity = Math.min(lift.verticalVelocity, -current.force * 20);
         collisionLifts.set(chip, lift);
+        chip.impactOnLanding = false;
         pendingChips.push({ chip, force: current.force * 0.72 });
       });
     }
