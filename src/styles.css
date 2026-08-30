@@ -397,7 +397,7 @@ body {
 }
 
 .InformationWindow__EntityTagList {
-  grid-template-columns: repeat(6, 44px);
+  grid-template-columns: repeat(5, 44px);
   gap: 8px;
 }
 
