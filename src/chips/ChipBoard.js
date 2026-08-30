@@ -176,8 +176,9 @@ export default class ChipBoard {
       const position = this.constrainPosition(chip, chip.x + (dx / length) * displacement, chip.y + (dy / length) * displacement);
       chip.x = position.x;
       chip.y = position.y;
-      chip.height = Math.max(chip.height, strength * ratio * chip.radius * IMPACT_LIFT_SCALE);
-      chip.verticalVelocity = Math.min(chip.verticalVelocity, -strength * ratio * 260);
+      const liftHeight = Math.max(0, strength * ratio * chip.radius * IMPACT_LIFT_SCALE - chip.height);
+      const launchVelocity = Math.sqrt(2 * GRAVITY * liftHeight);
+      chip.verticalVelocity = Math.min(chip.verticalVelocity, -launchVelocity);
       chip.impactOnLanding = false;
       if (hasPhysicalTilt(chip)) chip.tiltVelocity += (dx / length) * strength * 3;
     });

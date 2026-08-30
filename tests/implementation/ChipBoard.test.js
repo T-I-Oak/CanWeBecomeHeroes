@@ -66,7 +66,9 @@ test('a landing heavy chip affects a nearby chip', () => {
   board.update(0.02);
 
   assert.ok(neighbor.x > 410);
-  assert.ok(neighbor.height > 180);
+  assert.ok(neighbor.height > 0);
+  assert.ok(neighbor.height < 40);
+  assert.ok(neighbor.verticalVelocity < -700);
   assert.equal(neighbor.impactOnLanding, false);
 });
 
