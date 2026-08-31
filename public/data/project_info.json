@@ -1,0 +1,70 @@
+{
+  "title": {
+    "lang-store": {
+      "ja": "Can We Become Heroes?",
+      "en": "Can We Become Heroes?"
+    }
+  },
+  "description": {
+    "lang-store": {
+      "ja": "装備は倉庫に散らかしっぱなし。それでも試験期限は待ってくれない。仲間と装備を組み合わせ、あなたたちは勇者になれますか？",
+      "en": "The gear is scattered all over the warehouse, but the trial deadline will not wait. Build a team from what you find—can you become heroes?"
+    }
+  },
+  "tags": [
+    {
+      "lang-store": {
+        "ja": "チップ操作",
+        "en": "Chip Control"
+      }
+    },
+    {
+      "lang-store": {
+        "ja": "チームビルド",
+        "en": "Team Building"
+      }
+    },
+    {
+      "lang-store": {
+        "ja": "ローグライト",
+        "en": "Roguelite"
+      }
+    },
+    {
+      "lang-store": {
+        "ja": "オートバトル",
+        "en": "Auto Battler"
+      }
+    },
+    {
+      "lang-store": {
+        "ja": "ファンタジー",
+        "en": "Fantasy"
+      }
+    }
+  ],
+  "logo": {
+    "path": "assets/logo.png",
+    "type": "standard"
+  },
+  "badge": {
+    "content": {
+      "lang-store": {
+        "ja": "11月公開予定",
+        "en": "Coming November"
+      }
+    },
+    "type": "info"
+  },
+  "button": {
+    "content": {
+      "lang-store": {
+        "ja": "COMING SOON",
+        "en": "COMING SOON"
+      }
+    },
+    "url": "https://t-i-oak.github.io/CanWeBecomeHeroes/",
+    "type": "pending"
+  },
+  "image": "assets/thumbnail.png"
+}
