@@ -6,13 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "deploy": "npm run build && gh-pages -d dist",
     "test": "node --test",
     "simulate:battle": "node scripts/simulate-battle.js",
     "analyze:tag-affinity": "node scripts/analyze-tag-affinity.js"
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0",
     "vite": "^7.0.0"
   }
 }
