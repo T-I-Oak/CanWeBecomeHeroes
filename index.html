@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Can We Become Heroes?</title>
+    <script type="module" crossorigin src="/CanWeBecomeHeroes/assets/index-BdljgfHN.js"></script>
+    <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/index-CsHjlcbq.css">
+  </head>
+  <body>
+    <main class="AppShell">
+      <header class="Toolbar">
+        <button class="ControlButton" id="pause-game" type="button">一時停止</button>
+        <label class="ControlLabel" for="game-speed">速度
+          <select class="GameSpeedSelect" id="game-speed">
+            <option value="1">x1</option>
+            <option value="2">x2</option>
+            <option value="4">x4</option>
+          </select>
+        </label>
+        <label class="ControlLabel" for="pause-on-information">
+          <input id="pause-on-information" type="checkbox" checked />
+          詳細時に停止
+        </label>
+        <p class="GuideText">Heroを選択してから倉庫のitemを選択すると、Heroがitemへ移動します。</p>
+      </header>
+      <canvas class="ChipCanvas" id="chip-canvas" aria-label="Can We Become Heroes? ゲーム画面"></canvas>
+      <aside class="FlowLog" id="flow-log" aria-label="ゲームログ"></aside>
+      <aside class="StageSelection" id="stage-selection" aria-label="進路選択" hidden></aside>
+      <aside class="InformationWindowLayer" id="information-windows" aria-label="情報ウィンドウ"></aside>
+    </main>
+  </body>
+</html>
