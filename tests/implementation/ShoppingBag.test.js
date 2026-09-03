@@ -31,6 +31,22 @@ test('shopping bag stores up to three warehouse items without allowing retrieval
   assert.equal(board.chips.includes(items[3].chip), true);
 });
 
+test('an item transfer uses a temporary visual chip and removes it after arrival', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
+  const item = new ItemFactory().createWeapon({ weapon: 'sword', tags: [], x: 800, y: 700 });
+  let completed = false;
+
+  assert.equal(controller.animateItemTransfer(item, { from: { x: 800, y: 700 }, to: { x: 1200, y: 700 }, onComplete: () => { completed = true; } }), true);
+  assert.equal(board.chips.length, 1);
+  assert.equal(board.chips[0].isTransferVisual, true);
+  controller.update(0.14);
+  assert.ok(board.chips[0].x > 800 && board.chips[0].x < 1200);
+  controller.update(0.14);
+  assert.equal(board.chips.length, 0);
+  assert.equal(completed, true);
+});
+
 test('an invalid target clears an item-to-bag selection', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));

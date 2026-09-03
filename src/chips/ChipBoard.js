@@ -65,6 +65,7 @@ export default class ChipBoard {
 
   update(deltaSeconds) {
     this.chips.forEach((chip) => {
+      if (chip.isTransferVisual) return;
       this.updateFall(chip, deltaSeconds);
       this.updateStep(chip, deltaSeconds);
       if (hasPhysicalTilt(chip)) {
@@ -231,7 +232,7 @@ export default class ChipBoard {
 
     this.chips.forEach((first, firstIndex) => {
       this.chips.slice(firstIndex + 1).forEach((second) => {
-        if (first.height > 1 || second.height > 1 || first.isPickupTarget || second.isPickupTarget) return;
+        if (first.height > 1 || second.height > 1 || first.isPickupTarget || second.isPickupTarget || first.isTransferVisual || second.isTransferVisual) return;
 
         const dx = second.x - first.x || 1;
         const dy = second.y - first.y || 1;

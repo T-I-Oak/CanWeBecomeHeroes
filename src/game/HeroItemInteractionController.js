@@ -9,6 +9,7 @@ export default class HeroItemInteractionController {
     this.entities = new Map();
     this.gameLog = gameLog;
     this.bagAbsorptions = [];
+    this.itemTransfers = [];
     this.selection = { source: null, hover: null };
   }
 
@@ -120,6 +121,7 @@ export default class HeroItemInteractionController {
 
   update(deltaSeconds) {
     this.updateBagAbsorptions(deltaSeconds);
+    this.updateItemTransfers(deltaSeconds);
     const warehouseItems = [...this.entities.values()].filter((entity) => entity.chip.type === 'item' && !entity.isStored && this.board.chips.includes(entity.chip));
     this.pickupController.update(warehouseItems, deltaSeconds);
   }
@@ -172,5 +174,41 @@ export default class HeroItemInteractionController {
 
   getShoppingBag() {
     return [...this.entities.values()].find((entity) => entity.isShoppingBag) ?? null;
+  }
+
+  animateItemTransfer(item, { from, to, onComplete = null } = {}) {
+    if (!item || !from || !to) return false;
+    const visual = this.board.add({
+      type: 'item',
+      x: from.x,
+      y: from.y,
+      weight: item.chip.weight,
+      centerPath: item.chip.centerPath,
+      tagPaths: item.chip.tagPaths,
+      tagBaseColors: item.chip.tagBaseColors,
+      tagGlyphScales: item.chip.tagGlyphScales,
+    });
+    visual.fillColor = item.chip.fillColor;
+    visual.borderColor = item.chip.borderColor;
+    visual.isAbsorbing = true;
+    visual.isTransferVisual = true;
+    visual.height = 0;
+    visual.verticalVelocity = 0;
+    this.itemTransfers.push({ visual, startX: from.x, startY: from.y, targetX: to.x, targetY: to.y, elapsed: 0, duration: 0.28, onComplete });
+    return true;
+  }
+
+  updateItemTransfers(deltaSeconds) {
+    this.itemTransfers = this.itemTransfers.filter((transfer) => {
+      transfer.elapsed += deltaSeconds;
+      const progress = Math.min(1, transfer.elapsed / transfer.duration);
+      transfer.visual.x = transfer.startX + (transfer.targetX - transfer.startX) * progress;
+      transfer.visual.y = transfer.startY + (transfer.targetY - transfer.startY) * progress;
+      transfer.visual.scale = 1 - progress * 0.2;
+      if (progress < 1) return true;
+      this.board.removeChip(transfer.visual);
+      transfer.onComplete?.();
+      return false;
+    });
   }
 }

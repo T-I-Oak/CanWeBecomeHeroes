@@ -270,16 +270,29 @@ export default class BattleSystem {
     if (isHero(actor)) {
       target.removeEquipment(item);
       this.updateActionGaugeMaximum(target);
-      const area = GAME_AREAS.warehouse;
-      item.chip.x = area.x + item.chip.radius + this.random() * (area.width - item.chip.radius * 2);
-      item.chip.y = area.y + item.chip.radius + this.random() * (area.height - item.chip.radius * 2);
-      item.chip.scale = 1;
-      this.controller?.addToWarehouse?.(item);
+      const destination = this.getWarehouseDropPosition();
+      const completeTransfer = () => {
+        item.chip.x = destination.x;
+        item.chip.y = destination.y;
+        item.chip.scale = 1;
+        this.controller?.addToWarehouse?.(item);
+      };
+      const animated = this.controller?.animateItemTransfer?.(item, {
+        from: { x: target.chip.x, y: target.chip.y },
+        to: destination,
+        onComplete: completeTransfer,
+      });
+      if (!animated) completeTransfer();
       return;
     }
+    const source = { x: item.chip.x, y: item.chip.y };
     this.controller?.remove?.(item);
     actor.addEquipment(item);
     this.updateActionGaugeMaximum(actor);
+    this.controller?.animateItemTransfer?.(item, {
+      from: source,
+      to: { x: actor.chip.x, y: actor.chip.y },
+    });
   }
   getLightningTargets(target, participants, value) {
     const targetSlotPosition = getBattleSlotPosition(target);
