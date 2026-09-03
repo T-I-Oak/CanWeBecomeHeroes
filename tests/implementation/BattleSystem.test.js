@@ -491,6 +491,23 @@ test('one action aggregates miss and damage feedback by target with critical pri
   assert.equal(effects.hits.length, 1);
 });
 
+test('orb animates a gem tag from its owner when the tag is successfully added', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const effects = new CombatEffectSystem();
+  const item = new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  const actor = { chip: { x: 10, y: 10, height: 0 }, getLuckDegree: () => 1 };
+  const target = { chip: { type: 'enemy', x: 20, y: 20, height: 0 }, equipment: [item], refreshDerivedValues: () => {} };
+  const battle = new BattleSystem(board, { effects, random: () => 0 });
+
+  battle.applyOrb(actor, target, 1);
+
+  assert.equal(item.tags.includes('gem'), true);
+  assert.equal(effects.tagTransfers.length, 1);
+  assert.equal(effects.tagTransfers[0].tag, 'gem');
+  assert.equal(effects.tagTransfers[0].from, actor.chip);
+  assert.equal(effects.tagTransfers[0].to, target.chip);
+});
+
 test('one action records one visible battle log per actor and target', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });

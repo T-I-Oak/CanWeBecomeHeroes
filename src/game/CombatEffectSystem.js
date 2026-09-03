@@ -1,5 +1,9 @@
+import { drawFramedTag } from '../chips/ChipRenderer.js';
+import { getTagBaseColors, getTagGlyphScales } from './TagCatalog.js';
+
 const ATTACK_DURATION = 0.42;
 const HIT_RECOVERY = 0.34;
+const TAG_TRANSFER_DURATION = 0.32;
 
 function visualPosition(chip) {
   return {
@@ -14,6 +18,7 @@ export default class CombatEffectSystem {
     this.hits = [];
     this.popups = [];
     this.lightning = [];
+    this.tagTransfers = [];
     this.actionResults = null;
   }
 
@@ -80,6 +85,10 @@ export default class CombatEffectSystem {
     this.lightning.push({ from: from.chip, to: to.chip, elapsed: 0, duration: 0.22 });
   }
 
+  tagTransfer(from, to, tag) {
+    this.tagTransfers.push({ from: from.chip, to: to.chip, tag, elapsed: 0, duration: TAG_TRANSFER_DURATION });
+  }
+
   update(deltaSeconds) {
     this.attacks = this.attacks.filter((effect) => {
       effect.elapsed += deltaSeconds;
@@ -118,9 +127,11 @@ export default class CombatEffectSystem {
     this.popups = this.popups.filter((effect) => effect.elapsed < effect.duration);
     this.lightning.forEach((effect) => { effect.elapsed += deltaSeconds; });
     this.lightning = this.lightning.filter((effect) => effect.elapsed < effect.duration);
+    this.tagTransfers.forEach((effect) => { effect.elapsed += deltaSeconds; });
+    this.tagTransfers = this.tagTransfers.filter((effect) => effect.elapsed < effect.duration);
   }
 
-  draw(context) {
+  draw(context, assets = null) {
     context.save();
     this.lightning.forEach((effect) => {
       const from = visualPosition(effect.from);
@@ -141,6 +152,30 @@ export default class CombatEffectSystem {
       }
       context.lineTo(to.x, to.y);
       context.stroke();
+    });
+    if (assets) this.tagTransfers.forEach((effect) => {
+      const from = visualPosition(effect.from);
+      const to = visualPosition(effect.to);
+      const progress = Math.min(1, effect.elapsed / effect.duration);
+      const x = from.x + (to.x - from.x) * progress;
+      const y = from.y + (to.y - from.y) * progress - Math.sin(progress * Math.PI) * 34;
+      const size = 38 * (1 - progress * 0.12);
+      const alpha = progress < 0.82 ? 1 : (1 - progress) / 0.18;
+      context.save();
+      context.globalAlpha = Math.max(0, alpha);
+      context.translate(x, y);
+      context.rotate((progress - 0.5) * 0.35);
+      drawFramedTag(
+        context,
+        assets,
+        `/assets/tags/${effect.tag}.png`,
+        getTagBaseColors([effect.tag])[0],
+        getTagGlyphScales([effect.tag])[0],
+        0,
+        0,
+        size,
+      );
+      context.restore();
     });
     this.popups.forEach((effect) => {
       const position = visualPosition(effect.chip);

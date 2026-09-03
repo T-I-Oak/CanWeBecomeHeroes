@@ -752,7 +752,7 @@ export function startGame({ scenario }) {
       drawTagList(context, assets, hero, informationX, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.statusGaugeHeight + PREPARATION_LAYOUT.sectionGap);
     });
     board.getRenderChips().forEach((chip) => renderer.draw(chip, time / 1000));
-    combatEffects.draw(context);
+    combatEffects.draw(context, assets);
     drawChipSelectionGuide();
     context.restore();
     requestAnimationFrame(render);

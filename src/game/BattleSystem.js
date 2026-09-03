@@ -242,7 +242,14 @@ export default class BattleSystem {
   applyOrb(actor, target, coefficient) {
     if (this.random() >= (actor.getLuckDegree() + .3) * coefficient) return;
     const items = (isHero(target) ? Object.values(target.equipment) : target.equipment).filter((item) => item && item.tags.length < 3); const item = items[Math.floor(this.random() * items.length)];
-    if (!item?.addTag('gem')) return; item.chip.weight = getTagWeight(item.tags); item.chip.tagPaths = getTagPaths(item.tags); item.chip.tagBaseColors = getTagBaseColors(item.tags); item.chip.tagGlyphScales = getTagGlyphScales(item.tags); item.price = getTagPrice(item.tags); target.refreshDerivedValues?.();
+    if (!item?.addTag('gem')) return;
+    item.chip.weight = getTagWeight(item.tags);
+    item.chip.tagPaths = getTagPaths(item.tags);
+    item.chip.tagBaseColors = getTagBaseColors(item.tags);
+    item.chip.tagGlyphScales = getTagGlyphScales(item.tags);
+    item.price = getTagPrice(item.tags);
+    target.refreshDerivedValues?.();
+    this.effects?.tagTransfer(actor, target, 'gem');
   }
   getTheftCandidates(target) {
     if (!isHero(target)) return target.equipment;
