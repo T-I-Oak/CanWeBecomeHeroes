@@ -1,19 +1,22 @@
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
+import EntityRegistry from './EntityRegistry.js';
 
 export default class HeroItemInteractionController {
-  constructor(board, pickupController, gameLog = null) {
+  constructor(board, pickupController, gameLog = null, { entityRegistry = new EntityRegistry() } = {}) {
     this.board = board;
     this.pickupController = pickupController;
     this.activeHero = null;
     this.entities = new Map();
     this.gameLog = gameLog;
+    this.entityRegistry = entityRegistry;
     this.bagAbsorptions = [];
     this.itemTransfers = [];
     this.selection = { source: null, hover: null };
   }
 
   add(entity) {
+    this.entityRegistry.registerTree(entity);
     this.board.addChip(entity.chip);
     this.entities.set(entity.chip.id, entity);
     return entity;
@@ -22,6 +25,11 @@ export default class HeroItemInteractionController {
   remove(entity) {
     this.board.removeChip(entity.chip);
     this.entities.delete(entity.chip.id);
+  }
+
+  destroy(entity, options = {}) {
+    this.remove(entity);
+    this.entityRegistry.destroy(entity, options);
   }
 
   addToWarehouse(item) {

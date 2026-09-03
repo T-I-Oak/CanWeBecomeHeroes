@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import GameClock from '../../src/game/GameClock.js';
 import InformationWindowManager, { INFORMATION_WINDOW_PAUSE_REASON } from '../../src/app/InformationWindowManager.js';
+import EntityRegistry from '../../src/game/EntityRegistry.js';
 
 test('information windows retain the tapped branch and close its descendants', () => {
   const manager = new InformationWindowManager();
@@ -117,10 +118,11 @@ test('a pinned information window retains its dragged position', () => {
   assert.deepEqual(manager.entries[0].position, { x: 120, y: 240 });
 });
 
-test('dynamic entity entries refresh unless a window is being dragged', () => {
+test('dynamic entity and item entries refresh unless a window is being dragged', () => {
   let changes = 0;
   const manager = new InformationWindowManager({ onChange: () => { changes += 1; } });
   manager.open({ type: 'entity', data: { entity: { chip: { type: 'hero' } } } });
+  manager.open({ type: 'item', data: { item: { chip: { type: 'item' } } } });
   changes = 0;
   manager.refreshDynamicEntries();
   assert.equal(changes, 1);
@@ -133,11 +135,28 @@ test('dynamic entity entries refresh unless a window is being dragged', () => {
   assert.equal(changes, 1);
 });
 
-test('invalid entity information windows close even when pinned', () => {
-  const manager = new InformationWindowManager();
+test('destroyed entity information windows close even when pinned', () => {
+  const registry = new EntityRegistry();
+  const manager = new InformationWindowManager({ isTargetAlive: (target) => registry.isAlive(target) });
   const enemy = { hp: 3, chip: { type: 'enemy' } };
-  const entry = manager.open({ type: 'entity', data: { entity: enemy }, isValid: () => false });
+  registry.register(enemy);
+  const entry = manager.open({ type: 'entity', data: { entity: enemy } });
   manager.togglePin(entry.id);
+  registry.destroy(enemy);
+  manager.closeInvalidEntries();
+  assert.equal(manager.entries.length, 0);
+});
+
+test('item information windows remain open when an item moves and close when it is destroyed', () => {
+  const registry = new EntityRegistry();
+  const manager = new InformationWindowManager({ isTargetAlive: (target) => registry.isAlive(target) });
+  const item = { chip: { type: 'item' } };
+  registry.register(item);
+  manager.open({ type: 'item', data: { item } });
+  manager.closeInvalidEntries();
+  assert.equal(manager.entries.length, 1);
+
+  registry.destroy(item);
   manager.closeInvalidEntries();
   assert.equal(manager.entries.length, 0);
 });

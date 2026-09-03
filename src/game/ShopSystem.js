@@ -18,12 +18,13 @@ export function getGemAttempts(skillLevel) {
 }
 
 export default class ShopSystem {
-  constructor(board, shopState, returnSystem, { itemFactory = new ItemFactory(), onItemPurchased = () => {}, random = Math.random, gameLog = null } = {}) {
+  constructor(board, shopState, returnSystem, { itemFactory = new ItemFactory(), onItemPurchased = () => {}, entityRegistry = null, random = Math.random, gameLog = null } = {}) {
     this.board = board;
     this.shopState = shopState;
     this.returnSystem = returnSystem;
     this.itemFactory = itemFactory;
     this.onItemPurchased = onItemPurchased;
+    this.entityRegistry = entityRegistry;
     this.random = random;
     this.gameLog = gameLog;
     this.states = new Map();
@@ -75,7 +76,10 @@ export default class ShopSystem {
     state.purchases.slice(start, start + EQUIPMENT_PARTS.length).forEach(({ item }) => this.onItemPurchased(item));
     state.deliveredSets += 1;
     if (state.deliveredSets < SHOP_SET_COUNT) return;
-    if (state.bag) state.bag.storedItems.length = 0;
+    if (state.bag) {
+      state.bag.storedItems.forEach((item) => this.entityRegistry?.destroy(item, { includeRelated: true }));
+      state.bag.storedItems.length = 0;
+    }
     this.shopState.advance(this.random);
     this.gameLog?.log(`${hero.profession}・${hero.name.ja}はショップで買い物をした。`, { subject: 'hero', level: 'info', channel: 'shop' });
     hero.stamina = 0;

@@ -9,6 +9,7 @@ import ShopState from '../../src/game/ShopState.js';
 import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TICKS, SHOP_REVEAL_INTERVAL_TICKS, SHOP_SET_COUNT } from '../../src/game/ShopSystem.js';
 import { GAME_AREAS } from '../../src/game/GameAreas.js';
 import { createTrendEquipmentSet, createTrendProductTags, reduceTagCounts } from '../../src/game/TrendEquipmentGenerator.js';
+import EntityRegistry from '../../src/game/EntityRegistry.js';
 
 test('shop converts a bag sale into two nearby five-part equipment sets and returns the hero', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
@@ -16,14 +17,17 @@ test('shop converts a bag sale into two nearby five-part equipment sets and retu
   hero.currentArea = 'shop';
   const factory = new ItemFactory();
   const bag = factory.createDestination({ destination: 'shopping-bag', x: 0, y: 0 });
-  bag.store(factory.createBodyItem({ part: 'head', tags: ['fire', 'fire', 'fire'], x: 0, y: 0 }));
+  const soldItem = factory.createBodyItem({ part: 'head', tags: ['fire', 'fire', 'fire'], x: 0, y: 0 });
+  bag.store(soldItem);
   hero.equip(bag);
   board.addChip(hero.chip);
   const bought = [];
+  const entityRegistry = new EntityRegistry();
+  entityRegistry.registerTree(bag);
   const returns = new FacilityReturnSystem(board, new HeroSlotManager(), { random: () => 0.5 });
   hero.tags.push('gem');
   const logs = [];
-  const shop = new ShopSystem(board, new ShopState({ saleTag: 'fire', nextTag: 'water' }), returns, { onItemPurchased: (item) => bought.push(item), random: () => 0, gameLog: { log: (message, options) => logs.push({ message, options }) } });
+  const shop = new ShopSystem(board, new ShopState({ saleTag: 'fire', nextTag: 'water' }), returns, { onItemPurchased: (item) => bought.push(item), entityRegistry, random: () => 0, gameLog: { log: (message, options) => logs.push({ message, options }) } });
 
   shop.update([hero], 0);
   shop.update([hero], (SHOP_REVEAL_INTERVAL_TICKS - 1) / 60);
@@ -45,6 +49,8 @@ test('shop converts a bag sale into two nearby five-part equipment sets and retu
   shop.update([hero], SHOP_REVEAL_INTERVAL_TICKS / 60);
 
   assert.equal(bag.storedItems.length, 0);
+  assert.equal(entityRegistry.isAlive(bag), true);
+  assert.equal(entityRegistry.isAlive(soldItem), false);
   assert.equal(bought.length, 10);
   assert.deepEqual(bought.map((item) => item.category), ['head', 'weapon', 'torso', 'weapon', 'feet', 'head', 'weapon', 'torso', 'weapon', 'feet']);
   assert.ok(bought.every((item) => item.chip.bounds.width === GAME_AREAS.warehouse.width));

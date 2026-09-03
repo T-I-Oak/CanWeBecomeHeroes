@@ -1,10 +1,11 @@
 import { GAME_AREAS } from './GameAreas.js';
 
 export default class FacilityReturnSystem {
-  constructor(board, slotManager, { onItemReturned = () => {}, random = Math.random } = {}) {
+  constructor(board, slotManager, { onItemReturned = () => {}, onItemDiscarded = () => {}, random = Math.random } = {}) {
     this.board = board;
     this.slotManager = slotManager;
     this.onItemReturned = onItemReturned;
+    this.onItemDiscarded = onItemDiscarded;
     this.random = random;
     this.returning = new Set();
   }
@@ -14,7 +15,8 @@ export default class FacilityReturnSystem {
     if (!target) throw new Error('Facility return requires a preparation return position.');
     this.slotManager.release(hero);
     hero.clearBattleState?.();
-    hero.clearEquipment().filter((item) => item.category === 'destination').forEach((item) => {
+    const equipment = hero.clearEquipment();
+    equipment.filter((item) => item.category === 'destination').forEach((item) => {
       const area = GAME_AREAS.warehouse;
       item.chip.x = area.x + item.chip.radius + this.random() * (area.width - item.chip.radius * 2);
       item.chip.y = area.y + item.chip.radius + this.random() * (area.height - item.chip.radius * 2);
@@ -24,6 +26,7 @@ export default class FacilityReturnSystem {
       item.chip.bounds = { ...area };
       this.onItemReturned(item);
     });
+    equipment.filter((item) => item.category !== 'destination').forEach((item) => this.onItemDiscarded(item));
     hero.chip.bounds = null;
     hero.targetArea = 'preparation';
     this.returning.add(hero);

@@ -19,9 +19,9 @@ export function rollStageLevel(stageNumber, random = Math.random) {
 }
 
 export default class StageController {
-  constructor({ enemySpawn, battleSystem, enemyFactory = new EnemyFactory(), shopState = null, hasActiveShopHero = () => false, random = Math.random } = {}) {
+  constructor({ enemySpawn, battleSystem, enemyFactory = new EnemyFactory(), shopState = null, hasActiveShopHero = () => false, entityRegistry = null, random = Math.random } = {}) {
     if (!enemySpawn || !battleSystem) throw new Error('Stage controller requires enemy spawning and battle systems.');
-    Object.assign(this, { enemySpawn, battleSystem, enemyFactory, shopState, hasActiveShopHero, random });
+    Object.assign(this, { enemySpawn, battleSystem, enemyFactory, shopState, hasActiveShopHero, entityRegistry, random });
     this.stageNumber = 0;
     this.joinedCount = 0;
     this.state = 'idle';
@@ -39,6 +39,7 @@ export default class StageController {
       const patterns = COMBINATION_PATTERNS[kind];
       const pattern = patterns[Math.floor(this.random() * patterns.length)];
       const enemies = createEncounterEnemies({ kind, level, stageNumber, pattern, enemyFactory: this.enemyFactory, random: this.random });
+      enemies.forEach((enemy) => this.entityRegistry?.registerTree(enemy));
       return Object.freeze({
         id: `stage-${stageNumber}-choice-${index + 1}`,
         number: stageNumber,
@@ -70,6 +71,10 @@ export default class StageController {
     if (this.state !== 'selecting') throw new Error(`Cannot select a stage while state is ${this.state}.`);
     const choice = this.choices.find(({ id }) => id === choiceId);
     if (!choice) throw new RangeError(`Unknown stage choice: ${choiceId}`);
+    this.choices
+      .filter((candidate) => candidate !== choice)
+      .flatMap((candidate) => candidate.enemies)
+      .forEach((enemy) => this.entityRegistry?.destroy(enemy, { includeRelated: true }));
     this.battleSystem.resetStageState();
     this.enemySpawn.schedule(choice.enemies, { startTick: tick });
     this.shopState?.applyRouteTrends(choice.shopTrends, { preserveCurrent: this.hasActiveShopHero(), random: this.random });

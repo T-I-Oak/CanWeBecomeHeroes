@@ -1,9 +1,10 @@
 const PAUSE_REASON = 'information-window';
 
 export default class InformationWindowManager {
-  constructor({ clock, onChange = null } = {}) {
+  constructor({ clock, onChange = null, isTargetAlive = null } = {}) {
     this.clock = clock;
     this.onChange = onChange;
+    this.isTargetAlive = isTargetAlive;
     this.pauseOnOpen = false;
     this.windows = [];
     this.nextId = 1;
@@ -20,13 +21,13 @@ export default class InformationWindowManager {
     this.#notify();
   }
 
-  open({ type, data, parentId = null, anchor = null, isValid = null }) {
+  open({ type, data, parentId = null, anchor = null }) {
     const existing = this.windows.find((entry) => this.#isSameTarget(entry, type, data));
     if (existing) return existing;
     if (parentId !== null && !this.windows.some((entry) => entry.id === parentId)) parentId = null;
     if (parentId === null) this.windows = this.windows.filter((entry) => entry.pinned);
     else this.windows = this.windows.filter((entry) => entry.pinned || !this.#isDescendantOf(entry.id, parentId));
-    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor, position: null, pinned: false, isValid });
+    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor, position: null, pinned: false });
     this.windows.push(entry);
     this.#notify();
     return entry;
@@ -80,12 +81,16 @@ export default class InformationWindowManager {
   }
 
   refreshDynamicEntries() {
-    if (this.isDragging || this.isInteracting || !this.windows.some((entry) => entry.type === 'entity')) return;
+    if (this.isDragging || this.isInteracting || !this.windows.some((entry) => this.#getTarget(entry))) return;
     this.onChange?.(this.entries);
   }
 
   closeInvalidEntries() {
-    const invalid = this.windows.filter((entry) => entry.isValid && !entry.isValid());
+    if (!this.isTargetAlive) return;
+    const invalid = this.windows.filter((entry) => {
+      const target = this.#getTarget(entry);
+      return target && !this.isTargetAlive(target);
+    });
     if (invalid.length === 0) return;
     const ids = new Set(invalid.map((entry) => entry.id));
     this.windows = this.windows.filter((entry) => !ids.has(entry.id));
@@ -121,6 +126,12 @@ export default class InformationWindowManager {
     if (type === 'area') return entry.data.area === data.area;
     if (type === 'unique-skill') return entry.data.uniqueSkill.id === data.uniqueSkill.id && entry.data.uniqueSkill.level === data.uniqueSkill.level;
     return entry.data === data;
+  }
+
+  #getTarget(entry) {
+    if (entry.type === 'entity') return entry.data.entity;
+    if (entry.type === 'item') return entry.data.item;
+    return null;
   }
 
   #notify() {

@@ -9,6 +9,7 @@ import { HERO_PREPARATION_IMAGE_SIZE, PREPARATION_LAYOUT, PREPARATION_PANEL_WIDT
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import HeroItemInteractionController from '../game/HeroItemInteractionController.js';
+import EntityRegistry from '../game/EntityRegistry.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
 import GameClock from '../game/GameClock.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
@@ -522,12 +523,16 @@ export function startGame({ scenario }) {
   const slotManager = new HeroSlotManager();
   const gameLog = new GameLog();
   new FlowLog(document.querySelector('#flow-log'), gameLog);
-  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog), gameLog);
+  const entityRegistry = new EntityRegistry();
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog), gameLog, { entityRegistry });
   const { preparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
   const enemySpawn = new EnemySpawnSystem(controller);
-  const returnSystem = new FacilityReturnSystem(board, slotManager, { onItemReturned: (item) => controller.addToWarehouse(item) });
+  const returnSystem = new FacilityReturnSystem(board, slotManager, {
+    onItemReturned: (item) => controller.addToWarehouse(item),
+    onItemDiscarded: (item) => controller.destroy(item, { includeRelated: true }),
+  });
   const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem });
-  const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), gameLog });
+  const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), entityRegistry, gameLog });
   const combatEffects = new CombatEffectSystem();
   const enemyFactory = new EnemyFactory();
   const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), enemyFactory, returnSystem, effects: combatEffects, gameLog });
@@ -537,6 +542,7 @@ export function startGame({ scenario }) {
     enemyFactory,
     shopState: shop,
     hasActiveShopHero: () => controller.getHeroes().some((hero) => hero.currentArea === 'shop'),
+    entityRegistry,
     random,
   });
   const guildSystem = new GuildSystem(returnSystem, {
@@ -552,6 +558,7 @@ export function startGame({ scenario }) {
   const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'));
   const informationWindows = new InformationWindowManager({
     clock,
+    isTargetAlive: (target) => entityRegistry.isAlive(target),
     onChange: (entries) => informationLayer.render(entries),
   });
   informationLayer.manager = informationWindows;
@@ -564,13 +571,8 @@ export function startGame({ scenario }) {
       clock.resume('stage-selection');
     },
     onTagSelect: (tag, anchor) => informationWindows.open({ type: 'tag', data: { tag }, anchor }),
-    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'entity', data: { entity: enemy }, anchor, isValid: () => isEntityActive(enemy) }),
+    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'entity', data: { entity: enemy }, anchor }),
   });
-
-  function isEntityActive(entity) {
-    if (entity.chip.type !== 'enemy') return controller.hasEntity(entity);
-    return stageController.hasChoiceEnemy(entity) || enemySpawn.hasPending(entity) || controller.hasEntity(entity);
-  }
 
   function openStageSelection(stageNumber = stageController.stageNumber + 1) {
     const choices = stageController.createStageChoices({ stageNumber });
@@ -702,7 +704,6 @@ export function startGame({ scenario }) {
         type: entity.chip.type === 'item' ? 'item' : 'entity',
         data: entity.chip.type === 'item' ? { item: entity } : { entity },
         anchor: { x: event.clientX, y: event.clientY },
-        isValid: entity.chip.type === 'item' ? null : () => isEntityActive(entity),
       });
     }
     drag = null;

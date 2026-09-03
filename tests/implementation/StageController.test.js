@@ -5,6 +5,7 @@ import EnemyFactory from '../../src/game/EnemyFactory.js';
 import EnemySpawnSystem from '../../src/game/EnemySpawnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
 import StageController, { getStageBaseLevel, rollStageLevel } from '../../src/game/StageController.js';
+import EntityRegistry from '../../src/game/EntityRegistry.js';
 
 test('stage one rolls a level from one through five', () => {
   assert.equal(getStageBaseLevel(1), 3);
@@ -19,7 +20,8 @@ test('stage controller prepares three frozen route choices and starts only the s
   const enemySpawn = new EnemySpawnSystem({ add: (enemy) => added.push(enemy) });
   const battleSystem = new BattleSystem({ chips: [] }, { controller: {}, itemFactory: {} });
   const shop = new ShopState({ saleTag: 'valor', nextTag: 'iron' });
-  const stages = new StageController({ enemySpawn, battleSystem, enemyFactory: new EnemyFactory(), shopState: shop, random: () => 0.5 });
+  const entityRegistry = new EntityRegistry();
+  const stages = new StageController({ enemySpawn, battleSystem, enemyFactory: new EnemyFactory(), shopState: shop, entityRegistry, random: () => 0.5 });
 
   const choices = stages.createStageChoices({ stageNumber: 1 });
 
@@ -34,6 +36,8 @@ test('stage controller prepares three frozen route choices and starts only the s
   assert.equal(stages.state, 'spawning');
   assert.equal(shop.saleTag, choices[1].shopTrends.saleTag);
   assert.equal(shop.nextTag, choices[1].shopTrends.nextTag);
+  assert.ok(stage.enemies.every((enemy) => entityRegistry.isAlive(enemy)));
+  assert.ok(choices.filter((choice) => choice.id !== stage.id).flatMap((choice) => choice.enemies).every((enemy) => !entityRegistry.isAlive(enemy)));
   enemySpawn.update(699);
   assert.equal(added.length, 0);
   enemySpawn.update(700);

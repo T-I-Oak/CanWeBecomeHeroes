@@ -407,8 +407,11 @@ export default class BattleSystem {
   defeatEnemy(enemy) {
     if (!onBoard(this.board, enemy)) return;
     const { skill, summons } = this.uniqueSkillSystem.resolveOnDefeated(enemy);
-    this.board.removeChip(enemy.chip);
-    this.controller?.remove(enemy);
+    if (this.controller?.destroy) this.controller.destroy(enemy, { includeRelated: true });
+    else {
+      this.board.removeChip(enemy.chip);
+      this.controller?.remove(enemy);
+    }
     this.contributionPoints += enemy.contributionPoints;
     this.createEnemyDrops(enemy).forEach((item) => this.controller?.addToWarehouse(item));
     summons.forEach((summon) => {
