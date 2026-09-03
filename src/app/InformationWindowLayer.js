@@ -9,6 +9,7 @@ import { getFacilityDetail } from '../game/FacilityDetailCatalog.js';
 import { getAreaDetail } from '../game/AreaDetailCatalog.js';
 import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
 import { getHeroDetail } from '../game/HeroDetailCatalog.js';
+import { getEnemyDetail } from '../game/EnemyDetailCatalog.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
@@ -211,10 +212,8 @@ export default class InformationWindowLayer {
     title.append(createChipImage(entity.chip.centerPath), createElement('h2', 'InformationWindow__Name', displayName));
     content.append(title);
     const body = createElement('div', 'InformationWindow__EntityPanel');
-    if (!isEnemy) {
-      const detail = getHeroDetail(entity);
-      if (detail) body.append(this.#createHeroProfile(detail));
-    }
+    const detail = isEnemy ? getEnemyDetail(entity) : getHeroDetail(entity);
+    if (detail) body.append(this.#createEntityProfile(detail));
     const information = createElement('section', 'InformationWindow__EntityInformation');
     const statusGrid = createElement('div', 'InformationWindow__EntityStatusGrid');
     const statusKeys = [...ENTITY_STATUS_KEYS, isEnemy ? 'hp' : 'stamina'];
@@ -247,11 +246,11 @@ export default class InformationWindowLayer {
     return content;
   }
 
-  #createHeroProfile(detail) {
-    const profile = createElement('section', 'InformationWindow__HeroProfile');
+  #createEntityProfile(detail) {
+    const profile = createElement('section', 'InformationWindow__EntityProfile');
     profile.append(
       createElement('p', 'InformationWindow__Description', detail.description),
-      createElement('p', 'InformationWindow__HeroCombatStyle', detail.combatStyle),
+      createElement('p', 'InformationWindow__EntityCombatStyle', detail.combatStyle),
     );
     return profile;
   }

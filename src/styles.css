@@ -313,7 +313,7 @@ body {
   padding: 12px;
 }
 
-.InformationWindow__HeroProfile {
+.InformationWindow__EntityProfile {
   display: grid;
   grid-column: 1 / -1;
   gap: 6px;
@@ -323,7 +323,7 @@ body {
   border-radius: 8px;
 }
 
-.InformationWindow__HeroCombatStyle {
+.InformationWindow__EntityCombatStyle {
   margin: 0;
   color: #294b38;
   font-size: 14px;
