@@ -16,6 +16,10 @@ export default class EnemySpawnSystem {
     }).toSorted((first, second) => first.spawnTick - second.spawnTick);
   }
 
+  hasPending(enemy) {
+    return this.pending.some((entry) => entry.enemy === enemy);
+  }
+
   update(tick) {
     while (this.pending[0]?.spawnTick <= tick) {
       const { enemy } = this.pending.shift();

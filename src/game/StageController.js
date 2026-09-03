@@ -62,6 +62,10 @@ export default class StageController {
     this.joinedCount = joinedCount;
   }
 
+  hasChoiceEnemy(enemy) {
+    return this.state === 'selecting' && this.choices.some((choice) => choice.enemies.includes(enemy));
+  }
+
   selectStage(choiceId, { tick = 0 } = {}) {
     if (this.state !== 'selecting') throw new Error(`Cannot select a stage while state is ${this.state}.`);
     const choice = this.choices.find(({ id }) => id === choiceId);

@@ -166,6 +166,10 @@ export default class HeroItemInteractionController {
     return [...this.entities.values()].filter((entity) => entity.chip.type === 'enemy');
   }
 
+  hasEntity(entity) {
+    return this.entities.get(entity?.chip?.id) === entity;
+  }
+
   getShoppingBag() {
     return [...this.entities.values()].find((entity) => entity.isShoppingBag) ?? null;
   }

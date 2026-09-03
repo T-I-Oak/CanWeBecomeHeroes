@@ -133,11 +133,11 @@ test('dynamic entity entries refresh unless a window is being dragged', () => {
   assert.equal(changes, 1);
 });
 
-test('defeated enemy information windows close even when pinned', () => {
+test('invalid entity information windows close even when pinned', () => {
   const manager = new InformationWindowManager();
-  const enemy = { hp: 0, chip: { type: 'enemy' } };
-  const entry = manager.open({ type: 'entity', data: { entity: enemy } });
+  const enemy = { hp: 3, chip: { type: 'enemy' } };
+  const entry = manager.open({ type: 'entity', data: { entity: enemy }, isValid: () => false });
   manager.togglePin(entry.id);
-  manager.closeDefeatedEnemies();
+  manager.closeInvalidEntries();
   assert.equal(manager.entries.length, 0);
 });

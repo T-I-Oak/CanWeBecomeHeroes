@@ -20,13 +20,13 @@ export default class InformationWindowManager {
     this.#notify();
   }
 
-  open({ type, data, parentId = null, anchor = null }) {
+  open({ type, data, parentId = null, anchor = null, isValid = null }) {
     const existing = this.windows.find((entry) => this.#isSameTarget(entry, type, data));
     if (existing) return existing;
     if (parentId !== null && !this.windows.some((entry) => entry.id === parentId)) parentId = null;
     if (parentId === null) this.windows = this.windows.filter((entry) => entry.pinned);
     else this.windows = this.windows.filter((entry) => entry.pinned || !this.#isDescendantOf(entry.id, parentId));
-    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor, position: null, pinned: false });
+    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor, position: null, pinned: false, isValid });
     this.windows.push(entry);
     this.#notify();
     return entry;
@@ -84,14 +84,10 @@ export default class InformationWindowManager {
     this.onChange?.(this.entries);
   }
 
-  closeDefeatedEnemies() {
-    const defeated = this.windows.filter((entry) => (
-      entry.type === 'entity'
-      && entry.data.entity?.chip?.type === 'enemy'
-      && entry.data.entity.hp <= 0
-    ));
-    if (defeated.length === 0) return;
-    const ids = new Set(defeated.map((entry) => entry.id));
+  closeInvalidEntries() {
+    const invalid = this.windows.filter((entry) => entry.isValid && !entry.isValid());
+    if (invalid.length === 0) return;
+    const ids = new Set(invalid.map((entry) => entry.id));
     this.windows = this.windows.filter((entry) => !ids.has(entry.id));
     this.#notify();
   }

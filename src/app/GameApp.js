@@ -511,12 +511,18 @@ export function startGame({ scenario }) {
     assets,
     onSelect: (choiceId) => {
       stageController.selectStage(choiceId, { tick: clock.tick });
+      informationWindows.closeInvalidEntries();
       stageSelection.hide();
       clock.resume('stage-selection');
     },
     onTagSelect: (tag, anchor) => informationWindows.open({ type: 'tag', data: { tag }, anchor }),
-    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'entity', data: { entity: enemy }, anchor }),
+    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'entity', data: { entity: enemy }, anchor, isValid: () => isEntityActive(enemy) }),
   });
+
+  function isEntityActive(entity) {
+    if (entity.chip.type !== 'enemy') return controller.hasEntity(entity);
+    return stageController.hasChoiceEnemy(entity) || enemySpawn.hasPending(entity) || controller.hasEntity(entity);
+  }
 
   function openStageSelection(stageNumber = stageController.stageNumber + 1) {
     const choices = stageController.createStageChoices({ stageNumber });
@@ -641,7 +647,12 @@ export function startGame({ scenario }) {
       else if (area) informationWindows.open({ type: 'area', data: { area }, anchor: { x: event.clientX, y: event.clientY } });
       else if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
       else if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (entity) informationWindows.open({ type: entity.chip.type === 'item' ? 'item' : 'entity', data: entity.chip.type === 'item' ? { item: entity } : { entity }, anchor: { x: event.clientX, y: event.clientY } });
+      else if (entity) informationWindows.open({
+        type: entity.chip.type === 'item' ? 'item' : 'entity',
+        data: entity.chip.type === 'item' ? { item: entity } : { entity },
+        anchor: { x: event.clientX, y: event.clientY },
+        isValid: entity.chip.type === 'item' ? null : () => isEntityActive(entity),
+      });
     }
     drag = null;
   });
@@ -670,7 +681,7 @@ export function startGame({ scenario }) {
       guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
-      informationWindows.closeDefeatedEnemies();
+      informationWindows.closeInvalidEntries();
       informationWindows.refreshDynamicEntries();
       stageController.update();
       if (stageController.state === 'complete') openStageSelection();
