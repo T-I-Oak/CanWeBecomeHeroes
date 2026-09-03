@@ -230,6 +230,31 @@ test('bows shorten the action gauge by ten percent per weapon up to five weapons
   assert.equal(getActionGaugeMaximum(enemy), (15 - enemy.getStatus('speed')) * 0.5);
 });
 
+test('bows target the farthest enemy and reverse the distance-tie direction', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, logger: { info: () => {} } });
+  const createEnemyAt = (x) => {
+    const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+    enemy.chip.x = x;
+    enemy.chip.y = 500;
+    return enemy;
+  };
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 500, y: 500, stamina: 3 });
+  const left = createEnemyAt(400);
+  const right = createEnemyAt(600);
+  [hero, left, right].forEach((entity) => board.addChip(entity.chip));
+  assert.equal(battle.findTarget(hero, [hero, left, right]), left);
+
+  const archer = new HeroFactory().create({ profession: 'hunter', x: 1500, y: 500, stamina: 3 });
+  archer.equip(itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
+  const nearer = createEnemyAt(1400);
+  const farLeft = createEnemyAt(1200);
+  const farRight = createEnemyAt(1800);
+  [archer, nearer, farLeft, farRight].forEach((entity) => board.addChip(entity.chip));
+  assert.equal(battle.findTarget(archer, [archer, nearer, farLeft, farRight]), farRight);
+});
+
 test('stealing a bow immediately refreshes the affected action gauge maximum', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();

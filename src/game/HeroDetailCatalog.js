@@ -21,7 +21,7 @@ export const HERO_DETAILS = Object.freeze({
   }),
   Finley: Object.freeze({
     description: '山で迷子を見つけて連れ帰ったことがある。危険な場所でも誰かを見つけ出すため、勇者試験に挑む。',
-    combatStyle: '誰より早く動けるが、力押しは苦手。',
+    combatStyle: '誰より早く動き、弓を持てば遠い相手も狙える。ただし力押しは苦手。',
   }),
   Garnet: Object.freeze({
     description: '必要な物が必要な場所へ届かない場面を見てきた。もっと遠くまで品物と助けを運ぶため、勇者を目指す。',

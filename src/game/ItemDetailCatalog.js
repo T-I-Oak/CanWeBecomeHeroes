@@ -4,7 +4,7 @@ const ITEM_DETAILS = Object.freeze({
   staff: Object.freeze({ name: '杖', description: '魔法攻撃力が高い武器。' }),
   'holy-book': Object.freeze({ name: '聖書', description: '仲間の属性付与値を軽減する武器。' }),
   claw: Object.freeze({ name: '爪', description: '相手の装備を盗む武器。' }),
-  bow: Object.freeze({ name: '弓', description: 'アクションゲージを短縮する武器。' }),
+  bow: Object.freeze({ name: '弓', description: 'アクションゲージを短縮し、最も遠い敵を狙う武器。' }),
   banner: Object.freeze({ name: '旗', description: '仲間のアクションゲージを進める武器。' }),
   orb: Object.freeze({ name: '宝珠', description: '相手の装備に宝石タグを付与する武器。' }),
   'holy-symbol': Object.freeze({ name: '聖印', description: '仲間のスタミナまたはHPを回復する武器。' }),

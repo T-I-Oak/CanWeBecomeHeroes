@@ -33,6 +33,10 @@ export function getActionGaugeMaximum(actor) {
   const shortening = Math.min(bowCount, MAX_BOW_GAUGE_SHORTENING_WEAPONS) * BOW_GAUGE_SHORTENING_PER_WEAPON;
   return baseMaximum * (1 - shortening);
 }
+export function hasBow(actor) {
+  const equipment = Array.isArray(actor.equipment) ? actor.equipment : Object.values(actor.equipment ?? {});
+  return equipment.some((item) => item?.category === 'weapon' && item.type === 'bow');
+}
 
 export default class BattleSystem {
   constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console, onDamage = null } = {}) {
@@ -120,8 +124,11 @@ export default class BattleSystem {
   }
   findTarget(actor, participants) {
     const candidates = participants.filter((c) => isHero(c) !== isHero(actor) && onBoard(this.board, c));
-    const front = candidates.filter((c) => Math.abs(c.chip.x - actor.chip.x) < 1);
-    return (front.length ? front : candidates).toSorted((a, b) => Math.hypot(a.chip.x - actor.chip.x, a.chip.y - actor.chip.y) - Math.hypot(b.chip.x - actor.chip.x, b.chip.y - actor.chip.y) || a.chip.x - b.chip.x)[0] ?? null;
+    const direction = hasBow(actor) ? -1 : 1;
+    return candidates.toSorted((a, b) => (
+      direction * (Math.hypot(a.chip.x - actor.chip.x, a.chip.y - actor.chip.y) - Math.hypot(b.chip.x - actor.chip.x, b.chip.y - actor.chip.y))
+      || direction * (a.chip.x - b.chip.x)
+    ))[0] ?? null;
   }
   rangeTargets(actor, target, participants) {
     const coefficients = RANGE[actor.getTagCount('area')]; const foes = participants.filter((c) => isHero(c) !== isHero(actor) && onBoard(this.board, c)).toSorted((a, b) => a.chip.x - b.chip.x); const at = foes.indexOf(target); const center = Math.floor(coefficients.length / 2);
