@@ -72,6 +72,14 @@ export const ENEMY_CATALOG = Object.freeze({
     id: 'large-vitality', size: 'large', tagAffinity: 'vitality', nameKey: 'enemy.largeVitality', nameJa: '歩く世界樹', assetPath: '/assets/enemies/large-vitality.png', intrinsicTags: Object.freeze(['vitality']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'vitality-summon', level: 2 }),
   }),
+  'medium-gem': Object.freeze({
+    id: 'medium-gem', size: 'medium', tagAffinity: 'gem', nameKey: 'enemy.mediumGem', nameJa: 'クリスタルゴーレム', assetPath: '/assets/enemies/medium-gem.png', intrinsicTags: Object.freeze(['gem']), baseHp: 2, baseContributionPoints: 50,
+    uniqueSkill: Object.freeze({ id: 'gem-orb-rain', level: 1 }),
+  }),
+  'large-gem': Object.freeze({
+    id: 'large-gem', size: 'large', tagAffinity: 'gem', nameKey: 'enemy.largeGem', nameJa: 'ファフニール', assetPath: '/assets/enemies/large-gem.png', intrinsicTags: Object.freeze(['gem']), baseHp: 2, baseContributionPoints: 250,
+    uniqueSkill: Object.freeze({ id: 'gem-orb-rain', level: 2 }),
+  }),
 });
 
 export function getEnemyDefinition({ size, tagAffinity }) {

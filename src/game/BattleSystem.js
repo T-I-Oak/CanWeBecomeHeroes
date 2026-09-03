@@ -336,8 +336,19 @@ export default class BattleSystem {
       if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return damage;
     }
     target.hp = Math.max(0, target.hp - damage);
+    this.resolveDamageUniqueSkill(target);
     this.onDamage?.({ actor, target, type, damage, critical });
     if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) { if (actor) this.recordDefeat(actor, target); this.defeatEnemy(target); } return damage;
+  }
+  resolveDamageUniqueSkill(enemy) {
+    const { skill, drops } = this.uniqueSkillSystem.resolveOnDamaged?.(enemy) ?? { skill: null, drops: [] };
+    if (drops.length === 0) return;
+    drops.forEach((drop) => {
+      const position = this.getWarehouseDropPosition();
+      const item = this.itemFactory.createWeapon({ weapon: drop.weapon, tags: drop.tags, x: position.x, y: position.y });
+      this.controller?.addToWarehouse?.(item);
+    });
+    this.gameLog?.log(`${this.getEntityLabel(enemy)}は${skill.name}で宝珠を${drops.length}個落とした。`, { subject: 'enemy', level: 'info', channel: 'battle' });
   }
   recordMiss(actor, target) {
     if (!this.actionLogResults || !actor || !target) return;

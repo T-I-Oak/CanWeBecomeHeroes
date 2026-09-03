@@ -57,6 +57,25 @@ test('vitality mid-boss and boss catalog entries carry the shared unique skill a
   assert.deepEqual(getEnemyDefinition({ size: 'large', tagAffinity: 'vitality' }).uniqueSkill, { id: 'vitality-summon', level: 2 });
 });
 
+test('gem mid-boss and boss carry orb-rain at their respective levels', () => {
+  assert.deepEqual(getEnemyDefinition({ size: 'medium', tagAffinity: 'gem' }).uniqueSkill, { id: 'gem-orb-rain', level: 1 });
+  assert.deepEqual(getEnemyDefinition({ size: 'large', tagAffinity: 'gem' }).uniqueSkill, { id: 'gem-orb-rain', level: 2 });
+});
+
+test('gem orb-rain drops its level-specific orb rewards for each successful damage trigger', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createFromDefinition({ enemyDefinitionId: 'large-gem', slotPosition: 3, maximumHp: 10, totalTagCount: 0, random: () => 0 });
+  const drops = [];
+  const battle = new BattleSystem(board, { controller: { addToWarehouse: (item) => drops.push(item) }, itemFactory, random: () => 0, logger: { info: () => {} } });
+
+  battle.applyDamage(null, enemy, 'fire', 1);
+
+  assert.equal(drops.length, 2);
+  assert.deepEqual(drops.map((item) => item.type), ['orb', 'orb']);
+  assert.deepEqual(drops.map((item) => item.tags), [['gem', 'gem'], ['gem', 'gem']]);
+});
+
 test('last sprout summons into the inner available slots and inherits the defeated enemy battle parameters', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();

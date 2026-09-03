@@ -28,6 +28,19 @@ export default class UniqueSkillSystem {
     return Object.freeze({ skill, summons: Object.freeze(summons) });
   }
 
+  resolveOnDamaged(enemy) {
+    if (!enemy.uniqueSkill) return Object.freeze({ skill: null, drops: Object.freeze([]) });
+    const skill = getUniqueSkillLevelDetail(enemy.uniqueSkill);
+    if (skill.trigger !== 'damaged' || skill.id !== 'gem-orb-rain' || this.random() >= skill.levelDetail.chance) {
+      return Object.freeze({ skill, drops: Object.freeze([]) });
+    }
+    const drops = Array.from({ length: skill.levelDetail.dropCount }, () => Object.freeze({
+      weapon: 'orb',
+      tags: Object.freeze(Array.from({ length: skill.levelDetail.tagCount }, () => 'gem')),
+    }));
+    return Object.freeze({ skill, drops: Object.freeze(drops) });
+  }
+
   getAvailableSummonSlots(defeatedEnemy) {
     const occupied = new Set();
     const enemies = this.controller?.getEnemies?.() ?? [];

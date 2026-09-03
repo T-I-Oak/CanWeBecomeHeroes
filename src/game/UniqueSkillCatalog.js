@@ -10,8 +10,21 @@ const VITALITY_SUMMON = Object.freeze({
   }),
 });
 
+const GEM_ORB_RAIN = Object.freeze({
+  id: 'gem-orb-rain',
+  name: '宝珠の雨',
+  affinityTag: 'gem',
+  trigger: 'damaged',
+  description: 'ダメージを受けたとき、運により倉庫へ宝珠を落とす。',
+  levels: Object.freeze({
+    1: Object.freeze({ chance: 0.5, dropCount: 1, tagCount: 1, description: '50%で宝石タグ1の宝珠を1個落とす' }),
+    2: Object.freeze({ chance: 0.5, dropCount: 2, tagCount: 2, description: '50%で宝石タグ2の宝珠を2個落とす' }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
+  [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
 });
 
 export function getUniqueSkillDetail(id) {
