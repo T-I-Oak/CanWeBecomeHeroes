@@ -16,7 +16,7 @@ export const HERO_DETAILS = Object.freeze({
     combatStyle: '仲間が受けた炎・水・雷の影響を和らげる。',
   }),
   Ellis: Object.freeze({
-    description: '悪い相手から大事な物を取り返す。自分の手癖を胸を張れる仕事へ変えたくて、勇者試験に紛れ込んだ。',
+    description: '悪い相手から、大事な物を取り返してきた。自分の手癖を胸を張れる仕事へ変えたくて、勇者試験に紛れ込んだ。',
     combatStyle: '相手の装備を盗み、戦力を崩す。',
   }),
   Finley: Object.freeze({
