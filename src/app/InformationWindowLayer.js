@@ -8,6 +8,7 @@ import { AREA_THEME } from '../game/AreaTheme.js';
 import { getFacilityDetail } from '../game/FacilityDetailCatalog.js';
 import { getAreaDetail } from '../game/AreaDetailCatalog.js';
 import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
+import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
@@ -39,7 +40,7 @@ function createTagIcon(tag, sizeClass = '') {
   icon.style.setProperty('--tag-base-color', getTagBaseColors([tag])[0]);
   icon.style.setProperty('--tag-glyph-scale', String(getTagGlyphScales([tag])[0]));
   const image = document.createElement('img');
-  image.src = `/assets/tags/${tag}.png`;
+  image.src = resolvePublicAssetPath(`/assets/tags/${tag}.png`);
   image.alt = '';
   icon.append(image);
   return icon;
@@ -48,7 +49,7 @@ function createTagIcon(tag, sizeClass = '') {
 function createStatusIcon(status, sizeClass = '') {
   const icon = createElement('span', `InformationWindow__StatusIcon ${sizeClass}`.trim());
   const image = document.createElement('img');
-  image.src = STATUS_VISUALS[status].iconPath;
+  image.src = resolvePublicAssetPath(STATUS_VISUALS[status].iconPath);
   image.alt = '';
   icon.append(image);
   return icon;
@@ -57,7 +58,7 @@ function createStatusIcon(status, sizeClass = '') {
 function createChipImage(path) {
   const image = createElement('span', 'InformationWindow__ChipImage');
   const asset = document.createElement('img');
-  asset.src = path;
+  asset.src = resolvePublicAssetPath(path);
   asset.alt = '';
   image.append(asset);
   return image;
@@ -66,7 +67,7 @@ function createChipImage(path) {
 function createEquipmentImage(path) {
   const image = createElement('span', 'InformationWindow__EquipmentImage');
   const asset = document.createElement('img');
-  asset.src = path;
+  asset.src = resolvePublicAssetPath(path);
   asset.alt = '';
   image.append(asset);
   return image;
