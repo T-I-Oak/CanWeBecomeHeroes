@@ -15,7 +15,7 @@ export const ENEMY_DETAILS = Object.freeze({
   'small-vitality': Object.freeze({ description: '引き抜かれても、しぶとく根を張ろうとする不思議な植物。土があれば、まだまだ元気だ。', combatStyle: '行動後に、運がよければHPを回復する。' }),
   'small-area': Object.freeze({ description: '三つの頭で、獲物の逃げ道をふさぐ番犬。ひとつを避けても、別の頭が待っている。', combatStyle: '広い範囲へ攻撃を行う。' }),
   'medium-vitality': Object.freeze({ description: '長い年月で根を深く張った、歩く樹の魔物。倒れかけても、最後に新しい芽を残そうとする。', combatStyle: 'HPが0になると、マンドラゴラを最大2体召喚する。' }),
-  'large-vitality': Object.freeze({ description: '森そのものが歩き出したような、巨大な世界樹。倒れても根から次の命を呼び、戦場を埋め尽くそうとする。', combatStyle: 'HPが0になると、トレントを最大2体召喚する。かなり厄介。' }),
+  'large-vitality': Object.freeze({ description: '森そのものが歩き出したような、巨大な世界樹。倒れても根から次の命を呼び、戦場を埋め尽くそうとする。', combatStyle: 'HPが0になると、トレントを最大2体召喚する。回復されるとかなり厄介。' }),
   'medium-gem': Object.freeze({ description: '全身を結晶で覆った、鈍く光るゴーレム。砕けた欠片さえ、いつの間にか宝珠へ変わっている。', combatStyle: 'ダメージを受けると、50%で宝石タグ1の宝珠を倉庫へ1個落とす。' }),
   'large-gem': Object.freeze({ description: '財宝の山を寝床にする、宝石鱗の竜。傷つくほど宝珠をばらまき、倉庫をきらびやかに散らかしていく。', combatStyle: 'ダメージを受けると、50%で宝石タグ2の宝珠を倉庫へ2個落とす。倉庫の空きに注意。' }),
 });
