@@ -303,6 +303,11 @@ function getItemSlotTagAtPoint(point, item, slotX, slotY) {
   return tagIndex >= 0 ? item.tags[tagIndex] : null;
 }
 
+function getItemSlotAtPoint(point, item, slotX, slotY) {
+  if (!item) return null;
+  return isPointInRect(point, slotX, slotY, PREPARATION_LAYOUT.equipmentSlotSize, PREPARATION_LAYOUT.equipmentSlotSize) ? item : null;
+}
+
 function drawEquipmentGrid(context, assets, hero, x, y) {
   const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
   const gap = PREPARATION_LAYOUT.equipmentGap;
@@ -338,6 +343,28 @@ function getPreparationItemTagAtPoint(point, heroes) {
       const [column, row] = positions[slot];
       const tag = getItemSlotTagAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), bounds.y + PREPARATION_LAYOUT.topPadding + row * (slotSize + gap));
       if (tag) return tag;
+    }
+  }
+  return null;
+}
+
+function getPreparationItemAtPoint(point, heroes) {
+  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
+  const gap = PREPARATION_LAYOUT.equipmentGap;
+  const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
+  for (let index = 0; index < heroes.length; index += 1) {
+    const hero = heroes[index];
+    const bounds = getPreparationSubareaBounds(index);
+    const startX = bounds.x
+      + PREPARATION_LAYOUT.topPadding
+      + PREPARATION_LAYOUT.characterAreaWidth
+      + PREPARATION_LAYOUT.areaGap
+      + PREPARATION_LAYOUT.informationAreaWidth
+      + PREPARATION_LAYOUT.areaGap;
+    for (const slot of EQUIPMENT_SLOTS) {
+      const [column, row] = positions[slot];
+      const item = getItemSlotAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), bounds.y + PREPARATION_LAYOUT.topPadding + row * (slotSize + gap));
+      if (item) return item;
     }
   }
   return null;
@@ -427,6 +454,27 @@ function getShopTagAtPoint(point, shop, bag, transaction) {
     const [column, row] = purchaseSlots[index];
     const tag = getItemSlotTagAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
     if (tag) return tag;
+  }
+  return null;
+}
+
+function getShopItemAtPoint(point, shop, bag, transaction) {
+  if (!shop) return null;
+  const layout = getShopLayout(GAME_AREAS.shop);
+  const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, purchaseX } = layout.transaction;
+  if (bag && isPointInRect(point, bagX, bagY, 48, 48)) return bag;
+  const soldItems = Array.from({ length: 3 }, (_, index) => transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null);
+  for (let index = 0; index < soldItems.length; index += 1) {
+    const item = getItemSlotAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
+    if (item) return item;
+  }
+  const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
+  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
+  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
+  for (let index = 0; index < revealedInSet && index < purchaseSlots.length; index += 1) {
+    const [column, row] = purchaseSlots[index];
+    const item = getItemSlotAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
+    if (item) return item;
   }
   return null;
 }
@@ -642,11 +690,14 @@ export function startGame({ scenario }) {
         ?? getPreparationItemTagAtPoint(point, preparationHeroes)
         ?? getShopTagAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction())
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
+      const slotItem = getPreparationItemAtPoint(point, preparationHeroes)
+        ?? getShopItemAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction());
       const entity = controller.getEntityAt(point.x, point.y);
       if (facility) informationWindows.open({ type: 'facility', data: { facility }, anchor: { x: event.clientX, y: event.clientY } });
       else if (area) informationWindows.open({ type: 'area', data: { area }, anchor: { x: event.clientX, y: event.clientY } });
       else if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
       else if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
+      else if (slotItem) informationWindows.open({ type: 'item', data: { item: slotItem }, anchor: { x: event.clientX, y: event.clientY } });
       else if (entity) informationWindows.open({
         type: entity.chip.type === 'item' ? 'item' : 'entity',
         data: entity.chip.type === 'item' ? { item: entity } : { entity },
