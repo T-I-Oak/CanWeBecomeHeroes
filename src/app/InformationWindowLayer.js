@@ -113,7 +113,10 @@ export default class InformationWindowLayer {
     compact.type = 'button';
     compact.title = entry.compact ? '通常サイズで表示する' : '50%に縮小して表示する';
     compact.setAttribute('aria-label', compact.title);
-    compact.textContent = '½';
+    compact.append(
+      createElement('span', 'InformationWindow__CompactArrow InformationWindow__CompactArrow--top', '↘'),
+      createElement('span', 'InformationWindow__CompactArrow InformationWindow__CompactArrow--bottom', '↖'),
+    );
     compact.addEventListener('pointerdown', (event) => event.stopPropagation());
     compact.addEventListener('click', (event) => {
       event.stopPropagation();

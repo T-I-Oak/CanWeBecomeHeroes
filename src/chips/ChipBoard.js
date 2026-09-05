@@ -58,6 +58,7 @@ export default class ChipBoard {
     const ratio = stepDistance && distance > stepDistance ? stepDistance / distance : 1;
     const targetX = chip.x + (target.x - chip.x) * ratio;
     const targetY = chip.y + (target.y - chip.y) * ratio;
+    if (chip.type === 'hero' && targetX !== chip.x) chip.flipped = targetX < chip.x;
     const stepCount = stepDistance ? 1 : Math.max(2, Math.ceil(distance / (chip.radius * 0.75)));
     chip.step = { startX: chip.x, startY: chip.y, targetX, targetY, elapsed: 0, stepCount };
     return true;
@@ -156,7 +157,6 @@ export default class ChipBoard {
     const steppedProgress = (Math.floor(progress * step.stepCount) + Math.min(1, (progress * step.stepCount) % 1 * 2)) / step.stepCount;
     const nextX = step.startX + (step.targetX - step.startX) * Math.min(1, steppedProgress);
     chip.vx = (nextX - chip.x) / deltaSeconds;
-    chip.flipped = chip.type === 'hero' && chip.vx < 0;
     chip.x = nextX;
     chip.y = step.startY + (step.targetY - step.startY) * Math.min(1, steppedProgress);
     chip.height = Math.max(chip.height, Math.sin(progress * Math.PI * step.stepCount) * chip.radius * 0.12);
@@ -165,7 +165,6 @@ export default class ChipBoard {
     if (progress >= 1) {
       chip.step = null;
       chip.vx = 0;
-      chip.flipped = false;
     }
   }
 
