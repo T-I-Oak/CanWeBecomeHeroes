@@ -127,8 +127,7 @@ export default class InformationWindowLayer {
     if (!title) return;
     const compact = createElement('button', `InformationWindow__Compact${entry.compact ? ' is-compact' : ''}`);
     compact.type = 'button';
-    compact.title = entry.compact ? '通常サイズで表示する' : '50%に縮小して表示する';
-    compact.setAttribute('aria-label', compact.title);
+    compact.setAttribute('aria-label', entry.compact ? '通常サイズで表示する' : '50%に縮小して表示する');
     compact.append(createCompactIcon(entry.compact));
     compact.addEventListener('pointerdown', (event) => event.stopPropagation());
     compact.addEventListener('click', (event) => {
@@ -137,8 +136,7 @@ export default class InformationWindowLayer {
     });
     const pin = createElement('button', `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`);
     pin.type = 'button';
-    pin.title = entry.pinned ? 'ピン止めを外す' : 'ピン止めする';
-    pin.setAttribute('aria-label', pin.title);
+    pin.setAttribute('aria-label', entry.pinned ? 'ピン止めを外す' : 'ピン止めする');
     pin.textContent = '📌';
     pin.addEventListener('pointerdown', (event) => event.stopPropagation());
     pin.addEventListener('click', (event) => {
