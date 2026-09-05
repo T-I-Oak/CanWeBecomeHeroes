@@ -91,7 +91,11 @@ export default class ChipRenderer {
     context.arc(0, 0, chip.radius * 0.94, 0, Math.PI * 2);
     context.clip();
     const centerImage = getCenterImagePlacement(chip.radius);
-    drawImageCover(context, this.assets.load(chip.centerPath), centerImage.x, centerImage.y, centerImage.size);
+    context.save();
+    context.translate(centerImage.x, centerImage.y);
+    if (chip.flipped) context.scale(-1, 1);
+    drawImageCover(context, this.assets.load(chip.centerPath), 0, 0, centerImage.size);
+    context.restore();
     context.restore();
 
     this.drawTags(chip);

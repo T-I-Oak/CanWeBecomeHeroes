@@ -154,12 +154,19 @@ export default class ChipBoard {
     const duration = step.stepCount * MOVE_STEP_DURATION_SECONDS;
     const progress = Math.min(1, step.elapsed / duration);
     const steppedProgress = (Math.floor(progress * step.stepCount) + Math.min(1, (progress * step.stepCount) % 1 * 2)) / step.stepCount;
-    chip.x = step.startX + (step.targetX - step.startX) * Math.min(1, steppedProgress);
+    const nextX = step.startX + (step.targetX - step.startX) * Math.min(1, steppedProgress);
+    chip.vx = (nextX - chip.x) / deltaSeconds;
+    chip.flipped = chip.type === 'hero' && chip.vx < 0;
+    chip.x = nextX;
     chip.y = step.startY + (step.targetY - step.startY) * Math.min(1, steppedProgress);
     chip.height = Math.max(chip.height, Math.sin(progress * Math.PI * step.stepCount) * chip.radius * 0.12);
     if (hasPhysicalTilt(chip)) chip.tiltVelocity += (step.targetX - step.startX) * 0.00025;
     this.pushOverlaps(chip, chip.radius * 0.22);
-    if (progress >= 1) chip.step = null;
+    if (progress >= 1) {
+      chip.step = null;
+      chip.vx = 0;
+      chip.flipped = false;
+    }
   }
 
   applyImpact(source, velocity) {

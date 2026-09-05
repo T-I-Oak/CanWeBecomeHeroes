@@ -37,6 +37,8 @@ export default class Chip {
     this.effectOffsetX = 0;
     this.effectOffsetY = 0;
     this.effectRotation = 0;
+    this.vx = 0;
+    this.flipped = false;
   }
 
   get isSettled() {
@@ -54,5 +56,7 @@ export default class Chip {
     this.tiltVelocity = 0;
     this.step = null;
     this.impact = 0;
+    this.vx = 0;
+    this.flipped = false;
   }
 }

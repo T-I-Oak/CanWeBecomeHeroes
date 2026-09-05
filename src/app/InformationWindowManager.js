@@ -27,7 +27,7 @@ export default class InformationWindowManager {
     if (parentId !== null && !this.windows.some((entry) => entry.id === parentId)) parentId = null;
     if (parentId === null) this.windows = this.windows.filter((entry) => entry.pinned);
     else this.windows = this.windows.filter((entry) => entry.pinned || !this.#isDescendantOf(entry.id, parentId));
-    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor, position: null, pinned: false });
+    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor, position: null, pinned: false, compact: false });
     this.windows.push(entry);
     this.#notify();
     return entry;
@@ -57,6 +57,16 @@ export default class InformationWindowManager {
     if (index < 0) return null;
     const entry = this.windows[index];
     const next = Object.freeze({ ...entry, pinned: !entry.pinned });
+    this.windows.splice(index, 1, next);
+    this.#notify();
+    return next;
+  }
+
+  toggleCompact(id) {
+    const index = this.windows.findIndex((entry) => entry.id === id);
+    if (index < 0) return null;
+    const entry = this.windows[index];
+    const next = Object.freeze({ ...entry, compact: !entry.compact });
     this.windows.splice(index, 1, next);
     this.#notify();
     return next;

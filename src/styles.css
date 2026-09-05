@@ -129,6 +129,11 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.InformationWindow.is-compact {
+  scale: 0.5;
+  transform-origin: top left;
+}
+
 .InformationWindow:has(.InformationWindow__EntityPanel) {
   width: min(572px, calc(100vw - 32px));
 }
@@ -145,12 +150,12 @@ body {
   border-radius: 10px 10px 0 0;
 }
 
+.InformationWindow__Compact,
 .InformationWindow__Pin {
   display: grid;
   align-self: flex-start;
   width: 32px;
   height: 32px;
-  margin-left: auto;
   color: #f7edcf;
   font-size: 17px;
   cursor: pointer;
@@ -160,6 +165,14 @@ body {
   place-items: center;
 }
 
+.InformationWindow__Compact {
+  margin-left: auto;
+  font-size: 20px;
+}
+
+.InformationWindow__Compact:hover,
+.InformationWindow__Compact:focus-visible,
+.InformationWindow__Compact.is-compact,
 .InformationWindow__Pin:hover,
 .InformationWindow__Pin:focus-visible,
 .InformationWindow__Pin.is-pinned {

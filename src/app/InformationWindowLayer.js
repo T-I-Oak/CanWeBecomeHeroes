@@ -93,7 +93,7 @@ export default class InformationWindowLayer {
   }
 
   #renderWindow(entry) {
-    const window = createElement('section', 'InformationWindow');
+    const window = createElement('section', `InformationWindow${entry.compact ? ' is-compact' : ''}`);
     window.dataset.informationWindowId = entry.id;
     if (entry.type === 'tag') window.append(this.#renderTagDetail(entry));
     if (entry.type === 'status') window.append(this.#renderStatusDetail(entry));
@@ -109,6 +109,16 @@ export default class InformationWindowLayer {
   #addWindowControls(windowElement, entry) {
     const title = windowElement.querySelector('.InformationWindow__Title');
     if (!title) return;
+    const compact = createElement('button', `InformationWindow__Compact${entry.compact ? ' is-compact' : ''}`);
+    compact.type = 'button';
+    compact.title = entry.compact ? '通常サイズで表示する' : '50%に縮小して表示する';
+    compact.setAttribute('aria-label', compact.title);
+    compact.textContent = '½';
+    compact.addEventListener('pointerdown', (event) => event.stopPropagation());
+    compact.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.manager.toggleCompact(entry.id);
+    });
     const pin = createElement('button', `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`);
     pin.type = 'button';
     pin.title = entry.pinned ? 'ピン止めを外す' : 'ピン止めする';
@@ -119,10 +129,10 @@ export default class InformationWindowLayer {
       event.stopPropagation();
       this.manager.togglePin(entry.id);
     });
-    title.append(pin);
+    title.append(compact, pin);
 
     title.addEventListener('pointerdown', (event) => {
-      if (event.button !== 0 || event.target.closest('.InformationWindow__Pin')) return;
+      if (event.button !== 0 || event.target.closest('.InformationWindow__Pin, .InformationWindow__Compact')) return;
       const bounds = windowElement.getBoundingClientRect();
       const offset = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
       const move = (moveEvent) => {
@@ -385,9 +395,9 @@ export default class InformationWindowLayer {
     }
     const { anchor } = entry;
     if (!anchor) {
-      windowElement.style.left = '50%';
-      windowElement.style.top = '50%';
-      windowElement.style.transform = 'translate(-50%, -50%)';
+      windowElement.style.left = `${(globalThis.innerWidth - bounds.width) / 2}px`;
+      windowElement.style.top = `${(globalThis.innerHeight - bounds.height) / 2}px`;
+      windowElement.style.transform = 'none';
       return;
     }
     const margin = 12;

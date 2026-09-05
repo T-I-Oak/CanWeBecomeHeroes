@@ -35,6 +35,26 @@ test('moveLastHeroTo moves only the latest hero through stepped animation', () =
   assert.ok(hero.step);
 });
 
+test('a hero chip flips only while its stepped horizontal velocity is leftward', () => {
+  const board = new ChipBoard({ width: 800, height: 600 });
+  const hero = addChip(board, 'hero', 500, 300);
+  const item = addChip(board, 'item', 400, 400);
+
+  board.moveTo(hero, 200, 300);
+  board.update(0.1);
+  assert.ok(hero.vx < 0);
+  assert.equal(hero.flipped, true);
+
+  board.moveTo(item, 100, 400);
+  board.update(0.1);
+  assert.ok(item.vx < 0);
+  assert.equal(item.flipped, false);
+
+  board.update(10);
+  assert.equal(hero.vx, 0);
+  assert.equal(hero.flipped, false);
+});
+
 test('moveLastHeroTo constrains a target to the chip radius inside the board', () => {
   const board = new ChipBoard({ width: 800, height: 600 });
   const hero = addChip(board, 'hero', 300, 300);

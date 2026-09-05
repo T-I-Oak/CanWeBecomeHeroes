@@ -118,6 +118,16 @@ test('a pinned information window retains its dragged position', () => {
   assert.deepEqual(manager.entries[0].position, { x: 120, y: 240 });
 });
 
+test('an information window retains its compact state independently of pinning', () => {
+  const manager = new InformationWindowManager();
+  const entry = manager.open({ type: 'tag', data: { tag: 'valor' } });
+  manager.toggleCompact(entry.id);
+  manager.togglePin(entry.id);
+
+  assert.equal(manager.entries[0].compact, true);
+  assert.equal(manager.entries[0].pinned, true);
+});
+
 test('dynamic entity and item entries refresh unless a window is being dragged', () => {
   let changes = 0;
   const manager = new InformationWindowManager({ onChange: () => { changes += 1; } });
