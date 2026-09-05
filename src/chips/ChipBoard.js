@@ -165,6 +165,7 @@ export default class ChipBoard {
     if (progress >= 1) {
       chip.step = null;
       chip.vx = 0;
+      if (chip.type === 'hero') chip.flipped = false;
     }
   }
 

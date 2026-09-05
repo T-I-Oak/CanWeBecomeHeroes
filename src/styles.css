@@ -170,22 +170,14 @@ body {
   position: relative;
 }
 
-.InformationWindow__CompactArrow {
-  position: absolute;
-  font-family: system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.InformationWindow__CompactArrow--top {
-  top: 4px;
-  left: 4px;
-}
-
-.InformationWindow__CompactArrow--bottom {
-  right: 4px;
-  bottom: 4px;
+.InformationWindow__CompactIcon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
 }
 
 .InformationWindow__Compact:hover,

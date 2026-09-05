@@ -29,6 +29,22 @@ function createElement(tagName, className, text = null) {
   return element;
 }
 
+function createCompactIcon(isCompact) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.classList.add('InformationWindow__CompactIcon');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  const paths = isCompact
+    ? ['M11 11 4 4M4 8V4h4', 'M13 13 20 20M20 16v4h-4']
+    : ['M4 4 11 11M7 11h4V7', 'M20 20 13 13M17 13h-4v4'];
+  paths.forEach((d) => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    svg.append(path);
+  });
+  return svg;
+}
+
 function applyTagSkillVisual(element, count, tag = null) {
   const visual = tag ? getTagBadgeVisual(tag, count) : getTagSkillVisual(count);
   element.style.setProperty('--tag-skill-fill', visual.fill);
@@ -113,10 +129,7 @@ export default class InformationWindowLayer {
     compact.type = 'button';
     compact.title = entry.compact ? '通常サイズで表示する' : '50%に縮小して表示する';
     compact.setAttribute('aria-label', compact.title);
-    compact.append(
-      createElement('span', 'InformationWindow__CompactArrow InformationWindow__CompactArrow--top', '↘'),
-      createElement('span', 'InformationWindow__CompactArrow InformationWindow__CompactArrow--bottom', '↖'),
-    );
+    compact.append(createCompactIcon(entry.compact));
     compact.addEventListener('pointerdown', (event) => event.stopPropagation());
     compact.addEventListener('click', (event) => {
       event.stopPropagation();
