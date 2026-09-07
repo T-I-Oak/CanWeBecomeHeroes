@@ -23,6 +23,7 @@ const getBattleSlotPosition = (actor) => {
   const match = /^battle-(\d+)$/.exec(actor.currentSlotId ?? '');
   return match ? Number(match[1]) : null;
 };
+const getRangeSlotSpan = (actor) => actor.definition?.size === 'large' ? 2 : 1;
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 export function getRandomModifier(random = Math.random) { return 0.8 + random() * 0.4; }
 export function getActionGaugeBaseMaximum(actor) { return 15 - actor.getStatus('speed'); }
@@ -131,8 +132,29 @@ export default class BattleSystem {
     ))[0] ?? null;
   }
   rangeTargets(actor, target, participants) {
-    const coefficients = RANGE[actor.getTagCount('area')]; const foes = participants.filter((c) => isHero(c) !== isHero(actor) && onBoard(this.board, c)).toSorted((a, b) => a.chip.x - b.chip.x); const at = foes.indexOf(target); const center = Math.floor(coefficients.length / 2);
-    return coefficients.map((coefficient, index) => ({ target: foes[at + index - center], coefficient })).filter(({ target: t }) => t);
+    const coefficients = RANGE[actor.getTagCount('area')];
+    const foes = participants.filter((candidate) => isHero(candidate) !== isHero(actor) && onBoard(this.board, candidate));
+    const lane = this.createRangeLane(actor, foes);
+    const at = lane.indexOf(target);
+    const center = Math.floor(coefficients.length / 2);
+    return coefficients.map((coefficient, index) => ({ target: lane[at + index - center], coefficient })).filter(({ target: candidate }) => candidate);
+  }
+  createRangeLane(actor, foes) {
+    const slotCount = isHero(actor) ? 6 : 4;
+    const bySlot = new Map(foes.map((foe) => [getBattleSlotPosition(foe), foe]));
+    const hasCompleteSlotPositions = foes.every((foe) => {
+      const slot = getBattleSlotPosition(foe);
+      return Number.isInteger(slot) && slot >= 1 && slot <= slotCount;
+    });
+    if (!hasCompleteSlotPositions) return foes.toSorted((left, right) => left.chip.x - right.chip.x);
+
+    const lane = [];
+    for (let slot = 1; slot <= slotCount; slot += 1) {
+      const foe = bySlot.get(slot) ?? null;
+      lane.push(foe);
+      if (foe) slot += getRangeSlotSpan(foe) - 1;
+    }
+    return lane;
   }
   isAttackMiss(actor, target) {
     const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * 0.1);

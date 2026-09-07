@@ -19,6 +19,45 @@ test('initial enemy has five tagless equipment items and its affinity as an intr
   assert.equal(enemy.chip.radius, 64);
 });
 
+test('area keeps empty enemy slots in its coefficient lane', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const factory = new EnemyFactory();
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 3, maximums: { negotiation: 7 } });
+  hero.currentArea = 'battle';
+  hero.currentSlotId = 'battle-2';
+  hero.tags.push('area', 'area', 'area', 'area');
+  const left = factory.createInitialEncounter({ slotPosition: 2 });
+  const target = factory.createInitialEncounter({ slotPosition: 4 });
+  const right = factory.createInitialEncounter({ slotPosition: 5 });
+  const outerRight = factory.createInitialEncounter({ slotPosition: 6 });
+  [hero, left, target, right, outerRight].forEach((entity) => board.addChip(entity.chip));
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  assert.deepEqual(
+    battle.rangeTargets(hero, target, [hero, left, target, right, outerRight]).map(({ target: foe, coefficient }) => [foe.slotPosition, coefficient]),
+    [[2, 0.2], [4, 0.6], [5, 0.5], [6, 0.2]],
+  );
+});
+
+test('a large enemy occupies one area lane position despite using two board slots', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const factory = new EnemyFactory();
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 3 });
+  hero.currentArea = 'battle';
+  hero.currentSlotId = 'battle-2';
+  hero.tags.push('area', 'area');
+  const boss = factory.createFromDefinition({ enemyDefinitionId: 'large-vitality', slotPosition: 3, maximumHp: 6, totalTagCount: 0 });
+  const target = factory.createInitialEncounter({ slotPosition: 5 });
+  const right = factory.createInitialEncounter({ slotPosition: 6 });
+  [hero, boss, target, right].forEach((entity) => board.addChip(entity.chip));
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  assert.deepEqual(
+    battle.rangeTargets(hero, target, [hero, boss, target, right]).map(({ target: foe, coefficient }) => [foe.slotPosition, coefficient]),
+    [[3, 0.4], [5, 0.5], [6, 0.4]],
+  );
+});
+
 test('small arcane enemy resolves to the ghost catalog entry', () => {
   const enemy = new EnemyFactory().create({ size: 'small', tagAffinity: 'arcane', slotPosition: 4, maximumHp: 2, contributionPoints: 2, totalTagCount: 0 });
 
