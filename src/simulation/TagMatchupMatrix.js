@@ -68,9 +68,42 @@ export function analyzeTagMatchups({ tags = TAG_ORDER, ticks = 1000, trials = 10
     };
   }));
   return Object.freeze({
-    conditions: Object.freeze({ tags: selectedTags, tagCount: 3, ticks, trials, seed, maximums: DEFAULT_MAXIMUMS }),
+    conditions: Object.freeze({ tags: selectedTags, tagCount: 3, ticks, trials, seed, maximums: DEFAULT_MAXIMUMS, warehouseItems: 'none' }),
     matchups: Object.freeze(matchups),
   });
+}
+
+// 各タグをHero側・Enemy側の両方から見る。1行は 15対戦相手 × 2陣営 × trials 件。
+export function summarizeTagOutcomes(analysis) {
+  const { tags, trials } = analysis.conditions;
+  return tags.map((tag) => {
+    const asHero = analysis.matchups.filter((matchup) => matchup.heroTag === tag);
+    const asEnemy = analysis.matchups.filter((matchup) => matchup.enemyTag === tag);
+    const wins = asHero.reduce((total, matchup) => total + matchup.heroWins, 0)
+      + asEnemy.reduce((total, matchup) => total + matchup.enemyWins, 0);
+    const losses = asHero.reduce((total, matchup) => total + matchup.enemyWins, 0)
+      + asEnemy.reduce((total, matchup) => total + matchup.heroWins, 0);
+    const draws = asHero.reduce((total, matchup) => total + matchup.draws, 0)
+      + asEnemy.reduce((total, matchup) => total + matchup.draws, 0);
+    return Object.freeze({ tag, wins, losses, draws, total: tags.length * trials * 2 });
+  });
+}
+
+export function toTagOutcomeSummaryCsv(analysis) {
+  return [
+    'tag,wins,losses,draws,total',
+    ...summarizeTagOutcomes(analysis).map(({ tag, wins, losses, draws, total }) => [tag, wins, losses, draws, total].join(',')),
+  ].join('\n');
+}
+
+export function toTagOutcomeSummaryMarkdown(analysis) {
+  return [
+    `タグ別勝敗合計（Hero側・Enemy側を合算、各${analysis.conditions.trials.toLocaleString()}試行）`,
+    '',
+    '| タグ | 勝 | 負 | 引分 | 合計 |',
+    '| --- | ---: | ---: | ---: | ---: |',
+    ...summarizeTagOutcomes(analysis).map(({ tag, wins, losses, draws, total }) => `| ${getTagDetail(tag).name} | ${wins.toLocaleString()} | ${losses.toLocaleString()} | ${draws.toLocaleString()} | ${total.toLocaleString()} |`),
+  ].join('\n');
 }
 
 export function toMatchupMatrixCsv(analysis) {
