@@ -1,5 +1,7 @@
 import { TAG_ORDER } from '../game/TagCatalog.js';
 import { getTagDetail } from '../game/TagDetailCatalog.js';
+import { COMBINATION_PATTERNS } from '../game/EncounterDefinitions.js';
+import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
 import { runBattleSimulation } from './BattleSimulationRunner.js';
 
 export const TAG_WEAPON_LOADOUTS = Object.freeze({
@@ -22,9 +24,14 @@ export const TAG_WEAPON_LOADOUTS = Object.freeze({
 
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 3, magic: 3, speed: 3, negotiation: 3, luck: 3, stamina: 3 });
 
-function createHero(tag) {
+export const TAG_TEAM_COMPOSITIONS = Object.freeze(Object.fromEntries(COMBINATION_PATTERNS.regular.map((pattern) => {
+  const tags = [pattern.main, pattern.support1, pattern.support2].map((enemyDefinitionId) => getEnemyDefinitionById(enemyDefinitionId).tagAffinity);
+  return [tags[0], Object.freeze(tags)];
+})));
+
+function createCombatant(tag, role) {
   return {
-    label: `${tag} x3`,
+    label: `${role}:${tag} x3`,
     tags: [tag, tag, tag],
     weapons: TAG_WEAPON_LOADOUTS[tag],
     maximums: DEFAULT_MAXIMUMS,
@@ -32,20 +39,22 @@ function createHero(tag) {
   };
 }
 
-function createEnemy(tag) {
-  return {
-    label: `${tag} x3`,
-    tags: [tag, tag, tag],
-    weapons: TAG_WEAPON_LOADOUTS[tag],
-    maximums: DEFAULT_MAXIMUMS,
-    maximumHp: DEFAULT_MAXIMUMS.stamina,
-  };
+function createHeroTeam(mainTag) {
+  return TAG_TEAM_COMPOSITIONS[mainTag].map((tag, index) => createCombatant(tag, ['main', 'support1', 'support2'][index]));
 }
 
-export function analyzeTagMatchups({ tags = TAG_ORDER, ticks = 1000, trials = 1000, seed = 1 } = {}) {
+function createEnemyTeam(mainTag) {
+  return TAG_TEAM_COMPOSITIONS[mainTag].map((tag, index) => ({
+    ...createCombatant(tag, ['main', 'support1', 'support2'][index]),
+    maximumHp: DEFAULT_MAXIMUMS.stamina,
+  }));
+}
+
+export function analyzeTagMatchups({ tags = TAG_ORDER, ticks = 6000, trials = 1000, seed = 1 } = {}) {
   const selectedTags = [...tags];
   selectedTags.forEach((tag) => {
     if (!TAG_WEAPON_LOADOUTS[tag]) throw new Error(`Tag '${tag}' does not have a matchup weapon loadout.`);
+    if (!TAG_TEAM_COMPOSITIONS[tag]) throw new Error(`Tag '${tag}' does not have a main/support team composition.`);
   });
   let sequence = 0;
   const matchups = selectedTags.flatMap((heroTag) => selectedTags.map((enemyTag) => {
@@ -53,8 +62,8 @@ export function analyzeTagMatchups({ tags = TAG_ORDER, ticks = 1000, trials = 10
       ticks,
       trials,
       seed: seed + sequence++,
-      left: [createHero(heroTag)],
-      right: [createEnemy(enemyTag)],
+      left: createHeroTeam(heroTag),
+      right: createEnemyTeam(enemyTag),
     });
     return {
       heroTag,
@@ -68,7 +77,7 @@ export function analyzeTagMatchups({ tags = TAG_ORDER, ticks = 1000, trials = 10
     };
   }));
   return Object.freeze({
-    conditions: Object.freeze({ tags: selectedTags, tagCount: 3, ticks, trials, seed, maximums: DEFAULT_MAXIMUMS, warehouseItems: 'none' }),
+    conditions: Object.freeze({ tags: selectedTags, tagCount: 3, teamRoles: Object.freeze(['main', 'support1', 'support2']), ticks, trials, seed, maximums: DEFAULT_MAXIMUMS, warehouseItems: 'none' }),
     matchups: Object.freeze(matchups),
   });
 }
@@ -119,7 +128,7 @@ export function toMatchupMatrixMarkdown(analysis) {
   const { tags } = analysis.conditions;
   const rows = new Map(analysis.matchups.map((matchup) => [`${matchup.heroTag}:${matchup.enemyTag}`, matchup]));
   return [
-    `勝率（行: Hero / 列: Enemy、各${analysis.conditions.trials.toLocaleString()}試行）`,
+    `勝率（行: Hero主タグの3人編成 / 列: Enemy主タグの3人編成、各${analysis.conditions.trials.toLocaleString()}試行）`,
     '',
     `| Hero \\ Enemy | ${tags.map((tag) => getTagDetail(tag).name).join(' | ')} |`,
     `| --- | ${tags.map(() => '---:').join(' | ')} |`,
