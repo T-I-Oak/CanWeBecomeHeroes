@@ -40,6 +40,8 @@ import StageSelectionModal from './StageSelectionModal.js';
 import InformationWindowManager from './InformationWindowManager.js';
 import InformationWindowLayer from './InformationWindowLayer.js';
 import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
+import { APP_COPYRIGHT } from '../game/AppMetadata.js';
+import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -664,7 +666,10 @@ export function startGame({ scenario }) {
   canvas.addEventListener('pointermove', (event) => {
     const bounds = canvas.getBoundingClientRect();
     const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (!drag || drag.pointerId !== event.pointerId) {
+      canvas.style.cursor = isWarehousePortalAtPoint(context, point) ? 'pointer' : '';
+      return;
+    }
     const totalDistance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
     if (totalDistance > 6 && !drag.moved) {
       drag.moved = true;
@@ -684,6 +689,11 @@ export function startGame({ scenario }) {
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
     }
     if (!drag.moved) {
+      if (isWarehousePortalAtPoint(context, point)) {
+        window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer');
+        drag = null;
+        return;
+      }
       const facility = getFacilityNameplateAtPoint(point);
       const area = getAreaNameplateAtPoint(point);
       const status = getPreparationStatusAtPoint(point, preparationHeroes)
@@ -749,6 +759,7 @@ export function startGame({ scenario }) {
     drawBattleSlotGround(context, assets);
     drawFacilityNameplates(context, assets);
     drawAreaNameplates(context, assets);
+    drawWarehouseMetadata(context);
     drawFacilitySlots(context);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction());
     guildTimelineHours = drawGuildPanel(context, {
