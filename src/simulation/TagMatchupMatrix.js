@@ -50,7 +50,7 @@ function createEnemyTeam(mainTag) {
   }));
 }
 
-export function analyzeTagMatchups({ tags = TAG_ORDER, heroTags = tags, enemyTags = tags, ticks = 6000, trials = 1000, seed = 1 } = {}) {
+export function analyzeTagMatchups({ tags = TAG_ORDER, heroTags = tags, enemyTags = tags, ticks = 6000, trials = 200, seed = 1 } = {}) {
   const selectedTags = [...tags];
   const selectedHeroTags = [...heroTags];
   const selectedEnemyTags = [...enemyTags];

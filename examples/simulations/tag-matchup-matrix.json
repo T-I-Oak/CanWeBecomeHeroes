@@ -1,6 +1,6 @@
 {
   "ticks": 6000,
-  "trials": 1000,
+  "trials": 200,
   "seed": 1,
   "parallelism": 8,
   "outputDirectory": "tmp_tag-matchup-matrix"
