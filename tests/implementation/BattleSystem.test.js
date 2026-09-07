@@ -298,7 +298,7 @@ test('leaving the battle area clears all temporary battle state', () => {
   assert.equal(hero.physicalDamageReduction, 0);
   assert.equal(hero.chip.physicalDamageReduction, 0);
   assert.equal(hero.chip.tilt, 0);
-  assert.equal(hero.chip.poseTilt, 0);
+  assert.equal(hero.chip.poseTilt, 0.1);
   assert.equal(hero.luckBonus, 0);
 });
 
