@@ -183,7 +183,7 @@ export default class InformationWindowLayer {
       const status = createElement('p', 'InformationWindow__Effect');
       const statusIcon = createElement('span', 'InformationWindow__InlineIcon');
       const image = document.createElement('img');
-      image.src = STATUS_VISUALS[detail.status].iconPath;
+      image.src = resolvePublicAssetPath(STATUS_VISUALS[detail.status].iconPath);
       image.alt = '';
       statusIcon.append(image);
       statusIcon.tabIndex = 0;
