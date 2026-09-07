@@ -13,6 +13,11 @@ test('regular encounter definitions provide complete concrete patterns for the a
   });
 });
 
+test('elite and boss patterns include vitality and gem main enemies', () => {
+  assert.deepEqual(COMBINATION_PATTERNS.elite.map(({ main }) => main), ['medium-vitality', 'medium-gem']);
+  assert.deepEqual(COMBINATION_PATTERNS.boss.map(({ main }) => main), ['large-vitality', 'large-gem']);
+});
+
 test('regular difficulty derives enemy count and each enemy tag budget from its level', () => {
   const first = DIFFICULTIES.regular(1);
   const later = DIFFICULTIES.regular(99);

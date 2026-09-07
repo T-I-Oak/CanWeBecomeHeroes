@@ -19,8 +19,14 @@ export const COMBINATION_PATTERNS = Object.freeze({
     Object.freeze({ main: 'small-vitality', support1: 'small-iron', support2: 'small-fortune' }),
     Object.freeze({ main: 'small-area', support1: 'small-vitality', support2: 'small-lightning' }),
   ]),
-  elite: Object.freeze([Object.freeze({ main: 'medium-vitality', support1: 'small-iron', support2: 'small-fortune' })]),
-  boss: Object.freeze([Object.freeze({ main: 'large-vitality', support1: 'small-iron', support2: 'small-fortune' })]),
+  elite: Object.freeze([
+    Object.freeze({ main: 'medium-vitality', support1: 'small-iron', support2: 'small-fortune' }),
+    Object.freeze({ main: 'medium-gem', support1: 'small-blessing', support2: 'small-reputation' }),
+  ]),
+  boss: Object.freeze([
+    Object.freeze({ main: 'large-vitality', support1: 'small-iron', support2: 'small-fortune' }),
+    Object.freeze({ main: 'large-gem', support1: 'small-blessing', support2: 'small-reputation' }),
+  ]),
 });
 
 const CENTER_OUT_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
