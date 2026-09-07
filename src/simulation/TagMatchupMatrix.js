@@ -50,14 +50,16 @@ function createEnemyTeam(mainTag) {
   }));
 }
 
-export function analyzeTagMatchups({ tags = TAG_ORDER, ticks = 6000, trials = 1000, seed = 1 } = {}) {
+export function analyzeTagMatchups({ tags = TAG_ORDER, heroTags = tags, enemyTags = tags, ticks = 6000, trials = 1000, seed = 1 } = {}) {
   const selectedTags = [...tags];
-  selectedTags.forEach((tag) => {
+  const selectedHeroTags = [...heroTags];
+  const selectedEnemyTags = [...enemyTags];
+  [...selectedHeroTags, ...selectedEnemyTags].forEach((tag) => {
     if (!TAG_WEAPON_LOADOUTS[tag]) throw new Error(`Tag '${tag}' does not have a matchup weapon loadout.`);
     if (!TAG_TEAM_COMPOSITIONS[tag]) throw new Error(`Tag '${tag}' does not have a main/support team composition.`);
   });
   let sequence = 0;
-  const matchups = selectedTags.flatMap((heroTag) => selectedTags.map((enemyTag) => {
+  const matchups = selectedHeroTags.flatMap((heroTag) => selectedEnemyTags.map((enemyTag) => {
     const result = runBattleSimulation({
       ticks,
       trials,
@@ -77,7 +79,7 @@ export function analyzeTagMatchups({ tags = TAG_ORDER, ticks = 6000, trials = 10
     };
   }));
   return Object.freeze({
-    conditions: Object.freeze({ tags: selectedTags, tagCount: 3, teamRoles: Object.freeze(['main', 'support1', 'support2']), ticks, trials, seed, maximums: DEFAULT_MAXIMUMS, warehouseItems: 'none' }),
+    conditions: Object.freeze({ tags: selectedTags, heroTags: selectedHeroTags, enemyTags: selectedEnemyTags, tagCount: 3, teamRoles: Object.freeze(['main', 'support1', 'support2']), ticks, trials, seed, maximums: DEFAULT_MAXIMUMS, warehouseItems: 'none' }),
     matchups: Object.freeze(matchups),
   });
 }
