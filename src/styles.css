@@ -30,69 +30,77 @@ body {
 }
 
 .AppShell {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  position: relative;
   width: 100vw;
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
 }
 
-.Toolbar {
+.HudPanel {
+  position: fixed;
+  z-index: 20;
+  top: 16px;
+  left: 16px;
+  width: min(296px, calc(100vw - 32px));
+  padding: 8px 10px 10px;
+  border: 2px solid #bc8d3c;
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg, rgba(47, 73, 51, 0.98), rgba(20, 38, 29, 0.98)),
+    #1d3527;
+  box-shadow: 0 4px 0 #6f481d, 0 10px 22px rgba(15, 23, 18, 0.35);
+}
+
+.HudPanel__Logo {
+  display: block;
+  width: min(252px, 100%);
+  height: auto;
+  margin: 0 auto 6px;
+}
+
+.HudPanel__Controls {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #ffffff;
-  border-bottom: 1px solid #d5dce8;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
 }
 
-.ControlLabel,
-.GuideText {
-  font-size: 14px;
-}
-
-.ChipTypeSelect,
-.AddButton,
-.ControlButton,
-.GameSpeedSelect {
-  min-height: 36px;
-  padding: 6px 10px;
-  border: 1px solid #aeb9ca;
+.HudPanel__PauseButton,
+.HudPanel__SpeedSelect {
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 1px solid #d3ad62;
   border-radius: 6px;
-  background: #ffffff;
-  color: inherit;
-}
-
-.AddButton {
-  background: #2d6ac5;
-  border-color: #2d6ac5;
-  color: #ffffff;
+  background: #f6e6be;
+  color: #2d301f;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.ControlButton,
-.GameSpeedSelect {
-  background: #ffffff;
-  cursor: pointer;
-}
-
-.ControlLabel {
+.HudPanel__ControlLabel {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
+  color: #fff4d5;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.GameSpeedSelect {
-  min-height: 30px;
-  padding: 3px 6px;
+.HudPanel__SpeedSelect {
+  min-height: 26px;
+  padding: 2px 5px;
 }
 
-.GuideText {
-  margin: 0 0 0 auto;
+.HudPanel__DetailPause input {
+  accent-color: #d5ad55;
 }
 
 .ChipCanvas {
+  display: block;
   width: 100%;
   height: 100%;
   touch-action: none;
@@ -867,13 +875,15 @@ body {
 }
 
 @media (max-width: 640px) {
-  .Toolbar {
-    flex-wrap: wrap;
+  .HudPanel {
+    top: 8px;
+    left: 8px;
+    width: min(266px, calc(100vw - 16px));
+    padding: 6px 8px 8px;
   }
 
-  .GuideText {
-    width: 100%;
-    margin-left: 0;
+  .HudPanel__Logo {
+    width: min(220px, 100%);
   }
 
   .StageSelection {

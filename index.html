@@ -7,22 +7,24 @@
   </head>
   <body>
     <main class="AppShell">
-      <header class="Toolbar">
-        <button class="ControlButton" id="pause-game" type="button">一時停止</button>
-        <label class="ControlLabel" for="game-speed">速度
-          <select class="GameSpeedSelect" id="game-speed">
+      <canvas class="ChipCanvas" id="chip-canvas" aria-label="Can We Become Heroes? ゲーム画面"></canvas>
+      <aside class="HudPanel" aria-label="ゲーム操作">
+        <img class="HudPanel__Logo" src="/assets/logo.png" alt="Can We Become Heroes?" />
+        <div class="HudPanel__Controls">
+          <button class="HudPanel__PauseButton" id="pause-game" type="button">一時停止</button>
+          <label class="HudPanel__ControlLabel" for="game-speed">速度
+            <select class="HudPanel__SpeedSelect" id="game-speed">
             <option value="1">x1</option>
             <option value="2">x2</option>
             <option value="4">x4</option>
           </select>
-        </label>
-        <label class="ControlLabel" for="pause-on-information">
-          <input id="pause-on-information" type="checkbox" checked />
-          詳細時に停止
-        </label>
-        <p class="GuideText">Heroを選択してから倉庫のitemを選択すると、Heroがitemへ移動します。</p>
-      </header>
-      <canvas class="ChipCanvas" id="chip-canvas" aria-label="Can We Become Heroes? ゲーム画面"></canvas>
+          </label>
+          <label class="HudPanel__ControlLabel HudPanel__DetailPause" for="pause-on-information">
+            <input id="pause-on-information" type="checkbox" checked />
+            詳細時に停止
+          </label>
+        </div>
+      </aside>
       <aside class="FlowLog" id="flow-log" aria-label="ゲームログ"></aside>
       <aside class="StageSelection" id="stage-selection" aria-label="進路選択" hidden></aside>
       <aside class="InformationWindowLayer" id="information-windows" aria-label="情報ウィンドウ"></aside>
