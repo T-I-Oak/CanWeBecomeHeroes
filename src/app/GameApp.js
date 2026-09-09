@@ -615,8 +615,9 @@ export function startGame({ scenario }) {
 
   function updateTimeStatus() {
     const autoPaused = clock.pauseReasons.has('stamina-full') || clock.pauseReasons.has('information-window');
-    const status = clock.paused ? '停止中' : autoPaused ? '自動停止' : isAccelerated ? '加速中' : '進行中';
-    const state = clock.paused ? 'state-paused' : autoPaused ? 'state-auto-paused' : isAccelerated ? 'state-accelerated' : 'state-running';
+    const settingsPaused = clock.pauseReasons.has('time-settings');
+    const status = clock.paused || settingsPaused ? '停止中' : autoPaused ? '自動停止' : isAccelerated ? '加速中' : '進行中';
+    const state = clock.paused || settingsPaused ? 'state-paused' : autoPaused ? 'state-auto-paused' : isAccelerated ? 'state-accelerated' : 'state-running';
     timeStatus.textContent = status;
     timeStatus.className = `HudPanel__Status ${state}`;
     pauseButton.textContent = clock.paused ? '▶ 再開' : '⏸ 一時停止';
@@ -651,6 +652,9 @@ export function startGame({ scenario }) {
     const isOpen = timeSettings.hidden;
     timeSettings.hidden = !isOpen;
     timeSettingsToggle.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) clock.pause('time-settings');
+    else clock.resume('time-settings');
+    updateTimeStatus();
   });
   speedSlider.addEventListener('input', (event) => {
     speedLog = writeSpeedLog(event.currentTarget.value);
@@ -752,9 +756,11 @@ export function startGame({ scenario }) {
   }, { passive: false });
   canvas.addEventListener('pointerup', (event) => {
     if (!drag || drag.pointerId !== event.pointerId) return;
-    releaseStaminaPause();
     const bounds = canvas.getBoundingClientRect();
     const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
+    const selectionTarget = drag.startedSelection ? controller.getEntityAt(point.x, point.y) : null;
+    const selectionAction = selectionTarget ? controller.getSelectionAction(drag.entity, selectionTarget) : null;
+    if (selectionAction?.kind !== 'store') releaseStaminaPause();
     if (drag.startedSelection) {
       controller.updateSelectionHover(point.x, point.y);
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
