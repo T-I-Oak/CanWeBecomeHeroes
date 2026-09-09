@@ -11,19 +11,25 @@
       <aside class="HudPanel" aria-label="ゲーム操作">
         <img class="HudPanel__Logo" src="/assets/logo.png" alt="Can We Become Heroes?" />
         <div class="HudPanel__Controls">
-          <button class="HudPanel__PauseButton" id="pause-game" type="button">一時停止</button>
-          <label class="HudPanel__ControlLabel" for="game-speed">速度
-            <select class="HudPanel__SpeedSelect" id="game-speed">
-            <option value="1">x1</option>
-            <option value="2">x2</option>
-            <option value="4">x4</option>
-          </select>
-          </label>
-          <label class="HudPanel__ControlLabel HudPanel__DetailPause" for="pause-on-information">
-            <input id="pause-on-information" type="checkbox" checked />
-            詳細時に停止
-          </label>
+          <span class="HudPanel__Status state-running" id="time-status" aria-live="polite">進行中</span>
+          <button class="HudPanel__PauseButton" id="pause-game" type="button">⏸ 一時停止</button>
+          <button class="HudPanel__SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings">時間設定</button>
         </div>
+        <section class="HudPanel__Settings" id="time-settings" hidden aria-label="時間設定">
+          <label class="HudPanel__SpeedLabel" for="game-speed">通常速度
+            <input class="HudPanel__SpeedSlider" id="game-speed" type="range" min="-1" max="2" step="0.1" value="0" />
+            <span class="HudPanel__SpeedScale" aria-hidden="true"><span>遅い</span><span>標準</span><span>速い</span></span>
+          </label>
+          <div class="HudPanel__AutomationGroup">
+            <span class="HudPanel__AutomationTitle">自動停止</span>
+            <label class="HudPanel__AutomationOption" for="pause-on-information"><input id="pause-on-information" type="checkbox" checked /> 詳細表示時</label>
+            <label class="HudPanel__AutomationOption" for="pause-on-stamina-full"><input id="pause-on-stamina-full" type="checkbox" /> 仲間のスタミナ満タン時</label>
+          </div>
+          <div class="HudPanel__AutomationGroup">
+            <span class="HudPanel__AutomationTitle">自動加速</span>
+            <label class="HudPanel__AutomationOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> 待機エリアに仲間がいない時</label>
+          </div>
+        </section>
       </aside>
       <aside class="FlowLog" id="flow-log" aria-label="ゲームログ"></aside>
       <aside class="StageSelection" id="stage-selection" aria-label="進路選択" hidden></aside>

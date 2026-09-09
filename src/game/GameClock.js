@@ -1,7 +1,5 @@
 const MAX_WALL_DELTA_SECONDS = 0.05;
 const MAX_SIMULATION_STEP_SECONDS = 1 / 60;
-const SPEEDS = Object.freeze([1, 2, 4]);
-
 export default class GameClock {
   constructor({ speed = 1, paused = false } = {}) {
     this.speed = speed;
@@ -15,7 +13,7 @@ export default class GameClock {
   }
 
   setSpeed(speed) {
-    if (!SPEEDS.includes(speed)) throw new RangeError(`Unsupported game speed: ${speed}`);
+    if (!Number.isFinite(speed) || speed <= 0) throw new RangeError(`Game speed must be a positive finite number: ${speed}`);
     this.speed = speed;
   }
 
@@ -48,5 +46,3 @@ export default class GameClock {
     return steps;
   }
 }
-
-export { SPEEDS };

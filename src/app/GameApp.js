@@ -42,6 +42,7 @@ import InformationWindowLayer from './InformationWindowLayer.js';
 import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
 import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
+import { getSpeedFromLog, readSpeedLog, writeSpeedLog } from '../game/GameSpeedSettings.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -594,15 +595,84 @@ export function startGame({ scenario }) {
   }
 
   const pauseButton = document.querySelector('#pause-game');
-  pauseButton.addEventListener('click', () => {
-    pauseButton.textContent = clock.togglePaused() ? '再開' : '一時停止';
-  });
-  document.querySelector('#game-speed').addEventListener('change', (event) => {
-    clock.setSpeed(Number(event.currentTarget.value));
-  });
+  const timeStatus = document.querySelector('#time-status');
+  const timeSettings = document.querySelector('#time-settings');
+  const timeSettingsToggle = document.querySelector('#time-settings-toggle');
+  const speedSlider = document.querySelector('#game-speed');
   const pauseOnInformation = document.querySelector('#pause-on-information');
+  const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
+  const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
+  let speedLog = readSpeedLog();
+  let staminaPauseArmed = true;
+  let isAccelerated = false;
+
+  speedSlider.value = String(speedLog);
+  function updateClockSpeed() {
+    const hasPreparationCompanion = controller.getHeroes().some((hero) => hero.currentArea === 'preparation');
+    isAccelerated = accelerateWithoutPreparation.checked && !hasPreparationCompanion;
+    clock.setSpeed(getSpeedFromLog(speedLog) * (isAccelerated ? 2 : 1));
+  }
+
+  function updateTimeStatus() {
+    const autoPaused = clock.pauseReasons.has('stamina-full') || clock.pauseReasons.has('information-window');
+    const status = clock.paused ? '停止中' : autoPaused ? '自動停止' : isAccelerated ? '加速中' : '進行中';
+    const state = clock.paused ? 'state-paused' : autoPaused ? 'state-auto-paused' : isAccelerated ? 'state-accelerated' : 'state-running';
+    timeStatus.textContent = status;
+    timeStatus.className = `HudPanel__Status ${state}`;
+    pauseButton.textContent = clock.paused ? '▶ 再開' : '⏸ 一時停止';
+  }
+
+  function updateStaminaPause() {
+    if (!pauseOnStaminaFull.checked) {
+      staminaPauseArmed = true;
+      clock.resume('stamina-full');
+      return;
+    }
+    const hasFullPreparationCompanion = controller.getHeroes().some((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina);
+    if (!hasFullPreparationCompanion) {
+      staminaPauseArmed = true;
+      clock.resume('stamina-full');
+    } else if (staminaPauseArmed) {
+      clock.pause('stamina-full');
+    }
+  }
+
+  function releaseStaminaPause() {
+    staminaPauseArmed = false;
+    clock.resume('stamina-full');
+    updateTimeStatus();
+  }
+
+  pauseButton.addEventListener('click', () => {
+    clock.togglePaused();
+    updateTimeStatus();
+  });
+  timeSettingsToggle.addEventListener('click', () => {
+    const isOpen = timeSettings.hidden;
+    timeSettings.hidden = !isOpen;
+    timeSettingsToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  speedSlider.addEventListener('input', (event) => {
+    speedLog = writeSpeedLog(event.currentTarget.value);
+    speedSlider.value = String(speedLog);
+    updateClockSpeed();
+    updateTimeStatus();
+  });
   informationWindows.setPauseOnOpen(pauseOnInformation.checked);
-  pauseOnInformation.addEventListener('change', (event) => informationWindows.setPauseOnOpen(event.currentTarget.checked));
+  pauseOnInformation.addEventListener('change', (event) => {
+    informationWindows.setPauseOnOpen(event.currentTarget.checked);
+    updateTimeStatus();
+  });
+  pauseOnStaminaFull.addEventListener('change', () => {
+    updateStaminaPause();
+    updateTimeStatus();
+  });
+  accelerateWithoutPreparation.addEventListener('change', () => {
+    updateClockSpeed();
+    updateTimeStatus();
+  });
+  updateClockSpeed();
+  updateTimeStatus();
   document.addEventListener('pointerdown', (event) => {
     const windowElement = event.target.closest?.('.InformationWindow');
     informationWindows.focus(windowElement?.dataset.informationWindowId ?? null);
@@ -682,6 +752,7 @@ export function startGame({ scenario }) {
   }, { passive: false });
   canvas.addEventListener('pointerup', (event) => {
     if (!drag || drag.pointerId !== event.pointerId) return;
+    releaseStaminaPause();
     const bounds = canvas.getBoundingClientRect();
     const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
     if (drag.startedSelection) {
@@ -739,6 +810,8 @@ export function startGame({ scenario }) {
       combatEffects.update(simulationDeltaSeconds);
       controller.update(simulationDeltaSeconds);
       staminaRecovery.update(controller.getHeroes(), simulationDeltaSeconds);
+      updateStaminaPause();
+      updateClockSpeed();
       training.update(controller.getHeroes(), simulationDeltaSeconds);
       guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
@@ -750,6 +823,9 @@ export function startGame({ scenario }) {
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
     });
     controller.updateVisuals();
+    updateStaminaPause();
+    updateClockSpeed();
+    updateTimeStatus();
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     context.save();
     context.scale(camera.zoom, camera.zoom);
