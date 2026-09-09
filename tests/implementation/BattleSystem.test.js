@@ -163,8 +163,7 @@ test('a full action gauge resolves basic damage, awards contribution, drops an i
     remove: (entity) => removed.push(entity),
     addToWarehouse: (item) => dropped.push(item),
   };
-  const records = [];
-  const battle = new BattleSystem(board, { controller, itemFactory, random: () => 0, logger: { info: (message) => records.push(message) } });
+  const battle = new BattleSystem(board, { controller, itemFactory, random: () => 0 });
 
   battle.update({ heroes: [hero], enemies: [enemy], tick: 0, tickDelta: 1000 });
   battle.update({ heroes: [hero], enemies: [enemy], tick: 1, tickDelta: 1000 });
@@ -175,8 +174,6 @@ test('a full action gauge resolves basic damage, awards contribution, drops an i
   assert.equal(dropped.length, 5);
   assert.equal(dropped.reduce((total, item) => total + item.tags.length, 0), 5);
   assert.equal(battle.getElapsedTicks(1), 1);
-  assert.match(records[0], /【剣士・アヴェリー】 -> 【ゴブリン】/);
-  assert.match(records[0], /damage/);
 });
 
 test('enemy wipe locks the stage victory before completing it after the victory delay', () => {

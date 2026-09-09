@@ -40,8 +40,8 @@ export function hasBow(actor) {
 }
 
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, returnSystem, effects = null, gameLog = null, random = Math.random, logger = console, onDamage = null } = {}) {
-    Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, random, logger, onDamage });
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, returnSystem, effects = null, gameLog = null, random = Math.random, onDamage = null } = {}) {
+    Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.attributeTicks = 0;
   }
@@ -362,12 +362,12 @@ export default class BattleSystem {
     if (isHero(target)) {
       target.stamina = Math.max(0, target.stamina - damage);
       this.onDamage?.({ actor, target, type, damage, critical });
-      if (actor) this.logDamage(actor, target, type, damage, `スタミナ ${target.stamina.toFixed(2)}`); if (target.stamina === 0) this.returnSystem?.begin(target); return damage;
+      if (target.stamina === 0) this.returnSystem?.begin(target); return damage;
     }
     target.hp = Math.max(0, target.hp - damage);
     this.resolveDamageUniqueSkill(target);
     this.onDamage?.({ actor, target, type, damage, critical });
-    if (actor) this.logDamage(actor, target, type, damage, `HP ${target.hp.toFixed(2)}/${target.maximumHp}`); if (target.hp === 0) { if (actor) this.recordDefeat(actor, target); this.defeatEnemy(target); } return damage;
+    if (target.hp === 0) { if (actor) this.recordDefeat(actor, target); this.defeatEnemy(target); } return damage;
   }
   resolveDamageUniqueSkill(enemy) {
     const { skill, drops } = this.uniqueSkillSystem.resolveOnDamaged?.(enemy) ?? { skill: null, drops: [] };
@@ -414,7 +414,6 @@ export default class BattleSystem {
     this.actionLogResults = null;
   }
   getEntityLabel(entity) { return isHero(entity) ? `【${entity.profession}・${entity.name.ja}】` : `【${entity.definition.nameJa}】`; }
-  logDamage(actor, target, type, damage, remaining) { this.logger?.info?.(`[Battle] ${this.getEntityLabel(actor)} -> ${this.getEntityLabel(target)} | ${type} | ${damage.toFixed(3)} damage | ${remaining}`); }
   getWarehouseDropPosition() {
     const area = GAME_AREAS.warehouse;
     const margin = 64;
