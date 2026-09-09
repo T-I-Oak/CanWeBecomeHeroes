@@ -82,7 +82,6 @@ export default class ShopSystem {
     }
     this.shopState.advance(this.random);
     this.gameLog?.log(`${hero.profession}・${hero.name.ja}はショップで買い物をした。`, { subject: 'hero', level: 'info', channel: 'shop' });
-    hero.stamina = 0;
     state.returning = true;
     this.returnSystem.begin(hero);
   }

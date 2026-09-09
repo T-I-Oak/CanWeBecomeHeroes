@@ -4,8 +4,8 @@ import HeroFactory from '../../src/game/HeroFactory.js';
 import GuildSystem, { GUILD_APPLICATION_TICKS } from '../../src/game/GuildSystem.js';
 import { calculateGuildExtension } from '../../src/game/GuildTime.js';
 
-function guildHero(profession = 'mage') {
-  const hero = new HeroFactory().create({ profession, x: 300, y: 300, stamina: 3, bounds: { x: 0, y: 0, width: 600, height: 400 } });
+function guildHero(profession = 'mage', stamina = 3) {
+  const hero = new HeroFactory().create({ profession, x: 300, y: 300, stamina, bounds: { x: 0, y: 0, width: 600, height: 400 } });
   hero.currentArea = 'guild';
   return hero;
 }
@@ -22,7 +22,7 @@ test('guild completes after six hundred ticks using completion-time points and r
   const returned = [];
   const logs = [];
   const returnSystem = { begin: (hero) => returned.push(hero), update: () => false };
-  const hero = guildHero();
+  const hero = guildHero('mage', 5);
   hero.tags = ['reputation', 'reputation'];
   const guild = new GuildSystem(returnSystem, {
     getContributionPoints: () => points,
@@ -35,7 +35,7 @@ test('guild completes after six hundred ticks using completion-time points and r
 
   assert.equal(points, 0);
   assert.ok(Math.abs(guild.getExtensionHours() - 14.4) < 0.000000001);
-  assert.equal(hero.stamina, 0);
+  assert.equal(hero.stamina, 5);
   assert.deepEqual(returned, [hero]);
   assert.deepEqual(logs, [{
     message: '【魔法使い・ケイシー】はギルドとの巧みな交渉で好条件を引き出し、試験期限を14.4時間延長した。',
