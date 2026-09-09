@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getSpeedFromLog, normalizeSpeedLog, readSpeedLog, SPEED_LOG_STORAGE_KEY, writeSpeedLog } from '../../src/game/GameSpeedSettings.js';
+import { DEFAULT_TIME_SETTINGS, getSpeedFromLog, normalizeSpeedLog, readTimeSettings, TIME_SETTINGS_KEY, writeTimeSettings } from '../../src/game/GameSpeedSettings.js';
 
 test('speed log maps the configured logarithmic range to multiplicative game speed', () => {
   assert.equal(getSpeedFromLog(-1), 0.5);
@@ -12,11 +12,21 @@ test('speed log maps the configured logarithmic range to multiplicative game spe
   assert.equal(normalizeSpeedLog(3), 2);
 });
 
-test('speed log is restored from and saved to browser storage', () => {
+test('time settings are restored from and saved through the common data manager', () => {
   const values = new Map();
-  const storage = { getItem: (key) => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
-  assert.equal(readSpeedLog(storage), 0);
-  assert.equal(writeSpeedLog(1.04, storage), 1);
-  assert.equal(values.get(SPEED_LOG_STORAGE_KEY), '1');
-  assert.equal(readSpeedLog(storage), 1);
+  const dataManager = { getValue: (key) => values.get(key), setValue: (key, value) => values.set(key, value) };
+  assert.deepEqual(readTimeSettings(dataManager), DEFAULT_TIME_SETTINGS);
+  assert.deepEqual(writeTimeSettings({ speedLog: 1.04, pauseOnInformation: false, pauseOnStaminaFull: true, accelerateWithoutPreparation: true }, dataManager), {
+    speedLog: 1,
+    pauseOnInformation: false,
+    pauseOnStaminaFull: true,
+    accelerateWithoutPreparation: true,
+  });
+  assert.deepEqual(values.get(TIME_SETTINGS_KEY), {
+    speedLog: 1,
+    pauseOnInformation: false,
+    pauseOnStaminaFull: true,
+    accelerateWithoutPreparation: true,
+  });
+  assert.deepEqual(readTimeSettings(dataManager), values.get(TIME_SETTINGS_KEY));
 });

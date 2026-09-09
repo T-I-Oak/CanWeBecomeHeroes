@@ -42,7 +42,8 @@ import InformationWindowLayer from './InformationWindowLayer.js';
 import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
 import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
-import { getSpeedFromLog, readSpeedLog, writeSpeedLog } from '../game/GameSpeedSettings.js';
+import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
+import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../game/GameSpeedSettings.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -602,11 +603,24 @@ export function startGame({ scenario }) {
   const pauseOnInformation = document.querySelector('#pause-on-information');
   const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
   const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
-  let speedLog = readSpeedLog();
+  const timeSettingsDataManager = new DataManager('can-we-become-heroes');
+  let persistedTimeSettings = readTimeSettings(timeSettingsDataManager);
+  let speedLog = persistedTimeSettings.speedLog;
   let staminaPauseArmed = true;
   let isAccelerated = false;
 
   speedSlider.value = String(speedLog);
+  pauseOnInformation.checked = persistedTimeSettings.pauseOnInformation;
+  pauseOnStaminaFull.checked = persistedTimeSettings.pauseOnStaminaFull;
+  accelerateWithoutPreparation.checked = persistedTimeSettings.accelerateWithoutPreparation;
+  function saveTimeSettings() {
+    persistedTimeSettings = writeTimeSettings({
+      speedLog,
+      pauseOnInformation: pauseOnInformation.checked,
+      pauseOnStaminaFull: pauseOnStaminaFull.checked,
+      accelerateWithoutPreparation: accelerateWithoutPreparation.checked,
+    }, timeSettingsDataManager);
+  }
   function updateClockSpeed() {
     const hasPreparationCompanion = controller.getHeroes().some((hero) => hero.currentArea === 'preparation');
     isAccelerated = accelerateWithoutPreparation.checked && !hasPreparationCompanion;
@@ -657,21 +671,25 @@ export function startGame({ scenario }) {
     updateTimeStatus();
   });
   speedSlider.addEventListener('input', (event) => {
-    speedLog = writeSpeedLog(event.currentTarget.value);
+    speedLog = Number(event.currentTarget.value);
     speedSlider.value = String(speedLog);
+    saveTimeSettings();
     updateClockSpeed();
     updateTimeStatus();
   });
   informationWindows.setPauseOnOpen(pauseOnInformation.checked);
   pauseOnInformation.addEventListener('change', (event) => {
     informationWindows.setPauseOnOpen(event.currentTarget.checked);
+    saveTimeSettings();
     updateTimeStatus();
   });
   pauseOnStaminaFull.addEventListener('change', () => {
+    saveTimeSettings();
     updateStaminaPause();
     updateTimeStatus();
   });
   accelerateWithoutPreparation.addEventListener('change', () => {
+    saveTimeSettings();
     updateClockSpeed();
     updateTimeStatus();
   });

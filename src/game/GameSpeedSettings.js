@@ -2,7 +2,13 @@ export const SPEED_LOG_MIN = -1;
 export const SPEED_LOG_MAX = 2;
 export const SPEED_LOG_STEP = 0.1;
 export const DEFAULT_SPEED_LOG = 0;
-export const SPEED_LOG_STORAGE_KEY = 'can-we-become-heroes:time-speed-log';
+export const TIME_SETTINGS_KEY = 'timeSettings';
+export const DEFAULT_TIME_SETTINGS = Object.freeze({
+  speedLog: DEFAULT_SPEED_LOG,
+  pauseOnInformation: true,
+  pauseOnStaminaFull: false,
+  accelerateWithoutPreparation: false,
+});
 
 export function normalizeSpeedLog(value) {
   const numericValue = Number(value);
@@ -15,20 +21,22 @@ export function getSpeedFromLog(speedLog) {
   return 2 ** normalizeSpeedLog(speedLog);
 }
 
-export function readSpeedLog(storage = globalThis.localStorage) {
-  try {
-    return normalizeSpeedLog(storage?.getItem(SPEED_LOG_STORAGE_KEY));
-  } catch {
-    return DEFAULT_SPEED_LOG;
-  }
+export function normalizeTimeSettings(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  return {
+    speedLog: normalizeSpeedLog(source.speedLog),
+    pauseOnInformation: source.pauseOnInformation ?? DEFAULT_TIME_SETTINGS.pauseOnInformation,
+    pauseOnStaminaFull: Boolean(source.pauseOnStaminaFull),
+    accelerateWithoutPreparation: Boolean(source.accelerateWithoutPreparation),
+  };
 }
 
-export function writeSpeedLog(speedLog, storage = globalThis.localStorage) {
-  const normalizedSpeedLog = normalizeSpeedLog(speedLog);
-  try {
-    storage?.setItem(SPEED_LOG_STORAGE_KEY, String(normalizedSpeedLog));
-  } catch {
-    // Speed remains usable for this session even when persistent storage is unavailable.
-  }
-  return normalizedSpeedLog;
+export function readTimeSettings(dataManager) {
+  return normalizeTimeSettings(dataManager?.getValue(TIME_SETTINGS_KEY));
+}
+
+export function writeTimeSettings(value, dataManager) {
+  const normalized = normalizeTimeSettings(value);
+  dataManager?.setValue(TIME_SETTINGS_KEY, normalized);
+  return normalized;
 }
