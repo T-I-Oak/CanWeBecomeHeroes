@@ -1,13 +1,23 @@
 import { getAreaNameplateBounds } from '../game/AreaNameplateLayout.js';
+import { getAreaVisual } from '../game/AreaVisualCatalog.js';
 
-const STANDARD_AREA_LABELS = Object.freeze({
-  preparation: 'Home',
-  warehouse: 'Warehouse',
-});
+const STANDARD_AREAS = Object.freeze(['preparation', 'warehouse']);
 const NAMEPLATE_PATH = '/assets/ui/facility-nameplate.png';
 
-function drawPlaqueLabel(context, image, bounds, label) {
+function drawContainedIcon(context, image, x, y, size) {
+  const scale = Math.min(size / image.naturalWidth, size / image.naturalHeight);
+  const width = image.naturalWidth * scale;
+  const height = image.naturalHeight * scale;
+  context.drawImage(image, x + (size - width) / 2, y + (size - height) / 2, width, height);
+}
+
+function drawPlaqueLabel(context, image, bounds, label, areaName, assets) {
   context.drawImage(image, bounds.x, bounds.y, bounds.width, bounds.height);
+  const icon = assets.load(getAreaVisual(areaName).iconPath);
+  const iconSize = 24;
+  if (icon.complete && icon.naturalWidth > 0) drawContainedIcon(context, icon, bounds.x - iconSize - 2, bounds.y + (bounds.height - iconSize) / 2, iconSize);
+  context.textAlign = 'center';
+  context.font = 'bold 18px Georgia, serif';
   context.fillStyle = '#f4df9b';
   context.shadowColor = '#1a0f08';
   context.shadowBlur = 2;
@@ -15,7 +25,7 @@ function drawPlaqueLabel(context, image, bounds, label) {
   context.fillText(label, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 + 1);
 }
 
-function drawBattleBanner(context) {
+function drawBattleBanner(context, assets, textRepository) {
   const bounds = getAreaNameplateBounds('battle');
   const { x, y, width, height } = bounds;
   context.save();
@@ -46,25 +56,33 @@ function drawBattleBanner(context) {
   context.textAlign = 'center';
   context.textBaseline = 'middle';
   context.font = 'bold 18px Georgia, serif';
+  const icon = assets.load(getAreaVisual('battle').iconPath);
+  const iconSize = 24;
+  const label = textRepository.getName('area', 'battle', 'nameplate');
+  if (icon.complete && icon.naturalWidth > 0) {
+    drawContainedIcon(context, icon, x - iconSize - 2, y + (height - iconSize) / 2, iconSize);
+  }
+  context.textAlign = 'center';
   context.fillStyle = '#ffe7ae';
   context.shadowColor = '#26110e';
   context.shadowBlur = 2;
   context.shadowOffsetY = 1;
-  context.fillText('Battle', x + (width - 16) / 2, y + height / 2 + 1);
+  context.fillText(label, x + (width - 16) / 2, y + height / 2 + 1);
   context.restore();
 }
 
-export function drawAreaNameplates(context, assets) {
+export function drawAreaNameplates(context, assets, textRepository) {
   context.save();
   context.textAlign = 'center';
   context.textBaseline = 'middle';
   context.font = 'bold 18px Georgia, serif';
   const image = assets.load(NAMEPLATE_PATH);
   if (image.complete && image.naturalWidth > 0) {
-    Object.entries(STANDARD_AREA_LABELS).forEach(([areaName, label]) => {
-      drawPlaqueLabel(context, image, getAreaNameplateBounds(areaName), label);
+    STANDARD_AREAS.forEach((areaName) => {
+      const label = textRepository.getName('area', areaName, 'nameplate');
+      drawPlaqueLabel(context, image, getAreaNameplateBounds(areaName), label, areaName, assets);
     });
   }
   context.restore();
-  drawBattleBanner(context);
+  drawBattleBanner(context, assets, textRepository);
 }

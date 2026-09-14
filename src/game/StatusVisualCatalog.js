@@ -6,6 +6,8 @@ export const STATUS_VISUALS = Object.freeze({
   luck: Object.freeze({ iconPath: '/assets/status/luck.png', tagBaseColor: '#d66d9a', gaugeFrameColor: '#8d3f68' }),
   stamina: Object.freeze({ iconPath: '/assets/status/stamina.png', gaugeFrameColor: '#3d4d62' }),
   hp: Object.freeze({ iconPath: '/assets/status/hp.png', gaugeFrameColor: '#8d3f43' }),
+  durability: Object.freeze({ iconPath: '/assets/status/durability.png' }),
+  weight: Object.freeze({ iconPath: '/assets/status/weight.png', gaugeFrameColor: '#414954', gaugeActiveColor: '#cbd3db' }),
 });
 
 export function getStatusVisual(key) {

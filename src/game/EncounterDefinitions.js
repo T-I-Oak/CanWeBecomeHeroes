@@ -22,10 +22,12 @@ export const COMBINATION_PATTERNS = Object.freeze({
   elite: Object.freeze([
     Object.freeze({ main: 'medium-vitality', support1: 'small-iron', support2: 'small-fortune' }),
     Object.freeze({ main: 'medium-gem', support1: 'small-blessing', support2: 'small-reputation' }),
+    Object.freeze({ main: 'medium-area', support1: 'small-vitality', support2: 'small-lightning' }),
   ]),
   boss: Object.freeze([
     Object.freeze({ main: 'large-vitality', support1: 'small-iron', support2: 'small-fortune' }),
     Object.freeze({ main: 'large-gem', support1: 'small-blessing', support2: 'small-reputation' }),
+    Object.freeze({ main: 'large-area', support1: 'small-vitality', support2: 'small-lightning' }),
   ]),
 });
 
@@ -38,9 +40,9 @@ function maximumHpFor(kind, level) {
   return base + bonus;
 }
 
-function createSharedSettings(kind, level) {
+function createSharedSettings(kind, level, maximumOffset = 0) {
   const totalTagBudget = Math.max(0, Math.floor(level) + 2);
-  const maximum = maximumHpFor(kind, level);
+  const maximum = maximumHpFor(kind, level) - maximumOffset;
   const contributionMultiplier = (level + 9) / 12;
   const maximums = Object.freeze(Object.fromEntries(STATUS_KEYS.map((stat) => [stat, maximum])));
   return Object.freeze({ weaponCount: 2, totalTagBudget, maximumHp: maximum, maximums, contributionMultiplier });
@@ -62,17 +64,19 @@ function createNormalRoles(level) {
 }
 
 function createEliteRoles(level) {
-  const shared = createSharedSettings('elite', level);
+  const main = createSharedSettings('elite', level);
+  const support = createSharedSettings('elite', level, 1);
   return Object.freeze({
-    main: role(Math.ceil(level / 7), shared),
-    support1: role(Math.ceil(level / 14), shared),
-    support2: role(Math.max(1, Math.ceil((level - 7) / 14)), shared),
+    main: role(Math.ceil(level / 7), main),
+    support1: role(Math.ceil(level / 14), support),
+    support2: role(Math.max(1, Math.ceil((level - 7) / 14)), support),
   });
 }
 
 function createBossRoles(level, stageNumber) {
-  const shared = createSharedSettings('boss', level);
-  return Object.freeze({ main: role(Math.ceil(stageNumber / 14), shared), support1: role(2, shared), support2: role(2, shared) });
+  const main = createSharedSettings('boss', level);
+  const support = createSharedSettings('boss', level, 1);
+  return Object.freeze({ main: role(Math.ceil(stageNumber / 14), main), support1: role(2, support), support2: role(2, support) });
 }
 
 export function normalizeEnemyMaximum(value) {

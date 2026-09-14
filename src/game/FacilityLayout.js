@@ -2,7 +2,7 @@ import { GAME_AREAS } from './GameAreas.js';
 
 export const FACILITY_LAYOUT = Object.freeze({
   slotLeft: 24,
-  nameplateLeft: 24,
+  nameplateLeft: 50,
   nameplateTop: 16,
   nameplateWidth: 144,
   nameplateHeight: 48,

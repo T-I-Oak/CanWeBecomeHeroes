@@ -203,6 +203,8 @@ body {
 }
 
 .InformationWindow {
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -222,7 +224,27 @@ body {
 }
 
 .InformationWindow:has(.InformationWindow__EntityPanel) {
-  width: min(572px, calc(100vw - 32px));
+  width: min(624px, calc(100vw - 32px));
+}
+
+@media (max-width: 640px) {
+  .InformationWindow .InformationWindow__EntityTitle {
+    min-height: 104px;
+  }
+  .InformationWindow .InformationWindow__EntityTitle > .InformationWindow__ChipImage {
+    flex-basis: 80px;
+    width: 80px;
+    height: 80px;
+  }
+  .InformationWindow .InformationWindow__EntityPanel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .InformationWindow .InformationWindow__EntityStatusGrid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .InformationWindow .InformationWindow__EntityInformation {
+    min-width: 0;
+  }
 }
 
 .InformationWindow__Title {
@@ -299,10 +321,49 @@ body {
   font-weight: 700;
 }
 
+.InformationWindow__DataSection {
+  display: grid;
+  gap: 7px;
+}
+
+.InformationWindow__TagBody {
+  gap: 6px;
+}
+
+.InformationWindow__TagOverview {
+  display: grid;
+  gap: 4px;
+}
+
+.InformationWindow__DataSection .InformationWindow__ItemWeight {
+  justify-self: start;
+}
+
+.InformationWindow__TermIcon {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 2px solid #b9c8df;
+  border-radius: 50%;
+  background: #f4f7fc;
+  color: #334a70;
+}
+
+.InformationWindow__TermIcon svg {
+  display: block;
+  width: 70%;
+  height: 70%;
+}
+
+
 .InformationWindow__InlineIcon {
   display: inline-block;
   width: 1.4em;
   height: 1.4em;
+  padding: 0;
+  border: 0;
+  background: transparent;
   margin: 0 .2em;
   vertical-align: -.3em;
 }
@@ -314,12 +375,75 @@ body {
   object-fit: contain;
 }
 
+.InformationWindow__InlineIcon .InformationWindow__StatusIcon {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
 .InformationWindow__InlineIcon.state-clickable {
   cursor: pointer;
 }
 
 .InformationWindow__InlineIcon.state-clickable:hover,
 .InformationWindow__InlineIcon.state-clickable:focus-visible {
+  filter: brightness(1.12);
+  outline: 2px solid #24334d;
+  outline-offset: 2px;
+}
+
+.InformationWindow__InlineReference {
+  display: inline-flex;
+  align-items: center;
+  gap: .08em;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  line-height: inherit;
+  vertical-align: -.25em;
+  background: transparent;
+  border: 0;
+}
+
+.InformationWindow__InlineReference .InformationWindow__StatusIcon,
+.InformationWindow__InlineReference .InformationWindow__TagIcon,
+.InformationWindow__InlineReference .InformationWindow__AreaIcon {
+  flex: 0 0 1.4em;
+  width: 1.4em;
+  height: 1.4em;
+  min-width: 0;
+  min-height: 0;
+}
+
+.InformationWindow__InlineReference .InformationWindow__TermIcon {
+  flex: 0 0 1.4em;
+  width: 1.4em;
+  height: 1.4em;
+  min-width: 0;
+  min-height: 0;
+  border-width: 1px;
+}
+
+.InformationWindow__InlineReference .InformationWindow__InlineEnemyIcon {
+  flex: 0 0 1.4em;
+  width: 1.4em;
+  height: 1.4em;
+  vertical-align: baseline;
+}
+
+.InformationWindow__InlineReference--text {
+  vertical-align: baseline;
+}
+
+.InformationWindow__InlineReference.state-clickable {
+  cursor: pointer;
+}
+
+.InformationWindow__InlineReference.state-clickable:hover,
+.InformationWindow__InlineReference.state-clickable:focus-visible {
   filter: brightness(1.12);
   outline: 2px solid #24334d;
   outline-offset: 2px;
@@ -362,6 +486,21 @@ body {
   object-fit: contain;
 }
 
+.InformationWindow__AreaIcon {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+}
+
+.InformationWindow__AreaIcon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .InformationWindow__ChipImage {
   display: grid;
   flex: 0 0 48px;
@@ -393,6 +532,25 @@ body {
   margin-top: 2px;
 }
 
+.InformationWindow__SkillSection {
+  display: grid;
+  gap: 7px;
+}
+
+.InformationWindow__SkillHeader {
+  margin: 0;
+}
+
+.InformationWindow__SkillHeader .InformationWindow__InlineReference {
+  vertical-align: baseline;
+}
+
+.InformationWindow__SectionTitle {
+  margin: 0;
+  color: #294b38;
+  font-size: 15px;
+}
+
 .InformationWindow__Skill {
   display: inline-flex;
   align-items: center;
@@ -418,7 +576,7 @@ body {
 
 .InformationWindow__EntityPanel {
   display: grid;
-  grid-template-columns: 304px 232px;
+  grid-template-columns: minmax(0, 1fr) 232px;
   gap: 8px;
   padding: 12px;
 }
@@ -441,6 +599,13 @@ body {
   line-height: 1.45;
 }
 
+.InformationWindow__ItemTargetingNote {
+  margin: 0;
+  color: #526170;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .InformationWindow__EntityTitle {
   min-height: calc(var(--entity-portrait-size) + 24px);
 }
@@ -458,7 +623,7 @@ body {
 
 .InformationWindow__EntityStatusGrid {
   display: grid;
-  grid-template-columns: repeat(6, 44px);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -517,6 +682,45 @@ body {
   width: var(--status-segment-fill, 100%);
   content: '';
   background: var(--status-active-color, #54c96b);
+}
+
+.InformationWindow__EntityWeight {
+  grid-template-rows: 24px 1fr 16px;
+}
+
+.InformationWindow__WeightIndicator {
+  position: relative;
+  width: calc(100% - 4px);
+  height: 70px;
+  align-self: center;
+  overflow: hidden;
+  background: #46536a;
+  clip-path: polygon(8% 0, 92% 0, 70% 100%, 30% 100%);
+}
+
+.InformationWindow__WeightIndicator::before {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: var(--weight-fill);
+  content: '';
+  background: linear-gradient(to top, #58c96d 0%, #d6be57 55%, #ca7553 100%);
+}
+
+.InformationWindow__WeightIndicator::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  border: 1px solid #9da9ba;
+  clip-path: polygon(8% 0, 92% 0, 70% 100%, 30% 100%);
+}
+
+.InformationWindow__WeightValue {
+  color: #f3f6fa;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 16px;
 }
 
 .InformationWindow__EntityTagList,
@@ -590,6 +794,33 @@ body {
 .InformationWindow__EntityTag .InformationWindow__SkillRequirement {
   min-width: 12px;
   font-size: 13px;
+}
+
+.InformationWindow__ItemWeight {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 56px;
+  min-height: 28px;
+  padding: 2px;
+  color: #24334d;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  background: #e6edf5;
+  border: 2px solid #aab7cb;
+  border-radius: 8px;
+}
+
+.InformationWindow__ItemWeight .InformationWindow__StatusIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.InformationWindow__ItemWeightTimes {
+  white-space: nowrap;
 }
 
 .InformationWindow__EquipmentTags {
@@ -683,15 +914,18 @@ body {
 
 .InformationWindow__EntityStatus.state-clickable,
 .InformationWindow__EntityTag.state-clickable,
+.InformationWindow__ItemWeight.state-clickable,
 .InformationWindow__Equipment.state-clickable {
   cursor: pointer;
 }
 
 .InformationWindow__EntityStatus.state-clickable:hover,
 .InformationWindow__EntityTag.state-clickable:hover,
+.InformationWindow__ItemWeight.state-clickable:hover,
 .InformationWindow__Equipment.state-clickable:hover,
 .InformationWindow__EntityStatus.state-clickable:focus-visible,
 .InformationWindow__EntityTag.state-clickable:focus-visible,
+.InformationWindow__ItemWeight.state-clickable:focus-visible,
 .InformationWindow__Equipment.state-clickable:focus-visible {
   filter: brightness(1.08);
   outline: 2px solid #24334d;

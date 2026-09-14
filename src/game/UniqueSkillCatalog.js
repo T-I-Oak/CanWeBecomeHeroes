@@ -1,30 +1,37 @@
 const VITALITY_SUMMON = Object.freeze({
   id: 'vitality-summon',
-  name: '最後の芽吹き',
   affinityTag: 'vitality',
   trigger: 'defeated',
-  description: 'HPが0になったとき、空きスロットへ眷属を召喚する。',
   levels: Object.freeze({
-    1: Object.freeze({ summonEnemyDefinitionId: 'small-vitality', summonCount: 2, description: 'マンドラゴラを最大2体召喚' }),
-    2: Object.freeze({ summonEnemyDefinitionId: 'medium-vitality', summonCount: 2, description: 'トレントを最大2体召喚' }),
+    1: Object.freeze({ summonEnemyDefinitionId: 'small-vitality', summonCount: 2 }),
+    2: Object.freeze({ summonEnemyDefinitionId: 'medium-vitality', summonCount: 2 }),
   }),
 });
 
 const GEM_ORB_RAIN = Object.freeze({
   id: 'gem-orb-rain',
-  name: '宝珠の雨',
   affinityTag: 'gem',
   trigger: 'damaged',
-  description: 'ダメージを受けたとき、運により倉庫へ宝珠を落とす。',
   levels: Object.freeze({
-    1: Object.freeze({ chance: 0.5, dropCount: 1, tagCount: 1, description: '50%で宝石タグ1の宝珠を1個落とす' }),
-    2: Object.freeze({ chance: 0.5, dropCount: 2, tagCount: 2, description: '50%で宝石タグ2の宝珠を2個落とす' }),
+    1: Object.freeze({ chance: 0.5, dropCount: 1, tagCount: 1 }),
+    2: Object.freeze({ chance: 0.5, dropCount: 2, tagCount: 2 }),
+  }),
+});
+
+const AREA_HEAD_RUSH = Object.freeze({
+  id: 'area-head-rush',
+  affinityTag: 'area',
+  trigger: 'action',
+  levels: Object.freeze({
+    1: Object.freeze({ headCount: 1 }),
+    2: Object.freeze({ headCount: 2 }),
   }),
 });
 
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
+  [AREA_HEAD_RUSH.id]: AREA_HEAD_RUSH,
 });
 
 export function getUniqueSkillDetail(id) {

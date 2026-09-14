@@ -1,27 +1,28 @@
 export const DEFAULT_LOG_SUBJECTS = Object.freeze({
-  hero: { label: 'キャラクター' },
-  enemy: { label: '敵' },
-  system: { label: 'システム' },
+  hero: { labelKey: 'logCategory_hero' },
+  enemy: { labelKey: 'logCategory_enemy' },
+  system: { labelKey: 'logCategory_system' },
 });
 
 export const DEFAULT_LOG_LEVELS = Object.freeze({
-  info: { label: '情報' },
-  luck: { label: '幸運' },
-  unluck: { label: '不運' },
-  warning: { label: '注意' },
+  info: { labelKey: 'logCategory_info' },
+  luck: { labelKey: 'logCategory_luck' },
+  unluck: { labelKey: 'logCategory_unluck' },
+  warning: { labelKey: 'logCategory_warning' },
 });
 
 export const DEFAULT_LOG_CHANNELS = Object.freeze({
-  battle: { label: '戦闘' },
-  shop: { label: 'ショップ' },
-  guild: { label: 'ギルド' },
-  training: { label: '訓練' },
-  preparing: { label: '準備' },
-  event: { label: 'ゲーム進行' },
+  battle: { labelKey: 'logCategory_battle' },
+  shop: { labelKey: 'logCategory_shop' },
+  guild: { labelKey: 'logCategory_guild' },
+  training: { labelKey: 'logCategory_training' },
+  preparing: { labelKey: 'logCategory_preparing' },
+  event: { labelKey: 'logCategory_event' },
 });
 
 export default class GameLog {
-  constructor({ subjects = DEFAULT_LOG_SUBJECTS, levels = DEFAULT_LOG_LEVELS, channels = DEFAULT_LOG_CHANNELS, now = () => Date.now() } = {}) {
+  constructor({ textRepository = null, subjects = DEFAULT_LOG_SUBJECTS, levels = DEFAULT_LOG_LEVELS, channels = DEFAULT_LOG_CHANNELS, now = () => Date.now() } = {}) {
+    this.textRepository = textRepository;
     this.subjects = new Map(Object.entries(subjects));
     this.levels = new Map(Object.entries(levels));
     this.channels = new Map(Object.entries(channels));
@@ -43,7 +44,7 @@ export default class GameLog {
     this.channels.set(id, Object.freeze({ ...definition }));
   }
 
-  log(message, { subject = 'system', level = 'info', channel = 'event', notify = true, data = null } = {}) {
+  log(message, { subject = 'system', level = 'info', channel = 'event', notify = true, data = null, localized = null } = {}) {
     const subjectDefinition = this.subjects.get(subject);
     const levelDefinition = this.levels.get(level);
     const channelDefinition = this.channels.get(channel);
@@ -51,15 +52,29 @@ export default class GameLog {
     if (!levelDefinition) throw new Error(`Unknown log level: ${level}`);
     if (!channelDefinition) throw new Error(`Unknown log channel: ${channel}`);
     const record = Object.freeze({
-      id: this.nextId++, message, subject, level, channel, notify, data, timestamp: this.now(),
+      id: this.nextId++, message, subject, level, channel, notify, data, localized, timestamp: this.now(),
     });
     this.records.push(record);
     this.listeners.forEach((listener) => listener(record, {
-      subject: subjectDefinition,
-      level: levelDefinition,
-      channel: channelDefinition,
+      subject: this.resolveDefinition(subjectDefinition),
+      level: this.resolveDefinition(levelDefinition),
+      channel: this.resolveDefinition(channelDefinition),
     }));
     return record;
+  }
+
+  resolveDefinition(definition) {
+    if (!definition.labelKey) return definition;
+    return { ...definition, label: this.textRepository ? this.textRepository.getLabel(definition.labelKey) : definition.labelKey };
+  }
+
+  logLocalized(event, options = {}) {
+    const localized = structuredClone(event);
+    return this.log(this.textRepository ? this.textRepository.formatLog(localized) : event.key, { ...options, localized });
+  }
+
+  getMessage(record) {
+    return record.localized && this.textRepository ? this.textRepository.formatLog(record.localized) : record.message;
   }
 
   subscribe(listener) {

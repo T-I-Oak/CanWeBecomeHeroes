@@ -1,4 +1,8 @@
 import test from 'node:test';
+import gameText from '../../public/data/game_text.json' with { type: 'json' };
+import GameTextRepository from '../../src/game/GameTextRepository.js';
+import { expandLanguageResource } from '../../../GameWorksOAK/src/lib/core/i18n.js';
+const textRepository = await new GameTextRepository({ loadResource: async () => expandLanguageResource(gameText) }).load();
 import assert from 'node:assert/strict';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import GuildSystem, { GUILD_APPLICATION_TICKS } from '../../src/game/GuildSystem.js';
@@ -12,7 +16,7 @@ function guildHero(profession = 'mage', stamina = 3) {
 
 test('guild guarantees one hour when the calculated extension is below one hour, including zero contribution points', () => {
   assert.deepEqual(calculateGuildExtension({ contributionPoints: 0 }), {
-    extensionHours: 1, consumedPoints: 0, rate: 0.1, isMinimumGuarantee: true,
+    extensionHours: 1, consumedPoints: 0, rate: 0.2, isMinimumGuarantee: true,
   });
   assert.equal(calculateGuildExtension({ contributionPoints: 9, reputationSkillLevel: 1, isLucky: true }).isMinimumGuarantee, false);
 });
@@ -28,17 +32,17 @@ test('guild completes after six hundred ticks using completion-time points and r
     getContributionPoints: () => points,
     setContributionPoints: (value) => { points = value; },
     random: () => 0,
-    gameLog: { log: (message, options) => logs.push({ message, options }) },
+    textRepository, gameLog: { log: (message, options) => logs.push({ message, options }) },
   });
 
   guild.update([hero], GUILD_APPLICATION_TICKS / 60);
 
-  assert.equal(points, 0);
-  assert.ok(Math.abs(guild.getExtensionHours() - 14.4) < 0.000000001);
-  assert.equal(hero.stamina, 5);
+  assert.equal(points, 16);
+  assert.equal(guild.getExtensionHours(), 24);
+  assert.ok(Math.abs(hero.stamina - 2) < 0.000000001);
   assert.deepEqual(returned, [hero]);
   assert.deepEqual(logs, [{
-    message: '【魔法使い・ケイシー】はギルドとの巧みな交渉で好条件を引き出し、試験期限を14.4時間延長した。',
+    message: '【魔法使い・ケイシー】はギルドとの巧みな交渉で好条件を引き出し、試験期限を24時間延長した。',
     options: { subject: 'hero', level: 'luck', channel: 'guild' },
   }]);
 });

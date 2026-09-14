@@ -11,14 +11,15 @@ import { createTrendEquipmentItem, createTrendProductTags, reduceTagCounts } fro
 export const ENEMY_CONTRIBUTION_POINTS = Object.freeze({ regular: 10, midBoss: 50, boss: 250 });
 const RANK_BY_SIZE = Object.freeze({ small: 'regular', medium: 'midBoss', large: 'boss' });
 
-function getSlot(slotPosition) {
+function getSlot(slotPosition, span = 1) {
   const area = GAME_AREAS.battle;
   const startX = area.x + (area.width - HERO_SLOT_SIZE * 6) / 2;
   const top = area.y + (BATTLE_ENEMY_AREA_HEIGHT - HERO_SLOT_SIZE) / 2;
+  const boundsY = top - (span - 1) * HERO_SLOT_SIZE / 2;
   return Object.freeze({
-    x: startX + (slotPosition - 1) * HERO_SLOT_SIZE + HERO_SLOT_SIZE / 2,
+    x: startX + (slotPosition - 1) * HERO_SLOT_SIZE + HERO_SLOT_SIZE * span / 2,
     y: top + HERO_SLOT_SIZE / 2,
-    bounds: { x: startX + (slotPosition - 1) * HERO_SLOT_SIZE, y: top, width: HERO_SLOT_SIZE, height: HERO_SLOT_SIZE },
+    bounds: { x: startX + (slotPosition - 1) * HERO_SLOT_SIZE, y: boundsY, width: HERO_SLOT_SIZE * span, height: HERO_SLOT_SIZE * span },
   });
 }
 
@@ -30,7 +31,8 @@ export default class EnemyFactory {
   create({ size, tagAffinity, slotPosition, maximumHp, totalTagCount, maximums, rank = 'regular', contributionPoints = ENEMY_CONTRIBUTION_POINTS[rank], contributionMultiplier = 1, mainTag = tagAffinity, subTags = [], weaponCount = 2, random = Math.random }) {
     const definition = getEnemyDefinition({ size, tagAffinity: mainTag });
     if (!definition) throw new Error(`Missing enemy definition: ${size}-${tagAffinity}`);
-    const slot = getSlot(slotPosition);
+    const slotSpan = size === 'large' ? 2 : 1;
+    const slot = getSlot(slotPosition, slotSpan);
     const radius = ENEMY_CHIP_DIAMETER[size] / 2;
     const tags = [mainTag, ...subTags];
     const chip = new Chip({
@@ -74,6 +76,48 @@ export default class EnemyFactory {
       weaponCount,
       random,
     });
+  }
+
+  createAreaHead({ source, slotPosition }) {
+    const definition = getEnemyDefinitionById('phantom-area-head');
+    const slot = getSlot(slotPosition);
+    const chip = new Chip({
+      id: 0,
+      type: 'enemy',
+      radius: ENEMY_CHIP_DIAMETER.small / 2,
+      x: slot.x,
+      y: slot.y,
+      weight: source.getCarriedWeight(),
+      centerPath: definition.assetPath,
+      tagPaths: getTagPaths(source.tags),
+      tagBaseColors: getTagBaseColors(source.tags),
+      tagGlyphScales: getTagGlyphScales(source.tags),
+      bounds: slot.bounds,
+      fillColor: AREA_THEME.battle.chipFill,
+    });
+    chip.height = 0;
+    chip.verticalVelocity = 0;
+    chip.impactOnLanding = false;
+    const head = new Enemy({
+      definition,
+      tags: source.tags,
+      chip,
+      maximumHp: source.maximumHp,
+      contributionPoints: 0,
+      equipment: source.equipment,
+      maximums: source.maximums,
+      rank: 'phantom',
+      mainTag: source.mainTag,
+      subTags: source.subTags,
+      slotPosition,
+      totalTagCount: source.totalTagCount,
+      weaponCount: source.weaponCount,
+      contributionMultiplier: source.contributionMultiplier,
+    });
+    head.uniqueSkill = null;
+    head.isPhantomHead = true;
+    head.projectionSource = source;
+    return head;
   }
 
   createInitialEncounter(options = {}) {

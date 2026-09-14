@@ -1,19 +1,20 @@
+import { logText, entityText } from './LocalizedLog.js';
 import FacilityReturnSystem from './FacilityReturnSystem.js';
 
 export const TRAINING_INTERVAL_TICKS = 200;
 export const TRAINING_RESULT_DISPLAY_TICKS = 120;
 const GAME_TICK_SECONDS = 1 / 60;
 const STAT_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck', 'stamina']);
-const STAT_LABELS = Object.freeze({ power: 'パワー', magic: '魔力', speed: 'スピード', negotiation: '交渉力', luck: '運', stamina: 'スタミナ' });
 const MAXIMUM_STAT_VALUE = 7;
 
 export default class TrainingSystem {
-  constructor(board, slotManager, { onItemReturned = () => {}, random = Math.random, gameLog = null, returnSystem = null } = {}) {
+  constructor(board, slotManager, { onItemReturned = () => {}, random = Math.random, textRepository = null, gameLog = null, returnSystem = null } = {}) {
     this.board = board;
     this.slotManager = slotManager;
     this.onItemReturned = onItemReturned;
     this.random = random;
     this.gameLog = gameLog;
+    this.textRepository = textRepository;
     this.returnSystem = returnSystem ?? new FacilityReturnSystem(board, slotManager, { onItemReturned, random });
     this.elapsed = 0;
     this.states = new Map();
@@ -74,7 +75,7 @@ export default class TrainingSystem {
     hero.stamina -= staminaCost;
     hero.maximums[selected.stat] = Math.min(MAXIMUM_STAT_VALUE, hero.maximums[selected.stat] + 1);
     state.gainedCells.push(Object.freeze({ stat: selected.stat, value: hero.maximums[selected.stat] }));
-    this.gameLog?.log(`${hero.profession}・${hero.name.ja}は${STAT_LABELS[selected.stat]}を強化した。`, { subject: 'hero', level: isLucky ? 'luck' : 'info', channel: 'training' });
+    logText(this.gameLog, this.textRepository, 'logTraining', { hero: entityText(hero, false), stat: { kind: 'status', id: selected.stat } }, { subject: 'hero', level: isLucky ? 'luck' : 'info', channel: 'training' });
   }
 
   beginReturn(hero, state) {

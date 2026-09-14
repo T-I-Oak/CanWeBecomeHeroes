@@ -16,6 +16,7 @@ import { AREA_THEME } from '../game/AreaTheme.js';
 import StaminaRecoverySystem from '../game/StaminaRecoverySystem.js';
 import FacilitySwingSystem from '../game/FacilitySwingSystem.js';
 import GameLog from '../game/GameLog.js';
+import { refreshLocalizedUI } from './LocalizedUI.js';
 import FlowLog from './FlowLog.js';
 import TrainingSystem from '../game/TrainingSystem.js';
 import { getShopLayout, SHOP_TRANSACTION_ARROW_WIDTH } from '../game/ShopLayout.js';
@@ -44,6 +45,9 @@ import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
 import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../game/GameSpeedSettings.js';
+import { getWeightFillRatio } from '../game/WeightVisual.js';
+import GameTextRepository from '../game/GameTextRepository.js';
+import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -54,6 +58,8 @@ const STATUS_DEFINITIONS = Object.freeze([
   { key: 'luck', visual: STATUS_VISUALS.luck },
   { key: 'stamina', visual: STATUS_VISUALS.stamina },
 ]);
+const WEIGHT_STATUS_DEFINITION = Object.freeze({ key: 'weight', visual: STATUS_VISUALS.weight });
+const PREPARATION_STATUS_DEFINITIONS = Object.freeze([...STATUS_DEFINITIONS, WEIGHT_STATUS_DEFINITION]);
 const TAG_GRID = Object.freeze([
   Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'blessing']),
   Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
@@ -102,6 +108,68 @@ function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeCo
       context.restore();
     }
   }
+}
+
+function drawWeightGauge(context, assets, x, y, weight) {
+  const {
+    statusGaugeWidth: width,
+    statusGaugeHeight: height,
+    statusIconSize,
+    statusIconTopPadding,
+  } = PREPARATION_LAYOUT;
+  const visual = STATUS_VISUALS.weight;
+  const indicatorTop = y + 33;
+  const indicatorHeight = 70;
+  const indicatorBottom = indicatorTop + indicatorHeight;
+  const topInset = 4;
+  const bottomInset = 12;
+  const fillRatio = getWeightFillRatio(weight);
+
+  context.fillStyle = visual.gaugeFrameColor;
+  context.beginPath();
+  context.roundRect(x, y, width, height, 9);
+  context.fill();
+
+  const icon = assets.load(visual.iconPath);
+  if (icon.complete && icon.naturalWidth > 0) {
+    context.drawImage(icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
+  }
+
+  context.save();
+  context.beginPath();
+  context.moveTo(x + topInset, indicatorTop);
+  context.lineTo(x + width - topInset, indicatorTop);
+  context.lineTo(x + width - bottomInset, indicatorBottom);
+  context.lineTo(x + bottomInset, indicatorBottom);
+  context.closePath();
+  context.fillStyle = '#46536a';
+  context.fill();
+  context.clip();
+  const gradient = context.createLinearGradient(0, indicatorBottom, 0, indicatorTop);
+  gradient.addColorStop(0, '#58c96d');
+  gradient.addColorStop(0.55, '#d6be57');
+  gradient.addColorStop(1, '#ca7553');
+  context.fillStyle = gradient;
+  context.fillRect(x, indicatorBottom - indicatorHeight * fillRatio, width, indicatorHeight * fillRatio);
+  context.restore();
+
+  context.strokeStyle = '#9da9ba';
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(x + topInset, indicatorTop);
+  context.lineTo(x + width - topInset, indicatorTop);
+  context.lineTo(x + width - bottomInset, indicatorBottom);
+  context.lineTo(x + bottomInset, indicatorBottom);
+  context.closePath();
+  context.stroke();
+
+  context.fillStyle = '#f3f6fa';
+  context.font = 'bold 14px system-ui';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText(String(weight), x + width / 2, y + height - 10);
+  context.textAlign = 'start';
+  context.textBaseline = 'alphabetic';
 }
 
 function getTrainingStatusPanelLayout() {
@@ -226,18 +294,16 @@ function getPreparationTagAtPoint(point, heroes) {
 }
 
 function getPreparationStatusAtPoint(point, heroes) {
-  const { statusGaugeHeight, statusColumnWidth, statusColumnGap, statusGaugeWidth, statusIconSize, statusIconTopPadding, topPadding } = PREPARATION_LAYOUT;
+  const { statusGaugeHeight, statusColumnWidth, statusColumnGap, statusGaugeWidth, topPadding } = PREPARATION_LAYOUT;
   for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
     const hero = heroes[heroIndex];
     const bounds = getPreparationSubareaBounds(heroIndex);
     const informationX = bounds.x + topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
     const gaugeY = bounds.y + topPadding;
-    for (let statusIndex = 0; statusIndex < STATUS_DEFINITIONS.length; statusIndex += 1) {
-      const { key } = STATUS_DEFINITIONS[statusIndex];
+    for (let statusIndex = 0; statusIndex < PREPARATION_STATUS_DEFINITIONS.length; statusIndex += 1) {
+      const { key } = PREPARATION_STATUS_DEFINITIONS[statusIndex];
       const gaugeX = informationX + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2;
-      const iconX = gaugeX + (statusGaugeWidth - statusIconSize) / 2;
-      const iconY = gaugeY + statusIconTopPadding;
-      if (!isPointInRect(point, iconX, iconY, statusIconSize, statusIconSize)) continue;
+      if (!isPointInRect(point, gaugeX, gaugeY, statusGaugeWidth, statusGaugeHeight)) continue;
       return { status: key };
     }
   }
@@ -375,7 +441,7 @@ function getPreparationItemAtPoint(point, heroes) {
   return null;
 }
 
-function drawShopPanel(context, assets, shop, bag, transaction) {
+function drawShopPanel(context, assets, shop, bag, transaction, texts) {
   if (!shop) return;
   const area = GAME_AREAS.shop;
   const layout = getShopLayout(area);
@@ -397,8 +463,8 @@ function drawShopPanel(context, assets, shop, bag, transaction) {
     context.fillText(label, panelCenterX, y + 26);
     drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], panelCenterX - 24, y + 44, 48);
   };
-  drawTrend('SALE FOR', shop.saleTag, layout.saleBoards.sale);
-  drawTrend('NEXT', shop.nextTag, layout.saleBoards.next);
+  drawTrend(texts.getLabel('shopSale'), shop.saleTag, layout.saleBoards.sale);
+  drawTrend(texts.getLabel('shopNext'), shop.nextTag, layout.saleBoards.next);
 
   const bagSize = 48;
   const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, arrowX, purchaseX } = layout.transaction;
@@ -518,28 +584,31 @@ function drawBattleSlotGround(context, assets) {
   });
 }
 
-export function startGame({ scenario }) {
+export async function startGame({ scenario }) {
+  setupLanguageSelector('#language-selector', ['ja', 'en']);
+  const textRepository = await new GameTextRepository().load();
   const canvas = document.querySelector('#chip-canvas');
   const context = canvas.getContext('2d');
   const board = new ChipBoard(WORLD_SIZE);
   const camera = new Camera(WORLD_SIZE);
   const clock = new GameClock();
   const slotManager = new HeroSlotManager();
-  const gameLog = new GameLog();
-  new FlowLog(document.querySelector('#flow-log'), gameLog);
+  refreshLocalizedUI(document, textRepository);
+  const gameLog = new GameLog({ textRepository });
+  const flowLog = new FlowLog(document.querySelector('#flow-log'), gameLog);
   const entityRegistry = new EntityRegistry();
-  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog), gameLog, { entityRegistry });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog, textRepository), gameLog, { entityRegistry });
   const { preparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
   const enemySpawn = new EnemySpawnSystem(controller);
   const returnSystem = new FacilityReturnSystem(board, slotManager, {
     onItemReturned: (item) => controller.addToWarehouse(item),
     onItemDiscarded: (item) => controller.destroy(item, { includeRelated: true }),
   });
-  const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem });
-  const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), entityRegistry, gameLog });
-  const combatEffects = new CombatEffectSystem();
+  const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem, textRepository });
+  const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), entityRegistry, gameLog, textRepository });
+  const combatEffects = new CombatEffectSystem({ textRepository });
   const enemyFactory = new EnemyFactory();
-  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), enemyFactory, returnSystem, effects: combatEffects, gameLog });
+  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), enemyFactory, returnSystem, effects: combatEffects, gameLog, textRepository });
   const stageController = new StageController({
     enemySpawn,
     battleSystem,
@@ -553,21 +622,24 @@ export function startGame({ scenario }) {
     getContributionPoints: () => battleSystem.contributionPoints,
     setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
     gameLog,
+    textRepository,
   });
   const staminaRecovery = new StaminaRecoverySystem();
   const facilitySwing = new FacilitySwingSystem();
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const assets = new AssetLoader();
   const renderer = new ChipRenderer(context, assets);
-  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'));
+  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository);
   const informationWindows = new InformationWindowManager({
     clock,
     isTargetAlive: (target) => entityRegistry.isAlive(target),
     onChange: (entries) => informationLayer.render(entries),
   });
   informationLayer.manager = informationWindows;
+  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); updateTimeStatus(); });
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
+    textRepository,
     onSelect: (choiceId) => {
       stageController.selectStage(choiceId, { tick: clock.tick });
       informationWindows.closeInvalidEntries();
@@ -630,11 +702,11 @@ export function startGame({ scenario }) {
   function updateTimeStatus() {
     const autoPaused = clock.pauseReasons.has('stamina-full') || clock.pauseReasons.has('information-window');
     const settingsPaused = clock.pauseReasons.has('time-settings');
-    const status = clock.paused || settingsPaused ? '停止中' : autoPaused ? '自動停止' : isAccelerated ? '加速中' : '進行中';
+    const status = textRepository.getLabel(clock.paused || settingsPaused ? 'paused' : autoPaused ? 'autoPaused' : isAccelerated ? 'accelerated' : 'running');
     const state = clock.paused || settingsPaused ? 'state-paused' : autoPaused ? 'state-auto-paused' : isAccelerated ? 'state-accelerated' : 'state-running';
     timeStatus.textContent = status;
     timeStatus.className = `HudPanel__Status ${state}`;
-    pauseButton.textContent = clock.paused ? '▶ 再開' : '⏸ 一時停止';
+    pauseButton.textContent = textRepository.getLabel(clock.paused ? 'resume' : 'pause');
   }
 
   function updateStaminaPause() {
@@ -857,12 +929,13 @@ export function startGame({ scenario }) {
     ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
     preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
     drawBattleSlotGround(context, assets);
-    drawFacilityNameplates(context, assets);
-    drawAreaNameplates(context, assets);
+    drawFacilityNameplates(context, assets, textRepository);
+    drawAreaNameplates(context, assets, textRepository);
     drawWarehouseMetadata(context);
     drawFacilitySlots(context);
-    drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction());
+    drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction(), textRepository);
     guildTimelineHours = drawGuildPanel(context, {
+      textRepository,
       tick: clock.tick,
       contributionPoints: battleSystem.contributionPoints,
       extensionHours: guildSystem.getExtensionHours(),
@@ -895,9 +968,19 @@ export function startGame({ scenario }) {
       context.font = '16px system-ui';
       context.textBaseline = 'middle';
       context.textAlign = 'center';
-      context.fillText(`【${hero.profession}・${hero.name.ja}】`, characterX + PREPARATION_LAYOUT.characterAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
+      context.fillText(`【${textRepository.getHeroLabel(hero)}】`, characterX + PREPARATION_LAYOUT.characterAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
       context.textAlign = 'start';
-      STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
+      PREPARATION_STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
+        if (key === 'weight') {
+          drawWeightGauge(
+            context,
+            assets,
+            informationX + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
+            y + PREPARATION_LAYOUT.topPadding,
+            hero.getCarriedWeight(),
+          );
+          return;
+        }
         const value = key === 'stamina' ? hero.stamina : Math.floor(hero.getStatus(key));
         drawStatusGauge(
           context,
@@ -914,14 +997,20 @@ export function startGame({ scenario }) {
       drawEquipmentGrid(context, assets, hero, x, y + PREPARATION_LAYOUT.topPadding);
       drawTagList(context, assets, hero, informationX, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.statusGaugeHeight + PREPARATION_LAYOUT.sectionGap);
     });
-    board.getRenderChips().forEach((chip) => renderer.draw(chip, time / 1000));
+    const staminaPauseTargets = new Set(controller.getHeroes()
+      .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
+      .map((hero) => hero.chip));
+    board.getRenderChips().forEach((chip) => renderer.draw(chip, time / 1000, { staminaPauseTarget: staminaPauseTargets.has(chip) }));
     combatEffects.draw(context, assets);
     drawChipSelectionGuide();
     context.restore();
     requestAnimationFrame(render);
   }
 
-  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    informationWindows.refreshEntries();
+  });
   resizeCanvas();
   requestAnimationFrame(render);
 }

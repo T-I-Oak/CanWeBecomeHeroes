@@ -13,7 +13,8 @@ function visualPosition(chip) {
 }
 
 export default class CombatEffectSystem {
-  constructor() {
+  constructor({ textRepository = null } = {}) {
+    this.textRepository = textRepository;
     this.attacks = [];
     this.hits = [];
     this.popups = [];
@@ -35,8 +36,9 @@ export default class CombatEffectSystem {
     this.actionResults = null;
   }
 
-  attack(actor, rangeLevel) {
-    this.attacks.push({ chip: actor.chip, elapsed: 0, rangeLevel });
+  attack(actor, rangeLevel, { showGaugeAtMaximum = true } = {}) {
+    if (showGaugeAtMaximum) actor.chip.actionVisualCount = (actor.chip.actionVisualCount ?? 0) + 1;
+    this.attacks.push({ chip: actor.chip, elapsed: 0, rangeLevel, showGaugeAtMaximum });
   }
 
   miss(target) {
@@ -73,12 +75,12 @@ export default class CombatEffectSystem {
   }
 
   emitMiss(target) {
-    this.popups.push({ chip: target.chip, label: 'miss!', color: '#dce5f2', elapsed: 0, duration: 0.8 });
+    this.popups.push({ chip: target.chip, key: 'combatMiss', values: {}, color: '#dce5f2', elapsed: 0, duration: 0.8 });
   }
 
   emitDamage(target, amount, critical, lightning = false) {
     this.hits.push({ chip: target.chip, elapsed: 0, amount, lightning });
-    this.popups.push({ chip: target.chip, label: `${critical ? 'critical' : 'damage'} ${Math.round(amount * 100)}`, color: critical ? '#ffd365' : '#f6f0d8', elapsed: 0, duration: 0.9 });
+    this.popups.push({ chip: target.chip, key: critical ? 'combatCritical' : 'combatDamage', values: { amount: Math.round(amount * 100) }, color: critical ? '#ffd365' : '#f6f0d8', elapsed: 0, duration: 0.9 });
   }
 
   lightningPropagation(from, to) {
@@ -102,6 +104,7 @@ export default class CombatEffectSystem {
       if (ratio < 1) return true;
       effect.chip.effectOffsetX = 0;
       effect.chip.effectOffsetY = 0;
+      if (effect.showGaugeAtMaximum) effect.chip.actionVisualCount = Math.max(0, (effect.chip.actionVisualCount ?? 1) - 1);
       return false;
     });
     this.hits = this.hits.filter((effect) => {
@@ -188,8 +191,9 @@ export default class CombatEffectSystem {
       context.textAlign = 'center';
       context.textBaseline = 'middle';
       const y = position.y - effect.chip.radius - ratio * 22;
-      context.strokeText(effect.label, position.x, y);
-      context.fillText(effect.label, position.x, y);
+      const label = this.textRepository ? this.textRepository.getLabel(effect.key, effect.values) : effect.key;
+      context.strokeText(label, position.x, y);
+      context.fillText(label, position.x, y);
     });
     context.restore();
   }

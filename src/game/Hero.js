@@ -3,9 +3,9 @@ import { getHeroStepDistance } from './MovementSettings.js';
 import { getLuckDegree } from './Luck.js';
 
 export default class Hero {
-  constructor({ profession, name, tags, chip, stamina = 0, maximums = {} }) {
+  constructor({ profession, heroId = profession, tags, chip, stamina = 0, maximums = {} }) {
     this.profession = profession;
-    this.name = name;
+    this.heroId = heroId;
     this.tags = tags;
     this.chip = chip;
     this.stamina = stamina;

@@ -128,6 +128,23 @@ test('an information window retains its compact state independently of pinning',
   assert.equal(manager.entries[0].pinned, true);
 });
 
+test('language refresh redraws the same window entries without changing their presentation state', () => {
+  const notifications = [];
+  const manager = new InformationWindowManager({ onChange: (entries) => notifications.push(entries) });
+  const entry = manager.open({ type: 'facility', data: { facility: 'training' }, anchor: { x: 30, y: 40 } });
+  manager.togglePin(entry.id);
+  manager.toggleCompact(entry.id);
+  manager.setPosition(entry.id, { x: 120, y: 240 });
+  const before = manager.entries[0];
+  notifications.length = 0;
+
+  manager.refreshEntries();
+
+  assert.equal(notifications.length, 1);
+  assert.deepEqual(notifications[0][0], before);
+  assert.deepEqual(manager.entries[0], before);
+});
+
 test('dynamic entity and item entries refresh unless a window is being dragged', () => {
   let changes = 0;
   const manager = new InformationWindowManager({ onChange: () => { changes += 1; } });
@@ -153,6 +170,17 @@ test('destroyed entity information windows close even when pinned', () => {
   const entry = manager.open({ type: 'entity', data: { entity: enemy } });
   manager.togglePin(entry.id);
   registry.destroy(enemy);
+  manager.closeInvalidEntries();
+  assert.equal(manager.entries.length, 0);
+});
+
+test('projected enemy information windows close when their source is destroyed', () => {
+  const registry = new EntityRegistry();
+  const manager = new InformationWindowManager({ isTargetAlive: (target) => registry.isAlive(target) });
+  const source = { hp: 3, chip: { type: 'enemy' } };
+  registry.register(source);
+  manager.open({ type: 'enemy-projection', data: { source, enemyId: 'phantom-area-head' } });
+  registry.destroy(source);
   manager.closeInvalidEntries();
   assert.equal(manager.entries.length, 0);
 });

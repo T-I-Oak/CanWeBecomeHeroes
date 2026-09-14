@@ -1,0 +1,4761 @@
+{
+  "ui": {
+    "weaponTargetingNote": { "lang-store": { "ja": "複数の武器を装備している場合、先に装備した武器で攻撃対象が決まります。", "en": "When multiple weapons are equipped, the weapon equipped first determines the attack target." } },
+    "language": { "lang-store": { "ja": "言語", "en": "Language" } },
+    "logCategory_hero": { "lang-store": { "ja": "キャラクター", "en": "Character" } },
+    "logCategory_enemy": { "lang-store": { "ja": "敵", "en": "Enemy" } },
+    "logCategory_system": { "lang-store": { "ja": "システム", "en": "System" } },
+    "logCategory_info": { "lang-store": { "ja": "情報", "en": "Info" } },
+    "logCategory_luck": { "lang-store": { "ja": "幸運", "en": "Lucky" } },
+    "logCategory_unluck": { "lang-store": { "ja": "不運", "en": "Unlucky" } },
+    "logCategory_warning": { "lang-store": { "ja": "注意", "en": "Warning" } },
+    "logCategory_battle": { "lang-store": { "ja": "戦闘", "en": "Battle" } },
+    "logCategory_shop": { "lang-store": { "ja": "ショップ", "en": "Shop" } },
+    "logCategory_guild": { "lang-store": { "ja": "ギルド", "en": "Guild" } },
+    "logCategory_training": { "lang-store": { "ja": "訓練", "en": "Training" } },
+    "logCategory_preparing": { "lang-store": { "ja": "準備", "en": "Preparation" } },
+    "logCategory_event": { "lang-store": { "ja": "ゲーム進行", "en": "Game events" } },
+    "shopSale": { "lang-store": { "ja": "今回", "en": "CURRENT" } },
+    "shopNext": { "lang-store": { "ja": "次回", "en": "NEXT" } },
+    "combatMiss": { "lang-store": { "ja": "Miss!", "en": "miss!" } },
+    "combatDamage": { "lang-store": { "ja": "Damage {amount}", "en": "damage {amount}" } },
+    "combatCritical": { "lang-store": { "ja": "会心 {amount}", "en": "critical {amount}" } },
+    "documentLanguage": { "lang-store": { "ja": "ja", "en": "en" } },
+    "normalSize": {
+      "lang-store": {
+        "ja": "通常サイズで表示する",
+        "en": "Show at normal size"
+      }
+    },
+    "compactSize": {
+      "lang-store": {
+        "ja": "50%に縮小して表示する",
+        "en": "Show at 50% size"
+      }
+    },
+    "pin": {
+      "lang-store": {
+        "ja": "ピン止めする",
+        "en": "Pin window"
+      }
+    },
+    "unpin": {
+      "lang-store": {
+        "ja": "ピン止めを外す",
+        "en": "Unpin window"
+      }
+    },
+    "openInformation": {
+      "lang-store": {
+        "ja": "{name}の情報を開く",
+        "en": "Open information about {name}"
+      }
+    },
+    "openTagInformation": {
+      "lang-store": {
+        "ja": "{name}タグの情報を開く",
+        "en": "Open information about the {name} tag"
+      }
+    },
+    "heroIdentity": {
+      "lang-store": {
+        "ja": "{profession}・{name}",
+        "en": "{name} the {profession}"
+      }
+    },
+    "gameScreen": {
+      "lang-store": {
+        "ja": "Can We Become Heroes? ゲーム画面",
+        "en": "Can We Become Heroes? game screen"
+      }
+    },
+    "controls": {
+      "lang-store": {
+        "ja": "ゲーム操作",
+        "en": "Game controls"
+      }
+    },
+    "settings": {
+      "lang-store": {
+        "ja": "時間設定",
+        "en": "Time settings"
+      }
+    },
+    "speed": {
+      "lang-store": {
+        "ja": "通常速度",
+        "en": "Normal speed"
+      }
+    },
+    "slow": {
+      "lang-store": {
+        "ja": "遅い",
+        "en": "Slow"
+      }
+    },
+    "normal": {
+      "lang-store": {
+        "ja": "標準",
+        "en": "Normal"
+      }
+    },
+    "fast": {
+      "lang-store": {
+        "ja": "速い",
+        "en": "Fast"
+      }
+    },
+    "autoPause": {
+      "lang-store": {
+        "ja": "自動停止",
+        "en": "Auto-pause"
+      }
+    },
+    "pauseInformation": {
+      "lang-store": {
+        "ja": "詳細表示時",
+        "en": "When viewing details"
+      }
+    },
+    "pauseStamina": {
+      "lang-store": {
+        "ja": "仲間のスタミナ満タン時",
+        "en": "When an ally's Stamina is full"
+      }
+    },
+    "autoAccelerate": {
+      "lang-store": {
+        "ja": "自動加速",
+        "en": "Auto-speed"
+      }
+    },
+    "accelerateEmpty": {
+      "lang-store": {
+        "ja": "待機エリアに仲間がいない時",
+        "en": "When no allies are resting at Home"
+      }
+    },
+    "logs": {
+      "lang-store": {
+        "ja": "ゲームログ",
+        "en": "Game log"
+      }
+    },
+    "routes": {
+      "lang-store": {
+        "ja": "進路選択",
+        "en": "Route selection"
+      }
+    },
+    "informationWindows": {
+      "lang-store": {
+        "ja": "情報ウィンドウ",
+        "en": "Information windows"
+      }
+    },
+    "paused": {
+      "lang-store": {
+        "ja": "停止中",
+        "en": "Paused"
+      }
+    },
+    "autoPaused": {
+      "lang-store": {
+        "ja": "自動停止",
+        "en": "Auto-paused"
+      }
+    },
+    "accelerated": {
+      "lang-store": {
+        "ja": "加速中",
+        "en": "Accelerated"
+      }
+    },
+    "running": {
+      "lang-store": {
+        "ja": "進行中",
+        "en": "Running"
+      }
+    },
+    "resume": {
+      "lang-store": {
+        "ja": "▶ 再開",
+        "en": "▶ Resume"
+      }
+    },
+    "pause": {
+      "lang-store": {
+        "ja": "⏸ 一時停止",
+        "en": "⏸ Pause"
+      }
+    },
+    "chooseRoute": {
+      "lang-store": {
+        "ja": "進路を選択",
+        "en": "Choose a route"
+      }
+    },
+    "stageNumber": {
+      "lang-store": {
+        "ja": "第{number}ステージ",
+        "en": "Stage {number}"
+      }
+    },
+    "currentShop": {
+      "lang-store": {
+        "ja": "今回の店",
+        "en": "Current shop"
+      }
+    },
+    "nextShop": {
+      "lang-store": {
+        "ja": "次回の店",
+        "en": "Next shop"
+      }
+    },
+    "selectRoute": {
+      "lang-store": {
+        "ja": "この進路へ",
+        "en": "Take this route"
+      }
+    },
+    "remaining": {
+      "lang-store": {
+        "ja": "残り期限",
+        "en": "Time left"
+      }
+    },
+    "contributionExtension": {
+      "lang-store": {
+        "ja": "貢献による延長見込",
+        "en": "Est. extension"
+      }
+    },
+    "elapsed": {
+      "lang-store": {
+        "ja": "経過時間",
+        "en": "Elapsed"
+      }
+    },
+    "contribution": {
+      "lang-store": {
+        "ja": "貢献",
+        "en": "Contribution"
+      }
+    },
+    "extension": {
+      "lang-store": {
+        "ja": "延長見込",
+        "en": "Extension"
+      }
+    },
+    "daysHours": {
+      "lang-store": {
+        "ja": "{days}日 {hours}時間",
+        "en": "{days}d {hours}h"
+      }
+    },
+    "hours": {
+      "lang-store": {
+        "ja": "{hours}時間",
+        "en": "{hours} h"
+      }
+    },
+    "maxHours": {
+      "lang-store": {
+        "ja": "24H（MAX）",
+        "en": "24h (MAX)"
+      }
+    },
+    "logVictory": {
+      "lang-store": {
+        "ja": "敵を全滅させた。",
+        "en": "All enemies defeated."
+      }
+    },
+    "logDefeat": {
+      "lang-store": {
+        "ja": "{actor}は{target}を倒した。",
+        "en": "{actor} defeated {target}."
+      }
+    },
+    "logDamage": {
+      "lang-store": {
+        "ja": "{actor}は{target}にダメージ{damage}を与えた。",
+        "en": "{actor} dealt {damage} damage to {target}."
+      }
+    },
+    "logCritical": {
+      "lang-store": {
+        "ja": "{actor}は{target}に会心ダメージ{damage}を与えた。",
+        "en": "{actor} dealt {damage} critical damage to {target}."
+      }
+    },
+    "logMiss": {
+      "lang-store": {
+        "ja": "{actor}の{target}への攻撃は外れた。",
+        "en": "{actor}'s attack missed {target}."
+      }
+    },
+    "logOrb": {
+      "lang-store": {
+        "ja": "{actor}は{skill}で宝珠を{count}個落とした。",
+        "en": "{actor} used {skill}. Orbs dropped: {count}."
+      }
+    },
+    "logSummon": {
+      "lang-store": {
+        "ja": "{actor}は{skill}で{target}を{count}体召喚した。",
+        "en": "{actor} summoned {count} × {target} with {skill}."
+      }
+    },
+    "logHeads": {
+      "lang-store": {
+        "ja": "{actor}は{skill}で{count}つの頭を放った。",
+        "en": "{actor} used {skill}. Heads launched: {count}."
+      }
+    },
+    "logMinions": {
+      "lang-store": {
+        "ja": "{actor}は{skill}で眷属{minions}体と連携攻撃した。",
+        "en": "{actor} used {skill} for a coordinated attack. Participating minions: {minions}."
+      }
+    },
+    "logHeadsMinions": {
+      "lang-store": {
+        "ja": "{actor}は{skill}で{count}つの頭を放った、眷属{minions}体と連携攻撃した。",
+        "en": "{actor} used {skill}. Heads launched: {count}; minions joining the attack: {minions}."
+      }
+    },
+    "logTraining": {
+      "lang-store": {
+        "ja": "{hero}は{stat}を強化した。",
+        "en": "{hero} improved {stat}."
+      }
+    },
+    "logShop": {
+      "lang-store": {
+        "ja": "{hero}はショップで買い物をした。",
+        "en": "{hero} traded at the shop."
+      }
+    },
+    "logReveal": {
+      "lang-store": {
+        "ja": "{hero}は買った{part}の隠れた能力を見つけた。",
+        "en": "{hero} discovered a hidden ability in the purchased {part}."
+      }
+    },
+    "logDeparture": {
+      "lang-store": {
+        "ja": "{hero}は{destination}に向かって出発した。",
+        "en": "{hero} set out for {destination}."
+      }
+    },
+    "logGuild00": {
+      "lang-store": {
+        "ja": "{hero}はギルドと交渉して、試験期限を{hours}延長した。",
+        "en": "{hero} negotiated with the guild and extended the exam deadline by {hours}."
+      }
+    },
+    "logGuild01": {
+      "lang-store": {
+        "ja": "{hero}はギルドから好条件を引き出し、試験期限を{hours}延長した。",
+        "en": "{hero} secured favorable terms from the guild and extended the exam deadline by {hours}."
+      }
+    },
+    "logGuild10": {
+      "lang-store": {
+        "ja": "{hero}はギルドとの巧みな交渉で、試験期限を{hours}延長した。",
+        "en": "{hero} skillfully negotiated with the guild and extended the exam deadline by {hours}."
+      }
+    },
+    "logGuild11": {
+      "lang-store": {
+        "ja": "{hero}はギルドとの巧みな交渉で好条件を引き出し、試験期限を{hours}延長した。",
+        "en": "{hero} skillfully secured favorable terms from the guild and extended the exam deadline by {hours}."
+      }
+    },
+    "headPart": {
+      "lang-store": {
+        "ja": "頭装備",
+        "en": "headgear"
+      }
+    },
+    "torsoPart": {
+      "lang-store": {
+        "ja": "胴装備",
+        "en": "body armor"
+      }
+    },
+    "weaponPart": {
+      "lang-store": {
+        "ja": "手装備",
+        "en": "hand equipment"
+      }
+    },
+    "feetPart": {
+      "lang-store": {
+        "ja": "脚装備",
+        "en": "footwear"
+      }
+    },
+    "battleDestination": {
+      "lang-store": {
+        "ja": "戦闘",
+        "en": "battle"
+      }
+    },
+    "shopDestination": {
+      "lang-store": {
+        "ja": "ショップ",
+        "en": "the shop"
+      }
+    },
+    "guildDestination": {
+      "lang-store": {
+        "ja": "ギルド",
+        "en": "the guild"
+      }
+    },
+    "trainingDestination": {
+      "lang-store": {
+        "ja": "訓練",
+        "en": "training"
+      }
+    }
+  },
+  "information": {
+    "area": {
+      "preparation": {
+        "name": {
+          "lang-store": {
+            "ja": "拠点",
+            "en": "Home"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "次の出発に備え、味方たちが束の間の休息をとる場所。",
+            "en": "A place where companions enjoy a brief rest before setting out again."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "拠点で待機している味方の"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": "は、時間とともに回復する。"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": "が3以上の味方をアイテムへドラッグすると、装備を始めて出発する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Allies resting here recover "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": " over time. Drag an ally with at least 3 "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": " onto an item to have them equip it and set out."
+              }
+            ]
+          }
+        }
+      },
+      "warehouse": {
+        "name": {
+          "lang-store": {
+            "ja": "倉庫",
+            "en": "Warehouse"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "まだ使い手の決まらない装備が、次の出番を待つ場所。",
+            "en": "Equipment without a wielder waits here for its next chance to shine."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "battle"
+              },
+              {
+                "type": "text",
+                "value": "で手に入れた装備や、"
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "shop"
+              },
+              {
+                "type": "text",
+                "value": "から届いた装備が保管される。ここから装備を選び、味方に身につけさせられる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Stores equipment obtained at the "
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "battle"
+              },
+              {
+                "type": "text",
+                "value": " or delivered from the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "shop"
+              },
+              {
+                "type": "text",
+                "value": ". Choose equipment here for your allies to wear."
+              }
+            ]
+          }
+        }
+      },
+      "battle": {
+        "name": {
+          "lang-store": {
+            "ja": "試験場",
+            "en": "Exam Grounds"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "勇者試験に挑む仮免許の勇者たちと、行く手を阻む敵が向かい合う場所。",
+            "en": "Provisional heroes taking the hero exam face the enemies standing in their way."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "味方と敵が自動で戦う。"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": "が0になった味方は、戦闘から一時離脱して装備をすべて失い、"
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": "へ帰還する。敵を全滅させることで課題クリアーとなる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Allies and enemies fight automatically. When an ally's "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": " reaches 0, they temporarily leave battle, lose all their equipment, and return "
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": ". Defeat all enemies to clear the challenge."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "facility": {
+      "shop": {
+        "name": {
+          "lang-store": {
+            "ja": "ショップ",
+            "en": "Shop"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "石畳の店先に、売り物と掘り出し物が並ぶ。",
+            "en": "Goods and hidden bargains line the cobblestone storefront."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "買い物袋に入れた装備を売ると、売却額と"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "negotiation"
+              },
+              {
+                "type": "text",
+                "value": "に応じた装備を受け取れる。取引には"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": "を3消費する。取引を終えると、装備をすべて失って"
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": "へ帰還する。右側の黒板で、今回と次回の販売傾向を確認できる。"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "gem"
+              },
+              {
+                "type": "text",
+                "value": "のタグスキルに応じて、取引で得られる装備のタグ数がさらに増えることがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Sell the equipment in your shopping bag to receive equipment based on its sale value and your "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "negotiation"
+              },
+              {
+                "type": "text",
+                "value": ". A trade costs 3 "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": ". After trading, you lose all your equipment and return "
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": ". The blackboards on the right show the current and next shop trends. Your "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "gem"
+              },
+              {
+                "type": "text",
+                "value": " tag skill may add more tags to the equipment you receive."
+              }
+            ]
+          }
+        }
+      },
+      "guild": {
+        "name": {
+          "lang-store": {
+            "ja": "ギルド",
+            "en": "Guild"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "木の壁に囲まれた窓口の脇で、掲示板が静かに知らせを待っている。",
+            "en": "Beside a counter framed by wooden walls, a noticeboard quietly awaits the next announcement."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "貢献ポイントを使って試験期限の延長を申請できる。申請には"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": "を3消費する。申請を終えると、装備をすべて失って"
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": "へ帰還する。"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "reputation"
+              },
+              {
+                "type": "text",
+                "value": "のタグスキルに応じて、貢献ポイントあたりの延長時間が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Spend contribution points to request an extension to the exam deadline. Applying costs 3 "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": ". After applying, you lose all your equipment and return "
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": ". Your "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "reputation"
+              },
+              {
+                "type": "text",
+                "value": " tag skill increases the extension time gained per contribution point."
+              }
+            ]
+          }
+        }
+      },
+      "training": {
+        "name": {
+          "lang-store": {
+            "ja": "訓練場",
+            "en": "Training Ground"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "勇者試験に挑む仮免許の勇者たちが、腕を磨く場所。",
+            "en": "A place for provisional heroes to hone their skills for the hero exam."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": "を消費してステータス上限を高められる。"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": "が0になると訓練を終え、装備をすべて失って"
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": "へ帰還する。ゲージで、今回の訓練で上がったステータスを確認できる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Spend "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": " to raise your stat caps. When "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": " reaches 0, training ends. You lose all your equipment and return "
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": ". The gauges show which stats improved during this training session."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "status": {
+      "power": {
+        "name": {
+          "lang-store": {
+            "ja": "パワー",
+            "en": "Power"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "物理攻撃で与えるダメージに影響する。"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "valor"
+              },
+              {
+                "type": "text",
+                "value": "と"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "iron"
+              },
+              {
+                "type": "text",
+                "value": "のうち多い方のタグ数がパワー値になる。パワー値はパワーステータス上限を超えず、その上限は"
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "で高められる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Affects physical damage dealt. Power equals the higher of your "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "valor"
+              },
+              {
+                "type": "text",
+                "value": " and "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "iron"
+              },
+              {
+                "type": "text",
+                "value": " tag counts, up to your Power cap. You can raise this cap at the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "magic": {
+        "name": {
+          "lang-store": {
+            "ja": "魔力",
+            "en": "Magic"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "魔法攻撃で与えるダメージに影響する。"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "arcane"
+              },
+              {
+                "type": "text",
+                "value": "と"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "cloth"
+              },
+              {
+                "type": "text",
+                "value": "のうち多い方のタグ数が魔力値になる。魔力値は魔力ステータス上限を超えず、その上限は"
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "で高められる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Affects magical damage dealt. Magic equals the higher of your "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "arcane"
+              },
+              {
+                "type": "text",
+                "value": " and "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "cloth"
+              },
+              {
+                "type": "text",
+                "value": " tag counts, up to your Magic cap. You can raise this cap at the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "speed": {
+        "name": {
+          "lang-store": {
+            "ja": "スピード",
+            "en": "Speed"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "スピード値が高いほど、戦闘中の攻撃間隔が短くなる。"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "dexterity"
+              },
+              {
+                "type": "text",
+                "value": "と"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "feather"
+              },
+              {
+                "type": "text",
+                "value": "のうち多い方のタグ数がスピード値になる。スピード値はスピードステータス上限を超えず、その上限は"
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "で高められる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher Speed reduces the interval between attacks in battle. Speed equals the higher of your "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "dexterity"
+              },
+              {
+                "type": "text",
+                "value": " and "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "feather"
+              },
+              {
+                "type": "text",
+                "value": " tag counts, up to your Speed cap. You can raise this cap at the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "negotiation": {
+        "name": {
+          "lang-store": {
+            "ja": "交渉力",
+            "en": "Negotiation"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "ショップの取引で得られる装備のタグ数に影響する。"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "reputation"
+              },
+              {
+                "type": "text",
+                "value": "と"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "gem"
+              },
+              {
+                "type": "text",
+                "value": "のうち多い方のタグ数が交渉力値になる。交渉力値は交渉力ステータス上限を超えず、その上限は"
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "で高められる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Affects how many tags the equipment received in shop trades has. Negotiation equals the higher of your "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "reputation"
+              },
+              {
+                "type": "text",
+                "value": " and "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "gem"
+              },
+              {
+                "type": "text",
+                "value": " tag counts, up to your Negotiation cap. You can raise this cap at the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "luck": {
+        "name": {
+          "lang-store": {
+            "ja": "運",
+            "en": "Luck"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "会心など、偶然に左右される結果に影響する。"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "blessing"
+              },
+              {
+                "type": "text",
+                "value": "と"
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "fortune"
+              },
+              {
+                "type": "text",
+                "value": "のうち多い方のタグ数が運の値になる。運の値は運ステータス上限を超えず、その上限は"
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "で高められる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Affects critical hits and other chance-based outcomes. Luck equals the higher of your "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "blessing"
+              },
+              {
+                "type": "text",
+                "value": " and "
+              },
+              {
+                "type": "reference",
+                "kind": "tag",
+                "id": "fortune"
+              },
+              {
+                "type": "text",
+                "value": " tag counts, up to your Luck cap. You can raise this cap at the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "stamina": {
+        "name": {
+          "lang-store": {
+            "ja": "スタミナ",
+            "en": "Stamina"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "味方の"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "。戦闘で受けたダメージや施設の利用で減る。"
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": "で待機している間は時間とともに回復する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "An ally's "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". Decreases when taking damage in battle or using facilities. Recovers over time while resting at "
+              },
+              {
+                "type": "reference",
+                "kind": "area",
+                "id": "preparation"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "hp": {
+        "name": {
+          "lang-store": {
+            "ja": "HP",
+            "en": "HP"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "敵の"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "。戦闘で受けたダメージで減る。0になると撃破される。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "An enemy's "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". Decreases when taking damage in battle. The enemy is defeated when it reaches 0."
+              }
+            ]
+          }
+        }
+      },
+      "durability": {
+        "name": {
+          "lang-store": {
+            "ja": "耐久値",
+            "en": "Durability"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "戦闘でキャラクターが受けられるダメージの残りを表す。味方は"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": "、敵は"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "hp"
+              },
+              {
+                "type": "text",
+                "value": "で表示される。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "The remaining damage a character can withstand in battle. Displayed as "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "stamina"
+              },
+              {
+                "type": "text",
+                "value": " for allies and "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "hp"
+              },
+              {
+                "type": "text",
+                "value": " for enemies."
+              }
+            ]
+          }
+        }
+      },
+      "weight": {
+        "name": {
+          "lang-store": {
+            "ja": "重量",
+            "en": "Weight"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "タグの種類ごとに決まった重さがある。重量は、移動速度や戦闘での攻撃間隔に影響する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Each tag type has a fixed weight. Weight affects movement speed and the interval between attacks in battle."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "tag": {
+      "valor": {
+        "name": {
+          "lang-store": {
+            "ja": "武勇",
+            "en": "Valor"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "power"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "power"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて物理会心率が上がる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades increase your physical critical-hit chance."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "勘所",
+              "急所見切り",
+              "一撃必殺",
+              "英雄の一閃"
+            ],
+            "en": [
+              "Keen Instinct",
+              "Spot the Weakness",
+              "Lethal Strike",
+              "Hero's Flash"
+            ]
+          }
+        }
+      },
+      "iron": {
+        "name": {
+          "lang-store": {
+            "ja": "鉄",
+            "en": "Iron"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "power"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "power"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて、受けた物理攻撃の一部を相手に跳ね返す割合が上がる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades reflect a greater portion of physical damage taken back at the attacker."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "身構え",
+              "受け流し",
+              "不動の構え",
+              "聖騎士の誓約"
+            ],
+            "en": [
+              "Brace",
+              "Deflection",
+              "Unshakable Stance",
+              "Paladin's Oath"
+            ]
+          }
+        }
+      },
+      "arcane": {
+        "name": {
+          "lang-store": {
+            "ja": "魔導",
+            "en": "Arcane"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "magic"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "magic"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて魔法会心率が上がる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades increase your magical critical-hit chance."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "おまじない",
+              "魔力励起",
+              "術式強化",
+              "大賢者の秘術"
+            ],
+            "en": [
+              "Simple Charm",
+              "Arcane Awakening",
+              "Empowered Spell",
+              "Sage's Secret"
+            ]
+          }
+        }
+      },
+      "cloth": {
+        "name": {
+          "lang-store": {
+            "ja": "布",
+            "en": "Cloth"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "magic"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "magic"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて、炎・水・雷属性の影響を軽減する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades reduce the effects of fire, water, and lightning."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "護りの布",
+              "祈りの衣",
+              "守護結界",
+              "聖者の法衣"
+            ],
+            "en": [
+              "Protective Cloth",
+              "Prayer Robe",
+              "Guardian Ward",
+              "Saint's Vestments"
+            ]
+          }
+        }
+      },
+      "dexterity": {
+        "name": {
+          "lang-store": {
+            "ja": "軽業",
+            "en": "Dexterity"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "speed"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "speed"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて盗み成功率が上がる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades increase your chance of stealing successfully."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "指先の悪戯",
+              "すり抜け",
+              "盗人の手練れ",
+              "盗賊の極意"
+            ],
+            "en": [
+              "Nimble Fingers",
+              "Sleight of Hand",
+              "Master Thief",
+              "Art of Thievery"
+            ]
+          }
+        }
+      },
+      "feather": {
+        "name": {
+          "lang-store": {
+            "ja": "羽",
+            "en": "Feather"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "speed"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "speed"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて、相手の攻撃をかわしやすくなる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades make it easier to dodge attacks."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "身かわし",
+              "風読み",
+              "風走り",
+              "疾風の残像"
+            ],
+            "en": [
+              "Sidestep",
+              "Wind Reader",
+              "Wind Runner",
+              "Gale Afterimage"
+            ]
+          }
+        }
+      },
+      "reputation": {
+        "name": {
+          "lang-store": {
+            "ja": "信用",
+            "en": "Reputation"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "negotiation"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "negotiation"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて、ギルドでの試験期限延長に必要な貢献ポイントが軽減される。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades reduce the contribution points needed to extend the exam deadline at the guild."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "挨拶上手",
+              "口利き",
+              "信頼の証",
+              "信用の極致"
+            ],
+            "en": [
+              "Warm Greeting",
+              "A Good Word",
+              "Proof of Trust",
+              "Perfect Reputation"
+            ]
+          }
+        }
+      },
+      "gem": {
+        "name": {
+          "lang-store": {
+            "ja": "宝石",
+            "en": "Gem"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "negotiation"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "negotiation"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて、ショップの取引で得られる装備のタグ数が増える可能性が上がる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades increase the chance of receiving equipment with additional tags in shop trades."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "掘り出し物",
+              "目利き",
+              "秘蔵の鑑定眼",
+              "黄金の審美眼"
+            ],
+            "en": [
+              "Lucky Find",
+              "Discerning Eye",
+              "Master Appraiser",
+              "Golden Eye"
+            ]
+          }
+        }
+      },
+      "blessing": {
+        "name": {
+          "lang-store": {
+            "ja": "加護",
+            "en": "Blessing"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "luck"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "luck"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "が少ないときほど運に恵まれやすくなる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades improve your luck more when your "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": " is low."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "神頼み",
+              "守りの加護",
+              "奇跡の灯火",
+              "神恩の極み"
+            ],
+            "en": [
+              "A Prayer for Help",
+              "Protective Blessing",
+              "Light of Miracles",
+              "Divine Grace"
+            ]
+          }
+        }
+      },
+      "fortune": {
+        "name": {
+          "lang-store": {
+            "ja": "幸運",
+            "en": "Fortune"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "このタグが付いた装備を身につけると、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "luck"
+              },
+              {
+                "type": "text",
+                "value": "が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equipping an item with this tag increases "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "luck"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        },
+        "effectDescription": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "グレードに応じて、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "が多いときほど運に恵まれやすくなる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Higher grades improve your luck more when your "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": " is high."
+              }
+            ]
+          }
+        },
+        "skillNames": {
+          "lang-store": {
+            "ja": [
+              "小さな兆し",
+              "時流の巡り",
+              "星々の導き",
+              "天運の寵児"
+            ],
+            "en": [
+              "Small Omen",
+              "Turning Tide",
+              "Guidance of the Stars",
+              "Fortune's Favorite"
+            ]
+          }
+        }
+      },
+      "fire": {
+        "name": {
+          "lang-store": {
+            "ja": "炎",
+            "en": "Fire"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "炎属性を受けた相手は、しばらくの間ダメージを受け続ける。タグ数が多いほどダメージと継続時間が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets affected by fire take damage over time. More tags increase the damage and duration."
+              }
+            ]
+          }
+        }
+      },
+      "water": {
+        "name": {
+          "lang-store": {
+            "ja": "水",
+            "en": "Water"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "水属性を受けた相手は、しばらくの間攻撃を失敗しやすくなる。タグ数が多いほど効果と継続時間が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets affected by water become more likely to miss their attacks for a while. More tags increase the effect and duration."
+              }
+            ]
+          }
+        }
+      },
+      "lightning": {
+        "name": {
+          "lang-store": {
+            "ja": "雷",
+            "en": "Lightning"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "雷属性を受けた相手は、しばらくの間受けたダメージが隣接した仲間に伝搬するようになる。タグ数が多いほど伝搬する範囲とダメージ、継続時間が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "For a while, damage taken by targets affected by lightning spreads to their adjacent allies. More tags increase the spread, damage, and duration."
+              }
+            ]
+          }
+        }
+      },
+      "area": {
+        "name": {
+          "lang-store": {
+            "ja": "範囲",
+            "en": "Area"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "攻撃と属性の効果が、相手の周囲にも届くようになる。タグ数が多いほど届く範囲が広がり、範囲へ与えるダメージや属性の効果が大きくなる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Attacks and elemental effects also reach the area around the target. More tags increase the range and the damage or elemental effects applied in that area."
+              }
+            ]
+          }
+        }
+      },
+      "vitality": {
+        "name": {
+          "lang-store": {
+            "ja": "活力",
+            "en": "Vitality"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "行動終了後、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "luck"
+              },
+              {
+                "type": "text",
+                "value": "により自分の"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "を回復する。タグ数が多いほど回復量が増える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "After the user acts, its "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "luck"
+              },
+              {
+                "type": "text",
+                "value": " gives you a chance to recover your own "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". More tags increase the amount recovered."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "term": {
+      "tag-skill": {
+        "name": {
+          "lang-store": {
+            "ja": "タグスキル",
+            "en": "Tag Skills"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "同じタグを1・3・5・7個持つと、そのタグに応じた効果が自動で発動する。タグの数に応じて、効果は強化される。効果を持たないタグもある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Having 1, 3, 5, or 7 of the same tag automatically activates that tag's skill. Its effect grows stronger as the tag count increases. Some tags have no skill."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "item": {
+      "sword": {
+        "name": {
+          "lang-store": {
+            "ja": "剣",
+            "en": "Sword"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "冒険者なら一本は持っておきたい、素直で頼れる片手剣。",
+            "en": "A straightforward, dependable one-handed sword. Every adventurer should carry one."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": ""
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "の高い相手を狙う武器。物理攻撃力が高い。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets opponents with high "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". Has high physical attack power."
+              }
+            ]
+          }
+        }
+      },
+      "shield": {
+        "name": {
+          "lang-store": {
+            "ja": "盾",
+            "en": "Shield"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青地に金色の星をあしらった、立派な盾。",
+            "en": "A fine shield bearing a golden star on a blue field."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "近い相手を狙う武器。仲間へ物理攻撃軽減を付与する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets nearby opponents. Grants allies physical damage reduction."
+              }
+            ]
+          }
+        }
+      },
+      "staff": {
+        "name": {
+          "lang-store": {
+            "ja": "杖",
+            "en": "Staff"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "夜空を映す宝珠を宿した、月明かりの杖。",
+            "en": "A moonlit staff crowned with an orb that reflects the night sky."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": ""
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "の低い相手を狙う武器。魔法攻撃力が高い。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets opponents with low "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". Has high magical attack power."
+              }
+            ]
+          }
+        }
+      },
+      "holy-book": {
+        "name": {
+          "lang-store": {
+            "ja": "聖書",
+            "en": "Holy Book"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "開くたび、金の聖印が静かに輝く古い祈祷書。",
+            "en": "An old prayer book whose golden holy emblem glows softly whenever it is opened."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": ""
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "の低い相手を狙う武器。仲間が受けた炎・水・雷属性の影響を軽減する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets opponents with low "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". Reduces the effects of fire, water, and lightning on allies."
+              }
+            ]
+          }
+        }
+      },
+      "claw": {
+        "name": {
+          "lang-store": {
+            "ja": "爪",
+            "en": "Claw"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "音もなく伸びる刃で、目当ての品だけをかすめ取る手甲。",
+            "en": "A gauntlet with blades that extend without a sound, snatching only the prize you seek."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "豪華な装備をしている相手を狙う武器。相手の装備を盗むことがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets opponents with lavish equipment. May steal their equipment."
+              }
+            ]
+          }
+        }
+      },
+      "bow": {
+        "name": {
+          "lang-store": {
+            "ja": "弓",
+            "en": "Bow"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青い飾り紐を結んだ、細身の長弓。遠くの獲物を静かに狙い定める。",
+            "en": "A slender longbow tied with a blue cord. Quietly take aim at distant prey."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "遠い相手を狙う武器。自身のアクションゲージを短縮する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets distant opponents. Shortens its user's action gauge."
+              }
+            ]
+          }
+        }
+      },
+      "banner": {
+        "name": {
+          "lang-store": {
+            "ja": "旗",
+            "en": "Banner"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "金の羽根紋を染め抜いた、深い青の軍旗。掲げた合図が、仲間の足を早める。",
+            "en": "A deep blue battle standard bearing a golden feather crest. Its signal quickens your companions' steps."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": ""
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "の低い相手を狙う武器。仲間のアクションゲージを進める。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets opponents with low "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". Advances allies' action gauges."
+              }
+            ]
+          }
+        }
+      },
+      "orb": {
+        "name": {
+          "lang-store": {
+            "ja": "宝珠",
+            "en": "Orb"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "星明かりを閉じ込めた、青く澄んだ宝珠。放った宝石の欠片が相手の装備に食い込み、動きを鈍らせる。",
+            "en": "A clear blue orb holding a glimmer of starlight. The gem shards it releases lodge in enemy equipment, slowing their movements."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": ""
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "weight"
+              },
+              {
+                "type": "text",
+                "value": "の低い相手を狙う武器。相手の装備に宝石タグを追加して、行動を遅くすることがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets opponents with low "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "weight"
+              },
+              {
+                "type": "text",
+                "value": ". May add a Gem tag to their equipment, slowing their actions."
+              }
+            ]
+          }
+        }
+      },
+      "holy-symbol": {
+        "name": {
+          "lang-store": {
+            "ja": "聖印",
+            "en": "Holy Symbol"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青い宝石を抱く、星形の金の聖印。掲げた光が仲間の消耗を静かに癒やす。",
+            "en": "A golden, star-shaped holy symbol cradling a blue gem. Its raised light gently restores weary companions."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": ""
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "の低い相手を狙う武器。仲間の"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "を回復する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets opponents with low "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". Restores allies' "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "tarot-cards": {
+        "name": {
+          "lang-store": {
+            "ja": "タロット",
+            "en": "Tarot Cards"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "星と月を描いた、縁取りの美しい占い札。めくるたび、仲間に都合のいい偶然を呼び込む。",
+            "en": "Finely bordered divination cards adorned with stars and moons. Each turn of a card invites a fortunate coincidence for your companions."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": ""
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": "の低い相手を狙う武器。仲間の次の行動まで、"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "luck"
+              },
+              {
+                "type": "text",
+                "value": "を高める。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Targets opponents with low "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "durability"
+              },
+              {
+                "type": "text",
+                "value": ". Raises allies' "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "luck"
+              },
+              {
+                "type": "text",
+                "value": " until their next action."
+              }
+            ]
+          }
+        }
+      },
+      "shopping-bag": {
+        "name": {
+          "lang-store": {
+            "ja": "買い物袋",
+            "en": "Shopping Bag"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "口を紐で結んだ、肩掛けの買い物袋。売りたい装備を詰め込み、次の掘り出し物を探しに出かけよう。",
+            "en": "A shoulder bag tied shut with a cord. Pack the equipment you want to sell and set out in search of your next lucky find."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "shop"
+              },
+              {
+                "type": "text",
+                "value": "へ向かうときに身につけるアイテム。売りたい装備をアイテム袋へドラッグして、最大3個まで選べる。ショップへ向かう際、空きがあれば装備を可能な限り詰め込む。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equip this item to head to the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "shop"
+              },
+              {
+                "type": "text",
+                "value": ". Drag equipment you want to sell onto the bag to select up to 3 items. When leaving for the shop, the hero packs as much equipment as possible into any remaining space."
+              }
+            ]
+          }
+        }
+      },
+      "hero-license": {
+        "name": {
+          "lang-store": {
+            "ja": "勇者仮免許",
+            "en": "Provisional Hero License"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青いリボンを通した、金縁の仮免許。訓練を受ける資格を示す、小さな証明書。",
+            "en": "A gold-edged provisional license threaded with a blue ribbon. This small document certifies your eligibility to train."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "へ向かうときに身につけるアイテム。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equip this item to head to the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "training"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "renewal-form": {
+        "name": {
+          "lang-store": {
+            "ja": "延長申請書",
+            "en": "Extension Request"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "金の縁取りが施された、試験期限の延長を願い出る申請書。",
+            "en": "A gold-bordered form requesting an extension to the exam deadline."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "guild"
+              },
+              {
+                "type": "text",
+                "value": "へ向かうときに身につけるアイテム。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Equip this item to head to the "
+              },
+              {
+                "type": "reference",
+                "kind": "facility",
+                "id": "guild"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "head-1": {
+        "name": {
+          "lang-store": {
+            "ja": "兜",
+            "en": "Helm"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "かぶる者を頼もしく見せる、金の星飾りをあしらった顔を覆う重厚な兜。",
+            "en": "A heavy, full-face helm adorned with golden stars. It lends its wearer an air of dependability."
+          }
+        }
+      },
+      "head-2": {
+        "name": {
+          "lang-store": {
+            "ja": "とんがり帽",
+            "en": "Pointed Hat"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青い宝石を留めた、深い藍色に思索の気配を宿すとんがり帽。",
+            "en": "A deep indigo pointed hat set with a blue gem, carrying an air of quiet contemplation."
+          }
+        }
+      },
+      "head-3": {
+        "name": {
+          "lang-store": {
+            "ja": "フード",
+            "en": "Hood"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "人目を避けて各地を駆ける旅人が深くかぶる、金の刺繍と青い留め飾りを施した白いフード。",
+            "en": "A white hood with gold embroidery and a blue clasp, worn low by travelers who prefer to pass unnoticed."
+          }
+        }
+      },
+      "head-4": {
+        "name": {
+          "lang-store": {
+            "ja": "冠",
+            "en": "Crown"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青い宝石と白い羽根を飾った、かぶる者に気品を与えるきらびやかな金の冠。",
+            "en": "A gleaming golden crown adorned with blue gems and white feathers. It lends its wearer a regal air."
+          }
+        }
+      },
+      "head-5": {
+        "name": {
+          "lang-store": {
+            "ja": "羽根帽",
+            "en": "Feathered Hat"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "白い羽根と赤い飾り紐を添えた、遠い道のりを行く者に似合うつば広の黒い帽子。",
+            "en": "A wide-brimmed black hat with a white feather and a red cord, well suited to a traveler with a long road ahead."
+          }
+        }
+      },
+      "torso-1": {
+        "name": {
+          "lang-store": {
+            "ja": "鎧",
+            "en": "Armor"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青と金の意匠を重ねた、着る者を堂々と見せる重厚な鎧。",
+            "en": "Heavy armor worked in blue and gold, giving its wearer an imposing presence."
+          }
+        }
+      },
+      "torso-2": {
+        "name": {
+          "lang-store": {
+            "ja": "ローブ",
+            "en": "Robe"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "金の刺繍と青い宝石をあしらった、深い藍色を添える白いローブ。",
+            "en": "A white robe with deep indigo accents, gold embroidery, and blue gems."
+          }
+        }
+      },
+      "torso-3": {
+        "name": {
+          "lang-store": {
+            "ja": "ベスト",
+            "en": "Vest"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "走りやすいよう腰紐を締めた、使い込んだ革の留め具を備えた緑のベスト。",
+            "en": "A green vest with well-worn leather fastenings, tied at the waist for freedom of movement."
+          }
+        }
+      },
+      "torso-4": {
+        "name": {
+          "lang-store": {
+            "ja": "ジャケット",
+            "en": "Jacket"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "金の縁取りと紫のベストをのぞかせる、華やかな装いを好む者に似合う赤いジャケット。",
+            "en": "A red jacket with gold trim and a glimpse of a purple waistcoat, made for those who favor a flourish."
+          }
+        }
+      },
+      "torso-5": {
+        "name": {
+          "lang-store": {
+            "ja": "コート",
+            "en": "Coat"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "白い毛皮の襟をあしらった、寒い旅路に頼もしい茶色のコート。",
+            "en": "A brown coat with a white fur collar, a dependable companion on cold journeys."
+          }
+        }
+      },
+      "feet-1": {
+        "name": {
+          "lang-store": {
+            "ja": "グリーヴ",
+            "en": "Greaves"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "金の装飾を施した、足元を凛々しく見せる銀色のグリーヴ。",
+            "en": "Silver greaves with golden ornamentation, lending a dignified finish to every stride."
+          }
+        }
+      },
+      "feet-2": {
+        "name": {
+          "lang-store": {
+            "ja": "ブーツ",
+            "en": "Boots"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青い布をのぞかせる、長い学びの旅によくなじむ革のブーツ。",
+            "en": "Leather boots with glimpses of blue cloth, well suited to a long journey of learning."
+          }
+        }
+      },
+      "feet-3": {
+        "name": {
+          "lang-store": {
+            "ja": "シューズ",
+            "en": "Shoes"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "石畳にも土道にも軽やかに足を運ぶ、二本の留め具を備えた革のシューズ。",
+            "en": "Leather shoes with two fastenings, carrying their wearer lightly over cobblestones and dirt paths alike."
+          }
+        }
+      },
+      "feet-4": {
+        "name": {
+          "lang-store": {
+            "ja": "ローファー",
+            "en": "Loafers"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "金の刺繍が光る、格式ある場にも似合う深い青のローファー。",
+            "en": "Deep blue loafers with gleaming gold embroidery, fit for even the most formal occasion."
+          }
+        }
+      },
+      "feet-5": {
+        "name": {
+          "lang-store": {
+            "ja": "ファーブーツ",
+            "en": "Fur Boots"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "青い宝石を留めた、冬の旅人に似合う毛皮のブーツ。",
+            "en": "Fur boots set with blue gems, made for the winter traveler."
+          }
+        }
+      }
+    },
+    "enemy": {
+      "small-valor": {
+        "name": {
+          "lang-store": {
+            "ja": "ゴブリン",
+            "en": "Goblin"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "小柄でも、剣を振るう勢いだけは一人前の小鬼。仲間がそろうと、ますます強気になる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A little goblin whose sword swings are as bold as any warrior's. It grows even bolder with friends at its side."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "剣による物理攻撃を得意とする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Excels at physical attacks with a sword."
+              }
+            ]
+          }
+        }
+      },
+      "small-iron": {
+        "name": {
+          "lang-store": {
+            "ja": "リビングアーマー",
+            "en": "Living Armor"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "主を失った鎧に、古い守りの意志だけが宿っている。鈍重だが、簡単には崩れない。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Only an ancient will to protect remains within this masterless armor. Slow and heavy, but difficult to break."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "盾で物理攻撃を受け止め、受けた力を相手へ返す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Blocks physical attacks with a shield and turns part of their force back on the attacker."
+              }
+            ]
+          }
+        }
+      },
+      "small-arcane": {
+        "name": {
+          "lang-store": {
+            "ja": "ゴースト",
+            "en": "Ghost"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "淡い光をまとって漂う、いたずら好きのゴースト。守りをすり抜ける魔法で、相手をからかうのが好きだ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A mischievous ghost drifting in a pale glow. It delights in teasing foes with magic that slips past their defenses."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "防御されない魔法攻撃を放つ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Uses magical attacks that bypass defenses."
+              }
+            ]
+          }
+        }
+      },
+      "small-reputation": {
+        "name": {
+          "lang-store": {
+            "ja": "ドワーフ",
+            "en": "Dwarf"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "山の工房から出てきた、商売熱心なドワーフ。手に入れた品の値打ちは、誰より気にしている。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "An enterprising dwarf fresh from a mountain workshop. No one watches the value of its acquisitions more closely."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "宝珠で相手の動きを鈍らせる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Uses an orb to slow opponents."
+              }
+            ]
+          }
+        }
+      },
+      "small-lightning": {
+        "name": {
+          "lang-store": {
+            "ja": "雷狼",
+            "en": "Thunder Wolf"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "雷鳴と一緒に駆け抜ける、青白い毛並みの狼。獲物を追い詰めると、仲間へ電撃をつなぐ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A pale-furred wolf that races alongside the thunder. Once its prey is cornered, it sends lightning leaping among its companions."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "雷属性を付与し、受けた攻撃を周囲へ伝わりやすくする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Applies lightning, causing damage taken to spread to nearby allies."
+              }
+            ]
+          }
+        }
+      },
+      "small-cloth": {
+        "name": {
+          "lang-store": {
+            "ja": "ミイラ",
+            "en": "Mummy"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "乾いた包帯を引きずる、墓所からの迷子。炎も水も雷も、何重もの布でやわらげる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A lost wanderer from the tombs, trailing dry bandages. Layer upon layer of cloth softens fire, water, and lightning alike."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "炎・水・雷属性の影響を軽減する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Reduces the effects of fire, water, and lightning."
+              }
+            ]
+          }
+        }
+      },
+      "small-dexterity": {
+        "name": {
+          "lang-store": {
+            "ja": "コボルト",
+            "en": "Kobold"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "すばしこく走り回る、手癖の悪いコボルト。目についた物は、隙を見て持ち去ろうとする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A quick-footed kobold with sticky fingers. Anything that catches its eye is likely to vanish at the first opening."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "倉庫の装備を盗み、自分の装備にする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Steals equipment from the warehouse and equips it."
+              }
+            ]
+          }
+        }
+      },
+      "small-feather": {
+        "name": {
+          "lang-store": {
+            "ja": "ハーピー",
+            "en": "Harpy"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "高い場所から獲物を見つける、翼を持つ狩人。風向きが変われば、もう姿を捉えにくい。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A winged hunter that spots prey from high above. When the wind shifts, it is already slipping out of sight."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "すばやく行動し、相手の攻撃をかわしやすい。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Acts quickly and readily dodges attacks."
+              }
+            ]
+          }
+        }
+      },
+      "small-gem": {
+        "name": {
+          "lang-store": {
+            "ja": "ミミック",
+            "en": "Mimic"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "宝箱のふりをして獲物を待つ、小さな魔物。きらきらした物なら、罠にするのも大好きだ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A small monster waiting for prey in the guise of a treasure chest. It loves shiny things, especially as bait."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "宝珠を使って、相手の行動を遅らせる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Uses an orb to delay opponents' actions."
+              }
+            ]
+          }
+        }
+      },
+      "small-blessing": {
+        "name": {
+          "lang-store": {
+            "ja": "インプ",
+            "en": "Imp"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "悪知恵だけは一丁前の、小さな悪魔。追い詰められた仲間へ、都合よく手を貸す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A little devil with no shortage of cunning. It always finds a convenient way to help a cornered companion."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "仲間のHPを回復する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Restores allies' HP."
+              }
+            ]
+          }
+        }
+      },
+      "small-fortune": {
+        "name": {
+          "lang-store": {
+            "ja": "ピクシー",
+            "en": "Pixie"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "幸運を振りまく、小さな妖精。危ない目に遭うほど、なぜか機嫌がよくなる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A tiny fairy scattering good fortune. For some reason, danger only seems to improve its mood."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "元気なピクシーほど運が高く、会心やさまざまな判定を有利にする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A healthier pixie has greater luck, improving critical hits and other chance-based outcomes."
+              }
+            ]
+          }
+        }
+      },
+      "small-fire": {
+        "name": {
+          "lang-store": {
+            "ja": "サラマンダー",
+            "en": "Salamander"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "火の粉をまとって岩場を歩く、陽気なトカゲの魔物。通った後には、なかなか消えない熱が残る。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A cheerful lizard monster that wanders rocky ground in a shower of sparks. Its passing leaves a stubborn heat behind."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "炎属性を付与し、時間とともにダメージを与える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Applies fire to deal damage over time."
+              }
+            ]
+          }
+        }
+      },
+      "small-water": {
+        "name": {
+          "lang-store": {
+            "ja": "半魚人",
+            "en": "Fishman"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "水辺から這い出す、ぬるりとした半魚人。濡れた足場へ誘い込み、狙いを狂わせる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A slippery fish-like humanoid crawling out of the water. It lures foes onto wet footing and throws off their aim."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "水属性を付与し、相手の攻撃を失敗しやすくする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Applies water, making opponents more likely to miss."
+              }
+            ]
+          }
+        }
+      },
+      "small-vitality": {
+        "name": {
+          "lang-store": {
+            "ja": "マンドラゴラ",
+            "en": "Mandragora"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "引き抜かれても、しぶとく根を張ろうとする不思議な植物。土があれば、まだまだ元気だ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A strange plant that stubbornly tries to take root even after being pulled up. Give it soil and it still has plenty of life left."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "行動後に、運がよければHPを回復する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "May recover HP after acting, depending on luck."
+              }
+            ]
+          }
+        }
+      },
+      "small-area": {
+        "name": {
+          "lang-store": {
+            "ja": "ケルベロス",
+            "en": "Cerberus"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "三つの頭で、獲物の逃げ道をふさぐ番犬。ひとつを避けても、別の頭が待っている。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A three-headed guard dog that cuts off every escape. Evade one head and another is waiting."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "広い範囲へ攻撃を行う。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Attacks a wide area."
+              }
+            ]
+          }
+        }
+      },
+      "medium-vitality": {
+        "name": {
+          "lang-store": {
+            "ja": "トレント",
+            "en": "Treant"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "長い年月で根を深く張った、歩く樹の魔物。倒れかけても、最後に新しい芽を残そうとする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A walking tree monster with roots grown deep over many years. Even as it falls, it tries to leave one last shoot behind."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "HPが0になると、マンドラゴラを最大2体召喚する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Summons up to 2 Mandragoras when its HP reaches 0."
+              }
+            ]
+          }
+        }
+      },
+      "large-vitality": {
+        "name": {
+          "lang-store": {
+            "ja": "歩く世界樹",
+            "en": "Walking World Tree"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "森そのものが歩き出したような、巨大な世界樹。倒れても根から次の命を呼び、戦場を埋め尽くそうとする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "An immense world tree, as though the forest itself had begun to walk. Even in defeat, its roots call forth new life to fill the battlefield."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "HPが0になると、トレントを最大2体召喚する。回復されるとかなり厄介。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Summons up to 2 Treants when its HP reaches 0. Especially troublesome when healed."
+              }
+            ]
+          }
+        }
+      },
+      "medium-gem": {
+        "name": {
+          "lang-store": {
+            "ja": "クリスタルゴーレム",
+            "en": "Crystal Golem"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "全身を結晶で覆った、鈍く光るゴーレム。砕けた欠片さえ、いつの間にか宝珠へ変わっている。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A dimly gleaming golem covered in crystals. Even its shattered fragments somehow turn into orbs."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "ダメージを受けると、倉庫に宝珠を落とすことがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "May drop an orb into the warehouse when damaged."
+              }
+            ]
+          }
+        }
+      },
+      "large-gem": {
+        "name": {
+          "lang-store": {
+            "ja": "ファフニール",
+            "en": "Fafnir"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "財宝の山を寝床にする、宝石鱗の竜。傷つくほど宝珠をばらまき、倉庫をきらびやかに散らかしていく。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A gem-scaled dragon that sleeps upon a mountain of treasure. Each wound scatters more orbs, leaving the warehouse glittering with clutter."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "ダメージを受けると、倉庫に宝珠をいくつか落とすことがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "May drop several orbs into the warehouse when damaged."
+              }
+            ]
+          }
+        }
+      },
+      "medium-area": {
+        "name": {
+          "lang-store": {
+            "ja": "ヒュドラ",
+            "en": "Hydra"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "幾つもの首を伸ばして獲物を囲む、底なし沼の大蛇。ひとつの首を振りほどいても、すぐ別の首が迫る。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A great serpent of the bottomless mire, encircling its prey with many necks. Shake off one head and another is already closing in."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "アクション時、"
+              },
+              {
+                "type": "reference",
+                "kind": "enemy-definition",
+                "id": "phantom-area-head"
+              },
+              {
+                "type": "text",
+                "value": "をひとつ伸ばして追加攻撃する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "When acting, extends "
+              },
+              {
+                "type": "reference",
+                "kind": "enemy-definition",
+                "id": "phantom-area-head"
+              },
+              {
+                "type": "text",
+                "value": " once for an additional attack."
+              }
+            ]
+          }
+        }
+      },
+      "large-area": {
+        "name": {
+          "lang-store": {
+            "ja": "八岐大蛇",
+            "en": "Yamata no Orochi"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "八つの首を自在に操る、巨大な大蛇。首がひとつ動けば、戦場のあちこちから同時に襲いかかる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "An immense serpent that commands eight heads with ease. One head moves, and attacks strike from across the battlefield at once."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "アクション時、"
+              },
+              {
+                "type": "reference",
+                "kind": "enemy-definition",
+                "id": "phantom-area-head"
+              },
+              {
+                "type": "text",
+                "value": "をふたつ伸ばして追加攻撃する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "When acting, extends "
+              },
+              {
+                "type": "reference",
+                "kind": "enemy-definition",
+                "id": "phantom-area-head"
+              },
+              {
+                "type": "text",
+                "value": " twice for additional attacks."
+              }
+            ]
+          }
+        }
+      },
+      "phantom-area-head": {
+        "name": {
+          "lang-store": {
+            "ja": "龍の首",
+            "en": "Dragon Head"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "本体から伸びて、相手に食らいつく巨大な蛇の首。攻撃を終えると、すぐ本体へ戻っていく。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A giant serpent's head that stretches out from its body to bite its foe. Once the attack is over, it swiftly withdraws."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "本体のアクションに続けて、すぐ追加攻撃する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Makes an immediate follow-up attack after its body's action."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "unique-skill": {
+      "vitality-summon": {
+        "name": {
+          "lang-store": {
+            "ja": "最後の芽吹き",
+            "en": "Last Sprout"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "倒れた巨木の根から、なお新しい芽が伸びる。",
+            "en": "New shoots still rise from the roots of the fallen giant."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "倒されると、空いている敵の位置へ眷属を呼び出す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "When defeated, summons minions into empty enemy positions."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "マンドラゴラを最大2体召喚",
+                "en": "Summons up to 2 Mandragoras"
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "トレントを最大2体召喚",
+                "en": "Summons up to 2 Treants"
+              }
+            }
+          }
+        }
+      },
+      "gem-orb-rain": {
+        "name": {
+          "lang-store": {
+            "ja": "宝珠の雨",
+            "en": "Orb Rain"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "砕けるたび、宝石を宿した宝珠があたりに降り注ぐ。",
+            "en": "With every shattering blow, gem-bearing orbs rain down around it."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "ダメージを受けると、倉庫に宝珠を落とすことがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "May drop orbs into the warehouse when damaged."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "50%で宝石タグ1の宝珠を1個落とす",
+                "en": "50% chance to drop 1 orb with 1 Gem tag"
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "50%で宝石タグ2の宝珠を2個落とす",
+                "en": "50% chance to drop 2 orbs with 2 Gem tags"
+              }
+            }
+          }
+        }
+      },
+      "area-head-rush": {
+        "name": {
+          "lang-store": {
+            "ja": "多頭の猛攻",
+            "en": "Many-Headed Onslaught"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "巨体から伸びた首が、遠くの相手へ食らいつく。",
+            "en": "Heads stretch from the immense body to sink their fangs into distant foes."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "行動後、"
+              },
+              {
+                "type": "reference",
+                "kind": "enemy-definition",
+                "id": "phantom-area-head"
+              },
+              {
+                "type": "text",
+                "value": "が追加で攻撃し、眷属も連携して攻撃する。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "After acting, "
+              },
+              {
+                "type": "reference",
+                "kind": "enemy-definition",
+                "id": "phantom-area-head"
+              },
+              {
+                "type": "text",
+                "value": " attacks again, while the user's minions join in with coordinated attacks."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "龍の首をひとつ伸ばして、即座に追加攻撃する",
+                "en": "Extends one Dragon Head for an immediate additional attack"
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "龍の首をふたつ伸ばして、即座に追加攻撃する",
+                "en": "Extends two Dragon Heads for immediate additional attacks"
+              }
+            }
+          }
+        }
+      }
+    },
+    "hero": {
+      "Avery": {
+        "name": {
+          "lang-store": {
+            "ja": "アヴェリー",
+            "en": "Avery"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "幼なじみのブライアーと、どちらが先に勇者になるか競ってきた。格好よく決めたい気持ちは誰より強く、困っている人は放っておけない。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Avery has competed with childhood friend Briar to see who will become a hero first. No one wants to look impressive more, but Avery can never leave someone in trouble unaided."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "真っ向から斬り込む、物理攻撃の得意手。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Charges straight into the fray, excelling at physical attacks."
+              }
+            ]
+          }
+        }
+      },
+      "Briar": {
+        "name": {
+          "lang-store": {
+            "ja": "ブライアー",
+            "en": "Briar"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "幼なじみのアヴェリーに置いていかれまいと、勇者試験を受けた。慎重に周囲を見ているが、勝負となれば決して譲らない。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Briar entered the hero exam determined not to be left behind by childhood friend Avery. Usually watchful and cautious, Briar refuses to yield when a contest begins."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "物理攻撃を受け止め、仲間を守る。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Withstands physical attacks and protects companions."
+              }
+            ]
+          }
+        }
+      },
+      "Casey": {
+        "name": {
+          "lang-store": {
+            "ja": "ケイシー",
+            "en": "Casey"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "机上の術式より、実地で確かめる方が好き。未知の魔法と出会うため、危険も多い勇者試験へ飛び込んだ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Casey prefers testing spells in the field to studying formulas at a desk. The chance to discover unfamiliar magic was worth plunging into the dangers of the hero exam."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "守りをすり抜ける、強力な魔法攻撃を放つ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Unleashes powerful magical attacks that slip past defenses."
+              }
+            ]
+          }
+        }
+      },
+      "Darcy": {
+        "name": {
+          "lang-store": {
+            "ja": "ダーシー",
+            "en": "Darcy"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "困っている人を見過ごせない。もっと遠くの誰かにも手を伸ばせるよう、勇者になる道を選んだ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Darcy cannot pass by someone in need. Becoming a hero is a way to reach those who need help, even far away."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "仲間が受けた炎・水・雷属性の影響を和らげる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Reduces the effects of fire, water, and lightning on companions."
+              }
+            ]
+          }
+        }
+      },
+      "Ellis": {
+        "name": {
+          "lang-store": {
+            "ja": "エリス",
+            "en": "Ellis"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "昔は小遣い稼ぎに盗みもしたが、悪い相手から大事な物を取り返した時の方が、ずっと気分がよかった。自分の手癖を胸を張れる仕事へ変えたくて、勇者試験に紛れ込んだ。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Ellis once stole for pocket money, but taking someone's treasured possessions back from a villain felt far better. Hoping to turn sticky fingers into work worth being proud of, Ellis slipped into the hero exam."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "相手の装備を盗み、戦力を崩す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Steals opponents' equipment to weaken them."
+              }
+            ]
+          }
+        }
+      },
+      "Finley": {
+        "name": {
+          "lang-store": {
+            "ja": "フィンリー",
+            "en": "Finley"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "山で迷った人を見つけ、無事に下山させたことがある。危険な場所でも誰かを見つけ出すため、勇者試験に挑む。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Finley once found someone lost in the mountains and guided them safely down. The hero exam is another step toward finding people who need help, even in dangerous places."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "誰より早く動き、弓を持てば遠い相手も狙える。ただし力押しは苦手。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Acts faster than anyone and can target distant opponents with a bow, but struggles with brute force."
+              }
+            ]
+          }
+        }
+      },
+      "Garnet": {
+        "name": {
+          "lang-store": {
+            "ja": "ガーネット",
+            "en": "Garnet"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "必要な物が必要な場所へ届かない場面を見てきた。もっと遠くまで品物と助けを運ぶため、勇者を目指す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Garnet has seen essential supplies fail to reach the places that need them. Becoming a hero means carrying goods and help farther than ever."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "宝珠で相手の動きを鈍らせる。買い物も得意。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Slows opponents with an orb. Also excels at shopping."
+              }
+            ]
+          }
+        }
+      },
+      "Harper": {
+        "name": {
+          "lang-store": {
+            "ja": "ハーパー",
+            "en": "Harper"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "言葉で減らせる争いは多いと信じる。誰にでも届く発言力を得るため、勇者の肩書きを目指している。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Harper believes that words can prevent many conflicts. The title of hero could give those words the authority to reach anyone."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "仲間の行動を早め、ギルドとの交渉も有利に進める。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Quickens companions' actions and gains an advantage in negotiations with the guild."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "profession": {
+      "swordfighter": {
+        "name": {
+          "lang-store": {
+            "ja": "剣士",
+            "en": "Swordfighter"
+          }
+        }
+      },
+      "guard": {
+        "name": {
+          "lang-store": {
+            "ja": "衛兵",
+            "en": "Guard"
+          }
+        }
+      },
+      "mage": {
+        "name": {
+          "lang-store": {
+            "ja": "魔法使い",
+            "en": "Mage"
+          }
+        }
+      },
+      "cleric": {
+        "name": {
+          "lang-store": {
+            "ja": "僧侶",
+            "en": "Cleric"
+          }
+        }
+      },
+      "thief": {
+        "name": {
+          "lang-store": {
+            "ja": "盗賊",
+            "en": "Thief"
+          }
+        }
+      },
+      "hunter": {
+        "name": {
+          "lang-store": {
+            "ja": "狩人",
+            "en": "Hunter"
+          }
+        }
+      },
+      "merchant": {
+        "name": {
+          "lang-store": {
+            "ja": "商人",
+            "en": "Merchant"
+          }
+        }
+      },
+      "negotiator": {
+        "name": {
+          "lang-store": {
+            "ja": "交渉人",
+            "en": "Negotiator"
+          }
+        }
+      }
+    }
+  },
+  "nameplate": {
+    "area": {
+      "preparation": {
+        "name": {
+          "lang-store": {
+            "ja": "Home",
+            "en": "Home"
+          }
+        }
+      },
+      "warehouse": {
+        "name": {
+          "lang-store": {
+            "ja": "Warehouse",
+            "en": "Warehouse"
+          }
+        }
+      },
+      "battle": {
+        "name": {
+          "lang-store": {
+            "ja": "Battle",
+            "en": "Battle"
+          }
+        }
+      }
+    },
+    "facility": {
+      "shop": {
+        "name": {
+          "lang-store": {
+            "ja": "Shop",
+            "en": "Shop"
+          }
+        }
+      },
+      "guild": {
+        "name": {
+          "lang-store": {
+            "ja": "Guild",
+            "en": "Guild"
+          }
+        }
+      },
+      "training": {
+        "name": {
+          "lang-store": {
+            "ja": "Training",
+            "en": "Training"
+          }
+        }
+      }
+    }
+  }
+}

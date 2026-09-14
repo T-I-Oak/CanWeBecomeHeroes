@@ -2,9 +2,6 @@ import { GAME_AREAS } from '../game/GameAreas.js';
 import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import {
-  formatElapsedGuildTime,
-  formatGuildHours,
-  formatRemainingGuildTime,
   GUILD_EXTENSION_MAX_HOURS,
   getGuildTimeStatus,
 } from '../game/GuildTime.js';
@@ -68,16 +65,16 @@ function drawRow(context, label, value, x, y, width, valueColor = PANEL_TEXT) {
   context.fillText(value, x + width, y);
 }
 
-function drawTimelineLegend(context, { x, y, width }) {
+function drawTimelineLegend(context, { x, y, width }, texts) {
   const swatchSize = 10;
   context.font = '12px system-ui';
   context.textAlign = 'start';
   context.fillStyle = REMAINING_COLOR;
   context.fillRect(x, y - swatchSize / 2, swatchSize, swatchSize);
   context.fillStyle = MUTED_TEXT;
-  context.fillText('残り期限', x + swatchSize + 5, y);
+  context.fillText(texts.getLabel('remaining'), x + swatchSize + 5, y);
 
-  const label = '貢献による延長見込';
+  const label = texts.getLabel('contributionExtension');
   const labelWidth = context.measureText(label).width;
   const labelX = x + width - labelWidth;
   context.fillStyle = EXTENSION_COLOR;
@@ -86,7 +83,8 @@ function drawTimelineLegend(context, { x, y, width }) {
   context.fillText(label, labelX, y);
 }
 
-export function drawGuildPanel(context, { tick, contributionPoints, extensionHours, extensionRate, timelineHours }) {
+export function drawGuildPanel(context, { tick, contributionPoints, extensionHours, extensionRate, timelineHours, textRepository: texts }) {
+  const time = (hours) => texts.getLabel('daysHours', { days: Math.floor(hours / 24), hours: hours % 24 });
   const panel = getPanelBounds();
   const status = getGuildTimeStatus({ tick, contributionPoints, extensionHours, extensionRate, timelineHours });
   const contentX = panel.x + 16;
@@ -103,22 +101,22 @@ export function drawGuildPanel(context, { tick, contributionPoints, extensionHou
   context.textBaseline = 'middle';
   context.fillStyle = MUTED_TEXT;
   context.font = 'bold 13px system-ui';
-  context.fillText('残り期限', contentX, panel.y + 25);
+  context.fillText(texts.getLabel('remaining'), contentX, panel.y + 25);
   context.fillStyle = PANEL_TEXT;
   context.font = 'bold 26px system-ui';
-  context.fillText(formatRemainingGuildTime(status.remainingHours), contentX, panel.y + 55);
+  context.fillText(time(Math.max(0, Math.ceil(status.remainingHours))), contentX, panel.y + 55);
   drawTimeline(context, { x: contentX, y: panel.y + 78, width: contentWidth, height: 16 }, status);
-  drawTimelineLegend(context, { x: contentX, y: panel.y + 105, width: contentWidth });
+  drawTimelineLegend(context, { x: contentX, y: panel.y + 105, width: contentWidth }, texts);
   context.strokeStyle = PANEL_BORDER;
   context.lineWidth = 1;
   context.beginPath();
   context.moveTo(contentX, panel.y + 122);
   context.lineTo(contentX + contentWidth, panel.y + 122);
   context.stroke();
-  drawRow(context, '経過時間', formatElapsedGuildTime(status.elapsedHours), contentX, panel.y + 152, contentWidth);
-  drawRow(context, '貢献', `${Math.floor(contributionPoints)} pt`, contentX, panel.y + 182, contentWidth);
-  const extensionLabel = status.estimatedExtensionHours >= GUILD_EXTENSION_MAX_HOURS ? '24H（MAX）' : formatGuildHours(status.estimatedExtensionHours);
-  drawRow(context, '延長見込', extensionLabel, contentX, panel.y + 212, contentWidth, EXTENSION_COLOR);
+  drawRow(context, texts.getLabel('elapsed'), time(Math.max(0, Math.floor(status.elapsedHours))), contentX, panel.y + 152, contentWidth);
+  drawRow(context, texts.getLabel('contribution'), `${Math.floor(contributionPoints)} pt`, contentX, panel.y + 182, contentWidth);
+  const extensionLabel = status.estimatedExtensionHours >= GUILD_EXTENSION_MAX_HOURS ? texts.getLabel('maxHours') : texts.getLabel('hours', { hours: Math.max(0, Math.floor(status.estimatedExtensionHours)) });
+  drawRow(context, texts.getLabel('extension'), extensionLabel, contentX, panel.y + 212, contentWidth, EXTENSION_COLOR);
   context.restore();
   return status;
 }

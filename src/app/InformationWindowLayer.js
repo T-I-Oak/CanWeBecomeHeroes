@@ -1,16 +1,14 @@
-import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
-import { getTagDetail } from '../game/TagDetailCatalog.js';
-import { getTagBadgeVisual, getTagSkillVisual } from '../game/TagSkillVisualCatalog.js';
+import { TAGS, getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
+import { getTagBadgeVisual, getTagSkillVisual, TAG_SKILL_THRESHOLDS } from '../game/TagSkillVisualCatalog.js';
 import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
-import { getStatusDetail } from '../game/StatusDetailCatalog.js';
-import { getItemDetail } from '../game/ItemDetailCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
-import { getFacilityDetail } from '../game/FacilityDetailCatalog.js';
-import { getAreaDetail } from '../game/AreaDetailCatalog.js';
+import { getAreaVisual } from '../game/AreaVisualCatalog.js';
 import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
-import { getHeroDetail } from '../game/HeroDetailCatalog.js';
-import { getEnemyDetail } from '../game/EnemyDetailCatalog.js';
+
+import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
+import { ENEMY_CHIP_DIAMETER } from '../game/HeroSlotLayout.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
+import { getWeightFillRatio } from '../game/WeightVisual.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
@@ -73,6 +71,32 @@ function createStatusIcon(status, sizeClass = '') {
   return icon;
 }
 
+function createAreaIcon(area, sizeClass = '') {
+  const icon = createElement('span', `InformationWindow__AreaIcon ${sizeClass}`.trim());
+  const image = document.createElement('img');
+  image.src = resolvePublicAssetPath(getAreaVisual(area).iconPath);
+  image.alt = '';
+  icon.append(image);
+  return icon;
+}
+
+function createTermIcon(sizeClass = '') {
+  const icon = createElement('span', `InformationWindow__TermIcon ${sizeClass}`.trim());
+  icon.setAttribute('aria-hidden', 'true');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M4 5.5c2.8-.9 5.4-.2 8 1.7 2.6-1.9 5.2-2.6 8-1.7v12c-2.8-.9-5.4-.2-8 1.7-2.6-1.9-5.2-2.6-8-1.7zM12 7.2v12');
+  svg.append(path);
+  icon.append(svg);
+  return icon;
+}
+
 function createChipImage(path) {
   const image = createElement('span', 'InformationWindow__ChipImage');
   const asset = document.createElement('img');
@@ -92,15 +116,18 @@ function createEquipmentImage(path) {
 }
 
 export default class InformationWindowLayer {
-  constructor(element, manager) {
+  constructor(element, manager, textRepository = null) {
     this.element = element;
     this.manager = manager;
+    this.textRepository = textRepository;
     this.element.addEventListener('pointerdown', (event) => {
       if (event.target.closest?.('.InformationWindow')) this.manager.setInteracting(true);
     }, true);
     this.element.addEventListener('pointerup', () => this.manager.setInteracting(false), true);
     this.element.addEventListener('pointercancel', () => this.manager.setInteracting(false));
   }
+
+  setTextRepository(textRepository) { this.textRepository = textRepository; }
 
   render(entries) {
     const windows = entries.map((entry) => this.#renderWindow(entry));
@@ -114,9 +141,11 @@ export default class InformationWindowLayer {
     if (entry.type === 'tag') window.append(this.#renderTagDetail(entry));
     if (entry.type === 'status') window.append(this.#renderStatusDetail(entry));
     if (entry.type === 'entity') window.append(this.#renderEntityDetail(entry));
+    if (entry.type === 'enemy-projection') window.append(this.#renderEnemyProjectionDetail(entry));
     if (entry.type === 'item') window.append(this.#renderItemDetail(entry));
     if (entry.type === 'facility') window.append(this.#renderFacilityDetail(entry));
     if (entry.type === 'area') window.append(this.#renderAreaDetail(entry));
+    if (entry.type === 'term') window.append(this.#renderTermDetail(entry));
     if (entry.type === 'unique-skill') window.append(this.#renderUniqueSkillDetail(entry));
     this.#addWindowControls(window, entry);
     return window;
@@ -127,7 +156,7 @@ export default class InformationWindowLayer {
     if (!title) return;
     const compact = createElement('button', `InformationWindow__Compact${entry.compact ? ' is-compact' : ''}`);
     compact.type = 'button';
-    compact.setAttribute('aria-label', entry.compact ? '通常サイズで表示する' : '50%に縮小して表示する');
+    compact.setAttribute('aria-label', this.textRepository.getLabel(entry.compact ? 'normalSize' : 'compactSize'));
     compact.append(createCompactIcon(entry.compact));
     compact.addEventListener('pointerdown', (event) => event.stopPropagation());
     compact.addEventListener('click', (event) => {
@@ -136,7 +165,7 @@ export default class InformationWindowLayer {
     });
     const pin = createElement('button', `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`);
     pin.type = 'button';
-    pin.setAttribute('aria-label', entry.pinned ? 'ピン止めを外す' : 'ピン止めする');
+    pin.setAttribute('aria-label', this.textRepository.getLabel(entry.pinned ? 'unpin' : 'pin'));
     pin.textContent = '📌';
     pin.addEventListener('pointerdown', (event) => event.stopPropagation());
     pin.addEventListener('click', (event) => {
@@ -172,72 +201,106 @@ export default class InformationWindowLayer {
 
   #renderTagDetail(entry) {
     const { tag } = entry.data;
-    const detail = getTagDetail(tag);
+    const detail = this.textRepository.getInformationDetail('tag', tag);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
     title.append(createTagIcon(tag), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
 
-    const body = createElement('div', 'InformationWindow__Body');
-    if (detail.status) {
-      const status = createElement('p', 'InformationWindow__Effect');
-      const statusIcon = createElement('span', 'InformationWindow__InlineIcon');
-      const image = document.createElement('img');
-      image.src = resolvePublicAssetPath(STATUS_VISUALS[detail.status].iconPath);
-      image.alt = '';
-      statusIcon.append(image);
-      statusIcon.tabIndex = 0;
-      statusIcon.classList.add('state-clickable');
-      const openStatusDetail = (event) => this.manager.open({
-        type: 'status', parentId: entry.id, data: { status: detail.status }, anchor: { x: event.clientX, y: event.clientY },
-      });
-      statusIcon.addEventListener('click', openStatusDetail);
-      statusIcon.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openStatusDetail(event); }
-      });
-      status.append('このタグを持つItemを装備すると', statusIcon, `${detail.statusName}が増える。`);
-      body.append(status, createElement('p', 'InformationWindow__Description', `${detail.effect}が上がる。`));
+    const body = createElement('div', 'InformationWindow__Body InformationWindow__TagBody');
+    const descriptionSection = createElement('section', 'InformationWindow__EntityProfile InformationWindow__TagProfile');
+    descriptionSection.append(this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
 
+    const dataSection = createElement('section', 'InformationWindow__DataSection');
+    const weight = createElement('button', 'InformationWindow__ItemWeight state-clickable');
+    weight.type = 'button';
+    weight.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: this.textRepository.getName('status', 'weight') }));
+    weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightTimes', `× ${TAGS[tag].weight}`));
+    weight.addEventListener('click', (event) => this.manager.open({
+      type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    dataSection.append(weight);
+
+    const overview = createElement('div', 'InformationWindow__TagOverview');
+    overview.append(descriptionSection, dataSection);
+    body.append(overview);
+    if (TAGS[tag].group === 'status') {
+      const skillSection = createElement('section', 'InformationWindow__SkillSection InformationWindow__EntityProfile');
+      const skillHeader = createElement('h3', 'InformationWindow__SkillHeader');
+      const skillLink = createElement('button', 'InformationWindow__InlineReference state-clickable');
+      skillLink.type = 'button';
+      skillLink.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: this.textRepository.getName('term', 'tag-skill') }));
+      skillLink.append(createTermIcon(), this.textRepository.getName('term', 'tag-skill'));
+      skillLink.addEventListener('click', (event) => this.manager.open({
+        type: 'term', parentId: entry.id, data: { term: 'tag-skill' }, anchor: { x: event.clientX, y: event.clientY },
+      }));
+      skillHeader.append(skillLink);
+      const effectDescription = detail.effectDescription;
+      skillSection.append(
+        skillHeader,
+        Array.isArray(effectDescription)
+          ? this.#createLinkedDescription(effectDescription, entry.id, 'InformationWindow__EntityCombatStyle')
+          : createElement('p', 'InformationWindow__EntityCombatStyle', effectDescription),
+      );
       const skillList = createElement('div', 'InformationWindow__SkillList');
-      detail.skills.forEach((skill) => {
+      TAG_SKILL_THRESHOLDS.forEach((requiredCount, index) => {
         const skillBadge = createElement('div', 'InformationWindow__Skill');
-        applyTagSkillVisual(skillBadge, skill.requiredCount);
-        const requirement = createElement('span', 'InformationWindow__SkillRequirement', String(skill.requiredCount));
-        const name = createElement('span', 'InformationWindow__SkillName', skill.name);
+        applyTagSkillVisual(skillBadge, requiredCount);
+        const requirement = createElement('span', 'InformationWindow__SkillRequirement', String(requiredCount));
+        const name = createElement('span', 'InformationWindow__SkillName', detail.skillNames[index]);
         skillBadge.append(requirement, name);
         skillList.append(skillBadge);
       });
-      body.append(skillList);
-    } else body.append(createElement('p', 'InformationWindow__Description', detail.description));
+      skillSection.append(skillList);
+      body.append(skillSection);
+    }
     content.append(body);
     return content;
   }
 
   #renderStatusDetail(entry) {
     const { status } = entry.data;
-    const detail = getStatusDetail(status);
+    const detail = this.textRepository.getInformationDetail('status', status);
+    if (!detail) throw new RangeError(`Unknown localized status: ${status}`);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
     title.append(createStatusIcon(status), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
-    body.append(createElement('p', 'InformationWindow__Description', detail.description));
+    const profile = createElement('section', 'InformationWindow__EntityProfile InformationWindow__StatusProfile');
+    profile.append(this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
+    body.append(profile);
     content.append(body);
+    return content;
+  }
+
+  #renderTermDetail(entry) {
+    const detail = this.textRepository.getInformationDetail('term', entry.data.term);
+    const content = document.createDocumentFragment();
+    const title = createElement('header', 'InformationWindow__Title');
+    title.append(createTermIcon(), createElement('h2', 'InformationWindow__Name', detail.name));
+    const body = createElement('div', 'InformationWindow__Body');
+    const descriptionSection = createElement('section', 'InformationWindow__EntityProfile InformationWindow__TermProfile');
+    descriptionSection.append(
+      this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
+    );
+    body.append(descriptionSection);
+    content.append(title, body);
     return content;
   }
 
   #renderEntityDetail(entry) {
     const { entity } = entry.data;
     const isEnemy = entity.chip.type === 'enemy';
-    const displayName = isEnemy ? entity.definition.nameJa : `【${entity.profession}・${entity.name.ja}】`;
+    const displayName = isEnemy ? this.textRepository.getName('enemy', entity.definition.id) : `【${this.textRepository.getHeroLabel(entity)}】`;
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title InformationWindow__EntityTitle');
     title.style.setProperty('--entity-portrait-size', `${entity.chip.radius * 2 * ENTITY_PORTRAIT_SCALE}px`);
     title.append(createChipImage(entity.chip.centerPath), createElement('h2', 'InformationWindow__Name', displayName));
     content.append(title);
     const body = createElement('div', 'InformationWindow__EntityPanel');
-    const detail = isEnemy ? getEnemyDetail(entity) : getHeroDetail(entity);
-    if (detail) body.append(this.#createEntityProfile(detail));
+    const detail = isEnemy ? this.textRepository.getInformationDetail('enemy', entity.definition.id) : this.textRepository.getInformationDetail('hero', entity.heroId);
+    if (detail) body.append(this.#createEntityProfile(detail, entity, entry.id));
     const information = createElement('section', 'InformationWindow__EntityInformation');
     const statusGrid = createElement('div', 'InformationWindow__EntityStatusGrid');
     const statusKeys = [...ENTITY_STATUS_KEYS, isEnemy ? 'hp' : 'stamina'];
@@ -246,6 +309,7 @@ export default class InformationWindowLayer {
       const maximum = status === 'hp' ? entity.maximumHp : entity.maximums[status];
       statusGrid.append(this.#createEntityStatusGauge({ entry, status, current, maximum }));
     });
+    statusGrid.append(this.#createEntityWeightGauge(entity, entry));
     information.append(statusGrid);
 
     const tagList = createElement('div', 'InformationWindow__EntityTagList');
@@ -258,7 +322,7 @@ export default class InformationWindowLayer {
       tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
       tagList.append(tagButton);
     });
-    if (isEnemy && entity.uniqueSkill) tagList.append(this.#createUniqueSkillButton(entity.uniqueSkill, entry.id));
+    if (isEnemy && entity.uniqueSkill) tagList.append(this.#createUniqueSkillButton(entity.uniqueSkill, entry.id, entity));
     information.append(tagList);
     body.append(information);
 
@@ -270,39 +334,70 @@ export default class InformationWindowLayer {
     return content;
   }
 
-  #createEntityProfile(detail) {
+  #createEntityProfile(detail, entity = null, parentId = null) {
     const profile = createElement('section', 'InformationWindow__EntityProfile');
-    profile.append(
-      createElement('p', 'InformationWindow__Description', detail.description),
-      createElement('p', 'InformationWindow__EntityCombatStyle', detail.combatStyle),
-    );
+    const combatStyle = this.#createLinkedDescription(detail.combatStyle, parentId, 'InformationWindow__EntityCombatStyle', entity);
+    profile.append(this.#createLinkedDescription(detail.description, parentId), combatStyle);
     return profile;
   }
 
-  #createUniqueSkillButton(uniqueSkill, parentId) {
+  #createEnemyDefinitionLink({ id, label }, source, parentId) {
+    label = this.textRepository.getName('enemy', id);
+    const definition = getEnemyDefinitionById(id);
+    const link = createElement('button', 'InformationWindow__InlineReference state-clickable');
+    link.type = 'button';
+    const icon = createElement('span', 'InformationWindow__InlineIcon InformationWindow__InlineEnemyIcon');
+    const image = document.createElement('img');
+    image.src = resolvePublicAssetPath(definition.assetPath);
+    image.alt = '';
+    icon.append(image);
+    link.append(icon, label);
+    link.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
+    const openEnemyDefinition = (event) => this.manager.open({
+      type: 'enemy-projection', parentId, data: { source, enemyId: id }, anchor: { x: event.clientX, y: event.clientY },
+    });
+    link.addEventListener('click', openEnemyDefinition);
+    return link;
+  }
+
+  #renderEnemyProjectionDetail(entry) {
+    const definition = getEnemyDefinitionById(entry.data.enemyId);
+    const projection = Object.create(entry.data.source);
+    projection.definition = definition;
+    projection.uniqueSkill = null;
+    projection.chip = { ...entry.data.source.chip, type: 'enemy', radius: ENEMY_CHIP_DIAMETER.small / 2, centerPath: definition.assetPath };
+    return this.#renderEntityDetail({ ...entry, data: { entity: projection } });
+  }
+
+  #createUniqueSkillButton(uniqueSkill, parentId, source) {
     const detail = getUniqueSkillDetail(uniqueSkill.id);
     const button = createElement('button', `InformationWindow__UniqueSkill state-clickable level-${uniqueSkill.level}`);
     button.type = 'button';
-    button.append(createTagIcon(detail.affinityTag), createElement('span', 'InformationWindow__UniqueSkillMark', 'Ex'));
+    button.append(createTagIcon(detail.affinityTag), createElement('span', 'InformationWindow__UniqueSkillMark', `Ex${uniqueSkill.level}`));
     button.addEventListener('click', (event) => this.manager.open({
-      type: 'unique-skill', parentId, data: { uniqueSkill }, anchor: { x: event.clientX, y: event.clientY },
+      type: 'unique-skill', parentId, data: { uniqueSkill, source }, anchor: { x: event.clientX, y: event.clientY },
     }));
     return button;
   }
 
   #renderUniqueSkillDetail(entry) {
     const { uniqueSkill } = entry.data;
-    const detail = getUniqueSkillDetail(uniqueSkill.id);
+    const detail = this.textRepository.getInformationDetail('unique-skill', uniqueSkill.id);
     const content = document.createDocumentFragment();
     const title = createElement('header', `InformationWindow__Title InformationWindow__UniqueSkillTitle level-${uniqueSkill.level}`);
-    title.append(createTagIcon(detail.affinityTag), createElement('h2', 'InformationWindow__Name', detail.name));
+    title.append(createTagIcon(getUniqueSkillDetail(uniqueSkill.id).affinityTag), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
-    body.append(createElement('p', 'InformationWindow__Description', detail.description));
+    const profile = createElement('section', 'InformationWindow__EntityProfile');
+    profile.append(
+      createElement('p', 'InformationWindow__Description', detail.flavor),
+      this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle', entry.data.source),
+    );
+    body.append(profile);
     const levels = createElement('div', 'InformationWindow__UniqueSkillLevelList');
     Object.entries(detail.levels).forEach(([level, levelDetail]) => {
       const item = createElement('div', `InformationWindow__UniqueSkillLevel level-${level}`);
-      item.append(createElement('span', 'InformationWindow__UniqueSkillLevelName', `Lv${level}`), createElement('span', 'InformationWindow__UniqueSkillLevelEffect', levelDetail.description));
+      item.append(createElement('span', 'InformationWindow__UniqueSkillLevelName', `Ex${level}`), createElement('span', 'InformationWindow__UniqueSkillLevelEffect', levelDetail.description));
       levels.append(item);
     });
     body.append(levels);
@@ -335,15 +430,42 @@ export default class InformationWindowLayer {
     return gauge;
   }
 
+  #createEntityWeightGauge(entity, entry) {
+    const gauge = createElement('button', 'InformationWindow__EntityStatus InformationWindow__EntityWeight state-clickable');
+    gauge.type = 'button';
+    gauge.style.setProperty('--status-frame-color', STATUS_VISUALS.weight.gaugeFrameColor);
+    const weight = entity.getCarriedWeight();
+    gauge.style.setProperty('--weight-fill', `${getWeightFillRatio(weight) * 100}%`);
+    gauge.append(
+      createStatusIcon('weight'),
+      createElement('span', 'InformationWindow__WeightIndicator'),
+      createElement('span', 'InformationWindow__WeightValue', String(weight)),
+    );
+    gauge.addEventListener('click', (event) => this.manager.open({
+      type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    return gauge;
+  }
+
   #renderItemDetail(entry) {
     const { item } = entry.data;
-    const detail = getItemDetail(item.type);
+    const detail = this.textRepository.getInformationDetail('item', item.type) ?? { name: item.type };
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
     title.append(createChipImage(item.chip.centerPath), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
-    if (detail.description) body.append(createElement('p', 'InformationWindow__Description', detail.description));
+    if (detail.flavor || detail.description) {
+      const profile = createElement('section', 'InformationWindow__EntityProfile InformationWindow__ItemProfile');
+      if (detail.flavor) profile.append(createElement('p', 'InformationWindow__Description', detail.flavor));
+      if (detail.description) {
+        profile.append(this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
+      }
+      if (item.category === 'weapon') {
+        profile.append(createElement('p', 'InformationWindow__ItemTargetingNote', this.textRepository.getLabel('weaponTargetingNote')));
+      }
+      body.append(profile);
+    }
     const tagList = createElement('div', 'InformationWindow__EntityTagList');
     [...new Set(item.tags)].forEach((tag) => {
       const count = item.tags.filter((current) => current === tag).length;
@@ -354,34 +476,131 @@ export default class InformationWindowLayer {
       tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
       tagList.append(tagButton);
     });
-    if (tagList.childElementCount > 0) body.append(tagList);
+    const weight = createElement('button', 'InformationWindow__ItemWeight state-clickable');
+    weight.type = 'button';
+    weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightTimes', `× ${item.chip.weight}`));
+    weight.addEventListener('click', (event) => this.manager.open({
+      type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    tagList.append(weight);
+    body.append(tagList);
     content.append(body);
     return content;
   }
 
+  #createLinkedDescription(content, parentId, className = 'InformationWindow__Description', source = null) {
+    const text = createElement('p', className);
+    (Array.isArray(content) ? content : [content]).forEach((part) => {
+      if (typeof part === 'string') text.append(part);
+      else if (part.type === 'text') text.append(part.value);
+      else if (part.type === 'reference') text.append(this.#createReference(part, parentId, source));
+      else if (part.type === 'status') text.append(this.#createStatusReference(part, parentId));
+      else if (part.type === 'tag') text.append(this.#createTagReference(part, parentId));
+      else if (part.type === 'facility') text.append(this.#createFacilityReference(part, parentId));
+      else if (part.type === 'area') text.append(this.#createAreaReference(part, parentId));
+      else if (part.type === 'enemy-definition') text.append(this.#createEnemyDefinitionLink(part, source, parentId));
+    });
+    return text;
+  }
+
+  #createReference({ kind, id }, parentId, source = null) {
+    if (kind === 'enemy-definition') return this.#createEnemyDefinitionLink({ id }, source, parentId);
+    const label = this.textRepository.getName(kind, id);
+    if (!label) throw new RangeError(`Unknown localized reference: ${kind}/${id}`);
+    if (kind === 'status') return this.#createStatusReference({ id, label }, parentId);
+    if (kind === 'tag') return this.#createTagReference({ id, label }, parentId);
+    if (kind === 'area') return this.#createAreaReference({ id, label }, parentId);
+    return this.#createFacilityReference({ id, label }, parentId);
+  }
+
+  #createStatusReference({ id, label }, parentId) {
+    label = this.textRepository.getName('status', id);
+    const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
+    reference.type = 'button';
+    reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
+    reference.append(createStatusIcon(id), label);
+    reference.addEventListener('click', (event) => this.manager.open({
+      type: 'status', parentId, data: { status: id }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    return reference;
+  }
+
+  #createTagReference({ id, label }, parentId) {
+    label = this.textRepository.getName('tag', id);
+    const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
+    reference.type = 'button';
+    reference.setAttribute('aria-label', this.textRepository.getLabel('openTagInformation', { name: label }));
+    reference.append(createTagIcon(id, 'InformationWindow__TagIcon--inline'), label);
+    reference.addEventListener('click', (event) => this.manager.open({
+      type: 'tag', parentId, data: { tag: id }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    return reference;
+  }
+
+  #createFacilityReference({ id, label }, parentId) {
+    label = this.textRepository.getName('facility', id);
+    const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
+    reference.type = 'button';
+    reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
+    reference.append(createAreaIcon(id), label);
+    reference.addEventListener('click', (event) => this.manager.open({
+      type: 'facility', parentId, data: { facility: id }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    return reference;
+  }
+
+  #createAreaReference({ id, label }, parentId) {
+    label = this.textRepository.getName('area', id);
+    const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
+    reference.type = 'button';
+    reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
+    reference.append(createAreaIcon(id), label);
+    reference.addEventListener('click', (event) => this.manager.open({
+      type: 'area', parentId, data: { area: id }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    return reference;
+  }
+
   #renderFacilityDetail(entry) {
-    const detail = getFacilityDetail(entry.data.facility);
+    const detail = this.textRepository?.getInformationDetail('facility', entry.data.facility);
+    if (!detail) throw new RangeError(`Unknown localized facility: ${entry.data.facility}`);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
-    title.append(createElement('h2', 'InformationWindow__Name', detail.name));
+    title.append(createAreaIcon(entry.data.facility), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
-    body.append(createElement('p', 'InformationWindow__Description', detail.description));
+    if (detail.flavor) {
+      const profile = createElement('section', 'InformationWindow__EntityProfile');
+      profile.append(
+        createElement('p', 'InformationWindow__Description', detail.flavor),
+        this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
+      );
+      body.append(profile);
+    } else body.append(this.#createLinkedDescription(detail.description, entry.id));
     content.append(body);
     return content;
   }
 
   #renderAreaDetail(entry) {
-    const detail = getAreaDetail(entry.data.area);
+    const detail = this.textRepository?.getInformationDetail('area', entry.data.area);
+    if (!detail) throw new RangeError(`Unknown localized area: ${entry.data.area}`);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
-    title.append(createElement('h2', 'InformationWindow__Name', detail.name));
+    title.append(createAreaIcon(entry.data.area), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
-    body.append(createElement('p', 'InformationWindow__Description', detail.description));
+    if (detail.flavor) {
+      const profile = createElement('section', 'InformationWindow__EntityProfile');
+      profile.append(
+        createElement('p', 'InformationWindow__Description', detail.flavor),
+        this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
+      );
+      body.append(profile);
+    } else body.append(this.#createLinkedDescription(detail.description, entry.id));
     content.append(body);
     return content;
   }
+
 
   #createEquipmentButton(item, parentId, slot = null) {
     const button = createElement('button', `InformationWindow__Equipment${item ? ' state-clickable' : ''}`);
@@ -402,15 +621,17 @@ export default class InformationWindowLayer {
 
   #positionWindow(windowElement, entry) {
     if (entry.position) {
-      windowElement.style.left = `${entry.position.x}px`;
-      windowElement.style.top = `${entry.position.y}px`;
+      const position = this.#constrainPosition(windowElement, entry.position.x, entry.position.y);
+      windowElement.style.left = `${position.x}px`;
+      windowElement.style.top = `${position.y}px`;
       windowElement.style.transform = 'none';
       return;
     }
     const { anchor } = entry;
     if (!anchor) {
-      windowElement.style.left = `${(globalThis.innerWidth - bounds.width) / 2}px`;
-      windowElement.style.top = `${(globalThis.innerHeight - bounds.height) / 2}px`;
+      const bounds = windowElement.getBoundingClientRect();
+      windowElement.style.left = `${Math.max(12, (globalThis.innerWidth - bounds.width) / 2)}px`;
+      windowElement.style.top = `${Math.max(12, (globalThis.innerHeight - bounds.height) / 2)}px`;
       windowElement.style.transform = 'none';
       return;
     }

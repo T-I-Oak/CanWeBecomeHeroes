@@ -1,4 +1,8 @@
 import test from 'node:test';
+import gameText from '../../public/data/game_text.json' with { type: 'json' };
+import GameTextRepository from '../../src/game/GameTextRepository.js';
+import { expandLanguageResource } from '../../../GameWorksOAK/src/lib/core/i18n.js';
+const textRepository = await new GameTextRepository({ loadResource: async () => expandLanguageResource(gameText) }).load();
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
@@ -17,7 +21,7 @@ test('training raises a weighted eligible maximum after 200 ticks and consumes s
   const hero = trainingHero();
   board.addChip(hero.chip);
   const messages = [];
-  const training = new TrainingSystem(board, new HeroSlotManager(), { random: () => 0, gameLog: { log: (message, options) => messages.push({ message, options }) } });
+  const training = new TrainingSystem(board, new HeroSlotManager(), { random: () => 0, textRepository, gameLog: { log: (message, options) => messages.push({ message, options }) } });
 
   training.update([hero], TRAINING_INTERVAL_TICKS / 60);
 
@@ -32,7 +36,7 @@ test('training records a hero log after a non-lucky result', () => {
   const hero = trainingHero();
   board.addChip(hero.chip);
   const messages = [];
-  const training = new TrainingSystem(board, new HeroSlotManager(), { random: () => 0.99, gameLog: { log: (message, options) => messages.push({ message, options }) } });
+  const training = new TrainingSystem(board, new HeroSlotManager(), { random: () => 0.99, textRepository, gameLog: { log: (message, options) => messages.push({ message, options }) } });
 
   training.update([hero], TRAINING_INTERVAL_TICKS / 60);
 

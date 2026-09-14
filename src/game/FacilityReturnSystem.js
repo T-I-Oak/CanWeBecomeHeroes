@@ -1,7 +1,5 @@
 import { GAME_AREAS } from './GameAreas.js';
 
-export const RETURN_STAMINA_COST = 3;
-
 export default class FacilityReturnSystem {
   constructor(board, slotManager, { onItemReturned = () => {}, onItemDiscarded = () => {}, random = Math.random } = {}) {
     this.board = board;
@@ -16,7 +14,6 @@ export default class FacilityReturnSystem {
     const target = hero.preparationReturn;
     if (!target) throw new Error('Facility return requires a preparation return position.');
     this.slotManager.release(hero);
-    hero.stamina = Math.max(0, hero.stamina - RETURN_STAMINA_COST);
     hero.clearBattleState?.();
     const equipment = hero.clearEquipment();
     equipment.filter((item) => item.category === 'destination').forEach((item) => {

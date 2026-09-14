@@ -1,7 +1,11 @@
 import test from 'node:test';
+import gameText from '../../public/data/game_text.json' with { type: 'json' };
+import GameTextRepository from '../../src/game/GameTextRepository.js';
+import { expandLanguageResource } from '../../../GameWorksOAK/src/lib/core/i18n.js';
+const textRepository = await new GameTextRepository({ loadResource: async () => expandLanguageResource(gameText) }).load();
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
-import BattleSystem, { BATTLE_VICTORY_DELAY_TICKS, getActionGaugeMaximum, getAttackDamage, getRandomModifier } from '../../src/game/BattleSystem.js';
+import BattleSystem, { BATTLE_VICTORY_DELAY_TICKS, WEAPON_ATTACKS, getActionGaugeMaximum, getAttackDamage, getRandomModifier } from '../../src/game/BattleSystem.js';
 import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
@@ -35,7 +39,7 @@ test('area keeps empty enemy slots in its coefficient lane', () => {
 
   assert.deepEqual(
     battle.rangeTargets(hero, target, [hero, left, target, right, outerRight]).map(({ target: foe, coefficient }) => [foe.slotPosition, coefficient]),
-    [[2, 0.2], [4, 0.6], [5, 0.5], [6, 0.2]],
+    [[2, 0.6], [4, 0.9], [5, 0.8], [6, 0.6]],
   );
 });
 
@@ -52,16 +56,21 @@ test('a large enemy occupies one area lane position despite using two board slot
   [hero, boss, target, right].forEach((entity) => board.addChip(entity.chip));
   const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
 
+  assert.equal(boss.chip.bounds.width, 448);
+  assert.equal(boss.chip.bounds.height, 448);
+  assert.equal(boss.chip.x, boss.chip.bounds.x + boss.chip.bounds.width / 2);
+  assert.equal(boss.chip.y, boss.chip.bounds.y + boss.chip.bounds.height / 2);
+
   assert.deepEqual(
     battle.rangeTargets(hero, target, [hero, boss, target, right]).map(({ target: foe, coefficient }) => [foe.slotPosition, coefficient]),
-    [[3, 0.4], [5, 0.5], [6, 0.4]],
+    [[3, 0.7], [5, 0.8], [6, 0.7]],
   );
 });
 
 test('small arcane enemy resolves to the ghost catalog entry', () => {
   const enemy = new EnemyFactory().create({ size: 'small', tagAffinity: 'arcane', slotPosition: 4, maximumHp: 2, contributionPoints: 2, totalTagCount: 0 });
 
-  assert.equal(enemy.definition.nameJa, 'ゴースト');
+  assert.equal(enemy.definition.id, 'small-arcane');
   assert.equal(enemy.chip.centerPath, '/assets/enemies/small-arcane.png');
   assert.deepEqual(enemy.tags, ['arcane']);
 });
@@ -72,7 +81,6 @@ test('new small enemy catalog entries resolve their names and assets', () => {
     size: 'small',
     tagAffinity: 'reputation',
     nameKey: 'enemy.smallReputation',
-    nameJa: 'ドワーフ',
     assetPath: '/assets/enemies/small-reputation.png',
     intrinsicTags: ['reputation'],
     baseHp: 2,
@@ -83,7 +91,6 @@ test('new small enemy catalog entries resolve their names and assets', () => {
     size: 'small',
     tagAffinity: 'lightning',
     nameKey: 'enemy.smallLightning',
-    nameJa: '雷狼',
     assetPath: '/assets/enemies/small-lightning.png',
     intrinsicTags: ['lightning'],
     baseHp: 2,
@@ -99,6 +106,99 @@ test('vitality mid-boss and boss catalog entries carry the shared unique skill a
 test('gem mid-boss and boss carry orb-rain at their respective levels', () => {
   assert.deepEqual(getEnemyDefinition({ size: 'medium', tagAffinity: 'gem' }).uniqueSkill, { id: 'gem-orb-rain', level: 1 });
   assert.deepEqual(getEnemyDefinition({ size: 'large', tagAffinity: 'gem' }).uniqueSkill, { id: 'gem-orb-rain', level: 2 });
+});
+
+test('area mid-boss and boss carry head rush at their respective levels', () => {
+  assert.deepEqual(getEnemyDefinition({ size: 'medium', tagAffinity: 'area' }).uniqueSkill, { id: 'area-head-rush', level: 1 });
+  assert.deepEqual(getEnemyDefinition({ size: 'large', tagAffinity: 'area' }).uniqueSkill, { id: 'area-head-rush', level: 2 });
+});
+
+test('area head inherits its source tags, attacks immediately, and returns after its action', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const hydra = enemyFactory.createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 3, maximumHp: 5, totalTagCount: 3, maximums: { power: 4, magic: 4, speed: 4, negotiation: 4, luck: 4 }, random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: hydra.chip.x, y: hydra.chip.y + 224, stamina: 10, maximums: { stamina: 10 } });
+  hero.currentArea = 'battle';
+  hydra.chip.height = 0;
+  hero.chip.height = 0;
+  board.addChip(hydra.chip);
+  board.addChip(hero.chip);
+  const controller = { getEnemies: () => [hydra] };
+  const battle = new BattleSystem(board, { controller, itemFactory, enemyFactory, random: () => 0 });
+
+  battle.resolveActionUniqueSkill(hydra);
+
+  assert.equal(battle.phantomHeads.length, 1);
+  const [head] = battle.phantomHeads;
+  assert.equal(head.definition.id, 'phantom-area-head');
+  assert.equal(head.uniqueSkill, null);
+  assert.deepEqual(head.getTags(), hydra.getTags());
+  assert.equal(head.chip.actionGauge, head.chip.actionGaugeMaximum);
+  assert.equal(board.chips.includes(head.chip), true);
+
+  battle.updateActor(head, [hero, hydra, head], 0);
+
+  assert.equal(board.chips.includes(head.chip), false);
+  assert.equal(battle.phantomHeads.length, 0);
+});
+
+test('area head returns instead of remaining when no hero can be targeted', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const hydra = enemyFactory.createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 3, maximumHp: 5, totalTagCount: 0, random: () => 0 });
+  hydra.chip.height = 0;
+  board.addChip(hydra.chip);
+  const battle = new BattleSystem(board, { controller: { getEnemies: () => [hydra] }, itemFactory, enemyFactory, random: () => 0 });
+
+  battle.resolveActionUniqueSkill(hydra);
+  const [head] = battle.phantomHeads;
+  battle.updateActor(head, [hydra, head], 0);
+
+  assert.equal(board.chips.includes(head.chip), false);
+  assert.equal(battle.phantomHeads.length, 0);
+});
+
+test('area head rush lets an Ex2 boss and its Ex1 mid-boss chain their minion attacks without consuming gauges', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const yamata = enemyFactory.createFromDefinition({ enemyDefinitionId: 'large-area', slotPosition: 3, maximumHp: 7, totalTagCount: 0, random: () => 0 });
+  const regularLeft = enemyFactory.createInitialEncounter({ slotPosition: 1, random: () => 0 });
+  const midBoss = enemyFactory.createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 5, maximumHp: 5, totalTagCount: 0, random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: yamata.chip.x, y: yamata.chip.y + 224, stamina: 20, maximums: { stamina: 20 } });
+  hero.currentArea = 'battle';
+  [yamata, regularLeft, midBoss, hero].forEach((entity) => { entity.chip.height = 0; board.addChip(entity.chip); });
+  regularLeft.chip.actionGauge = 1.25;
+  const effects = new CombatEffectSystem();
+  const enemies = [yamata, regularLeft, midBoss];
+  const battle = new BattleSystem(board, { controller: { getEnemies: () => enemies }, itemFactory, enemyFactory, effects, random: () => 0 });
+
+  battle.resolveAction(yamata, hero, [hero, ...enemies]);
+
+  assert.deepEqual(effects.attacks.map((effect) => effect.chip), [yamata.chip, regularLeft.chip, midBoss.chip, regularLeft.chip]);
+  assert.equal(battle.phantomHeads.length, 2);
+  assert.equal(regularLeft.chip.actionGauge, 1.25);
+  assert.equal(regularLeft.chip.actionVisualCount, 0);
+  assert.equal(midBoss.chip.actionVisualCount, 0);
+});
+
+test('area Ex2 and a cooperating Ex1 mid-boss launch three heads when three enemy positions are free', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const yamata = enemyFactory.createFromDefinition({ enemyDefinitionId: 'large-area', slotPosition: 3, maximumHp: 7, totalTagCount: 0, random: () => 0 });
+  const midBoss = enemyFactory.createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 5, maximumHp: 5, totalTagCount: 0, random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: yamata.chip.x, y: yamata.chip.y + 224, stamina: 20, maximums: { stamina: 20 } });
+  hero.currentArea = 'battle';
+  [yamata, midBoss, hero].forEach((entity) => { entity.chip.height = 0; board.addChip(entity.chip); });
+  const enemies = [yamata, midBoss];
+  const battle = new BattleSystem(board, { controller: { getEnemies: () => enemies }, itemFactory, enemyFactory, random: () => 0 });
+
+  battle.resolveAction(yamata, hero, [hero, ...enemies]);
+
+  assert.equal(battle.phantomHeads.length, 3);
 });
 
 test('gem orb-rain drops its level-specific orb rewards for each successful damage trigger', () => {
@@ -187,7 +287,7 @@ test('enemy wipe locks the stage victory before completing it after the victory 
   board.addChip(hero.chip);
   board.addChip(enemy.chip);
   const records = [];
-  const battle = new BattleSystem(board, { controller: {}, itemFactory, logger: { info: () => {} }, gameLog: { log: (message, options) => records.push({ message, options }) } });
+  const battle = new BattleSystem(board, { textRepository, controller: {}, itemFactory, logger: { info: () => {} }, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
   battle.update({ heroes: [hero], enemies: [enemy], tick: 0, tickDelta: 1 });
   board.removeChip(enemy.chip);
@@ -225,6 +325,11 @@ test('magic standard damage uses half the physical standard divisor', () => {
   const actor = { getStatus: () => 1 };
   assert.equal(getAttackDamage(actor, { stat: 'power', multiplier: 1 }), 0.75);
   assert.equal(getAttackDamage(actor, { stat: 'magic', multiplier: 1 }), 0.375);
+});
+
+test('orb is a tiny physical attack and banner is a tiny magical attack', () => {
+  assert.deepEqual(WEAPON_ATTACKS.orb, ['power', 1 / 8]);
+  assert.deepEqual(WEAPON_ATTACKS.banner, ['magic', 1 / 8]);
 });
 
 test('battle random modifiers range from eighty through one hundred twenty percent', () => {
@@ -266,7 +371,7 @@ test('bows shorten the action gauge by ten percent per weapon up to five weapons
   assert.equal(getActionGaugeMaximum(enemy), (15 - enemy.getStatus('speed')) * 0.5);
 });
 
-test('bows target the farthest enemy and reverse the distance-tie direction', () => {
+test('weapons narrow target candidates in equipment order, then distance and left position break ties', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
   const battle = new BattleSystem(board, { controller: {}, itemFactory, logger: { info: () => {} } });
@@ -288,7 +393,44 @@ test('bows target the farthest enemy and reverse the distance-tie direction', ()
   const farLeft = createEnemyAt(1200);
   const farRight = createEnemyAt(1800);
   [archer, nearer, farLeft, farRight].forEach((entity) => board.addChip(entity.chip));
-  assert.equal(battle.findTarget(archer, [archer, nearer, farLeft, farRight]), farRight);
+  assert.equal(battle.findTarget(archer, [archer, nearer, farLeft, farRight]), farLeft);
+
+  const target = ({ x, hp = 5, weight = 0, equipment = [] }) => ({
+    chip: { type: 'enemy', x, y: 500 }, hp, equipment,
+    getCarriedWeight: () => weight,
+  });
+  const weapon = type => ({ category: 'weapon', type });
+  const actor = type => ({ chip: { type: 'hero', x: 1000, y: 500 }, equipment: { rightHand: weapon(type), leftHand: null } });
+  const testTarget = (type, candidates, expected) => {
+    const current = actor(type);
+    [current, ...candidates].forEach(entity => board.addChip(entity.chip));
+    assert.equal(battle.findTarget(current, [current, ...candidates]), expected, type);
+  };
+  const highHp = target({ x: 900, hp: 8 });
+  const lowHp = target({ x: 1100, hp: 2 });
+  testTarget('sword', [highHp, lowHp], highHp);
+  const distantHighHp = target({ x: 500, hp: 8 });
+  const nearbyHighHp = target({ x: 950, hp: 8 });
+  testTarget('sword', [distantHighHp, nearbyHighHp], nearbyHighHp);
+  const swordThenBow = { chip: { type: 'hero', x: 1000, y: 500 }, equipment: { rightHand: weapon('sword'), leftHand: weapon('bow') } };
+  [swordThenBow, distantHighHp, nearbyHighHp].forEach(entity => board.addChip(entity.chip));
+  assert.equal(battle.findTarget(swordThenBow, [swordThenBow, distantHighHp, nearbyHighHp]), distantHighHp);
+  ['staff', 'holy-book', 'holy-symbol', 'banner', 'tarot-cards'].forEach(type => testTarget(type, [highHp, lowHp], lowHp));
+  const lavish = target({ x: 1100, equipment: [{ tags: ['valor', 'iron', 'fire'] }] });
+  const plain = target({ x: 900, equipment: [{ tags: [] }] });
+  testTarget('claw', [lavish, plain], lavish);
+  const heavy = target({ x: 900, weight: 5 });
+  const light = target({ x: 1100, weight: 1 });
+  testTarget('orb', [heavy, light], light);
+  const fartherShieldTarget = target({ x: 800 });
+  const nearerShieldTarget = target({ x: 950 });
+  testTarget('shield', [fartherShieldTarget, nearerShieldTarget], nearerShieldTarget);
+
+  const enemyActor = { chip: { type: 'enemy', x: 1000, y: 500 }, equipment: [weapon('sword'), weapon('bow')] };
+  const heroHigh = { chip: { type: 'hero', x: 900, y: 500 }, stamina: 8 };
+  const heroLow = { chip: { type: 'hero', x: 1100, y: 500 }, stamina: 2 };
+  [enemyActor, heroHigh, heroLow].forEach(entity => board.addChip(entity.chip));
+  assert.equal(battle.findTarget(enemyActor, [enemyActor, heroHigh, heroLow]), heroHigh);
 });
 
 test('stealing a bow immediately refreshes the affected action gauge maximum', () => {
@@ -503,7 +645,7 @@ test('holy symbol and tarot cards support only other allies', () => {
 
   assert.equal(actor.stamina, 1);
   assert.equal(actor.luckBonus, 0);
-  assert.equal(ally.stamina, 1.25);
+  assert.equal(ally.stamina, 1.15);
   assert.equal(ally.luckBonus, 0.25);
 });
 
@@ -567,7 +709,8 @@ test('one action aggregates miss and damage feedback by target with critical pri
   effects.endAction();
 
   assert.equal(effects.popups.length, 1);
-  assert.equal(effects.popups[0].label, 'critical 30');
+  assert.equal(effects.popups[0].key, 'combatCritical');
+  assert.deepEqual(effects.popups[0].values, { amount: 30 });
   assert.equal(effects.hits.length, 1);
 });
 
@@ -593,7 +736,7 @@ test('one action records one visible battle log per actor and target', () => {
   const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
   const enemy = new EnemyFactory().createInitialEncounter();
   const records = [];
-  const battle = new BattleSystem(board, { gameLog: { log: (message, options) => records.push({ message, options }) } });
+  const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
   battle.actionLogResults = new Map();
   battle.recordMiss(hero, enemy);
@@ -612,7 +755,7 @@ test('a missed action records a visible unlucky battle log', () => {
   const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
   const enemy = new EnemyFactory().createInitialEncounter();
   const records = [];
-  const battle = new BattleSystem(board, { gameLog: { log: (message, options) => records.push({ message, options }) } });
+  const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
   battle.actionLogResults = new Map();
   battle.recordMiss(hero, enemy);
@@ -629,7 +772,7 @@ test('a defeat replaces the action damage log with a visible defeat log', () => 
   const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
   const enemy = new EnemyFactory().createInitialEncounter();
   const records = [];
-  const battle = new BattleSystem(board, { gameLog: { log: (message, options) => records.push({ message, options }) } });
+  const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
   battle.actionLogResults = new Map();
   battle.recordDamage(hero, enemy, 2, false);

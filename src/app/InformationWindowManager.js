@@ -95,6 +95,10 @@ export default class InformationWindowManager {
     this.onChange?.(this.entries);
   }
 
+  refreshEntries() {
+    this.onChange?.(this.entries);
+  }
+
   closeInvalidEntries() {
     if (!this.isTargetAlive) return;
     const invalid = this.windows.filter((entry) => {
@@ -134,13 +138,16 @@ export default class InformationWindowManager {
     if (type === 'item') return entry.data.item === data.item;
     if (type === 'facility') return entry.data.facility === data.facility;
     if (type === 'area') return entry.data.area === data.area;
+    if (type === 'term') return entry.data.term === data.term;
     if (type === 'unique-skill') return entry.data.uniqueSkill.id === data.uniqueSkill.id && entry.data.uniqueSkill.level === data.uniqueSkill.level;
+    if (type === 'enemy-projection') return entry.data.source === data.source && entry.data.enemyId === data.enemyId;
     return entry.data === data;
   }
 
   #getTarget(entry) {
     if (entry.type === 'entity') return entry.data.entity;
     if (entry.type === 'item') return entry.data.item;
+    if (entry.type === 'enemy-projection') return entry.data.source;
     return null;
   }
 

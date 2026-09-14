@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import HeroSlotManager from '../../src/game/HeroSlotManager.js';
-import FacilityReturnSystem, { RETURN_STAMINA_COST } from '../../src/game/FacilityReturnSystem.js';
+import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
 
-test('every facility return consumes three stamina without allowing a negative value', () => {
+test('facility return does not consume additional stamina', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const returns = new FacilityReturnSystem(board, new HeroSlotManager());
   const hero = new HeroFactory().create({
@@ -13,9 +13,9 @@ test('every facility return consumes three stamina without allowing a negative v
   });
 
   returns.begin(hero);
-  assert.equal(hero.stamina, 5 - RETURN_STAMINA_COST);
+  assert.equal(hero.stamina, 5);
 
   hero.stamina = 2;
   returns.begin(hero);
-  assert.equal(hero.stamina, 0);
+  assert.equal(hero.stamina, 2);
 });

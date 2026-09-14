@@ -15,6 +15,8 @@ export default class FlowLog {
   constructor(container, gameLog, { random = Math.random } = {}) {
     this.container = container;
     this.random = random;
+    this.gameLog = gameLog;
+    this.visibleEntries = new Map();
     this.unsubscribe = gameLog.subscribe((record, definitions) => {
       if (record.notify) this.show(record, definitions);
     });
@@ -35,7 +37,8 @@ export default class FlowLog {
     message.className = 'FlowLog__Message';
     const text = document.createElement('span');
     text.className = 'FlowLog__Text';
-    text.textContent = record.message;
+    text.textContent = this.gameLog.getMessage(record);
+    this.visibleEntries.set(entry, { text, record });
     message.append(text);
     entry.append(message);
     this.container.append(entry);
@@ -45,8 +48,15 @@ export default class FlowLog {
     entry.style.setProperty('--flow-y', `${this.getFlowY(record.channel)}%`);
     entry.style.setProperty('--flow-duration-adjusted', `${adjustedDuration}ms`);
     entry.addEventListener('animationend', (event) => {
-      if (event.target === entry && event.animationName === 'flow-log-right-to-left') entry.remove();
+      if (event.target === entry && event.animationName === 'flow-log-right-to-left') {
+        this.visibleEntries.delete(entry);
+        entry.remove();
+      }
     });
     requestAnimationFrame(() => entry.classList.add('state-running'));
+  }
+
+  refreshLanguage() {
+    this.visibleEntries.forEach(({ text, record }) => { text.textContent = this.gameLog.getMessage(record); });
   }
 }

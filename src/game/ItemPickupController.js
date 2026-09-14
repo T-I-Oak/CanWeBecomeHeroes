@@ -1,11 +1,12 @@
-const DESTINATION_LABELS = Object.freeze({ battle: '戦闘', shop: 'ショップ', guild: 'ギルド', training: '訓練' });
+import { logText, entityText } from './LocalizedLog.js';
 
 export default class ItemPickupController {
-  constructor(board, slotManager, gameLog = null) {
+  constructor(board, slotManager, gameLog = null, textRepository = null) {
     this.board = board;
     this.slotManager = slotManager;
     this.states = new Map();
     this.gameLog = gameLog;
+    this.textRepository = textRepository;
   }
 
   start(hero, item, secondItem = null) {
@@ -113,6 +114,6 @@ export default class ItemPickupController {
     }
     state.destinationSlot = slot;
     this.board.moveTo(state.hero.chip, slot.x, slot.y, { stepDistance: state.hero.getStepDistance() });
-    this.gameLog?.log(`【${state.hero.profession}・${state.hero.name.ja}】は${DESTINATION_LABELS[area]}に向かって出発した。`, { subject: 'hero', level: 'info', channel: area });
+    logText(this.gameLog, this.textRepository, 'logDeparture', { hero: entityText(state.hero), destination: { kind: 'label', id: `${area}Destination` } }, { subject: 'hero', level: 'info', channel: area });
   }
 }

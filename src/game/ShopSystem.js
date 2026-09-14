@@ -1,3 +1,4 @@
+import { logText, entityText } from './LocalizedLog.js';
 import ItemFactory from './ItemFactory.js';
 import { GAME_AREAS } from './GameAreas.js';
 import { EQUIPMENT_PARTS, createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
@@ -6,8 +7,9 @@ import { EQUIPMENT_PARTS, createTrendEquipmentSet } from './TrendEquipmentGenera
 export const SHOP_REVEAL_INTERVAL_TICKS = 100;
 export const SHOP_PURCHASE_DELIVERY_TICKS = 600;
 export const SHOP_SET_COUNT = 2;
+export const SHOP_STAMINA_DRAIN_INTERVAL_TICKS = 40;
+export const SHOP_STAMINA_DRAIN = 0.1;
 const GAME_TICK_SECONDS = 1 / 60;
-const PART_LABELS = Object.freeze({ head: '頭装備', torso: '胴装備', weapon: '手装備', feet: '脚装備' });
 
 export function getSaleTagCount(value, negotiation) {
   return Math.min(15, Math.max(5, 5 + Math.floor(value / Math.max(1, 10 - negotiation))));
@@ -18,7 +20,7 @@ export function getGemAttempts(skillLevel) {
 }
 
 export default class ShopSystem {
-  constructor(board, shopState, returnSystem, { itemFactory = new ItemFactory(), onItemPurchased = () => {}, entityRegistry = null, random = Math.random, gameLog = null } = {}) {
+  constructor(board, shopState, returnSystem, { itemFactory = new ItemFactory(), onItemPurchased = () => {}, entityRegistry = null, random = Math.random, textRepository = null, gameLog = null } = {}) {
     this.board = board;
     this.shopState = shopState;
     this.returnSystem = returnSystem;
@@ -27,6 +29,7 @@ export default class ShopSystem {
     this.entityRegistry = entityRegistry;
     this.random = random;
     this.gameLog = gameLog;
+    this.textRepository = textRepository;
     this.states = new Map();
   }
 
@@ -58,6 +61,7 @@ export default class ShopSystem {
   }
 
   updateTransactionTick(hero, state) {
+    if (state.ticks % SHOP_STAMINA_DRAIN_INTERVAL_TICKS === 0) hero.stamina = Math.max(0, hero.stamina - SHOP_STAMINA_DRAIN);
     if (state.ticks % SHOP_PURCHASE_DELIVERY_TICKS === 0) {
       this.deliverSet(hero, state);
       return;
@@ -66,7 +70,7 @@ export default class ShopSystem {
       const purchase = state.purchases[state.revealed];
       state.revealed += 1;
       if (purchase.enhanced) {
-        this.gameLog?.log(`${hero.profession}・${hero.name.ja}は買った${PART_LABELS[purchase.part]}の隠れた能力を見つけた。`, { subject: 'hero', level: 'luck', channel: 'shop' });
+        logText(this.gameLog, this.textRepository, 'logReveal', { hero: entityText(hero, false), part: { kind: 'label', id: `${purchase.part}Part` } }, { subject: 'hero', level: 'luck', channel: 'shop' });
       }
     }
   }
@@ -81,7 +85,7 @@ export default class ShopSystem {
       state.bag.storedItems.length = 0;
     }
     this.shopState.advance(this.random);
-    this.gameLog?.log(`${hero.profession}・${hero.name.ja}はショップで買い物をした。`, { subject: 'hero', level: 'info', channel: 'shop' });
+    logText(this.gameLog, this.textRepository, 'logShop', { hero: entityText(hero, false) }, { subject: 'hero', level: 'info', channel: 'shop' });
     state.returning = true;
     this.returnSystem.begin(hero);
   }

@@ -7,33 +7,36 @@
   </head>
   <body>
     <main class="AppShell">
-      <canvas class="ChipCanvas" id="chip-canvas" aria-label="Can We Become Heroes? ゲーム画面"></canvas>
-      <aside class="HudPanel" aria-label="ゲーム操作">
+      <canvas class="ChipCanvas" id="chip-canvas" data-ui-aria="gameScreen"></canvas>
+      <aside class="HudPanel" data-ui-aria="controls">
         <img class="HudPanel__Logo" src="/assets/logo.png" alt="Can We Become Heroes?" />
         <div class="HudPanel__Controls">
-          <span class="HudPanel__Status state-running" id="time-status" aria-live="polite">進行中</span>
-          <button class="HudPanel__PauseButton" id="pause-game" type="button">⏸ 一時停止</button>
-          <button class="HudPanel__SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings">時間設定</button>
+          <span class="HudPanel__Status state-running" id="time-status" aria-live="polite"><span data-ui="running"></span></span>
+          <button class="HudPanel__PauseButton" id="pause-game" type="button"><span data-ui="pause"></span></button>
+          <button class="HudPanel__SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings"><span data-ui="settings"></span></button>
         </div>
-        <section class="HudPanel__Settings" id="time-settings" hidden aria-label="時間設定">
-          <label class="HudPanel__SpeedLabel" for="game-speed">通常速度
+        <section class="HudPanel__Settings" id="time-settings" hidden data-ui-aria="settings">
+          <label class="HudPanel__SpeedLabel" for="language-selector"><span data-ui="language"></span>
+            <select id="language-selector"></select>
+          </label>
+          <label class="HudPanel__SpeedLabel" for="game-speed"><span data-ui="speed"></span>
             <input class="HudPanel__SpeedSlider" id="game-speed" type="range" min="-1" max="2" step="0.1" value="0" />
-            <span class="HudPanel__SpeedScale" aria-hidden="true"><span>遅い</span><span>標準</span><span>速い</span></span>
+            <span class="HudPanel__SpeedScale" aria-hidden="true"><span><span data-ui="slow"></span></span><span><span data-ui="normal"></span></span><span><span data-ui="fast"></span></span></span>
           </label>
           <div class="HudPanel__AutomationGroup">
-            <span class="HudPanel__AutomationTitle">自動停止</span>
-            <label class="HudPanel__AutomationOption" for="pause-on-information"><input id="pause-on-information" type="checkbox" checked /> 詳細表示時</label>
-            <label class="HudPanel__AutomationOption" for="pause-on-stamina-full"><input id="pause-on-stamina-full" type="checkbox" /> 仲間のスタミナ満タン時</label>
+            <span class="HudPanel__AutomationTitle"><span data-ui="autoPause"></span></span>
+            <label class="HudPanel__AutomationOption" for="pause-on-information"><input id="pause-on-information" type="checkbox" checked /> <span data-ui="pauseInformation"></span></label>
+            <label class="HudPanel__AutomationOption" for="pause-on-stamina-full"><input id="pause-on-stamina-full" type="checkbox" /> <span data-ui="pauseStamina"></span></label>
           </div>
           <div class="HudPanel__AutomationGroup">
-            <span class="HudPanel__AutomationTitle">自動加速</span>
-            <label class="HudPanel__AutomationOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> 待機エリアに仲間がいない時</label>
+            <span class="HudPanel__AutomationTitle"><span data-ui="autoAccelerate"></span></span>
+            <label class="HudPanel__AutomationOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> <span data-ui="accelerateEmpty"></span></label>
           </div>
         </section>
       </aside>
-      <aside class="FlowLog" id="flow-log" aria-label="ゲームログ"></aside>
-      <aside class="StageSelection" id="stage-selection" aria-label="進路選択" hidden></aside>
-      <aside class="InformationWindowLayer" id="information-windows" aria-label="情報ウィンドウ"></aside>
+      <aside class="FlowLog" id="flow-log" data-ui-aria="logs"></aside>
+      <aside class="StageSelection" id="stage-selection" data-ui-aria="routes" hidden></aside>
+      <aside class="InformationWindowLayer" id="information-windows" data-ui-aria="informationWindows"></aside>
     </main>
     <script type="module" src="/src/main.js"></script>
   </body>

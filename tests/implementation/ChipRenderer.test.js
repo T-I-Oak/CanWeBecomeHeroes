@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createTagAngles, getCenterImagePlacement, getPhysicalShieldPresentation } from '../../src/chips/ChipRenderer.js';
+import { createTagAngles, getActionGaugePresentationRatio, getCenterImagePlacement, getPhysicalShieldPresentation, getStaminaPauseWavePresentation } from '../../src/chips/ChipRenderer.js';
 
 test('tag angles keep the same interval for two and three tags', () => {
   const slotCount = 8;
@@ -38,4 +38,20 @@ test('physical shield presentation strengthens with physical damage reduction', 
   assert.equal(absent.alpha, 0);
   assert.ok(full.alpha > partial.alpha);
   assert.ok(full.pulse > partial.pulse);
+});
+
+test('stamina-full waves expand and fade over their real-time animation cycle', () => {
+  const first = getStaminaPauseWavePresentation(0, 96, 0);
+  const later = getStaminaPauseWavePresentation(0.6, 96, 0);
+
+  assert.ok(later.radius > first.radius);
+  assert.ok(later.alpha < first.alpha);
+});
+
+test('action gauge remains visually full while its action animation is active', () => {
+  const chip = { actionGauge: 3, actionGaugeMaximum: 12, actionVisualCount: 1 };
+
+  assert.equal(getActionGaugePresentationRatio(chip), 1);
+  chip.actionVisualCount = 0;
+  assert.equal(getActionGaugePresentationRatio(chip), 0.25);
 });

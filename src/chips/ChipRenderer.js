@@ -46,6 +46,20 @@ export function getPhysicalShieldPresentation(reduction) {
   };
 }
 
+export function getStaminaPauseWavePresentation(timeSeconds, radius, index) {
+  const progress = (timeSeconds / 1.6 + index / 3) % 1;
+  return {
+    radius: radius * (1.08 + progress * 1.02),
+    alpha: 0.3 + (1 - progress) ** 1.25 * 0.7,
+    lineWidth: Math.max(4, radius * 0.055) * (1 - progress * 0.18),
+  };
+}
+
+export function getActionGaugePresentationRatio(chip) {
+  if ((chip.actionVisualCount ?? 0) > 0) return 1;
+  return Math.max(0, Math.min(1, chip.actionGauge / chip.actionGaugeMaximum));
+}
+
 export default class ChipRenderer {
   constructor(context, assets, { tagSlotCount = DEFAULT_TAG_SLOT_COUNT } = {}) {
     this.context = context;
@@ -53,13 +67,15 @@ export default class ChipRenderer {
     this.tagSlotCount = tagSlotCount;
   }
 
-  draw(chip, timeSeconds = 0) {
+  draw(chip, timeSeconds = 0, { staminaPauseTarget = false } = {}) {
     const { context } = this;
     const scale = chip.scale;
     const visualX = chip.x + (chip.effectOffsetX ?? 0);
     const drawY = chip.y - chip.height + (chip.effectOffsetY ?? 0);
     const airRatio = Math.min(chip.height / (chip.radius * 5), 0.65);
     const shadowAlpha = 0.24 / (1 + airRatio);
+
+    if (staminaPauseTarget) this.drawStaminaPauseWaves(chip, visualX, drawY, timeSeconds);
 
     context.save();
     context.fillStyle = `rgba(19, 28, 46, ${shadowAlpha})`;
@@ -115,6 +131,27 @@ export default class ChipRenderer {
     context.restore();
     this.drawPhysicalShieldOverlay(chip, visualX, drawY, timeSeconds);
     this.drawAttributeOverlays(chip, visualX, drawY, timeSeconds);
+  }
+
+  drawStaminaPauseWaves(chip, x, y, timeSeconds) {
+    const { context } = this;
+    context.save();
+    context.lineCap = 'round';
+    [0, 1, 2].forEach((index) => {
+      const wave = getStaminaPauseWavePresentation(timeSeconds, chip.radius, index);
+      context.globalAlpha = wave.alpha;
+      context.lineWidth = wave.lineWidth + Math.max(2, chip.radius * 0.025);
+      context.strokeStyle = '#315d31';
+      context.beginPath();
+      context.arc(x, y, wave.radius, 0, Math.PI * 2);
+      context.stroke();
+      context.lineWidth = wave.lineWidth;
+      context.strokeStyle = '#d7ff58';
+      context.beginPath();
+      context.arc(x, y, wave.radius, 0, Math.PI * 2);
+      context.stroke();
+    });
+    context.restore();
   }
 
   drawPhysicalShieldOverlay(chip, x, y, timeSeconds) {
@@ -203,7 +240,7 @@ export default class ChipRenderer {
     const height = Math.max(7, chip.radius * 0.12);
     const x = -width / 2;
     const y = chip.radius * 0.5 - height / 2;
-    const ratio = Math.max(0, Math.min(1, chip.actionGauge / chip.actionGaugeMaximum));
+    const ratio = getActionGaugePresentationRatio(chip);
     context.fillStyle = 'rgba(18, 30, 49, 0.72)';
     context.beginPath();
     context.roundRect(x, y, width, height, height / 2);

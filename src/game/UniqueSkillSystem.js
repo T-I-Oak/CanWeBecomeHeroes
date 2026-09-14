@@ -41,10 +41,20 @@ export default class UniqueSkillSystem {
     return Object.freeze({ skill, drops: Object.freeze(drops) });
   }
 
-  getAvailableSummonSlots(defeatedEnemy) {
-    const occupied = new Set();
+  resolveOnAction(enemy, { reservedSlots = [] } = {}) {
+    if (!enemy.uniqueSkill) return Object.freeze({ skill: null, heads: Object.freeze([]) });
+    const skill = getUniqueSkillLevelDetail(enemy.uniqueSkill);
+    if (skill.trigger !== 'action' || skill.id !== 'area-head-rush') return Object.freeze({ skill, heads: Object.freeze([]) });
+    const heads = this.getAvailableSummonSlots(null, reservedSlots)
+      .slice(0, skill.levelDetail.headCount)
+      .map((slotPosition) => this.enemyFactory.createAreaHead({ source: enemy, slotPosition }));
+    return Object.freeze({ skill, heads: Object.freeze(heads) });
+  }
+
+  getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {
+    const occupied = new Set(reservedSlots);
     const enemies = this.controller?.getEnemies?.() ?? [];
-    enemies.filter((enemy) => enemy !== defeatedEnemy && onBoard(this.board, enemy)).forEach((enemy) => {
+    enemies.filter((enemy) => enemy !== excludedEnemy && onBoard(this.board, enemy)).forEach((enemy) => {
       const span = enemy.definition.size === 'large' ? LARGE_ENEMY_SLOT_SPAN : 1;
       for (let index = 0; index < span; index += 1) occupied.add(enemy.slotPosition + index);
     });

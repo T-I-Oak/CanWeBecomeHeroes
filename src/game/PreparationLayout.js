@@ -3,14 +3,14 @@ import { CENTER_IMAGE_SCALE } from '../chips/ChipRenderer.js';
 
 export const PREPARATION_LAYOUT = Object.freeze({
   characterAreaWidth: 168,
-  informationAreaWidth: 304,
+  informationAreaWidth: 356,
   itemAreaWidth: 232,
   topPadding: 12,
   areaGap: 8,
   sectionGap: 8,
   bottomPadding: 12,
   headerHeight: 30,
-  statusCount: 6,
+  statusCount: 7,
   statusColumnWidth: 44,
   statusColumnGap: 8,
   statusGaugeWidth: 40,

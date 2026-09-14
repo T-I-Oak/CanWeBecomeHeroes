@@ -56,24 +56,31 @@ export function getPreviewTagAtPoint(enemy, canvas, clientX, clientY) {
 }
 
 export default class StageSelectionModal {
-  constructor(container, { assets, onSelect = () => {}, onTagSelect = () => {}, onEnemySelect = () => {} } = {}) {
+  constructor(container, { assets, textRepository, onSelect = () => {}, onTagSelect = () => {}, onEnemySelect = () => {} } = {}) {
     if (!container || !assets) throw new Error('Stage selection modal requires a container and assets.');
     this.container = container;
     this.assets = assets;
+    this.textRepository = textRepository;
+    this.enemyLabels = [];
+    this.textLabels = [];
+    this.tagLabels = [];
     this.onSelect = onSelect;
     this.onTagSelect = onTagSelect;
     this.onEnemySelect = onEnemySelect;
   }
 
   show({ stageNumber, choices }) {
+    this.enemyLabels = [];
+    this.textLabels = [];
+    this.tagLabels = [];
     this.container.replaceChildren();
     const dialog = createElement('section', 'StageSelection__Dialog');
     dialog.setAttribute('role', 'dialog');
     dialog.setAttribute('aria-modal', 'true');
     dialog.setAttribute('aria-labelledby', 'stage-selection-title');
-    const heading = createElement('h1', 'StageSelection__Title', '進路を選択');
+    const heading = this.createLabel('h1', 'StageSelection__Title', 'chooseRoute');
     heading.id = 'stage-selection-title';
-    const subtitle = createElement('p', 'StageSelection__Subtitle', `第${stageNumber}ステージ`);
+    const subtitle = this.createLabel('p', 'StageSelection__Subtitle', 'stageNumber', { number: stageNumber });
     const options = createElement('div', 'StageSelection__Options');
     choices.forEach((choice) => options.append(this.createOption(choice)));
     dialog.append(heading, subtitle, options);
@@ -83,6 +90,9 @@ export default class StageSelectionModal {
   }
 
   hide() {
+    this.enemyLabels = [];
+    this.textLabels = [];
+    this.tagLabels = [];
     this.container.classList.remove('state-open');
     this.container.replaceChildren();
     this.container.hidden = true;
@@ -110,10 +120,10 @@ export default class StageSelectionModal {
 
     const trends = createElement('div', 'StageSelection__Trends');
     trends.append(
-      this.createTrend('今回の店', choice.shopTrends.saleTag),
-      this.createTrend('次回の店', choice.shopTrends.nextTag),
+      this.createTrend('currentShop', choice.shopTrends.saleTag),
+      this.createTrend('nextShop', choice.shopTrends.nextTag),
     );
-    const selectButton = createElement('button', 'StageSelection__SelectButton state-clickable', 'この進路へ');
+    const selectButton = this.createLabel('button', 'StageSelection__SelectButton state-clickable', 'selectRoute');
     selectButton.type = 'button';
     selectButton.addEventListener('click', () => this.onSelect(choice.id));
     option.append(enemyLine, trends, selectButton);
@@ -129,8 +139,10 @@ export default class StageSelectionModal {
     if (span > 1) canvas.classList.add('state-large');
     canvas.width = previewSize;
     canvas.height = previewSize;
-    canvas.setAttribute('aria-label', enemy.definition.nameJa);
-    const label = createElement('span', 'StageSelection__EnemyName', enemy.definition.nameJa);
+    const name = this.textRepository.getName('enemy', enemy.definition.id);
+    canvas.setAttribute('aria-label', name);
+    const label = createElement('span', 'StageSelection__EnemyName', name);
+    this.enemyLabels.push({ id: enemy.definition.id, canvas, label });
     slot.append(canvas, label);
     this.drawChipPreview(canvas, enemy.chip, previewSize);
     canvas.addEventListener('click', (event) => {
@@ -141,15 +153,32 @@ export default class StageSelectionModal {
     return slot;
   }
 
+  createLabel(tag, className, key, values = {}) {
+    const element = createElement(tag, className, this.textRepository.getLabel(key, values));
+    this.textLabels.push({ element, key, values });
+    return element;
+  }
+
+  refreshLanguage() {
+    this.textLabels.forEach(({ element, key, values }) => { element.textContent = this.textRepository.getLabel(key, values); });
+    this.tagLabels.forEach(({ element, id }) => element.setAttribute('aria-label', this.textRepository.getName('tag', id)));
+    this.enemyLabels.forEach(({ id, canvas, label }) => {
+      const name = this.textRepository.getName('enemy', id);
+      canvas.setAttribute('aria-label', name);
+      label.textContent = name;
+    });
+  }
+
   createTrend(label, tag) {
     const trend = createElement('div', 'StageSelection__Trend');
     const tagIcon = document.createElement('canvas');
     tagIcon.className = 'StageSelection__TrendIcon';
     tagIcon.width = TREND_TAG_SIZE;
     tagIcon.height = TREND_TAG_SIZE;
-    tagIcon.setAttribute('aria-label', tag);
+    tagIcon.setAttribute('aria-label', this.textRepository.getName('tag', tag));
+    this.tagLabels.push({ element: tagIcon, id: tag });
     this.drawTrendTag(tagIcon, tag);
-    trend.append(createElement('span', 'StageSelection__TrendLabel', label), tagIcon);
+    trend.append(this.createLabel('span', 'StageSelection__TrendLabel', label), tagIcon);
     tagIcon.addEventListener('click', (event) => this.onTagSelect(tag, { x: event.clientX, y: event.clientY }));
     return trend;
   }

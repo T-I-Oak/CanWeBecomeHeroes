@@ -1,8 +1,14 @@
 import { TAG_ORDER } from '../game/TagCatalog.js';
-import { getTagDetail } from '../game/TagDetailCatalog.js';
+import gameText from '../../public/data/game_text.json' with { type: 'json' };
+import { expandLanguageResource } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import { COMBINATION_PATTERNS } from '../game/EncounterDefinitions.js';
 import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
 import { runBattleSimulation } from './BattleSimulationRunner.js';
+
+// Offline reports use the same resource and language resolver as the game.
+function getTagDetail(tag) {
+  return expandLanguageResource(gameText.information.tag[tag]);
+}
 
 export const TAG_WEAPON_LOADOUTS = Object.freeze({
   valor: Object.freeze(['sword', 'sword']),

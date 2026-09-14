@@ -1,8 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  formatElapsedGuildTime,
-  formatRemainingGuildTime,
   GAME_TICKS_PER_HOUR,
   getGuildTimeStatus,
   GUILD_TIMELINE_STANDARD_HOURS,
@@ -13,10 +11,8 @@ test('guild time uses five hundred ticks per hour with a seven-day initial deadl
 
   assert.equal(status.elapsedHours, 25);
   assert.equal(status.remainingHours, 143);
-  assert.equal(status.estimatedExtensionHours, 20);
+  assert.equal(status.estimatedExtensionHours, 24);
   assert.equal(status.timelineHours, GUILD_TIMELINE_STANDARD_HOURS);
-  assert.equal(formatElapsedGuildTime(status.elapsedHours), '1日 1時間');
-  assert.equal(formatRemainingGuildTime(status.remainingHours), '5日 23時間');
 });
 
 test('guild timeline expands beyond the initial seven-day horizon for remaining time and extension estimate', () => {

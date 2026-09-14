@@ -32,6 +32,7 @@ export default class Chip {
     this.actionGauge = null;
     this.actionGaugeMaximum = null;
     this.actionGaugeBaseMaximum = null;
+    this.actionVisualCount = 0;
     this.attributeValues = null;
     this.physicalDamageReduction = 0;
     this.effectOffsetX = 0;
@@ -54,6 +55,7 @@ export default class Chip {
     this.tilt = 0;
     this.poseTilt = 0;
     this.tiltVelocity = 0;
+    this.actionVisualCount = 0;
     this.step = null;
     this.impact = 0;
     this.vx = 0;

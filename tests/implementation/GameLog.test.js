@@ -11,8 +11,8 @@ test('game log keeps records in memory and notifies subscribers', () => {
   assert.equal(record.timestamp, 1234);
   assert.equal(record.subject, 'hero');
   assert.equal(record.channel, 'event');
-  assert.equal(received[0].definitions.subject.label, 'キャラクター');
-  assert.equal(received[0].definitions.level.label, '情報');
+  assert.equal(received[0].definitions.subject.labelKey, 'logCategory_hero');
+  assert.equal(received[0].definitions.level.labelKey, 'logCategory_info');
 });
 
 test('game log accepts future log levels and can suppress a notification', () => {

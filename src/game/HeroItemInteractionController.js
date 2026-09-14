@@ -1,6 +1,8 @@
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
 import EntityRegistry from './EntityRegistry.js';
+import Chip from '../chips/Chip.js';
+import { getWarehouseItemCapacity } from './WarehouseCapacity.js';
 
 export default class HeroItemInteractionController {
   constructor(board, pickupController, gameLog = null, { entityRegistry = new EntityRegistry() } = {}) {
@@ -33,9 +35,22 @@ export default class HeroItemInteractionController {
   }
 
   addToWarehouse(item) {
+    if (this.getWarehouseItemCount() >= getWarehouseItemCapacity()) return null;
     item.chip.bounds = { ...GAME_AREAS.warehouse };
     item.chip.beginDrop();
     return this.add(item);
+  }
+
+  getWarehouseItemCount() {
+    return [...this.entities.values()].filter((entity) => (
+      entity.chip.type === 'item'
+      && !entity.isStored
+      && this.board.chips.includes(entity.chip)
+      && entity.chip.bounds?.x === GAME_AREAS.warehouse.x
+      && entity.chip.bounds?.y === GAME_AREAS.warehouse.y
+      && entity.chip.bounds?.width === GAME_AREAS.warehouse.width
+      && entity.chip.bounds?.height === GAME_AREAS.warehouse.height
+    )).length;
   }
 
   getEntityAt(x, y) {
@@ -185,19 +200,27 @@ export default class HeroItemInteractionController {
   }
 
   animateItemTransfer(item, { from, to, onComplete = null } = {}) {
-    if (!item || !from || !to) return false;
-    const visual = this.board.add({
-      type: 'item',
+    return this.animateChipTransfer(item, { from, to, onComplete });
+  }
+
+  animateChipTransfer(entity, { from, to, onComplete = null } = {}) {
+    if (!entity?.chip || !from || !to) return false;
+    const source = entity.chip;
+    const visual = new Chip({
+      id: 0,
+      type: source.type,
+      radius: source.radius,
       x: from.x,
       y: from.y,
-      weight: item.chip.weight,
-      centerPath: item.chip.centerPath,
-      tagPaths: item.chip.tagPaths,
-      tagBaseColors: item.chip.tagBaseColors,
-      tagGlyphScales: item.chip.tagGlyphScales,
+      weight: source.weight,
+      centerPath: source.centerPath,
+      tagPaths: source.tagPaths,
+      tagBaseColors: source.tagBaseColors,
+      tagGlyphScales: source.tagGlyphScales,
+      fillColor: source.fillColor,
+      borderColor: source.borderColor,
     });
-    visual.fillColor = item.chip.fillColor;
-    visual.borderColor = item.chip.borderColor;
+    this.board.addChip(visual);
     visual.isAbsorbing = true;
     visual.isTransferVisual = true;
     visual.height = 0;

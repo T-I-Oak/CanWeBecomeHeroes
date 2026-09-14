@@ -1,4 +1,8 @@
 import test from 'node:test';
+import gameText from '../../public/data/game_text.json' with { type: 'json' };
+import GameTextRepository from '../../src/game/GameTextRepository.js';
+import { expandLanguageResource } from '../../../GameWorksOAK/src/lib/core/i18n.js';
+const textRepository = await new GameTextRepository({ loadResource: async () => expandLanguageResource(gameText) }).load();
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
@@ -45,7 +49,7 @@ test('pickup controller retargets when another hero removes its target item', ()
 test('pickup controller logs the facility when a hero starts for a reserved destination slot', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const messages = [];
-  const controller = new ItemPickupController(board, new HeroSlotManager(), { log: (message, options) => messages.push({ message, options }) });
+  const controller = new ItemPickupController(board, new HeroSlotManager(), { log: (message, options) => messages.push({ message, options }) }, textRepository);
   const hero = new HeroFactory().create({ profession: 'cleric', x: 700, y: 700 });
   const item = new ItemFactory().createWeapon({ weapon: 'staff', tags: [], x: 800, y: 700 });
   [hero, item].forEach((entity) => board.addChip(entity.chip));

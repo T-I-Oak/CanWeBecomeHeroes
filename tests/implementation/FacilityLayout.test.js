@@ -14,13 +14,13 @@ test('facility hero slots share a 24px left alignment and named facilities leave
   });
 });
 
-test('facility nameplates use the shared 3:1 bounds at the upper left', () => {
+test('facility nameplates reserve their left side for an icon and use shared 3:1 bounds', () => {
   const plaque = getFacilityNameplateBounds('guild');
   assert.deepEqual(plaque, {
-    x: GAME_AREAS.guild.x + 24,
-    y: GAME_AREAS.guild.y + 16,
-    width: 144,
-    height: 48,
+    x: GAME_AREAS.guild.x + FACILITY_LAYOUT.nameplateLeft,
+    y: GAME_AREAS.guild.y + FACILITY_LAYOUT.nameplateTop,
+    width: FACILITY_LAYOUT.nameplateWidth,
+    height: FACILITY_LAYOUT.nameplateHeight,
   });
 });
 
