@@ -48,6 +48,7 @@ import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
+import { getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
 import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
@@ -187,13 +188,11 @@ function drawShopPanel(context, assets, shop, bag, transaction, texts) {
   const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, arrowX, purchaseX } = layout.transaction;
   const bagImage = assets.load('/assets/items/hand-shopping-bag.png');
   if (bagImage.complete && bagImage.naturalWidth > 0) context.drawImage(bagImage, bagX, bagY, bagSize, bagSize);
-  Array.from({ length: 3 }, (_, index) => {
-    drawItemSlot(context, assets, transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null, sellX + index * (slotSize + gap), sellItemsTop);
+  getShopSoldItems(bag, transaction).forEach((item, index) => {
+    drawItemSlot(context, assets, item, sellX + index * (slotSize + gap), sellItemsTop);
   });
-  const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
-  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
-  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
-  purchaseSlots.forEach(([column, row], index) => {
+  const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
+  SHOP_PURCHASE_SLOT_GRID.forEach(([column, row], index) => {
     const purchase = transaction?.purchases[purchaseSetStart + index];
     drawItemSlot(context, assets, index < revealedInSet ? purchase.item : null, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
   });
@@ -229,17 +228,15 @@ function getShopTagAtPoint(point, shop, bag, transaction) {
   if (trendTag) return trendTag.tag;
 
   const { slotSize, gap, top, sellItemsTop, sellX, purchaseX } = layout.transaction;
-  const soldItems = Array.from({ length: 3 }, (_, index) => transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null);
+  const soldItems = getShopSoldItems(bag, transaction);
   for (let index = 0; index < soldItems.length; index += 1) {
     const tag = getItemSlotTagAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
     if (tag) return tag;
   }
-  const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
-  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
-  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
-  for (let index = 0; index < purchaseSlots.length; index += 1) {
+  const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
+  for (let index = 0; index < SHOP_PURCHASE_SLOT_GRID.length; index += 1) {
     if (index >= revealedInSet) continue;
-    const [column, row] = purchaseSlots[index];
+    const [column, row] = SHOP_PURCHASE_SLOT_GRID[index];
     const tag = getItemSlotTagAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
     if (tag) return tag;
   }
@@ -251,16 +248,14 @@ function getShopItemAtPoint(point, shop, bag, transaction) {
   const layout = getShopLayout(GAME_AREAS.shop);
   const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, purchaseX } = layout.transaction;
   if (bag && isPointInRect(point, bagX, bagY, 48, 48)) return bag;
-  const soldItems = Array.from({ length: 3 }, (_, index) => transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null);
+  const soldItems = getShopSoldItems(bag, transaction);
   for (let index = 0; index < soldItems.length; index += 1) {
     const item = getItemSlotAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
     if (item) return item;
   }
-  const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
-  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
-  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
-  for (let index = 0; index < revealedInSet && index < purchaseSlots.length; index += 1) {
-    const [column, row] = purchaseSlots[index];
+  const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
+  for (let index = 0; index < revealedInSet && index < SHOP_PURCHASE_SLOT_GRID.length; index += 1) {
+    const [column, row] = SHOP_PURCHASE_SLOT_GRID[index];
     const item = getItemSlotAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
     if (item) return item;
   }
