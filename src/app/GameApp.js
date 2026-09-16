@@ -49,6 +49,7 @@ import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMeta
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
 import TimeSettingsController from './TimeSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
+import TrialRunFlow from './TrialRunFlow.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -56,7 +57,6 @@ import HeroProgressRepository from '../game/HeroProgressRepository.js';
 import StartPartySelection from '../game/StartPartySelection.js';
 import StartPartySelectionModal from './StartPartySelectionModal.js';
 import { createRunScenario } from '../game/RunScenario.js';
-import { unlockClearedTrialMembers } from '../game/TrialCompletionProgress.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -691,6 +691,16 @@ export async function startGame() {
   }
 
   openStageSelection(1);
+  const trialRunFlow = new TrialRunFlow({
+    clock,
+    stageController,
+    runController,
+    recruitmentController,
+    heroProgress,
+    getMembers: () => preparationHeroes,
+    getRemainingHours: getRemainingTrialHours,
+    openStageSelection,
+  });
 
   function resizeCanvas() {
     const bounds = canvas.getBoundingClientRect();
@@ -816,21 +826,7 @@ export async function startGame() {
       informationWindows.closeInvalidEntries();
       informationWindows.refreshDynamicEntries();
       stageController.update();
-      recruitmentController.processCompletedStage({
-        stage: stageController.currentStage,
-        stageState: stageController.state,
-        heroes: controller.getHeroes(),
-      });
-      stageController.setJoinedCount(recruitmentController.joinedCount);
-      const wasRunActive = runController.isActive;
-      runController.update({
-        remainingHours: getRemainingTrialHours(),
-        stage: stageController.currentStage,
-        stageState: stageController.state,
-      });
-      unlockClearedTrialMembers({ wasRunActive, runController, members: preparationHeroes, heroProgress });
-      if (!runController.isActive) clock.pause('run-complete');
-      else if (stageController.state === 'complete') openStageSelection();
+      trialRunFlow.update(controller.getHeroes());
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
     });
     controller.updateVisuals();
