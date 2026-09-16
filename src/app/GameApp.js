@@ -48,7 +48,7 @@ import TimeSettingsController from './TimeSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
-import { drawTrainingStatusPanel, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
+import { drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
@@ -62,112 +62,6 @@ import { createRunScenario } from '../game/RunScenario.js';
 const STATUS_DEFINITIONS = HERO_STATUS_DEFINITIONS;
 const WEIGHT_STATUS_DEFINITION = Object.freeze({ key: 'weight', visual: STATUS_VISUALS.weight });
 const PREPARATION_STATUS_DEFINITIONS = Object.freeze([...STATUS_DEFINITIONS, WEIGHT_STATUS_DEFINITION]);
-function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeColor = '#54c96b', { highlightedCells = [], highlightPhase = 0 } = {}) {
-  const { statusGaugeWidth: width, statusGaugeHeight: height, statusIconSize, statusIconTopPadding, statusIconSegmentGap, statusGaugeHorizontalPadding: inset, statusGaugeBottomPadding, statusSegmentHeight, statusSegmentGap: gap } = PREPARATION_LAYOUT;
-  const capacity = 7;
-  context.fillStyle = visual.gaugeFrameColor;
-  context.beginPath();
-  context.roundRect(x, y, width, height, 9);
-  context.fill();
-  const icon = assets.load(visual.iconPath);
-  if (icon.complete && icon.naturalWidth > 0) {
-    context.drawImage(icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
-  }
-  for (let index = 0; index < capacity; index += 1) {
-    const segmentY = y + height - statusGaugeBottomPadding - statusSegmentHeight - index * (statusSegmentHeight + gap);
-    const fillRatio = Math.max(0, Math.min(1, value - index));
-    context.fillStyle = index < maximum ? '#9da9ba' : '#46536a';
-    context.beginPath();
-    context.roundRect(x + inset, segmentY, width - inset * 2, statusSegmentHeight, 4);
-    context.fill();
-    if (fillRatio > 0) {
-      context.save();
-      context.beginPath();
-      context.rect(x + inset, segmentY, (width - inset * 2) * fillRatio, statusSegmentHeight);
-      context.clip();
-      context.fillStyle = activeColor;
-      context.beginPath();
-      context.roundRect(x + inset, segmentY, width - inset * 2, statusSegmentHeight, 4);
-      context.fill();
-      context.restore();
-    }
-    if (highlightedCells.includes(index + 1)) {
-      const glow = 0.55 + Math.sin(highlightPhase) * 0.25;
-      context.save();
-      context.fillStyle = `rgba(255, 215, 91, ${glow})`;
-      context.shadowColor = '#fff3af';
-      context.shadowBlur = 7;
-      context.fill();
-      context.strokeStyle = '#fff4ba';
-      context.lineWidth = 2;
-      context.stroke();
-      context.restore();
-    }
-  }
-}
-
-function drawWeightGauge(context, assets, x, y, weight) {
-  const {
-    statusGaugeWidth: width,
-    statusGaugeHeight: height,
-    statusIconSize,
-    statusIconTopPadding,
-  } = PREPARATION_LAYOUT;
-  const visual = STATUS_VISUALS.weight;
-  const indicatorTop = y + 33;
-  const indicatorHeight = 70;
-  const indicatorBottom = indicatorTop + indicatorHeight;
-  const topInset = 4;
-  const bottomInset = 12;
-  const fillRatio = getWeightFillRatio(weight);
-
-  context.fillStyle = visual.gaugeFrameColor;
-  context.beginPath();
-  context.roundRect(x, y, width, height, 9);
-  context.fill();
-
-  const icon = assets.load(visual.iconPath);
-  if (icon.complete && icon.naturalWidth > 0) {
-    context.drawImage(icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
-  }
-
-  context.save();
-  context.beginPath();
-  context.moveTo(x + topInset, indicatorTop);
-  context.lineTo(x + width - topInset, indicatorTop);
-  context.lineTo(x + width - bottomInset, indicatorBottom);
-  context.lineTo(x + bottomInset, indicatorBottom);
-  context.closePath();
-  context.fillStyle = '#46536a';
-  context.fill();
-  context.clip();
-  const gradient = context.createLinearGradient(0, indicatorBottom, 0, indicatorTop);
-  gradient.addColorStop(0, '#58c96d');
-  gradient.addColorStop(0.55, '#d6be57');
-  gradient.addColorStop(1, '#ca7553');
-  context.fillStyle = gradient;
-  context.fillRect(x, indicatorBottom - indicatorHeight * fillRatio, width, indicatorHeight * fillRatio);
-  context.restore();
-
-  context.strokeStyle = '#9da9ba';
-  context.lineWidth = 1;
-  context.beginPath();
-  context.moveTo(x + topInset, indicatorTop);
-  context.lineTo(x + width - topInset, indicatorTop);
-  context.lineTo(x + width - bottomInset, indicatorBottom);
-  context.lineTo(x + bottomInset, indicatorBottom);
-  context.closePath();
-  context.stroke();
-
-  context.fillStyle = '#f3f6fa';
-  context.font = 'bold 14px system-ui';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.fillText(String(weight), x + width / 2, y + height - 10);
-  context.textAlign = 'start';
-  context.textBaseline = 'alphabetic';
-}
-
 function drawTextAtVisualCenter(context, text, x, centerY) {
   const metrics = context.measureText(text);
   context.textBaseline = 'alphabetic';
