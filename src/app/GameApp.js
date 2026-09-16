@@ -28,7 +28,7 @@ import ItemFactory from '../game/ItemFactory.js';
 import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { drawGuildPanel } from './GuildPanel.js';
-import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
+import { getGuildTimeStatus, GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 import { drawAreaNameplates } from './AreaNameplateRenderer.js';
@@ -36,6 +36,7 @@ import createLocationNameplateBoundsRegistry from './LocationNameplateBoundsRegi
 import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
+import RunController from '../game/RunController.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import StageSelectionModal from './StageSelectionModal.js';
 import InformationWindowManager from './InformationWindowManager.js';
@@ -619,6 +620,7 @@ export async function startGame({ scenario }) {
     entityRegistry,
     random,
   });
+  const runController = new RunController();
   const guildSystem = new GuildSystem(returnSystem, {
     getContributionPoints: () => battleSystem.contributionPoints,
     setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
@@ -655,6 +657,14 @@ export async function startGame({ scenario }) {
     const choices = stageController.createStageChoices({ stageNumber });
     clock.pause('stage-selection');
     stageSelection.show({ stageNumber, choices });
+  }
+
+  function getRemainingTrialHours() {
+    return getGuildTimeStatus({
+      tick: clock.tick,
+      contributionPoints: battleSystem.contributionPoints,
+      extensionHours: guildSystem.getExtensionHours(),
+    }).remainingHours;
   }
 
   openStageSelection(1);
@@ -916,7 +926,13 @@ export async function startGame({ scenario }) {
       informationWindows.closeInvalidEntries();
       informationWindows.refreshDynamicEntries();
       stageController.update();
-      if (stageController.state === 'complete') openStageSelection();
+      runController.update({
+        remainingHours: getRemainingTrialHours(),
+        stage: stageController.currentStage,
+        stageState: stageController.state,
+      });
+      if (!runController.isActive) clock.pause('run-complete');
+      else if (stageController.state === 'complete') openStageSelection();
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
     });
     controller.updateVisuals();
