@@ -48,7 +48,7 @@ import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
-import { getRevealedPurchaseEntries, getShopPanelSnapshot, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
+import { drawShopPanel as drawShopPanelPresentation, getRevealedPurchaseEntries, getShopPanelSnapshot, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
 import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
@@ -161,61 +161,7 @@ function getPreparationItemAtPoint(point, heroes) {
 
 function drawShopPanel(context, assets, shop, bag, transaction, texts) {
   const snapshot = getShopPanelSnapshot(shop, bag, transaction);
-  if (!snapshot) return;
-  const area = GAME_AREAS.shop;
-  const layout = getShopLayout(area);
-  const drawTrend = (label, tag, board) => {
-    const panelCenterX = board.x + board.width / 2;
-    const { x: boardX, y, width: boardWidth, height: boardHeight } = board;
-    context.fillStyle = '#263b2a';
-    context.strokeStyle = '#9b7142';
-    context.lineWidth = 4;
-    context.beginPath();
-    context.roundRect(boardX, y, boardWidth, boardHeight, 8);
-    context.fill();
-    context.stroke();
-
-    context.fillStyle = '#f2e8c8';
-    context.font = 'bold 16px system-ui';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText(label, panelCenterX, y + 26);
-    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], panelCenterX - 24, y + 44, 48);
-  };
-  drawTrend(texts.getLabel('shopSale'), snapshot.saleTag, layout.saleBoards.sale);
-  drawTrend(texts.getLabel('shopNext'), snapshot.nextTag, layout.saleBoards.next);
-
-  const bagSize = 48;
-  const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, arrowX, purchaseX } = layout.transaction;
-  const bagImage = assets.load('/assets/items/hand-shopping-bag.png');
-  if (bagImage.complete && bagImage.naturalWidth > 0) context.drawImage(bagImage, bagX, bagY, bagSize, bagSize);
-  snapshot.soldItems.forEach((item, index) => {
-    drawItemSlot(context, assets, item, sellX + index * (slotSize + gap), sellItemsTop);
-  });
-  const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
-  SHOP_PURCHASE_SLOT_GRID.forEach(([column, row], index) => {
-    const purchase = transaction?.purchases[purchaseSetStart + index];
-    drawItemSlot(context, assets, index < revealedInSet ? purchase.item : null, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
-  });
-  const arrowY = sellItemsTop + slotSize / 2;
-  const arrowWidth = SHOP_TRANSACTION_ARROW_WIDTH;
-  const arrowHeight = 30;
-  context.fillStyle = '#f7f0d7';
-  context.strokeStyle = '#9b7142';
-  context.lineWidth = 3;
-  context.beginPath();
-  context.moveTo(arrowX, arrowY - arrowHeight / 2);
-  context.lineTo(arrowX + arrowWidth - 14, arrowY - arrowHeight / 2);
-  context.lineTo(arrowX + arrowWidth - 14, arrowY - arrowHeight);
-  context.lineTo(arrowX + arrowWidth, arrowY);
-  context.lineTo(arrowX + arrowWidth - 14, arrowY + arrowHeight);
-  context.lineTo(arrowX + arrowWidth - 14, arrowY + arrowHeight / 2);
-  context.lineTo(arrowX, arrowY + arrowHeight / 2);
-  context.closePath();
-  context.fill();
-  context.stroke();
-  context.textAlign = 'start';
-  context.textBaseline = 'alphabetic';
+  drawShopPanelPresentation({ context, assets, snapshot, texts, layout: getShopLayout(GAME_AREAS.shop), drawItemSlot, drawFramedTag, getTagBaseColors, getTagGlyphScales, arrowWidth: SHOP_TRANSACTION_ARROW_WIDTH });
 }
 
 function getShopTagAtPoint(point, shop, bag, transaction) {
