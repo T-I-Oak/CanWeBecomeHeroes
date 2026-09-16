@@ -25,14 +25,12 @@ import BattleSystem from '../game/BattleSystem.js';
 import CombatEffectSystem from '../game/CombatEffectSystem.js';
 import ItemFactory from '../game/ItemFactory.js';
 import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
-import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { drawGuildPanel } from './GuildPanel.js';
 import { getGuildTimeStatus, GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 import { drawAreaNameplates } from './AreaNameplateRenderer.js';
 import createLocationNameplateBoundsRegistry from './LocationNameplateBoundsRegistry.js';
-import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
 import RunController from '../game/RunController.js';
@@ -50,6 +48,7 @@ import TimeSettingsController from './TimeSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
+import { drawTrainingStatusPanel, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
@@ -60,14 +59,7 @@ import StartPartySelection from '../game/StartPartySelection.js';
 import StartPartySelectionModal from './StartPartySelectionModal.js';
 import { createRunScenario } from '../game/RunScenario.js';
 
-const STATUS_DEFINITIONS = Object.freeze([
-  { key: 'power', visual: STATUS_VISUALS.power },
-  { key: 'magic', visual: STATUS_VISUALS.magic },
-  { key: 'speed', visual: STATUS_VISUALS.speed },
-  { key: 'negotiation', visual: STATUS_VISUALS.negotiation },
-  { key: 'luck', visual: STATUS_VISUALS.luck },
-  { key: 'stamina', visual: STATUS_VISUALS.stamina },
-]);
+const STATUS_DEFINITIONS = HERO_STATUS_DEFINITIONS;
 const WEIGHT_STATUS_DEFINITION = Object.freeze({ key: 'weight', visual: STATUS_VISUALS.weight });
 const PREPARATION_STATUS_DEFINITIONS = Object.freeze([...STATUS_DEFINITIONS, WEIGHT_STATUS_DEFINITION]);
 function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeColor = '#54c96b', { highlightedCells = [], highlightPhase = 0 } = {}) {
@@ -174,51 +166,6 @@ function drawWeightGauge(context, assets, x, y, weight) {
   context.fillText(String(weight), x + width / 2, y + height - 10);
   context.textAlign = 'start';
   context.textBaseline = 'alphabetic';
-}
-
-function getTrainingStatusPanelLayout() {
-  const area = GAME_AREAS.training;
-  const slotOrigin = getFacilitySlotOrigin('training');
-  return {
-    x: slotOrigin.x + HERO_SLOT_SIZE + 24,
-    y: area.y + (area.height - PREPARATION_LAYOUT.statusGaugeHeight) / 2,
-  };
-}
-
-function getTrainingStatusGaugeBounds(statusIndex) {
-  const panel = getTrainingStatusPanelLayout();
-  const { statusColumnWidth, statusColumnGap, statusGaugeWidth, statusGaugeHeight } = PREPARATION_LAYOUT;
-  return {
-    x: panel.x + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2,
-    y: panel.y,
-    width: statusGaugeWidth,
-    height: statusGaugeHeight,
-  };
-}
-
-function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
-  const highlightsByStat = new Map();
-  presentation?.gainedCells.forEach(({ stat, value }) => {
-    const cells = highlightsByStat.get(stat) ?? [];
-    cells.push(value);
-    highlightsByStat.set(stat, cells);
-  });
-  STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-    const value = hero ? (key === 'stamina' ? hero.stamina : Math.floor(hero.getStatus(key))) : 0;
-    const maximum = hero ? hero.maximums[key] : 0;
-    const bounds = getTrainingStatusGaugeBounds(statIndex);
-    drawStatusGauge(
-      context,
-      assets,
-      visual,
-      bounds.x,
-      bounds.y,
-      value,
-      maximum,
-      key === 'stamina' ? getVitalGaugeColor(value) : '#54c96b',
-      { highlightedCells: highlightsByStat.get(key) ?? [], highlightPhase: time / 180 },
-    );
-  });
 }
 
 function drawTextAtVisualCenter(context, text, x, centerY) {
