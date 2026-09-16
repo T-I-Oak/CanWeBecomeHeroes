@@ -12,7 +12,6 @@ import HeroItemInteractionController from '../game/HeroItemInteractionController
 import EntityRegistry from '../game/EntityRegistry.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
 import GameClock from '../game/GameClock.js';
-import { AREA_THEME } from '../game/AreaTheme.js';
 import StaminaRecoverySystem from '../game/StaminaRecoverySystem.js';
 import FacilitySwingSystem from '../game/FacilitySwingSystem.js';
 import GameLog from '../game/GameLog.js';
@@ -51,6 +50,7 @@ import TimeSettingsController from './TimeSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
+import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
@@ -227,27 +227,6 @@ function drawTextAtVisualCenter(context, text, x, centerY) {
   context.fillText(text, x, centerY + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2);
 }
 
-function drawFramedTag(context, assets, tagPath, baseColor, glyphScale = 1, x, y, size) {
-  const centerX = x + size / 2;
-  const centerY = y + size / 2;
-  context.fillStyle = '#17253d';
-  context.beginPath();
-  context.arc(centerX, centerY, size * 0.5, 0, Math.PI * 2);
-  context.fill();
-  context.fillStyle = baseColor ?? '#e1e8f0';
-  context.beginPath();
-  context.arc(centerX, centerY, size * 0.43, 0, Math.PI * 2);
-  context.fill();
-  const icon = assets.load(tagPath);
-  const glyphSize = size * glyphScale;
-  if (icon.complete && icon.naturalWidth > 0) context.drawImage(icon, x + (size - glyphSize) / 2, y + (size - glyphSize) / 2, glyphSize, glyphSize);
-  context.lineWidth = Math.max(1, size * 0.035);
-  context.strokeStyle = 'rgba(255, 255, 255, 0.78)';
-  context.beginPath();
-  context.arc(centerX, centerY, size * 0.43 - context.lineWidth / 2, 0, Math.PI * 2);
-  context.stroke();
-}
-
 function drawTagList(context, assets, hero, x, y) {
   const { statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagIconSize, tagIconNumberGap, tagRowGap } = PREPARATION_LAYOUT;
   context.font = 'bold 14px system-ui';
@@ -308,30 +287,6 @@ function getChipTagAtPoint(entity, point) {
   const angles = createTagAngles(tags.length, 8);
   const tagIndex = angles.findIndex((angle) => Math.hypot(localX - Math.cos(angle) * tagRadius, localY - Math.sin(angle) * tagRadius) <= iconSize * 0.55);
   return tagIndex >= 0 ? tags[tagIndex] : null;
-}
-
-function drawItemSlot(context, assets, item, slotX, slotY) {
-  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
-  context.fillStyle = item?.category === 'destination' ? AREA_THEME[item.destination].chipFill : '#eef1f6';
-  context.strokeStyle = '#aab4c6';
-  context.lineWidth = 2;
-  context.beginPath();
-  context.roundRect(slotX, slotY, slotSize, slotSize, 8);
-  context.fill();
-  context.stroke();
-  if (!item) return;
-  const image = assets.load(item.chip.centerPath);
-  const imageSize = slotSize - PREPARATION_LAYOUT.equipmentImagePadding * 2;
-  const imageX = slotX + (slotSize - imageSize) / 2;
-  const imageY = slotY + slotSize - imageSize;
-  if (image.complete && image.naturalWidth > 0) context.drawImage(image, imageX, imageY, imageSize, imageSize);
-  const tagWidth = item.chip.tagPaths.length * PREPARATION_LAYOUT.equipmentTagIconSize
-    + Math.max(0, item.chip.tagPaths.length - 1) * PREPARATION_LAYOUT.equipmentTagGap;
-  const tagStartX = slotX + (slotSize - tagWidth) / 2;
-  item.chip.tagPaths.forEach((tagPath, tagIndex) => {
-    const tagX = tagStartX + tagIndex * (PREPARATION_LAYOUT.equipmentTagIconSize + PREPARATION_LAYOUT.equipmentTagGap);
-    drawFramedTag(context, assets, tagPath, item.chip.tagBaseColors[tagIndex], item.chip.tagGlyphScales[tagIndex], tagX, slotY + 2, PREPARATION_LAYOUT.equipmentTagIconSize);
-  });
 }
 
 function getItemSlotTagAtPoint(point, item, slotX, slotY) {
