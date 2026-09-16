@@ -65,7 +65,7 @@ test('UI and historical log text follow language changes without replacing state
     setLanguage('ja');
     await texts.refreshLanguage();
     effects.draw(context);
-    assert.ok(drawn.includes('会心 30'));
+    assert.ok(drawn.includes('Critical 30'));
     assert.equal(effects.popups[0], popup);
     assert.equal(popup.elapsed, 0.1);
     flow.refreshLanguage();

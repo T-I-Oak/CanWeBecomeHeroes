@@ -19,7 +19,7 @@
     "shopNext": { "lang-store": { "ja": "次回", "en": "NEXT" } },
     "combatMiss": { "lang-store": { "ja": "Miss!", "en": "miss!" } },
     "combatDamage": { "lang-store": { "ja": "Damage {amount}", "en": "damage {amount}" } },
-    "combatCritical": { "lang-store": { "ja": "会心 {amount}", "en": "critical {amount}" } },
+    "combatCritical": { "lang-store": { "ja": "Critical {amount}", "en": "critical {amount}" } },
     "documentLanguage": { "lang-store": { "ja": "ja", "en": "en" } },
     "normalSize": {
       "lang-store": {
