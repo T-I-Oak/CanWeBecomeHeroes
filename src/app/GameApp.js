@@ -51,6 +51,7 @@ import TimeSettingsController from './TimeSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
+import { getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -70,12 +71,6 @@ const STATUS_DEFINITIONS = Object.freeze([
 ]);
 const WEIGHT_STATUS_DEFINITION = Object.freeze({ key: 'weight', visual: STATUS_VISUALS.weight });
 const PREPARATION_STATUS_DEFINITIONS = Object.freeze([...STATUS_DEFINITIONS, WEIGHT_STATUS_DEFINITION]);
-const TAG_GRID = Object.freeze([
-  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'blessing']),
-  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
-  Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
-]);
-
 function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeColor = '#54c96b', { highlightedCells = [], highlightPhase = 0 } = {}) {
   const { statusGaugeWidth: width, statusGaugeHeight: height, statusIconSize, statusIconTopPadding, statusIconSegmentGap, statusGaugeHorizontalPadding: inset, statusGaugeBottomPadding, statusSegmentHeight, statusSegmentGap: gap } = PREPARATION_LAYOUT;
   const capacity = 7;
@@ -258,7 +253,7 @@ function drawTagList(context, assets, hero, x, y) {
   const { statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagIconSize, tagIconNumberGap, tagRowGap } = PREPARATION_LAYOUT;
   context.font = 'bold 14px system-ui';
   context.textAlign = 'center';
-  TAG_GRID.forEach((row, rowIndex) => {
+  PREPARATION_TAG_GRID.forEach((row, rowIndex) => {
     row.forEach((tag, columnIndex) => {
       const count = hero.getTagCount(tag);
       const cellX = x + columnIndex * (statusColumnWidth + statusColumnGap);
@@ -284,40 +279,6 @@ function drawTagList(context, assets, hero, x, y) {
 
 function isPointInRect(point, x, y, width, height) {
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
-}
-
-function getPreparationTagAtPoint(point, heroes) {
-  const { statusGaugeHeight, sectionGap, statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagRowGap, topPadding } = PREPARATION_LAYOUT;
-  for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
-    const bounds = getPreparationSubareaBounds(heroIndex);
-    const informationX = bounds.x + topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
-    const tagStartY = bounds.y + topPadding + statusGaugeHeight + sectionGap;
-    for (let rowIndex = 0; rowIndex < TAG_GRID.length; rowIndex += 1) {
-      for (let columnIndex = 0; columnIndex < TAG_GRID[rowIndex].length; columnIndex += 1) {
-        const badgeX = informationX + columnIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - tagBadgeWidth) / 2;
-        const badgeY = tagStartY + rowIndex * (tagBadgeHeight + tagRowGap);
-        if (isPointInRect(point, badgeX, badgeY, tagBadgeWidth, tagBadgeHeight)) return TAG_GRID[rowIndex][columnIndex];
-      }
-    }
-  }
-  return null;
-}
-
-function getPreparationStatusAtPoint(point, heroes) {
-  const { statusGaugeHeight, statusColumnWidth, statusColumnGap, statusGaugeWidth, topPadding } = PREPARATION_LAYOUT;
-  for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
-    const hero = heroes[heroIndex];
-    const bounds = getPreparationSubareaBounds(heroIndex);
-    const informationX = bounds.x + topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
-    const gaugeY = bounds.y + topPadding;
-    for (let statusIndex = 0; statusIndex < PREPARATION_STATUS_DEFINITIONS.length; statusIndex += 1) {
-      const { key } = PREPARATION_STATUS_DEFINITIONS[statusIndex];
-      const gaugeX = informationX + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2;
-      if (!isPointInRect(point, gaugeX, gaugeY, statusGaugeWidth, statusGaugeHeight)) continue;
-      return { status: key };
-    }
-  }
-  return null;
 }
 
 function getTrainingStatusAtPoint(point, hero) {
@@ -749,7 +710,7 @@ export async function startGame() {
       if (isWarehousePortalAtPoint(context, point)) return { type: 'portal' };
       const facility = nameplateBounds.getFacilityAtPoint(point);
       const area = nameplateBounds.getAreaAtPoint(point);
-      const status = getPreparationStatusAtPoint(point, preparationHeroes)
+      const status = getPreparationStatusAtPoint(point, preparationHeroes, PREPARATION_STATUS_DEFINITIONS)
         ?? getTrainingStatusAtPoint(point, controller.getHeroes().find((hero) => hero.currentArea === 'training'));
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
         ?? getPreparationItemTagAtPoint(point, preparationHeroes)
