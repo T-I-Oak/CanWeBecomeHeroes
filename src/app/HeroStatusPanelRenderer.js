@@ -4,6 +4,10 @@ import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
 import { STATUS_VISUALS, getVitalGaugeColor } from '../game/StatusVisualCatalog.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
+import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
+import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
+import { drawFramedTag } from './EquipmentSlotRenderer.js';
+import { PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 
 export const HERO_STATUS_DEFINITIONS = Object.freeze([
   { key: 'power', visual: STATUS_VISUALS.power }, { key: 'magic', visual: STATUS_VISUALS.magic }, { key: 'speed', visual: STATUS_VISUALS.speed },
@@ -26,3 +30,15 @@ export function drawWeightGauge(context, assets, x, y, weight) {
 
 export function getTrainingStatusGaugeBounds(statusIndex) { const area = GAME_AREAS.training; const origin = getFacilitySlotOrigin('training'); const { statusColumnWidth, statusColumnGap, statusGaugeWidth, statusGaugeHeight } = PREPARATION_LAYOUT; return { x: origin.x + HERO_SLOT_SIZE + 24 + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2, y: area.y + (area.height - statusGaugeHeight) / 2, width: statusGaugeWidth, height: statusGaugeHeight }; }
 export function drawTrainingStatusPanel(context, assets, hero, presentation, time) { const highlights = new Map(); presentation?.gainedCells.forEach(({ stat, value }) => highlights.set(stat, [...(highlights.get(stat) ?? []), value])); HERO_STATUS_DEFINITIONS.forEach(({ key, visual }, index) => { const bounds = getTrainingStatusGaugeBounds(index); drawStatusGauge(context, assets, visual, bounds.x, bounds.y, hero ? (key === 'stamina' ? hero.stamina : Math.floor(hero.getStatus(key))) : 0, hero?.maximums[key] ?? 0, key === 'stamina' ? getVitalGaugeColor(hero?.stamina ?? 0) : '#54c96b', { highlightedCells: highlights.get(key) ?? [], highlightPhase: time / 180 }); }); }
+
+export function drawHeroTagList(context, assets, hero, x, y) {
+  const { statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagIconSize, tagIconNumberGap, tagRowGap } = PREPARATION_LAYOUT;
+  context.font = 'bold 14px system-ui'; context.textAlign = 'center';
+  PREPARATION_TAG_GRID.forEach((row, rowIndex) => row.forEach((tag, columnIndex) => {
+    const count = hero.getTagCount(tag); const badgeX = x + columnIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - tagBadgeWidth) / 2; const badgeY = y + rowIndex * (tagBadgeHeight + tagRowGap); const visual = getTagBadgeVisual(tag, count);
+    context.fillStyle = visual.fill; context.strokeStyle = visual.border; context.lineWidth = 1; context.beginPath(); context.roundRect(badgeX, badgeY, tagBadgeWidth, tagBadgeHeight, 6); context.fill(); context.stroke();
+    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], badgeX + 3, badgeY + (tagBadgeHeight - tagIconSize) / 2, tagIconSize);
+    context.fillStyle = visual.text; const metrics = context.measureText(String(count)); context.textBaseline = 'alphabetic'; context.fillText(String(count), badgeX + tagBadgeWidth - 9 - tagIconNumberGap, badgeY + tagBadgeHeight / 2 + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2);
+  }));
+  context.textAlign = 'start'; context.textBaseline = 'alphabetic';
+}

@@ -40,7 +40,6 @@ import EnemyFactory from '../game/EnemyFactory.js';
 import StageSelectionModal from './StageSelectionModal.js';
 import InformationWindowManager from './InformationWindowManager.js';
 import InformationWindowLayer from './InformationWindowLayer.js';
-import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
 import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
@@ -48,7 +47,7 @@ import TimeSettingsController from './TimeSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
-import { drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
+import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
@@ -62,40 +61,6 @@ import { createRunScenario } from '../game/RunScenario.js';
 const STATUS_DEFINITIONS = HERO_STATUS_DEFINITIONS;
 const WEIGHT_STATUS_DEFINITION = Object.freeze({ key: 'weight', visual: STATUS_VISUALS.weight });
 const PREPARATION_STATUS_DEFINITIONS = Object.freeze([...STATUS_DEFINITIONS, WEIGHT_STATUS_DEFINITION]);
-function drawTextAtVisualCenter(context, text, x, centerY) {
-  const metrics = context.measureText(text);
-  context.textBaseline = 'alphabetic';
-  context.fillText(text, x, centerY + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2);
-}
-
-function drawTagList(context, assets, hero, x, y) {
-  const { statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagIconSize, tagIconNumberGap, tagRowGap } = PREPARATION_LAYOUT;
-  context.font = 'bold 14px system-ui';
-  context.textAlign = 'center';
-  PREPARATION_TAG_GRID.forEach((row, rowIndex) => {
-    row.forEach((tag, columnIndex) => {
-      const count = hero.getTagCount(tag);
-      const cellX = x + columnIndex * (statusColumnWidth + statusColumnGap);
-      const badgeX = cellX + (statusColumnWidth - tagBadgeWidth) / 2;
-      const badgeY = y + rowIndex * (tagBadgeHeight + tagRowGap);
-      const visual = getTagBadgeVisual(tag, count);
-      context.fillStyle = visual.fill;
-      context.strokeStyle = visual.border;
-      context.lineWidth = 1;
-      context.beginPath();
-      context.roundRect(badgeX, badgeY, tagBadgeWidth, tagBadgeHeight, 6);
-      context.fill();
-      context.stroke();
-      const tagY = badgeY + (tagBadgeHeight - tagIconSize) / 2;
-      drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], badgeX + 3, tagY, tagIconSize);
-      context.fillStyle = visual.text;
-      drawTextAtVisualCenter(context, String(count), badgeX + tagBadgeWidth - 9 - tagIconNumberGap, badgeY + tagBadgeHeight / 2);
-    });
-  });
-  context.textAlign = 'start';
-  context.textBaseline = 'alphabetic';
-}
-
 function isPointInRect(point, x, y, width, height) {
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
@@ -612,7 +577,7 @@ export async function startGame() {
       });
       context.textBaseline = 'alphabetic';
       drawEquipmentGrid(context, assets, hero, x, y + PREPARATION_LAYOUT.topPadding);
-      drawTagList(context, assets, hero, informationX, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.statusGaugeHeight + PREPARATION_LAYOUT.sectionGap);
+      drawHeroTagList(context, assets, hero, informationX, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.statusGaugeHeight + PREPARATION_LAYOUT.sectionGap);
     });
     const staminaPauseTargets = new Set(controller.getHeroes()
       .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
