@@ -26,7 +26,7 @@ import BattleSystem from '../game/BattleSystem.js';
 import CombatEffectSystem from '../game/CombatEffectSystem.js';
 import ItemFactory from '../game/ItemFactory.js';
 import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
-import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
+import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { drawGuildPanel } from './GuildPanel.js';
 import { getGuildTimeStatus, GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
@@ -50,6 +50,7 @@ import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
 import TimeSettingsController from './TimeSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
+import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -559,40 +560,6 @@ function getShopItemAtPoint(point, shop, bag, transaction) {
   return null;
 }
 
-function drawTiledBackground(context, assets, imagePath, bounds) {
-  const { x, y, width, height } = bounds;
-  const image = assets.load(imagePath);
-  if (!image.complete || image.naturalWidth === 0) return;
-  const pattern = context.createPattern(image, 'repeat');
-  if (!pattern) return;
-  context.save();
-  context.beginPath();
-  context.rect(x, y, width, height);
-  context.clip();
-  context.translate(x, y);
-  context.fillStyle = pattern;
-  context.fillRect(0, 0, width, height);
-  context.restore();
-}
-
-function drawAreaBackground(context, assets, areaName) {
-  drawTiledBackground(context, assets, `/assets/background/${areaName}.png`, GAME_AREAS[areaName]);
-}
-
-function drawBattleSlotGround(context, assets) {
-  const image = assets.load('/assets/background/trampled-ground.png');
-  if (!image.complete || image.naturalWidth === 0) return;
-  const battle = GAME_AREAS.battle;
-  const startX = battle.x + (battle.width - HERO_SLOT_SIZE * 6) / 2;
-  const rows = [
-    { columns: [0, 1, 2, 3, 4, 5], y: battle.y + (BATTLE_ENEMY_AREA_HEIGHT - HERO_SLOT_SIZE) / 2 },
-    { columns: [1, 2, 3, 4], y: battle.y + BATTLE_ENEMY_AREA_HEIGHT },
-  ];
-  rows.forEach(({ columns, y }) => {
-    columns.forEach((column) => context.drawImage(image, startX + column * HERO_SLOT_SIZE, y, HERO_SLOT_SIZE, HERO_SLOT_SIZE));
-  });
-}
-
 export async function startGame() {
   setupLanguageSelector('#language-selector', ['ja', 'en']);
   const textRepository = await new GameTextRepository().load();
@@ -837,9 +804,7 @@ export async function startGame() {
     context.save();
     context.scale(camera.zoom, camera.zoom);
     context.translate(-camera.x, -camera.y);
-    ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
-    preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
-    drawBattleSlotGround(context, assets);
+    drawWorldSurfaces(context, assets, preparationHeroes.length);
     drawFacilityNameplates(context, assets, textRepository, nameplateBounds);
     drawAreaNameplates(context, assets, textRepository, nameplateBounds);
     drawWarehouseMetadata(context);
