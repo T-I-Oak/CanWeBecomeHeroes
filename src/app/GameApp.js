@@ -47,7 +47,7 @@ import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
 import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
-import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../game/GameSpeedSettings.js';
+import TimeSettingsController from './TimeSettingsController.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -661,7 +661,7 @@ export async function startGame() {
     onChange: (entries) => informationLayer.render(entries),
   });
   informationLayer.manager = informationWindows;
-  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); updateTimeStatus(); });
+  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); timeSettingsController.updateStatus(); });
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
     textRepository,
@@ -708,98 +708,14 @@ export async function startGame() {
   const pauseOnInformation = document.querySelector('#pause-on-information');
   const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
   const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
-  const timeSettingsDataManager = dataManager;
-  let persistedTimeSettings = readTimeSettings(timeSettingsDataManager);
-  let speedLog = persistedTimeSettings.speedLog;
-  let staminaPauseArmed = true;
-  let isAccelerated = false;
-
-  speedSlider.value = String(speedLog);
-  pauseOnInformation.checked = persistedTimeSettings.pauseOnInformation;
-  pauseOnStaminaFull.checked = persistedTimeSettings.pauseOnStaminaFull;
-  accelerateWithoutPreparation.checked = persistedTimeSettings.accelerateWithoutPreparation;
-  function saveTimeSettings() {
-    persistedTimeSettings = writeTimeSettings({
-      speedLog,
-      pauseOnInformation: pauseOnInformation.checked,
-      pauseOnStaminaFull: pauseOnStaminaFull.checked,
-      accelerateWithoutPreparation: accelerateWithoutPreparation.checked,
-    }, timeSettingsDataManager);
-  }
-  function updateClockSpeed() {
-    const hasPreparationCompanion = controller.getHeroes().some((hero) => hero.currentArea === 'preparation');
-    isAccelerated = accelerateWithoutPreparation.checked && !hasPreparationCompanion;
-    clock.setSpeed(getSpeedFromLog(speedLog) * (isAccelerated ? 2 : 1));
-  }
-
-  function updateTimeStatus() {
-    const autoPaused = clock.pauseReasons.has('stamina-full') || clock.pauseReasons.has('information-window');
-    const settingsPaused = clock.pauseReasons.has('time-settings');
-    const status = textRepository.getLabel(clock.paused || settingsPaused ? 'paused' : autoPaused ? 'autoPaused' : isAccelerated ? 'accelerated' : 'running');
-    const state = clock.paused || settingsPaused ? 'state-paused' : autoPaused ? 'state-auto-paused' : isAccelerated ? 'state-accelerated' : 'state-running';
-    timeStatus.textContent = status;
-    timeStatus.className = `HudPanel__Status ${state}`;
-    pauseButton.textContent = textRepository.getLabel(clock.paused ? 'resume' : 'pause');
-  }
-
-  function updateStaminaPause() {
-    if (!pauseOnStaminaFull.checked) {
-      staminaPauseArmed = true;
-      clock.resume('stamina-full');
-      return;
-    }
-    const hasFullPreparationCompanion = controller.getHeroes().some((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina);
-    if (!hasFullPreparationCompanion) {
-      staminaPauseArmed = true;
-      clock.resume('stamina-full');
-    } else if (staminaPauseArmed) {
-      clock.pause('stamina-full');
-    }
-  }
-
-  function releaseStaminaPause() {
-    staminaPauseArmed = false;
-    clock.resume('stamina-full');
-    updateTimeStatus();
-  }
-
-  pauseButton.addEventListener('click', () => {
-    clock.togglePaused();
-    updateTimeStatus();
+  const timeSettingsController = new TimeSettingsController({
+    clock,
+    dataManager,
+    textRepository,
+    getHeroes: () => controller.getHeroes(),
+    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
+    onPauseOnInformationChange: (pauseOnOpen) => informationWindows.setPauseOnOpen(pauseOnOpen),
   });
-  timeSettingsToggle.addEventListener('click', () => {
-    const isOpen = timeSettings.hidden;
-    timeSettings.hidden = !isOpen;
-    timeSettingsToggle.setAttribute('aria-expanded', String(isOpen));
-    if (isOpen) clock.pause('time-settings');
-    else clock.resume('time-settings');
-    updateTimeStatus();
-  });
-  speedSlider.addEventListener('input', (event) => {
-    speedLog = Number(event.currentTarget.value);
-    speedSlider.value = String(speedLog);
-    saveTimeSettings();
-    updateClockSpeed();
-    updateTimeStatus();
-  });
-  informationWindows.setPauseOnOpen(pauseOnInformation.checked);
-  pauseOnInformation.addEventListener('change', (event) => {
-    informationWindows.setPauseOnOpen(event.currentTarget.checked);
-    saveTimeSettings();
-    updateTimeStatus();
-  });
-  pauseOnStaminaFull.addEventListener('change', () => {
-    saveTimeSettings();
-    updateStaminaPause();
-    updateTimeStatus();
-  });
-  accelerateWithoutPreparation.addEventListener('change', () => {
-    saveTimeSettings();
-    updateClockSpeed();
-    updateTimeStatus();
-  });
-  updateClockSpeed();
-  updateTimeStatus();
   document.addEventListener('pointerdown', (event) => {
     const windowElement = event.target.closest?.('.InformationWindow');
     informationWindows.focus(windowElement?.dataset.informationWindowId ?? null);
@@ -883,7 +799,7 @@ export async function startGame() {
     const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
     const selectionTarget = drag.startedSelection ? controller.getEntityAt(point.x, point.y) : null;
     const selectionAction = selectionTarget ? controller.getSelectionAction(drag.entity, selectionTarget) : null;
-    if (selectionAction?.kind !== 'store') releaseStaminaPause();
+    if (selectionAction?.kind !== 'store') timeSettingsController.releaseStaminaPause();
     if (drag.startedSelection) {
       controller.updateSelectionHover(point.x, point.y);
       if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
@@ -939,8 +855,8 @@ export async function startGame() {
       combatEffects.update(simulationDeltaSeconds);
       controller.update(simulationDeltaSeconds);
       staminaRecovery.update(controller.getHeroes(), simulationDeltaSeconds);
-      updateStaminaPause();
-      updateClockSpeed();
+      timeSettingsController.updateStaminaPause();
+      timeSettingsController.updateClockSpeed();
       training.update(controller.getHeroes(), simulationDeltaSeconds);
       guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
@@ -966,9 +882,9 @@ export async function startGame() {
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
     });
     controller.updateVisuals();
-    updateStaminaPause();
-    updateClockSpeed();
-    updateTimeStatus();
+    timeSettingsController.updateStaminaPause();
+    timeSettingsController.updateClockSpeed();
+    timeSettingsController.updateStatus();
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     context.save();
     context.scale(camera.zoom, camera.zoom);
