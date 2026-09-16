@@ -10,3 +10,10 @@ export const BATTLE_FRIENDLY_AREA_HEIGHT = HERO_SLOT_SIZE;
 export const BATTLE_AREA_HEIGHT = BATTLE_ENEMY_AREA_HEIGHT + BATTLE_FRIENDLY_AREA_HEIGHT;
 export const ENEMY_CHIP_DIAMETER = Object.freeze({ small: 128, medium: HERO_CHIP_DIAMETER, large: HERO_CHIP_DIAMETER * 2 });
 export const LARGE_ENEMY_SLOT_SPAN = 2;
+
+/** Returns an enemy chip's rendered diameter as a fraction of one battle slot. */
+export function getEnemyChipScale(size) {
+  const diameter = ENEMY_CHIP_DIAMETER[size];
+  if (!diameter) throw new RangeError(`Unknown enemy size: ${size}`);
+  return diameter / HERO_SLOT_SIZE;
+}

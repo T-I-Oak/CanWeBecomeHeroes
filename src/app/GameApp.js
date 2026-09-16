@@ -51,6 +51,11 @@ import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../game/Ga
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
+import HeroProgressRepository from '../game/HeroProgressRepository.js';
+import StartPartySelection from '../game/StartPartySelection.js';
+import StartPartySelectionModal from './StartPartySelectionModal.js';
+import { createRunScenario } from '../game/RunScenario.js';
+import { unlockClearedTrialMembers } from '../game/TrialCompletionProgress.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -587,7 +592,7 @@ function drawBattleSlotGround(context, assets) {
   });
 }
 
-export async function startGame({ scenario }) {
+export async function startGame() {
   setupLanguageSelector('#language-selector', ['ja', 'en']);
   const textRepository = await new GameTextRepository().load();
   const canvas = document.querySelector('#chip-canvas');
@@ -599,6 +604,12 @@ export async function startGame({ scenario }) {
   const slotManager = new HeroSlotManager();
   refreshLocalizedUI(document, textRepository);
   const gameLog = new GameLog({ textRepository });
+  const dataManager = new DataManager('can-we-become-heroes');
+  const heroProgress = new HeroProgressRepository(dataManager);
+  const assets = new AssetLoader();
+  const partySelection = new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() });
+  const selectedProfessionIds = await new StartPartySelectionModal(document.querySelector('#start-party-selection'), { assets, textRepository }).show(partySelection);
+  const scenario = createRunScenario({ professionIds: selectedProfessionIds });
   const flowLog = new FlowLog(document.querySelector('#flow-log'), gameLog);
   const entityRegistry = new EntityRegistry();
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog, textRepository), gameLog, { entityRegistry });
@@ -642,7 +653,6 @@ export async function startGame({ scenario }) {
   const staminaRecovery = new StaminaRecoverySystem();
   const facilitySwing = new FacilitySwingSystem();
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
-  const assets = new AssetLoader();
   const renderer = new ChipRenderer(context, assets);
   const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository);
   const informationWindows = new InformationWindowManager({
@@ -698,7 +708,7 @@ export async function startGame({ scenario }) {
   const pauseOnInformation = document.querySelector('#pause-on-information');
   const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
   const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
-  const timeSettingsDataManager = new DataManager('can-we-become-heroes');
+  const timeSettingsDataManager = dataManager;
   let persistedTimeSettings = readTimeSettings(timeSettingsDataManager);
   let speedLog = persistedTimeSettings.speedLog;
   let staminaPauseArmed = true;
@@ -944,11 +954,13 @@ export async function startGame({ scenario }) {
         heroes: controller.getHeroes(),
       });
       stageController.setJoinedCount(recruitmentController.joinedCount);
+      const wasRunActive = runController.isActive;
       runController.update({
         remainingHours: getRemainingTrialHours(),
         stage: stageController.currentStage,
         stageState: stageController.state,
       });
+      unlockClearedTrialMembers({ wasRunActive, runController, members: preparationHeroes, heroProgress });
       if (!runController.isActive) clock.pause('run-complete');
       else if (stageController.state === 'complete') openStageSelection();
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);

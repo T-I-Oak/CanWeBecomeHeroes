@@ -15,13 +15,19 @@ const PROFESSIONS = Object.freeze({
 
 export const HERO_PROFESSION_IDS = Object.freeze(Object.keys(PROFESSIONS));
 
+export function getHeroProfessionDefinition(profession) {
+  const definition = PROFESSIONS[profession];
+  if (!definition) throw new RangeError(`Unknown hero profession: ${profession}`);
+  return definition;
+}
+
 export default class HeroFactory {
   createRandom({ x, y, random = Math.random, bounds = null, stamina = 0 }) {
     return this.create({ profession: HERO_PROFESSION_IDS[Math.floor(random() * HERO_PROFESSION_IDS.length)], x, y, bounds, stamina });
   }
 
   create({ profession, x, y, maximums, bounds = null, stamina = 0 }) {
-    const definition = PROFESSIONS[profession];
+    const definition = getHeroProfessionDefinition(profession);
     const tags = [definition.tag, definition.tag];
     const chip = new Chip({ id: 0, type: 'hero', x, y, weight: getTagWeight(tags), centerPath: `/assets/heroes/${definition.asset}.png`, tagPaths: getTagPaths(tags), tagBaseColors: getTagBaseColors(tags), tagGlyphScales: getTagGlyphScales(tags), bounds });
     return new Hero({ profession, heroId: definition.heroId, tags, chip, maximums, stamina });

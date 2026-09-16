@@ -191,14 +191,16 @@
     },
     "chooseRoute": {
       "lang-store": {
-        "ja": "進路を選択",
-        "en": "Choose a route"
+        "ja": "試験課題を選択してください",
+        "en": "Choose a task"
       }
     },
+    "startPartySelection": { "lang-store": { "ja": "パーティー選択", "en": "Party Selection" } },
+    "startTrial": { "lang-store": { "ja": "試験に出発する", "en": "Depart for Trial" } },
     "stageNumber": {
       "lang-store": {
-        "ja": "第{number}ステージ",
-        "en": "Stage {number}"
+        "ja": "第{number}試験",
+        "en": "Trial {number}"
       }
     },
     "currentShop": {
@@ -215,8 +217,8 @@
     },
     "selectRoute": {
       "lang-store": {
-        "ja": "この進路へ",
-        "en": "Take this route"
+        "ja": "この課題へ",
+        "en": "Take this task"
       }
     },
     "remaining": {
