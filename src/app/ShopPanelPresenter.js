@@ -13,3 +13,8 @@ export function getRevealedPurchaseEntries(transaction) {
   const { setStart, revealedCount } = getShopPurchasePresentation(transaction);
   return SHOP_PURCHASE_SLOT_GRID.slice(0, revealedCount).map(([column, row], index) => ({ column, row, item: transaction?.purchases[setStart + index]?.item ?? null }));
 }
+
+export function getShopPanelSnapshot(shop, bag, transaction) {
+  if (!shop) return null;
+  return Object.freeze({ saleTag: shop.saleTag, nextTag: shop.nextTag, soldItems: getShopSoldItems(bag, transaction), purchases: getRevealedPurchaseEntries(transaction) });
+}

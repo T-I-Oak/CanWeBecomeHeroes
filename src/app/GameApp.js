@@ -48,7 +48,7 @@ import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
-import { getRevealedPurchaseEntries, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
+import { getRevealedPurchaseEntries, getShopPanelSnapshot, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
 import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
@@ -160,7 +160,8 @@ function getPreparationItemAtPoint(point, heroes) {
 }
 
 function drawShopPanel(context, assets, shop, bag, transaction, texts) {
-  if (!shop) return;
+  const snapshot = getShopPanelSnapshot(shop, bag, transaction);
+  if (!snapshot) return;
   const area = GAME_AREAS.shop;
   const layout = getShopLayout(area);
   const drawTrend = (label, tag, board) => {
@@ -181,14 +182,14 @@ function drawShopPanel(context, assets, shop, bag, transaction, texts) {
     context.fillText(label, panelCenterX, y + 26);
     drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], panelCenterX - 24, y + 44, 48);
   };
-  drawTrend(texts.getLabel('shopSale'), shop.saleTag, layout.saleBoards.sale);
-  drawTrend(texts.getLabel('shopNext'), shop.nextTag, layout.saleBoards.next);
+  drawTrend(texts.getLabel('shopSale'), snapshot.saleTag, layout.saleBoards.sale);
+  drawTrend(texts.getLabel('shopNext'), snapshot.nextTag, layout.saleBoards.next);
 
   const bagSize = 48;
   const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, arrowX, purchaseX } = layout.transaction;
   const bagImage = assets.load('/assets/items/hand-shopping-bag.png');
   if (bagImage.complete && bagImage.naturalWidth > 0) context.drawImage(bagImage, bagX, bagY, bagSize, bagSize);
-  getShopSoldItems(bag, transaction).forEach((item, index) => {
+  snapshot.soldItems.forEach((item, index) => {
     drawItemSlot(context, assets, item, sellX + index * (slotSize + gap), sellItemsTop);
   });
   const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
