@@ -577,6 +577,7 @@ body {
 .InformationWindow__EntityPanel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 232px;
+  align-items: start;
   gap: 8px;
   padding: 12px;
 }
