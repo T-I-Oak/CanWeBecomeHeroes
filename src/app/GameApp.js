@@ -48,6 +48,7 @@ import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
 import TimeSettingsController from './TimeSettingsController.js';
+import GameCanvasInput from './GameCanvasInput.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -720,8 +721,6 @@ export async function startGame() {
     const windowElement = event.target.closest?.('.InformationWindow');
     informationWindows.focus(windowElement?.dataset.informationWindowId ?? null);
   });
-  let drag = null;
-
   function drawChipSelectionGuide() {
     const guide = controller.getSelectionGuide();
     if (!guide) return;
@@ -765,51 +764,12 @@ export async function startGame() {
     context.restore();
   }
 
-  canvas.addEventListener('pointerdown', (event) => {
-    event.preventDefault();
-    const bounds = canvas.getBoundingClientRect();
-    const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    const entity = controller.getEntityAt(point.x, point.y);
-    drag = {
-      pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastY: event.clientY,
-      moved: false, entity, startedSelection: false,
-    };
-    canvas.setPointerCapture(event.pointerId);
-  }, { passive: false });
-  canvas.addEventListener('pointermove', (event) => {
-    const bounds = canvas.getBoundingClientRect();
-    const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    if (!drag || drag.pointerId !== event.pointerId) {
-      canvas.style.cursor = isWarehousePortalAtPoint(context, point) ? 'pointer' : '';
-      return;
-    }
-    const totalDistance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
-    if (totalDistance > 6 && !drag.moved) {
-      drag.moved = true;
-      drag.startedSelection = Boolean(drag.entity && !controller.hasSelectionSource() && controller.beginSelection(drag.entity));
-    }
-    if (drag.startedSelection) controller.updateSelectionHover(point.x, point.y);
-    if (drag.moved && !drag.entity) camera.panByScreen(event.clientX - drag.lastX, event.clientY - drag.lastY);
-    drag.lastX = event.clientX;
-    drag.lastY = event.clientY;
-  }, { passive: false });
-  canvas.addEventListener('pointerup', (event) => {
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    const bounds = canvas.getBoundingClientRect();
-    const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    const selectionTarget = drag.startedSelection ? controller.getEntityAt(point.x, point.y) : null;
-    const selectionAction = selectionTarget ? controller.getSelectionAction(drag.entity, selectionTarget) : null;
-    if (selectionAction?.kind !== 'store') timeSettingsController.releaseStaminaPause();
-    if (drag.startedSelection) {
-      controller.updateSelectionHover(point.x, point.y);
-      if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
-    }
-    if (!drag.moved) {
-      if (isWarehousePortalAtPoint(context, point)) {
-        window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer');
-        drag = null;
-        return;
-      }
+  new GameCanvasInput(canvas, {
+    camera,
+    controller,
+    getCursor: (point) => (isWarehousePortalAtPoint(context, point) ? 'pointer' : ''),
+    getInformationTarget: (point) => {
+      if (isWarehousePortalAtPoint(context, point)) return { type: 'portal' };
       const facility = nameplateBounds.getFacilityAtPoint(point);
       const area = nameplateBounds.getAreaAtPoint(point);
       const status = getPreparationStatusAtPoint(point, preparationHeroes)
@@ -821,29 +781,21 @@ export async function startGame() {
       const slotItem = getPreparationItemAtPoint(point, preparationHeroes)
         ?? getShopItemAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction());
       const entity = controller.getEntityAt(point.x, point.y);
-      if (facility) informationWindows.open({ type: 'facility', data: { facility }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (area) informationWindows.open({ type: 'area', data: { area }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
-      else if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (slotItem) informationWindows.open({ type: 'item', data: { item: slotItem }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (entity) informationWindows.open({
+      if (facility) return { type: 'facility', data: { facility } };
+      if (area) return { type: 'area', data: { area } };
+      if (status) return { type: 'status', data: status };
+      if (tag) return { type: 'tag', data: { tag } };
+      if (slotItem) return { type: 'item', data: { item: slotItem } };
+      if (entity) return {
         type: entity.chip.type === 'item' ? 'item' : 'entity',
         data: entity.chip.type === 'item' ? { item: entity } : { entity },
-        anchor: { x: event.clientX, y: event.clientY },
-      });
-    }
-    drag = null;
+      };
+      return null;
+    },
+    onInformationTarget: (target, event) => informationWindows.open({ ...target, anchor: { x: event.clientX, y: event.clientY } }),
+    onPortalOpen: () => window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer'),
+    onReleaseStaminaPause: () => timeSettingsController.releaseStaminaPause(),
   });
-  canvas.addEventListener('pointercancel', () => {
-    if (drag?.startedSelection) controller.clearSelection();
-    drag = null;
-  });
-  canvas.addEventListener('wheel', (event) => {
-    event.preventDefault();
-    const bounds = canvas.getBoundingClientRect();
-    const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
-    camera.setZoomAtScreenPoint(camera.zoom * factor, event.clientX - bounds.left, event.clientY - bounds.top);
-  }, { passive: false });
 
   let previousTime = performance.now();
   function render(time) {
