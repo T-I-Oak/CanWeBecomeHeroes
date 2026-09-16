@@ -1,11 +1,8 @@
 import { GAME_AREAS } from './GameAreas.js';
+import { LOCATION_NAMEPLATE_LAYOUT } from './LocationNameplateLayout.js';
 
 export const FACILITY_LAYOUT = Object.freeze({
   slotLeft: 24,
-  nameplateLeft: 50,
-  nameplateTop: 16,
-  nameplateWidth: 144,
-  nameplateHeight: 48,
   heroSlotTop: 80,
 });
 
@@ -18,21 +15,11 @@ export function getFacilitySlotOrigin(areaName) {
   });
 }
 
-export function getFacilityNameplateBounds(areaName) {
+export function getFacilityNameplateOrigin(areaName) {
   const area = GAME_AREAS[areaName];
   if (!area) throw new Error(`Unknown facility area: ${areaName}`);
   return Object.freeze({
-    x: area.x + FACILITY_LAYOUT.nameplateLeft,
-    y: area.y + FACILITY_LAYOUT.nameplateTop,
-    width: FACILITY_LAYOUT.nameplateWidth,
-    height: FACILITY_LAYOUT.nameplateHeight,
+    x: area.x + LOCATION_NAMEPLATE_LAYOUT.left,
+    y: area.y + LOCATION_NAMEPLATE_LAYOUT.top,
   });
-}
-
-export function getFacilityNameplateAtPoint(point) {
-  return ['shop', 'guild', 'training'].find((areaName) => {
-    const bounds = getFacilityNameplateBounds(areaName);
-    return point.x >= bounds.x && point.x <= bounds.x + bounds.width
-      && point.y >= bounds.y && point.y <= bounds.y + bounds.height;
-  }) ?? null;
 }

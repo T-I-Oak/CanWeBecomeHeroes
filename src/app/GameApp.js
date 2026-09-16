@@ -32,8 +32,8 @@ import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 import { drawAreaNameplates } from './AreaNameplateRenderer.js';
-import { getAreaNameplateAtPoint } from '../game/AreaNameplateLayout.js';
-import { getFacilityNameplateAtPoint, getFacilitySlotOrigin } from '../game/FacilityLayout.js';
+import createLocationNameplateBoundsRegistry from './LocationNameplateBoundsRegistry.js';
+import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
 import EnemyFactory from '../game/EnemyFactory.js';
@@ -589,6 +589,7 @@ export async function startGame({ scenario }) {
   const textRepository = await new GameTextRepository().load();
   const canvas = document.querySelector('#chip-canvas');
   const context = canvas.getContext('2d');
+  const nameplateBounds = createLocationNameplateBoundsRegistry();
   const board = new ChipBoard(WORLD_SIZE);
   const camera = new Camera(WORLD_SIZE);
   const clock = new GameClock();
@@ -861,8 +862,8 @@ export async function startGame({ scenario }) {
         drag = null;
         return;
       }
-      const facility = getFacilityNameplateAtPoint(point);
-      const area = getAreaNameplateAtPoint(point);
+      const facility = nameplateBounds.getFacilityAtPoint(point);
+      const area = nameplateBounds.getAreaAtPoint(point);
       const status = getPreparationStatusAtPoint(point, preparationHeroes)
         ?? getTrainingStatusAtPoint(point, controller.getHeroes().find((hero) => hero.currentArea === 'training'));
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
@@ -929,8 +930,8 @@ export async function startGame({ scenario }) {
     ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
     preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
     drawBattleSlotGround(context, assets);
-    drawFacilityNameplates(context, assets, textRepository);
-    drawAreaNameplates(context, assets, textRepository);
+    drawFacilityNameplates(context, assets, textRepository, nameplateBounds);
+    drawAreaNameplates(context, assets, textRepository, nameplateBounds);
     drawWarehouseMetadata(context);
     drawFacilitySlots(context);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction(), textRepository);

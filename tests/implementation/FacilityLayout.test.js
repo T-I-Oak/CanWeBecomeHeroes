@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GAME_AREAS } from '../../src/game/GameAreas.js';
-import { FACILITY_LAYOUT, getFacilityNameplateAtPoint, getFacilityNameplateBounds, getFacilitySlotOrigin } from '../../src/game/FacilityLayout.js';
+import { FACILITY_LAYOUT, getFacilityNameplateOrigin, getFacilitySlotOrigin } from '../../src/game/FacilityLayout.js';
+import { LOCATION_NAMEPLATE_LAYOUT } from '../../src/game/LocationNameplateLayout.js';
 import HeroSlotManager from '../../src/game/HeroSlotManager.js';
 
-test('facility hero slots share a 24px left alignment and named facilities leave room for the plaque', () => {
+test('facility hero slots share a 24px left alignment and named facilities leave room for the nameplate', () => {
   ['shop', 'guild', 'training'].forEach((areaName) => {
     const origin = getFacilitySlotOrigin(areaName);
     assert.equal(origin.x, GAME_AREAS[areaName].x + FACILITY_LAYOUT.slotLeft);
@@ -14,20 +15,12 @@ test('facility hero slots share a 24px left alignment and named facilities leave
   });
 });
 
-test('facility nameplates reserve their left side for an icon and use shared 3:1 bounds', () => {
-  const plaque = getFacilityNameplateBounds('guild');
-  assert.deepEqual(plaque, {
-    x: GAME_AREAS.guild.x + FACILITY_LAYOUT.nameplateLeft,
-    y: GAME_AREAS.guild.y + FACILITY_LAYOUT.nameplateTop,
-    width: FACILITY_LAYOUT.nameplateWidth,
-    height: FACILITY_LAYOUT.nameplateHeight,
+test('facility nameplates use one shared origin for the icon and facility name', () => {
+  const origin = getFacilityNameplateOrigin('guild');
+  assert.deepEqual(origin, {
+    x: GAME_AREAS.guild.x + LOCATION_NAMEPLATE_LAYOUT.left,
+    y: GAME_AREAS.guild.y + LOCATION_NAMEPLATE_LAYOUT.top,
   });
-});
-
-test('facility nameplate hit testing returns only the clicked facility', () => {
-  const bounds = getFacilityNameplateBounds('guild');
-  assert.equal(getFacilityNameplateAtPoint({ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }), 'guild');
-  assert.equal(getFacilityNameplateAtPoint({ x: bounds.x - 1, y: bounds.y }), null);
 });
 
 test('facility slot manager targets use the same origins as the rendered slots', () => {

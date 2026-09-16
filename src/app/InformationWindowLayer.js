@@ -2,7 +2,7 @@ import { TAGS, getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js
 import { getTagBadgeVisual, getTagSkillVisual, TAG_SKILL_THRESHOLDS } from '../game/TagSkillVisualCatalog.js';
 import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
-import { getAreaVisual } from '../game/AreaVisualCatalog.js';
+import { getLocationVisual } from '../game/LocationVisualCatalog.js';
 import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
 
 import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
@@ -71,10 +71,10 @@ function createStatusIcon(status, sizeClass = '') {
   return icon;
 }
 
-function createAreaIcon(area, sizeClass = '') {
-  const icon = createElement('span', `InformationWindow__AreaIcon ${sizeClass}`.trim());
+function createLocationIcon(location, sizeClass = '') {
+  const icon = createElement('span', `InformationWindow__LocationIcon ${sizeClass}`.trim());
   const image = document.createElement('img');
-  image.src = resolvePublicAssetPath(getAreaVisual(area).iconPath);
+  image.src = resolvePublicAssetPath(getLocationVisual(location).iconPath);
   image.alt = '';
   icon.append(image);
   return icon;
@@ -542,7 +542,7 @@ export default class InformationWindowLayer {
     const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
     reference.type = 'button';
     reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
-    reference.append(createAreaIcon(id), label);
+    reference.append(createLocationIcon(id), label);
     reference.addEventListener('click', (event) => this.manager.open({
       type: 'facility', parentId, data: { facility: id }, anchor: { x: event.clientX, y: event.clientY },
     }));
@@ -554,7 +554,7 @@ export default class InformationWindowLayer {
     const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
     reference.type = 'button';
     reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
-    reference.append(createAreaIcon(id), label);
+    reference.append(createLocationIcon(id), label);
     reference.addEventListener('click', (event) => this.manager.open({
       type: 'area', parentId, data: { area: id }, anchor: { x: event.clientX, y: event.clientY },
     }));
@@ -566,7 +566,7 @@ export default class InformationWindowLayer {
     if (!detail) throw new RangeError(`Unknown localized facility: ${entry.data.facility}`);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
-    title.append(createAreaIcon(entry.data.facility), createElement('h2', 'InformationWindow__Name', detail.name));
+    title.append(createLocationIcon(entry.data.facility), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
     if (detail.flavor) {
@@ -586,7 +586,7 @@ export default class InformationWindowLayer {
     if (!detail) throw new RangeError(`Unknown localized area: ${entry.data.area}`);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
-    title.append(createAreaIcon(entry.data.area), createElement('h2', 'InformationWindow__Name', detail.name));
+    title.append(createLocationIcon(entry.data.area), createElement('h2', 'InformationWindow__Name', detail.name));
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
     if (detail.flavor) {
