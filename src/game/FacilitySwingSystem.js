@@ -1,4 +1,4 @@
-const SWING_ANGLE_RADIANS = Math.PI / 18;
+export const HERO_SWING_ANGLE_RADIANS = Math.PI / 18;
 const FOLLOW_RATE = 8;
 
 export const FACILITY_SWING_ANGULAR_FREQUENCY = Object.freeze({
@@ -7,6 +7,10 @@ export const FACILITY_SWING_ANGULAR_FREQUENCY = Object.freeze({
   guild: 1.5,
 });
 export const HERO_STATE_SWING_ANGULAR_FREQUENCY = Object.freeze({ preparationReady: 1.2, active: 6 });
+
+export function getHeroSwingPoseTilt(timeSeconds, frequency) {
+  return frequency ? Math.sin(timeSeconds * frequency) * HERO_SWING_ANGLE_RADIANS : 0;
+}
 
 export function getHeroSwingFrequency(hero) {
   if (hero.currentArea === 'preparation' && hero.stamina >= 3) return HERO_STATE_SWING_ANGULAR_FREQUENCY.preparationReady;
@@ -23,7 +27,7 @@ export default class FacilitySwingSystem {
     const followRatio = 1 - Math.exp(-FOLLOW_RATE * deltaSeconds);
     heroes.forEach((hero) => {
       const frequency = getHeroSwingFrequency(hero, activeHero);
-      const targetTilt = frequency ? Math.sin(this.time * frequency) * SWING_ANGLE_RADIANS : 0;
+      const targetTilt = getHeroSwingPoseTilt(this.time, frequency);
       // Pose motion is independent from battle knockback tilt.  Following the
       // combined rotation here would visually cancel a hit as soon as this
       // idle animation updates.

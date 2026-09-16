@@ -28,14 +28,17 @@ import ItemFactory from '../game/ItemFactory.js';
 import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { drawGuildPanel } from './GuildPanel.js';
-import { GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
+import { getGuildTimeStatus, GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 import { drawAreaNameplates } from './AreaNameplateRenderer.js';
-import { getAreaNameplateAtPoint } from '../game/AreaNameplateLayout.js';
-import { getFacilityNameplateAtPoint, getFacilitySlotOrigin } from '../game/FacilityLayout.js';
+import createLocationNameplateBoundsRegistry from './LocationNameplateBoundsRegistry.js';
+import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
+import RunController from '../game/RunController.js';
+import RecruitmentController from '../game/RecruitmentController.js';
+import PreparationHeroProvisioner from '../game/PreparationHeroProvisioner.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import StageSelectionModal from './StageSelectionModal.js';
 import InformationWindowManager from './InformationWindowManager.js';
@@ -48,6 +51,11 @@ import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../game/Ga
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
+import HeroProgressRepository from '../game/HeroProgressRepository.js';
+import StartPartySelection from '../game/StartPartySelection.js';
+import StartPartySelectionModal from './StartPartySelectionModal.js';
+import { createRunScenario } from '../game/RunScenario.js';
+import { unlockClearedTrialMembers } from '../game/TrialCompletionProgress.js';
 
 const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
@@ -584,21 +592,30 @@ function drawBattleSlotGround(context, assets) {
   });
 }
 
-export async function startGame({ scenario }) {
+export async function startGame() {
   setupLanguageSelector('#language-selector', ['ja', 'en']);
   const textRepository = await new GameTextRepository().load();
   const canvas = document.querySelector('#chip-canvas');
   const context = canvas.getContext('2d');
+  const nameplateBounds = createLocationNameplateBoundsRegistry();
   const board = new ChipBoard(WORLD_SIZE);
   const camera = new Camera(WORLD_SIZE);
   const clock = new GameClock();
   const slotManager = new HeroSlotManager();
   refreshLocalizedUI(document, textRepository);
   const gameLog = new GameLog({ textRepository });
+  const dataManager = new DataManager('can-we-become-heroes');
+  const heroProgress = new HeroProgressRepository(dataManager);
+  const assets = new AssetLoader();
+  const partySelection = new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() });
+  const selectedProfessionIds = await new StartPartySelectionModal(document.querySelector('#start-party-selection'), { assets, textRepository }).show(partySelection);
+  const scenario = createRunScenario({ professionIds: selectedProfessionIds });
   const flowLog = new FlowLog(document.querySelector('#flow-log'), gameLog);
   const entityRegistry = new EntityRegistry();
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog, textRepository), gameLog, { entityRegistry });
-  const { preparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
+  const { preparationHeroes: initialPreparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
+  const preparationHeroes = [...initialPreparationHeroes];
+  const heroProvisioner = new PreparationHeroProvisioner({ controller, random });
   const enemySpawn = new EnemySpawnSystem(controller);
   const returnSystem = new FacilityReturnSystem(board, slotManager, {
     onItemReturned: (item) => controller.addToWarehouse(item),
@@ -618,6 +635,15 @@ export async function startGame({ scenario }) {
     entityRegistry,
     random,
   });
+  const recruitmentController = new RecruitmentController({
+    random,
+    onRecruit: (profession) => {
+      const hero = heroProvisioner.provision({ profession, preparationIndex: preparationHeroes.length });
+      preparationHeroes.push(hero);
+      return hero;
+    },
+  });
+  const runController = new RunController();
   const guildSystem = new GuildSystem(returnSystem, {
     getContributionPoints: () => battleSystem.contributionPoints,
     setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
@@ -627,7 +653,6 @@ export async function startGame({ scenario }) {
   const staminaRecovery = new StaminaRecoverySystem();
   const facilitySwing = new FacilitySwingSystem();
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
-  const assets = new AssetLoader();
   const renderer = new ChipRenderer(context, assets);
   const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository);
   const informationWindows = new InformationWindowManager({
@@ -656,6 +681,14 @@ export async function startGame({ scenario }) {
     stageSelection.show({ stageNumber, choices });
   }
 
+  function getRemainingTrialHours() {
+    return getGuildTimeStatus({
+      tick: clock.tick,
+      contributionPoints: battleSystem.contributionPoints,
+      extensionHours: guildSystem.getExtensionHours(),
+    }).remainingHours;
+  }
+
   openStageSelection(1);
 
   function resizeCanvas() {
@@ -675,7 +708,7 @@ export async function startGame({ scenario }) {
   const pauseOnInformation = document.querySelector('#pause-on-information');
   const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
   const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
-  const timeSettingsDataManager = new DataManager('can-we-become-heroes');
+  const timeSettingsDataManager = dataManager;
   let persistedTimeSettings = readTimeSettings(timeSettingsDataManager);
   let speedLog = persistedTimeSettings.speedLog;
   let staminaPauseArmed = true;
@@ -861,8 +894,8 @@ export async function startGame({ scenario }) {
         drag = null;
         return;
       }
-      const facility = getFacilityNameplateAtPoint(point);
-      const area = getAreaNameplateAtPoint(point);
+      const facility = nameplateBounds.getFacilityAtPoint(point);
+      const area = nameplateBounds.getAreaAtPoint(point);
       const status = getPreparationStatusAtPoint(point, preparationHeroes)
         ?? getTrainingStatusAtPoint(point, controller.getHeroes().find((hero) => hero.currentArea === 'training'));
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
@@ -893,7 +926,7 @@ export async function startGame({ scenario }) {
     event.preventDefault();
     const bounds = canvas.getBoundingClientRect();
     const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
-    camera.setZoom(camera.zoom * factor, event.clientX - bounds.left, event.clientY - bounds.top);
+    camera.setZoomAtScreenPoint(camera.zoom * factor, event.clientX - bounds.left, event.clientY - bounds.top);
   }, { passive: false });
 
   let previousTime = performance.now();
@@ -915,7 +948,21 @@ export async function startGame({ scenario }) {
       informationWindows.closeInvalidEntries();
       informationWindows.refreshDynamicEntries();
       stageController.update();
-      if (stageController.state === 'complete') openStageSelection();
+      recruitmentController.processCompletedStage({
+        stage: stageController.currentStage,
+        stageState: stageController.state,
+        heroes: controller.getHeroes(),
+      });
+      stageController.setJoinedCount(recruitmentController.joinedCount);
+      const wasRunActive = runController.isActive;
+      runController.update({
+        remainingHours: getRemainingTrialHours(),
+        stage: stageController.currentStage,
+        stageState: stageController.state,
+      });
+      unlockClearedTrialMembers({ wasRunActive, runController, members: preparationHeroes, heroProgress });
+      if (!runController.isActive) clock.pause('run-complete');
+      else if (stageController.state === 'complete') openStageSelection();
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
     });
     controller.updateVisuals();
@@ -929,8 +976,8 @@ export async function startGame({ scenario }) {
     ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
     preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
     drawBattleSlotGround(context, assets);
-    drawFacilityNameplates(context, assets, textRepository);
-    drawAreaNameplates(context, assets, textRepository);
+    drawFacilityNameplates(context, assets, textRepository, nameplateBounds);
+    drawAreaNameplates(context, assets, textRepository, nameplateBounds);
     drawWarehouseMetadata(context);
     drawFacilitySlots(context);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction(), textRepository);

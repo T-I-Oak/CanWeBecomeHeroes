@@ -1,0 +1,1 @@
+export const MAX_RECRUITED_HERO_COUNT = 2;
