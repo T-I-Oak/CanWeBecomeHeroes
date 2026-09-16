@@ -51,7 +51,7 @@ import TimeSettingsController from './TimeSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
-import { getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
+import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -60,7 +60,6 @@ import StartPartySelection from '../game/StartPartySelection.js';
 import StartPartySelectionModal from './StartPartySelectionModal.js';
 import { createRunScenario } from '../game/RunScenario.js';
 
-const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 const STATUS_DEFINITIONS = Object.freeze([
   { key: 'power', visual: STATUS_VISUALS.power },
   { key: 'magic', visual: STATUS_VISUALS.magic },
@@ -359,9 +358,8 @@ function drawEquipmentGrid(context, assets, hero, x, y) {
     + PREPARATION_LAYOUT.areaGap
     + PREPARATION_LAYOUT.informationAreaWidth
     + PREPARATION_LAYOUT.areaGap;
-  const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
   EQUIPMENT_SLOTS.forEach((slot) => {
-    const [column, row] = positions[slot];
+    const [column, row] = EQUIPMENT_SLOT_GRID[slot];
     const slotX = startX + column * (slotSize + gap);
     const slotY = y + row * (slotSize + gap);
     drawItemSlot(context, assets, hero.equipment[slot], slotX, slotY);
@@ -371,19 +369,12 @@ function drawEquipmentGrid(context, assets, hero, x, y) {
 function getPreparationItemTagAtPoint(point, heroes) {
   const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
   const gap = PREPARATION_LAYOUT.equipmentGap;
-  const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
   for (let index = 0; index < heroes.length; index += 1) {
     const hero = heroes[index];
-    const bounds = getPreparationSubareaBounds(index);
-    const startX = bounds.x
-      + PREPARATION_LAYOUT.topPadding
-      + PREPARATION_LAYOUT.characterAreaWidth
-      + PREPARATION_LAYOUT.areaGap
-      + PREPARATION_LAYOUT.informationAreaWidth
-      + PREPARATION_LAYOUT.areaGap;
+    const { x: startX, y: startY } = getPreparationEquipmentOrigin(index);
     for (const slot of EQUIPMENT_SLOTS) {
-      const [column, row] = positions[slot];
-      const tag = getItemSlotTagAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), bounds.y + PREPARATION_LAYOUT.topPadding + row * (slotSize + gap));
+      const [column, row] = EQUIPMENT_SLOT_GRID[slot];
+      const tag = getItemSlotTagAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), startY + row * (slotSize + gap));
       if (tag) return tag;
     }
   }
@@ -393,19 +384,12 @@ function getPreparationItemTagAtPoint(point, heroes) {
 function getPreparationItemAtPoint(point, heroes) {
   const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
   const gap = PREPARATION_LAYOUT.equipmentGap;
-  const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
   for (let index = 0; index < heroes.length; index += 1) {
     const hero = heroes[index];
-    const bounds = getPreparationSubareaBounds(index);
-    const startX = bounds.x
-      + PREPARATION_LAYOUT.topPadding
-      + PREPARATION_LAYOUT.characterAreaWidth
-      + PREPARATION_LAYOUT.areaGap
-      + PREPARATION_LAYOUT.informationAreaWidth
-      + PREPARATION_LAYOUT.areaGap;
+    const { x: startX, y: startY } = getPreparationEquipmentOrigin(index);
     for (const slot of EQUIPMENT_SLOTS) {
-      const [column, row] = positions[slot];
-      const item = getItemSlotAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), bounds.y + PREPARATION_LAYOUT.topPadding + row * (slotSize + gap));
+      const [column, row] = EQUIPMENT_SLOT_GRID[slot];
+      const item = getItemSlotAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), startY + row * (slotSize + gap));
       if (item) return item;
     }
   }

@@ -6,6 +6,16 @@ export const PREPARATION_TAG_GRID = Object.freeze([
   Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
   Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
 ]);
+export const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
+export const EQUIPMENT_SLOT_GRID = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
+
+export function getPreparationEquipmentOrigin(heroIndex) {
+  const bounds = getPreparationSubareaBounds(heroIndex);
+  return {
+    x: bounds.x + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap + PREPARATION_LAYOUT.informationAreaWidth + PREPARATION_LAYOUT.areaGap,
+    y: bounds.y + PREPARATION_LAYOUT.topPadding,
+  };
+}
 
 function isPointInRect(point, x, y, width, height) {
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
