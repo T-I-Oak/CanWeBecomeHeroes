@@ -8,3 +8,8 @@ export function getShopPurchasePresentation(transaction) {
 export function getShopSoldItems(bag, transaction) {
   return Array.from({ length: 3 }, (_, index) => transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null);
 }
+
+export function getRevealedPurchaseEntries(transaction) {
+  const { setStart, revealedCount } = getShopPurchasePresentation(transaction);
+  return SHOP_PURCHASE_SLOT_GRID.slice(0, revealedCount).map(([column, row], index) => ({ column, row, item: transaction?.purchases[setStart + index]?.item ?? null }));
+}

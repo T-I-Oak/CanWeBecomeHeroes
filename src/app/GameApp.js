@@ -48,7 +48,7 @@ import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
-import { getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
+import { getRevealedPurchaseEntries, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
 import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
@@ -234,10 +234,8 @@ function getShopTagAtPoint(point, shop, bag, transaction) {
     if (tag) return tag;
   }
   const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
-  for (let index = 0; index < SHOP_PURCHASE_SLOT_GRID.length; index += 1) {
-    if (index >= revealedInSet) continue;
-    const [column, row] = SHOP_PURCHASE_SLOT_GRID[index];
-    const tag = getItemSlotTagAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
+  for (const { column, row, item } of getRevealedPurchaseEntries(transaction)) {
+    const tag = getItemSlotTagAtPoint(point, item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
     if (tag) return tag;
   }
   return null;
@@ -254,9 +252,8 @@ function getShopItemAtPoint(point, shop, bag, transaction) {
     if (item) return item;
   }
   const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
-  for (let index = 0; index < revealedInSet && index < SHOP_PURCHASE_SLOT_GRID.length; index += 1) {
-    const [column, row] = SHOP_PURCHASE_SLOT_GRID[index];
-    const item = getItemSlotAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
+  for (const { column, row, item: purchaseItem } of getRevealedPurchaseEntries(transaction)) {
+    const item = getItemSlotAtPoint(point, purchaseItem, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
     if (item) return item;
   }
   return null;
