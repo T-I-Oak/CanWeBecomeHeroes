@@ -37,6 +37,8 @@ import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
 import RunController from '../game/RunController.js';
+import RecruitmentController from '../game/RecruitmentController.js';
+import PreparationHeroProvisioner from '../game/PreparationHeroProvisioner.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import StageSelectionModal from './StageSelectionModal.js';
 import InformationWindowManager from './InformationWindowManager.js';
@@ -600,7 +602,9 @@ export async function startGame({ scenario }) {
   const flowLog = new FlowLog(document.querySelector('#flow-log'), gameLog);
   const entityRegistry = new EntityRegistry();
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog, textRepository), gameLog, { entityRegistry });
-  const { preparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
+  const { preparationHeroes: initialPreparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
+  const preparationHeroes = [...initialPreparationHeroes];
+  const heroProvisioner = new PreparationHeroProvisioner({ controller, random });
   const enemySpawn = new EnemySpawnSystem(controller);
   const returnSystem = new FacilityReturnSystem(board, slotManager, {
     onItemReturned: (item) => controller.addToWarehouse(item),
@@ -619,6 +623,14 @@ export async function startGame({ scenario }) {
     hasActiveShopHero: () => controller.getHeroes().some((hero) => hero.currentArea === 'shop'),
     entityRegistry,
     random,
+  });
+  const recruitmentController = new RecruitmentController({
+    random,
+    onRecruit: (profession) => {
+      const hero = heroProvisioner.provision({ profession, preparationIndex: preparationHeroes.length });
+      preparationHeroes.push(hero);
+      return hero;
+    },
   });
   const runController = new RunController();
   const guildSystem = new GuildSystem(returnSystem, {
@@ -926,6 +938,12 @@ export async function startGame({ scenario }) {
       informationWindows.closeInvalidEntries();
       informationWindows.refreshDynamicEntries();
       stageController.update();
+      recruitmentController.processCompletedStage({
+        stage: stageController.currentStage,
+        stageState: stageController.state,
+        heroes: controller.getHeroes(),
+      });
+      stageController.setJoinedCount(recruitmentController.joinedCount);
       runController.update({
         remainingHours: getRemainingTrialHours(),
         stage: stageController.currentStage,

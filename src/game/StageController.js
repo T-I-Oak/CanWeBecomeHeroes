@@ -2,6 +2,7 @@ import EnemyFactory from './EnemyFactory.js';
 import { COMBINATION_PATTERNS, createEncounterEnemies } from './EncounterDefinitions.js';
 import { TAGS } from './TagCatalog.js';
 import { createStageRouteKinds } from './StageKindDistribution.js';
+import { MAX_RECRUITED_HERO_COUNT } from './RecruitmentLimits.js';
 
 export const STAGE_LEVEL_OFFSET = 2;
 export const STAGE_LEVEL_VARIATION = 2;
@@ -59,7 +60,7 @@ export default class StageController {
   }
 
   setJoinedCount(joinedCount) {
-    if (!Number.isInteger(joinedCount) || joinedCount < 0 || joinedCount > 2) throw new RangeError('Joined count must be an integer between zero and two.');
+    if (!Number.isInteger(joinedCount) || joinedCount < 0 || joinedCount > MAX_RECRUITED_HERO_COUNT) throw new RangeError(`Joined count must be an integer between zero and ${MAX_RECRUITED_HERO_COUNT}.`);
     this.joinedCount = joinedCount;
   }
 

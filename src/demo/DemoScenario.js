@@ -1,10 +1,9 @@
 import { CHIP_RADIUS } from '../chips/Chip.js';
-import HeroFactory, { HERO_PROFESSION_IDS } from '../game/HeroFactory.js';
+import { HERO_PROFESSION_IDS } from '../game/HeroFactory.js';
 import ItemFactory, { DESTINATION_TYPES } from '../game/ItemFactory.js';
-import { GAME_AREAS, getPreparationSubareaBounds } from '../game/GameAreas.js';
-import { PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH } from '../game/PreparationLayout.js';
+import { GAME_AREAS } from '../game/GameAreas.js';
+import PreparationHeroProvisioner from '../game/PreparationHeroProvisioner.js';
 import ShopState from '../game/ShopState.js';
-import { createTrendEquipmentSet } from '../game/TrendEquipmentGenerator.js';
 
 function randomWarehousePosition(radius = CHIP_RADIUS.item, random = Math.random) {
   return {
@@ -19,32 +18,11 @@ function selectRandomProfessions(random) {
 }
 
 export function createDemoScenario({ random = Math.random } = {}) {
-  const heroFactory = new HeroFactory();
   const itemFactory = new ItemFactory();
   return Object.freeze({
     initialize({ controller }) {
-      const preparationHeroes = selectRandomProfessions(random).map((profession, index) => {
-        const bounds = getPreparationSubareaBounds(index);
-        const hero = heroFactory.create({
-          profession,
-          x: bounds.x + PREPARATION_PANEL_WIDTH - PREPARATION_LAYOUT.bottomPadding - PREPARATION_LAYOUT.equipmentSlotSize * 1.5 - PREPARATION_LAYOUT.equipmentGap + (random() - 0.5) * 20,
-          y: bounds.y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.equipmentSlotSize * 1.5 + PREPARATION_LAYOUT.equipmentGap + (random() - 0.5) * 12,
-          bounds,
-          stamina: 0,
-        });
-        hero.chip.tilt = (random() - 0.5) * 0.16;
-        controller.add(hero);
-        return hero;
-      });
-      preparationHeroes.forEach((hero) => {
-        Array.from({ length: 2 }, () => createTrendEquipmentSet({
-          trendTag: hero.tags[0],
-          tagBudget: 5,
-          itemFactory,
-          random,
-          placePart: () => randomWarehousePosition(CHIP_RADIUS.item, random),
-        })).flat().forEach(({ item }) => controller.addToWarehouse(item));
-      });
+      const heroProvisioner = new PreparationHeroProvisioner({ controller, random });
+      const preparationHeroes = selectRandomProfessions(random).map((profession, index) => heroProvisioner.provision({ profession, preparationIndex: index }));
       DESTINATION_TYPES.forEach((destination) => {
         const { x, y } = randomWarehousePosition(CHIP_RADIUS.item, random);
         controller.addToWarehouse(itemFactory.createDestination({ destination, x, y }));
