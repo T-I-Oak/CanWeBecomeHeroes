@@ -32,6 +32,24 @@ export default class Camera {
     this.setPointer(pointerX, pointerY);
   }
 
+  setZoomAtScreenPoint(zoom, screenX, screenY) {
+    const worldPoint = this.toWorld(screenX, screenY);
+    this.zoom = Math.max(this.getEffectiveMinZoom(), Math.min(this.maxZoom, zoom));
+    this.setWorldPointAtScreenPoint(worldPoint, screenX, screenY);
+  }
+
+  setWorldPointAtScreenPoint(worldPoint, screenX, screenY) {
+    const visibleWidth = this.viewport.width / this.zoom;
+    const visibleHeight = this.viewport.height / this.zoom;
+    const horizontalRange = this.world.width - visibleWidth;
+    const verticalRange = this.world.height - visibleHeight;
+    const requestedX = worldPoint.x - screenX / this.zoom;
+    const requestedY = worldPoint.y - screenY / this.zoom;
+
+    this.x = horizontalRange > 0 ? Math.max(0, Math.min(horizontalRange, requestedX)) : horizontalRange / 2;
+    this.y = verticalRange > 0 ? Math.max(0, Math.min(verticalRange, requestedY)) : verticalRange / 2;
+  }
+
   panByScreen(deltaX, deltaY) {
     const visibleWidth = this.viewport.width / this.zoom;
     const visibleHeight = this.viewport.height / this.zoom;

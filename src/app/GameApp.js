@@ -894,7 +894,7 @@ export async function startGame({ scenario }) {
     event.preventDefault();
     const bounds = canvas.getBoundingClientRect();
     const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
-    camera.setZoom(camera.zoom * factor, event.clientX - bounds.left, event.clientY - bounds.top);
+    camera.setZoomAtScreenPoint(camera.zoom * factor, event.clientX - bounds.left, event.clientY - bounds.top);
   }, { passive: false });
 
   let previousTime = performance.now();
