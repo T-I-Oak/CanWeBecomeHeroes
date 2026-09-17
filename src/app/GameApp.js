@@ -49,7 +49,7 @@ import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
 import { drawShopPanel as drawShopPanelPresentation, getRevealedPurchaseEntries, getShopPanelSnapshot, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
-import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
+import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getHeroStatusDisplayValue, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
@@ -460,7 +460,7 @@ export async function startGame() {
           );
           return;
         }
-        const value = key === 'stamina' ? hero.stamina : Math.floor(hero.getStatus(key));
+        const value = getHeroStatusDisplayValue(hero, key);
         drawStatusGauge(
           context,
           assets,

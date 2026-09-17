@@ -42,3 +42,9 @@ export function drawHeroTagList(context, assets, hero, x, y) {
   }));
   context.textAlign = 'start'; context.textBaseline = 'alphabetic';
 }
+
+export function getHeroStatusDisplayValue(hero, statusKey) {
+  if (statusKey === 'weight') return hero.getCarriedWeight();
+  if (statusKey === 'stamina') return hero.stamina;
+  return Math.floor(hero.getStatus(statusKey));
+}
