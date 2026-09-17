@@ -1,27 +1,20 @@
-import { STATUS_KEYS, TAGS, getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
+import { STATUS_KEYS, TAGS } from '../game/TagCatalog.js';
 import { TAG_DISPLAY_GRID } from '../game/TagDisplayLayout.js';
-import { getTagBadgeVisual, getTagSkillVisual, TAG_SKILL_THRESHOLDS } from '../game/TagSkillVisualCatalog.js';
+import { TAG_SKILL_THRESHOLDS } from '../game/TagSkillVisualCatalog.js';
 import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
-import { getLocationVisual } from '../game/LocationVisualCatalog.js';
 import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
 
 import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
 import { ENEMY_CHIP_DIAMETER } from '../game/HeroSlotLayout.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js';
-import { ITEM_VALUE_VISUAL } from '../game/ItemValueVisual.js';
+import { createInformationElement as createElement } from './InformationWindowElementFactory.js';
+import { applyTagSkillVisual, createChipImage, createEquipmentImage, createItemValueIcon, createLocationIcon, createStatusIcon, createTagIcon, createTermIcon } from './InformationWindowVisualFactory.js';
 
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
 // this same world-size ratio instead of being normalized to the hero size.
 const ENTITY_PORTRAIT_SCALE = 156 / 192;
-
-function createElement(tagName, className, text = null) {
-  const element = document.createElement(tagName);
-  element.className = className;
-  if (text !== null) element.textContent = text;
-  return element;
-}
 
 function createCompactIcon(isCompact) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -37,87 +30,6 @@ function createCompactIcon(isCompact) {
     svg.append(path);
   });
   return svg;
-}
-
-function applyTagSkillVisual(element, count, tag = null) {
-  const visual = tag ? getTagBadgeVisual(tag, count) : getTagSkillVisual(count);
-  element.style.setProperty('--tag-skill-fill', visual.fill);
-  element.style.setProperty('--tag-skill-border', visual.border);
-  element.style.setProperty('--tag-skill-text', visual.text);
-  element.dataset.tagSkillLevel = String(visual.level);
-}
-
-function createTagIcon(tag, sizeClass = '') {
-  const icon = createElement('span', `InformationWindow__TagIcon ${sizeClass}`.trim());
-  icon.style.setProperty('--tag-base-color', getTagBaseColors([tag])[0]);
-  icon.style.setProperty('--tag-glyph-scale', String(getTagGlyphScales([tag])[0]));
-  const image = document.createElement('img');
-  image.src = resolvePublicAssetPath(`/assets/tags/${tag}.png`);
-  image.alt = '';
-  icon.append(image);
-  return icon;
-}
-
-function createStatusIcon(status, sizeClass = '') {
-  const icon = createElement('span', `InformationWindow__StatusIcon ${sizeClass}`.trim());
-  const image = document.createElement('img');
-  image.src = resolvePublicAssetPath(STATUS_VISUALS[status].iconPath);
-  image.alt = '';
-  icon.append(image);
-  return icon;
-}
-
-function createLocationIcon(location, sizeClass = '') {
-  const icon = createElement('span', `InformationWindow__LocationIcon ${sizeClass}`.trim());
-  const image = document.createElement('img');
-  image.src = resolvePublicAssetPath(getLocationVisual(location).iconPath);
-  image.alt = '';
-  icon.append(image);
-  return icon;
-}
-
-function createTermIcon(sizeClass = '') {
-  const icon = createElement('span', `InformationWindow__TermIcon ${sizeClass}`.trim());
-  icon.setAttribute('aria-hidden', 'true');
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '2');
-  svg.setAttribute('stroke-linecap', 'round');
-  svg.setAttribute('stroke-linejoin', 'round');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', 'M4 5.5c2.8-.9 5.4-.2 8 1.7 2.6-1.9 5.2-2.6 8-1.7v12c-2.8-.9-5.4-.2-8 1.7-2.6-1.9-5.2-2.6-8-1.7zM12 7.2v12');
-  svg.append(path);
-  icon.append(svg);
-  return icon;
-}
-
-function createItemValueIcon(sizeClass = '') {
-  const icon = createElement('span', `InformationWindow__ItemValueIcon ${sizeClass}`.trim());
-  const image = document.createElement('img');
-  image.src = resolvePublicAssetPath(ITEM_VALUE_VISUAL.iconPath);
-  image.alt = '';
-  icon.append(image);
-  return icon;
-}
-
-function createChipImage(path) {
-  const image = createElement('span', 'InformationWindow__ChipImage');
-  const asset = document.createElement('img');
-  asset.src = resolvePublicAssetPath(path);
-  asset.alt = '';
-  image.append(asset);
-  return image;
-}
-
-function createEquipmentImage(path) {
-  const image = createElement('span', 'InformationWindow__EquipmentImage');
-  const asset = document.createElement('img');
-  asset.src = resolvePublicAssetPath(path);
-  asset.alt = '';
-  image.append(asset);
-  return image;
 }
 
 export default class InformationWindowLayer {
