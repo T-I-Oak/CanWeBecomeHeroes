@@ -2,6 +2,7 @@ import HeroFactory, { HERO_PROFESSION_IDS, getHeroProfessionDefinition } from '.
 import { AREA_THEME } from '../game/AreaTheme.js';
 import { getHeroSwingPoseTilt } from '../game/FacilitySwingSystem.js';
 import ModalLayer from './ModalLayer.js';
+import { createModalDialog } from './ModalDialog.js';
 import { createStaticChipPreviewDrawer } from './ChipPreview.js';
 
 const HERO_PREVIEW_SIZE = 256;
@@ -35,10 +36,11 @@ export default class StartPartySelectionModal {
   render() {
     this.stopPreviewAnimation();
     this.selectedPreviewDrawers = [];
-    const dialog = createElement('section', 'ModalDialog StartPartySelection__Dialog');
-    dialog.setAttribute('role', 'dialog');
-    dialog.setAttribute('aria-modal', 'true');
-    const title = createElement('h1', 'StartPartySelection__Title', this.textRepository.getLabel('startPartySelection'));
+    const { dialog, header, body, footer } = createModalDialog({
+      dialogClass: 'StartPartySelection__Dialog',
+      title: this.textRepository.getLabel('startPartySelection'),
+      titleId: 'start-party-selection-title',
+    });
     const roster = createElement('div', 'StartPartySelection__Roster');
     HERO_PROFESSION_IDS.forEach((professionId) => roster.append(this.createRosterSlot(professionId)));
     const start = createElement('button', 'StartPartySelection__StartButton', this.textRepository.getLabel('startTrial'));
@@ -48,7 +50,9 @@ export default class StartPartySelectionModal {
       this.modalLayer.close();
       this.resolve([...this.selection.professionIds]);
     });
-    dialog.append(title, roster, start);
+    body.append(roster);
+    footer.append(start);
+    dialog.append(header, body, footer);
     this.container.replaceChildren(dialog);
     this.startPreviewAnimation();
   }

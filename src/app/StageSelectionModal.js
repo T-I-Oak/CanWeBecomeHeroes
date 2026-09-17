@@ -2,6 +2,7 @@ import { createTagAngles, drawFramedTag } from '../chips/ChipRenderer.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { getEnemyChipScale } from '../game/HeroSlotLayout.js';
 import ModalLayer from './ModalLayer.js';
+import { createModalDialog } from './ModalDialog.js';
 import { createStaticChipPreview, drawStaticChipPreview } from './ChipPreview.js';
 
 const SLOT_COUNT = 6;
@@ -56,16 +57,18 @@ export default class StageSelectionModal {
     this.textLabels = [];
     this.tagLabels = [];
     this.container.replaceChildren();
-    const dialog = createElement('section', 'ModalDialog StageSelection__Dialog');
-    dialog.setAttribute('role', 'dialog');
-    dialog.setAttribute('aria-modal', 'true');
-    dialog.setAttribute('aria-labelledby', 'stage-selection-title');
-    const heading = this.createLabel('h1', 'StageSelection__Title', 'stageNumber', { number: stageNumber });
-    heading.id = 'stage-selection-title';
-    const subtitle = this.createLabel('p', 'StageSelection__Subtitle', 'chooseRoute');
+    const { dialog, header, heading, titleElement, body } = createModalDialog({
+      dialogClass: 'StageSelection__Dialog',
+      title: this.textRepository.getLabel('stageNumber', { number: stageNumber }),
+      titleId: 'stage-selection-title',
+    });
+    this.textLabels.push({ element: titleElement, key: 'stageNumber', values: { number: stageNumber } });
+    const subtitle = this.createLabel('p', 'ModalDialog__Subtitle', 'chooseRoute');
     const options = createElement('div', 'StageSelection__Options');
     choices.forEach((choice) => options.append(this.createOption(choice)));
-    dialog.append(heading, subtitle, options);
+    heading.append(subtitle);
+    body.append(options);
+    dialog.append(header, body);
     this.container.append(dialog);
     this.modalLayer.open();
   }

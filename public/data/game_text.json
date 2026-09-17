@@ -2,6 +2,7 @@
   "ui": {
     "weaponTargetingNote": { "lang-store": { "ja": "複数の武器を装備している場合、先に装備した武器で攻撃対象が決まります。", "en": "When multiple weapons are equipped, the weapon equipped first determines the attack target." } },
     "language": { "lang-store": { "ja": "言語", "en": "Language" } },
+    "gameProgress": { "lang-store": { "ja": "ゲーム進行", "en": "Game progress" } },
     "logCategory_hero": { "lang-store": { "ja": "キャラクター", "en": "Character" } },
     "logCategory_enemy": { "lang-store": { "ja": "敵", "en": "Enemy" } },
     "logCategory_system": { "lang-store": { "ja": "システム", "en": "System" } },
