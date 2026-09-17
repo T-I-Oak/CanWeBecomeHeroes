@@ -484,7 +484,8 @@ export default class InformationWindowLayer {
       tagButton.addEventListener('click', (event) => this.manager.open({ type: 'tag', parentId: entry.id, data: { tag }, anchor: { x: event.clientX, y: event.clientY } }));
       tagList.append(tagButton);
     });
-    const weight = createElement('button', 'InformationWindow__ItemWeight state-clickable');
+    const itemProperties = createElement('div', 'InformationWindow__ItemPropertyList');
+    const weight = createElement('button', 'InformationWindow__ItemProperty InformationWindow__ItemWeight state-clickable');
     weight.type = 'button';
     weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightTimes', `× ${item.chip.weight}`));
     weight.addEventListener('click', (event) => this.manager.open({
@@ -493,14 +494,14 @@ export default class InformationWindowLayer {
     const value = this.#createTermReference({
       id: 'item-value',
       parentId: entry.id,
-      className: 'InformationWindow__ItemValue',
-      label: `[${this.textRepository.getLabel('itemValue')}]`,
+      className: 'InformationWindow__ItemProperty InformationWindow__ItemValue',
+      label: '',
     });
     value.append(
       createElement('span', 'InformationWindow__ItemValueAmount', String(item.value)),
     );
-    tagList.append(weight, value);
-    body.append(tagList);
+    itemProperties.append(weight, value);
+    body.append(tagList, itemProperties);
     content.append(body);
     return content;
   }

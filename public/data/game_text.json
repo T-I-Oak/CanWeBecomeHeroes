@@ -2472,31 +2472,13 @@
             "ja": [
               {
                 "type": "text",
-                "value": "装備に付与されているタグの価値合計に、タグ数を掛けて求める。タグがない装備の価値は1。ショップでは、買い物袋に入れた装備の価値合計と"
-              },
-              {
-                "type": "reference",
-                "kind": "status",
-                "id": "negotiation"
-              },
-              {
-                "type": "text",
-                "value": "に応じて、受け取る装備のタグ数が決まる。"
+                "value": "アイテムに付いたタグの種類や数によって決まる値。ショップでは、買い物袋に入れたアイテムの価値が高いほど、多くのタグが付いた装備を受け取れる。"
               }
             ],
             "en": [
               {
                 "type": "text",
-                "value": "Calculated by multiplying the total Value of an item's tags by its tag count. Tagless items have a Value of 1. At the Shop, the total Value of the equipment in the shopping bag and "
-              },
-              {
-                "type": "reference",
-                "kind": "status",
-                "id": "negotiation"
-              },
-              {
-                "type": "text",
-                "value": " determine the tag count of the equipment received."
+                "value": "A value determined by the types and number of tags on an item. At the Shop, higher-value items in the shopping bag yield equipment with more tags."
               }
             ]
           }

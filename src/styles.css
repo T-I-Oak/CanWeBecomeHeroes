@@ -774,6 +774,12 @@ body {
   gap: 8px;
 }
 
+.InformationWindow__ItemPropertyList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .InformationWindow__EquipmentList {
   grid-template-columns: repeat(3, 72px);
   grid-template-rows: repeat(3, 72px);
@@ -837,21 +843,24 @@ body {
   font-size: 13px;
 }
 
-.InformationWindow__ItemWeight {
+.InformationWindow__ItemProperty {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
   min-width: 56px;
   min-height: 28px;
-  padding: 2px;
-  color: #24334d;
+  padding: 2px 7px;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
+  border-radius: 8px;
+}
+
+.InformationWindow__ItemWeight {
+  color: #24334d;
   background: #e6edf5;
   border: 2px solid #aab7cb;
-  border-radius: 8px;
 }
 
 .InformationWindow__ItemWeight .InformationWindow__StatusIcon {
@@ -865,20 +874,9 @@ body {
 }
 
 .InformationWindow__ItemValue {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-width: 56px;
-  min-height: 28px;
-  padding: 2px 7px;
   color: #4f3512;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
   background: #f3d37c;
   border: 2px solid #b9812f;
-  border-radius: 8px;
 }
 
 .InformationWindow__ItemValue .InformationWindow__ItemValueIcon {
