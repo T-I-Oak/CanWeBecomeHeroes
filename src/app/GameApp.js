@@ -51,7 +51,7 @@ import { drawSelectionGuide } from './SelectionGuideRenderer.js';
 import { drawShopPanel as drawShopPanelPresentation, getRevealedPurchaseEntries, getShopPanelSnapshot, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
 import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getHeroStatusDisplayValue, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
-import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
+import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationInformationOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -430,7 +430,7 @@ export async function startGame() {
       context.lineWidth = 1;
       context.strokeRect(x, y, PREPARATION_PANEL_WIDTH, height);
       const characterX = x + PREPARATION_LAYOUT.topPadding;
-      const informationX = characterX + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
+      const informationX = getPreparationInformationOrigin(index).x;
       if (image.complete && image.naturalWidth > 0) {
         const placement = getCenterImagePlacement(hero.chip.radius);
         const centerX = characterX + PREPARATION_LAYOUT.characterAreaWidth / 2;

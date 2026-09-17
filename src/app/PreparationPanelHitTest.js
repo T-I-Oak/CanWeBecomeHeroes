@@ -17,6 +17,14 @@ export function getPreparationEquipmentOrigin(heroIndex) {
   };
 }
 
+export function getPreparationInformationOrigin(heroIndex) {
+  const bounds = getPreparationSubareaBounds(heroIndex);
+  return Object.freeze({
+    x: bounds.x + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap,
+    y: bounds.y + PREPARATION_LAYOUT.topPadding,
+  });
+}
+
 function isPointInRect(point, x, y, width, height) {
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
