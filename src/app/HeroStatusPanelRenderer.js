@@ -7,8 +7,8 @@ import { STATUS_VISUALS, getVitalGaugeColor } from '../game/StatusVisualCatalog.
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
-import { drawFramedTag } from './EquipmentSlotRenderer.js';
-import { PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
+import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
+import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 
 export const HERO_STATUS_DEFINITIONS = Object.freeze([
   { key: 'power', visual: STATUS_VISUALS.power },
@@ -166,7 +166,16 @@ export function getHeroStatusDisplayValue(hero, statusKey) {
   return Math.floor(hero.getStatus(statusKey));
 }
 
-export function drawPreparationHeroPanel({ context, assets, hero, index, textRepository, definitions, drawEquipmentGrid }) {
+function drawPreparationEquipmentGrid(context, assets, hero, heroIndex) {
+  const { equipmentSlotSize: slotSize, equipmentGap: gap } = PREPARATION_LAYOUT;
+  const origin = getPreparationEquipmentOrigin(heroIndex);
+  EQUIPMENT_SLOTS.forEach((slot) => {
+    const [column, row] = EQUIPMENT_SLOT_GRID[slot];
+    drawItemSlot(context, assets, hero.equipment[slot], origin.x + column * (slotSize + gap), origin.y + row * (slotSize + gap));
+  });
+}
+
+export function drawPreparationHeroPanel({ context, assets, hero, index, textRepository }) {
   const { x, y, height } = getPreparationSubareaBounds(index);
   const characterX = x + PREPARATION_LAYOUT.topPadding;
   const informationX = characterX + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
@@ -186,7 +195,7 @@ export function drawPreparationHeroPanel({ context, assets, hero, index, textRep
   context.textAlign = 'center';
   context.fillText(`【${textRepository.getHeroLabel(hero)}】`, characterX + PREPARATION_LAYOUT.characterAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
   context.textAlign = 'start';
-  definitions.forEach(({ key, visual }, statIndex) => {
+  PREPARATION_HERO_STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
     const gaugeX = informationX + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2;
     if (key === 'weight') {
       drawWeightGauge(context, assets, gaugeX, y + PREPARATION_LAYOUT.topPadding, hero.getCarriedWeight());
@@ -196,6 +205,6 @@ export function drawPreparationHeroPanel({ context, assets, hero, index, textRep
     drawStatusGauge(context, assets, visual, gaugeX, y + PREPARATION_LAYOUT.topPadding, value, hero.maximums[key], key === 'stamina' ? getVitalGaugeColor(value) : '#54c96b');
   });
   context.textBaseline = 'alphabetic';
-  drawEquipmentGrid(context, assets, hero, x, y + PREPARATION_LAYOUT.topPadding);
+  drawPreparationEquipmentGrid(context, assets, hero, index);
   drawHeroTagList(context, assets, hero, informationX, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.statusGaugeHeight + PREPARATION_LAYOUT.sectionGap);
 }

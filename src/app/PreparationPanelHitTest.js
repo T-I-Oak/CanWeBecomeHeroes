@@ -1,5 +1,7 @@
 import { getPreparationSubareaBounds } from '../game/GameAreas.js';
 import { PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
+import { getEquipmentSlotItemAtPoint, getEquipmentSlotTagAtPoint } from './EquipmentSlotHitTest.js';
+import { isPointInRect } from './RectHitTest.js';
 
 export const PREPARATION_TAG_GRID = Object.freeze([
   Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'blessing']),
@@ -23,10 +25,6 @@ export function getPreparationInformationOrigin(heroIndex) {
     x: bounds.x + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap,
     y: bounds.y + PREPARATION_LAYOUT.topPadding,
   });
-}
-
-function isPointInRect(point, x, y, width, height) {
-  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
 
 export function getPreparationTagAtPoint(point, heroes) {
@@ -57,6 +55,28 @@ export function getPreparationStatusAtPoint(point, heroes, statusDefinitions) {
     }
   }
   return null;
+}
+
+function getPreparationEquipmentEntryAtPoint(point, heroes, findAtPoint) {
+  const { equipmentSlotSize: slotSize, equipmentGap: gap } = PREPARATION_LAYOUT;
+  for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
+    const hero = heroes[heroIndex];
+    const origin = getPreparationEquipmentOrigin(heroIndex);
+    for (const slot of EQUIPMENT_SLOTS) {
+      const [column, row] = EQUIPMENT_SLOT_GRID[slot];
+      const entry = findAtPoint(point, hero.equipment[slot], origin.x + column * (slotSize + gap), origin.y + row * (slotSize + gap));
+      if (entry) return entry;
+    }
+  }
+  return null;
+}
+
+export function getPreparationEquipmentTagAtPoint(point, heroes) {
+  return getPreparationEquipmentEntryAtPoint(point, heroes, getEquipmentSlotTagAtPoint);
+}
+
+export function getPreparationEquipmentItemAtPoint(point, heroes) {
+  return getPreparationEquipmentEntryAtPoint(point, heroes, getEquipmentSlotItemAtPoint);
 }
 
 export function isPreparationPanelPoint(point, bounds) {

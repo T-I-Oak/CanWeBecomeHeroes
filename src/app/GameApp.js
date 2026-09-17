@@ -5,9 +5,7 @@ import ChipRenderer, { createTagAngles } from '../chips/ChipRenderer.js';
 import ItemPickupController from '../game/ItemPickupController.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, WORLD_SIZE } from '../game/GameAreas.js';
-import { PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
-import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import HeroItemInteractionController from '../game/HeroItemInteractionController.js';
 import EntityRegistry from '../game/EntityRegistry.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
@@ -48,10 +46,12 @@ import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
-import { drawShopPanel as drawShopPanelPresentation, getRevealedPurchaseEntries, getShopPanelSnapshot, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
-import { drawPreparationHeroPanel, drawTrainingStatusPanel, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
+import { drawShopPanel as drawShopPanelPresentation, getRevealedPurchaseEntries, getShopPanelSnapshot, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
+import { drawPreparationHeroPanel, drawTrainingStatusPanel, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS, PREPARATION_HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
-import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
+import { getPreparationEquipmentItemAtPoint, getPreparationEquipmentTagAtPoint, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
+import { getEquipmentSlotItemAtPoint, getEquipmentSlotTagAtPoint } from './EquipmentSlotHitTest.js';
+import { isPointInRect } from './RectHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -61,11 +61,6 @@ import StartPartySelectionModal from './StartPartySelectionModal.js';
 import { createRunScenario } from '../game/RunScenario.js';
 
 const STATUS_DEFINITIONS = HERO_STATUS_DEFINITIONS;
-const WEIGHT_STATUS_DEFINITION = Object.freeze({ key: 'weight', visual: STATUS_VISUALS.weight });
-const PREPARATION_STATUS_DEFINITIONS = Object.freeze([...STATUS_DEFINITIONS, WEIGHT_STATUS_DEFINITION]);
-function isPointInRect(point, x, y, width, height) {
-  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
-}
 
 function getTrainingStatusAtPoint(point, hero) {
   for (let statusIndex = 0; statusIndex < STATUS_DEFINITIONS.length; statusIndex += 1) {
@@ -97,68 +92,6 @@ function getChipTagAtPoint(entity, point) {
   return tagIndex >= 0 ? tags[tagIndex] : null;
 }
 
-function getItemSlotTagAtPoint(point, item, slotX, slotY) {
-  if (!item) return null;
-  const tagSize = PREPARATION_LAYOUT.equipmentTagIconSize;
-  const tagGap = PREPARATION_LAYOUT.equipmentTagGap;
-  const tagWidth = item.chip.tagPaths.length * tagSize + Math.max(0, item.chip.tagPaths.length - 1) * tagGap;
-  const tagStartX = slotX + (PREPARATION_LAYOUT.equipmentSlotSize - tagWidth) / 2;
-  const tagIndex = item.tags.findIndex((tag, index) => isPointInRect(point, tagStartX + index * (tagSize + tagGap), slotY + 2, tagSize, tagSize));
-  return tagIndex >= 0 ? item.tags[tagIndex] : null;
-}
-
-function getItemSlotAtPoint(point, item, slotX, slotY) {
-  if (!item) return null;
-  return isPointInRect(point, slotX, slotY, PREPARATION_LAYOUT.equipmentSlotSize, PREPARATION_LAYOUT.equipmentSlotSize) ? item : null;
-}
-
-function drawEquipmentGrid(context, assets, hero, x, y) {
-  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
-  const gap = PREPARATION_LAYOUT.equipmentGap;
-  const startX = x
-    + PREPARATION_LAYOUT.topPadding
-    + PREPARATION_LAYOUT.characterAreaWidth
-    + PREPARATION_LAYOUT.areaGap
-    + PREPARATION_LAYOUT.informationAreaWidth
-    + PREPARATION_LAYOUT.areaGap;
-  EQUIPMENT_SLOTS.forEach((slot) => {
-    const [column, row] = EQUIPMENT_SLOT_GRID[slot];
-    const slotX = startX + column * (slotSize + gap);
-    const slotY = y + row * (slotSize + gap);
-    drawItemSlot(context, assets, hero.equipment[slot], slotX, slotY);
-  });
-}
-
-function getPreparationItemTagAtPoint(point, heroes) {
-  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
-  const gap = PREPARATION_LAYOUT.equipmentGap;
-  for (let index = 0; index < heroes.length; index += 1) {
-    const hero = heroes[index];
-    const { x: startX, y: startY } = getPreparationEquipmentOrigin(index);
-    for (const slot of EQUIPMENT_SLOTS) {
-      const [column, row] = EQUIPMENT_SLOT_GRID[slot];
-      const tag = getItemSlotTagAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), startY + row * (slotSize + gap));
-      if (tag) return tag;
-    }
-  }
-  return null;
-}
-
-function getPreparationItemAtPoint(point, heroes) {
-  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
-  const gap = PREPARATION_LAYOUT.equipmentGap;
-  for (let index = 0; index < heroes.length; index += 1) {
-    const hero = heroes[index];
-    const { x: startX, y: startY } = getPreparationEquipmentOrigin(index);
-    for (const slot of EQUIPMENT_SLOTS) {
-      const [column, row] = EQUIPMENT_SLOT_GRID[slot];
-      const item = getItemSlotAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), startY + row * (slotSize + gap));
-      if (item) return item;
-    }
-  }
-  return null;
-}
-
 function drawShopPanel(context, assets, shop, bag, transaction, texts) {
   const snapshot = getShopPanelSnapshot(shop, bag, transaction);
   drawShopPanelPresentation({ context, assets, snapshot, texts, layout: getShopLayout(GAME_AREAS.shop), drawItemSlot, drawFramedTag, getTagBaseColors, getTagGlyphScales, arrowWidth: SHOP_TRANSACTION_ARROW_WIDTH });
@@ -177,12 +110,11 @@ function getShopTagAtPoint(point, shop, bag, transaction) {
   const { slotSize, gap, top, sellItemsTop, sellX, purchaseX } = layout.transaction;
   const soldItems = getShopSoldItems(bag, transaction);
   for (let index = 0; index < soldItems.length; index += 1) {
-    const tag = getItemSlotTagAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
+    const tag = getEquipmentSlotTagAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
     if (tag) return tag;
   }
-  const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
   for (const { column, row, item } of getRevealedPurchaseEntries(transaction)) {
-    const tag = getItemSlotTagAtPoint(point, item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
+    const tag = getEquipmentSlotTagAtPoint(point, item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
     if (tag) return tag;
   }
   return null;
@@ -195,12 +127,11 @@ function getShopItemAtPoint(point, shop, bag, transaction) {
   if (bag && isPointInRect(point, bagX, bagY, 48, 48)) return bag;
   const soldItems = getShopSoldItems(bag, transaction);
   for (let index = 0; index < soldItems.length; index += 1) {
-    const item = getItemSlotAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
+    const item = getEquipmentSlotItemAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
     if (item) return item;
   }
-  const { setStart: purchaseSetStart, revealedCount: revealedInSet } = getShopPurchasePresentation(transaction);
   for (const { column, row, item: purchaseItem } of getRevealedPurchaseEntries(transaction)) {
-    const item = getItemSlotAtPoint(point, purchaseItem, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
+    const item = getEquipmentSlotItemAtPoint(point, purchaseItem, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
     if (item) return item;
   }
   return null;
@@ -352,13 +283,13 @@ export async function startGame() {
       if (isWarehousePortalAtPoint(context, point)) return { type: 'portal' };
       const facility = nameplateBounds.getFacilityAtPoint(point);
       const area = nameplateBounds.getAreaAtPoint(point);
-      const status = getPreparationStatusAtPoint(point, preparationHeroes, PREPARATION_STATUS_DEFINITIONS)
+      const status = getPreparationStatusAtPoint(point, preparationHeroes, PREPARATION_HERO_STATUS_DEFINITIONS)
         ?? getTrainingStatusAtPoint(point, controller.getHeroes().find((hero) => hero.currentArea === 'training'));
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
-        ?? getPreparationItemTagAtPoint(point, preparationHeroes)
+        ?? getPreparationEquipmentTagAtPoint(point, preparationHeroes)
         ?? getShopTagAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction())
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
-      const slotItem = getPreparationItemAtPoint(point, preparationHeroes)
+      const slotItem = getPreparationEquipmentItemAtPoint(point, preparationHeroes)
         ?? getShopItemAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction());
       const entity = controller.getEntityAt(point.x, point.y);
       if (facility) return { type: 'facility', data: { facility } };
@@ -430,8 +361,6 @@ export async function startGame() {
         hero,
         index,
         textRepository,
-        definitions: PREPARATION_STATUS_DEFINITIONS,
-        drawEquipmentGrid,
       });
     });
     const staminaPauseTargets = new Set(controller.getHeroes()
