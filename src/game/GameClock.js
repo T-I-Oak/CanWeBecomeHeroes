@@ -1,5 +1,8 @@
+export const GAME_TICKS_PER_SECOND = 60;
+export const GAME_TICK_SECONDS = 1 / GAME_TICKS_PER_SECOND;
+
 const MAX_WALL_DELTA_SECONDS = 0.05;
-const MAX_SIMULATION_STEP_SECONDS = 1 / 60;
+const MAX_SIMULATION_STEP_SECONDS = GAME_TICK_SECONDS;
 export default class GameClock {
   constructor({ speed = 1, paused = false } = {}) {
     this.speed = speed;
@@ -36,7 +39,7 @@ export default class GameClock {
     let steps = 0;
     while (remaining > 0.000000001) {
       const deltaSeconds = Math.min(MAX_SIMULATION_STEP_SECONDS, remaining);
-      const tickDelta = deltaSeconds * 60;
+      const tickDelta = deltaSeconds * GAME_TICKS_PER_SECOND;
       this.tick += tickDelta;
       update(deltaSeconds, tickDelta);
       if (this.isPaused) break;

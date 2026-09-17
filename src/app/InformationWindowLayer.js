@@ -1,4 +1,5 @@
-import { TAGS, getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
+import { STATUS_KEYS, TAGS, getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
+import { TAG_DISPLAY_GRID } from '../game/TagDisplayLayout.js';
 import { getTagBadgeVisual, getTagSkillVisual, TAG_SKILL_THRESHOLDS } from '../game/TagSkillVisualCatalog.js';
 import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
@@ -11,15 +12,9 @@ import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js';
 import { ITEM_VALUE_VISUAL } from '../game/ItemValueVisual.js';
 
-const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
 // this same world-size ratio instead of being normalized to the hero size.
 const ENTITY_PORTRAIT_SCALE = 156 / 192;
-const TAG_GRID = Object.freeze([
-  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'blessing']),
-  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
-  Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
-]);
 
 function createElement(tagName, className, text = null) {
   const element = document.createElement(tagName);
@@ -222,10 +217,10 @@ export default class InformationWindowLayer {
     descriptionSection.append(this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
 
     const dataSection = createElement('section', 'InformationWindow__DataSection');
-    const weight = createElement('button', 'InformationWindow__AttributeBadge InformationWindow__ItemWeight state-clickable');
+    const weight = createElement('button', 'InformationWindow__TagWeightReference state-clickable');
     weight.type = 'button';
     weight.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: this.textRepository.getName('status', 'weight') }));
-    weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightAmount', String(TAGS[tag].weight)));
+    weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__TagWeightAmount', String(TAGS[tag].weight)));
     weight.addEventListener('click', (event) => this.manager.open({
       type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
     }));
@@ -308,7 +303,7 @@ export default class InformationWindowLayer {
     if (detail) body.append(this.#createEntityProfile(detail, entity, entry.id));
     const information = createElement('section', 'InformationWindow__EntityInformation');
     const statusGrid = createElement('div', 'InformationWindow__EntityStatusGrid');
-    const statusKeys = [...ENTITY_STATUS_KEYS, isEnemy ? 'hp' : 'stamina'];
+    const statusKeys = [...STATUS_KEYS, isEnemy ? 'hp' : 'stamina'];
     statusKeys.forEach((status) => {
       const current = status === 'hp' ? entity.hp : status === 'stamina' ? entity.stamina : entity.getStatus(status);
       const maximum = status === 'hp' ? entity.maximumHp : entity.maximums[status];
@@ -318,7 +313,7 @@ export default class InformationWindowLayer {
     information.append(statusGrid);
 
     const tagList = createElement('div', 'InformationWindow__EntityTagList');
-    TAG_GRID.flat().forEach((tag) => {
+    TAG_DISPLAY_GRID.flat().forEach((tag) => {
       const count = entity.getTagCount(tag);
       const tagButton = createElement('button', 'InformationWindow__EntityTag state-clickable');
       tagButton.type = 'button';
@@ -478,7 +473,7 @@ export default class InformationWindowLayer {
     const tagList = createElement('div', 'InformationWindow__ItemTagList');
     [...new Set(item.tags)].forEach((tag) => {
       const count = item.tags.filter((current) => current === tag).length;
-      const tagButton = createElement('button', 'InformationWindow__EntityTag InformationWindow__ItemBadge state-clickable');
+      const tagButton = createElement('button', 'InformationWindow__ItemTag InformationWindow__ItemBadge state-clickable');
       tagButton.type = 'button';
       applyTagSkillVisual(tagButton, count, tag);
       tagButton.append(createTagIcon(tag, 'InformationWindow__TagIcon--small'), createElement('span', 'InformationWindow__SkillRequirement', String(count)));
@@ -486,7 +481,7 @@ export default class InformationWindowLayer {
       tagList.append(tagButton);
     });
     const itemProperties = createElement('div', 'InformationWindow__ItemPropertyList');
-    const weight = createElement('button', 'InformationWindow__AttributeBadge InformationWindow__ItemBadge InformationWindow__ItemWeight state-clickable');
+    const weight = createElement('button', 'InformationWindow__ItemWeight InformationWindow__ItemBadge state-clickable');
     weight.type = 'button';
     applyTagSkillVisual(weight, 0);
     weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightAmount', String(item.chip.weight)));
@@ -496,7 +491,7 @@ export default class InformationWindowLayer {
     const value = this.#createTermReference({
       id: 'item-value',
       parentId: entry.id,
-      className: 'InformationWindow__AttributeBadge InformationWindow__ItemBadge InformationWindow__ItemValue',
+      className: 'InformationWindow__ItemValue InformationWindow__ItemBadge',
       label: '',
     });
     applyTagSkillVisual(value, 0);

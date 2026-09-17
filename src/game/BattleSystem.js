@@ -4,11 +4,11 @@ import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagValue, getTagWe
 import { createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
 import EnemyFactory from './EnemyFactory.js';
 import UniqueSkillSystem from './UniqueSkillSystem.js';
+import { GAME_TICKS_PER_SECOND } from './GameClock.js';
 
-const TICKS_PER_SECOND = 60;
 const ACTION_GAUGE_BASE_RATE = 13 / 300;
 const ACTION_GAUGE_WEIGHT_SCALE = 25;
-const ATTRIBUTE_TICK_INTERVAL = 60;
+const ATTRIBUTE_TICK_INTERVAL = GAME_TICKS_PER_SECOND;
 const RANGE = [[1], [0.6, 0.7, 0.6], [0.7, 0.8, 0.7], [0.5, 0.7, 0.8, 0.7, 0.5], [0.6, 0.8, 0.9, 0.8, 0.6], [0.6, 0.7, 0.8, 0.9, 0.8, 0.7, 0.6], [0.7, 0.8, 0.9, 1, 0.9, 0.8, 0.7], [0.7, 0.8, 0.9, 1, 1, 1, 0.9, 0.8, 0.7]];
 export const WEAPON_ATTACKS = Object.freeze({ sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['magic', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['power', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] });
 const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
@@ -519,4 +519,4 @@ export default class BattleSystem {
   }
   getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }
 }
-export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, TICKS_PER_SECOND, BOW_GAUGE_SHORTENING_PER_WEAPON, MAX_BOW_GAUGE_SHORTENING_WEAPONS };
+export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, BOW_GAUGE_SHORTENING_PER_WEAPON, MAX_BOW_GAUGE_SHORTENING_WEAPONS };

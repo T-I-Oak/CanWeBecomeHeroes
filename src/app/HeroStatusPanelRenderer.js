@@ -7,8 +7,9 @@ import { STATUS_VISUALS, getVitalGaugeColor } from '../game/StatusVisualCatalog.
 import { getWeightFillRatio, WEIGHT_GAUGE_COLOR_STOPS } from '../game/WeightVisual.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
+import { TAG_DISPLAY_GRID } from '../game/TagDisplayLayout.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
-import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
+import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin } from './PreparationPanelHitTest.js';
 
 export const HERO_STATUS_DEFINITIONS = Object.freeze([
   { key: 'power', visual: STATUS_VISUALS.power },
@@ -148,7 +149,7 @@ export function drawHeroTagList(context, assets, hero, x, y) {
   const { statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagIconSize, tagIconNumberGap, tagRowGap } = PREPARATION_LAYOUT;
   context.font = 'bold 14px system-ui';
   context.textAlign = 'center';
-  PREPARATION_TAG_GRID.forEach((row, rowIndex) => row.forEach((tag, columnIndex) => {
+  TAG_DISPLAY_GRID.forEach((row, rowIndex) => row.forEach((tag, columnIndex) => {
     const count = hero.getTagCount(tag);
     const badgeX = x + columnIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - tagBadgeWidth) / 2;
     const badgeY = y + rowIndex * (tagBadgeHeight + tagRowGap);

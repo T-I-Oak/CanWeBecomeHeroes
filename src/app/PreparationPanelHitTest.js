@@ -2,12 +2,7 @@ import { getPreparationSubareaBounds } from '../game/GameAreas.js';
 import { PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
 import { getEquipmentSlotItemAtPoint, getEquipmentSlotTagAtPoint } from './EquipmentSlotHitTest.js';
 import { isPointInRect } from './RectHitTest.js';
-
-export const PREPARATION_TAG_GRID = Object.freeze([
-  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'blessing']),
-  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
-  Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
-]);
+import { TAG_DISPLAY_GRID } from '../game/TagDisplayLayout.js';
 export const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
 export const EQUIPMENT_SLOT_GRID = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
 
@@ -33,11 +28,11 @@ export function getPreparationTagAtPoint(point, heroes) {
     const bounds = getPreparationSubareaBounds(heroIndex);
     const informationX = bounds.x + topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
     const tagStartY = bounds.y + topPadding + statusGaugeHeight + sectionGap;
-    for (let rowIndex = 0; rowIndex < PREPARATION_TAG_GRID.length; rowIndex += 1) {
-      for (let columnIndex = 0; columnIndex < PREPARATION_TAG_GRID[rowIndex].length; columnIndex += 1) {
+    for (let rowIndex = 0; rowIndex < TAG_DISPLAY_GRID.length; rowIndex += 1) {
+      for (let columnIndex = 0; columnIndex < TAG_DISPLAY_GRID[rowIndex].length; columnIndex += 1) {
         const badgeX = informationX + columnIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - tagBadgeWidth) / 2;
         const badgeY = tagStartY + rowIndex * (tagBadgeHeight + tagRowGap);
-        if (isPointInRect(point, badgeX, badgeY, tagBadgeWidth, tagBadgeHeight)) return PREPARATION_TAG_GRID[rowIndex][columnIndex];
+        if (isPointInRect(point, badgeX, badgeY, tagBadgeWidth, tagBadgeHeight)) return TAG_DISPLAY_GRID[rowIndex][columnIndex];
       }
     }
   }

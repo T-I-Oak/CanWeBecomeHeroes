@@ -1,10 +1,10 @@
 import { logText, entityText } from './LocalizedLog.js';
 import { calculateGuildExtension, getGuildExtensionRate } from './GuildTime.js';
+import { GAME_TICK_SECONDS } from './GameClock.js';
 
 export const GUILD_APPLICATION_TICKS = 600;
 export const GUILD_STAMINA_DRAIN_INTERVAL_TICKS = 20;
 export const GUILD_STAMINA_DRAIN = 0.1;
-const GAME_TICK_SECONDS = 1 / 60;
 
 export default class GuildSystem {
   constructor(returnSystem, { getContributionPoints, setContributionPoints, random = Math.random, textRepository = null, gameLog = null } = {}) {

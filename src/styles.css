@@ -667,7 +667,8 @@ body {
 
 .InformationWindow__EntityStatus,
 .InformationWindow__EntityTag,
-.InformationWindow__AttributeBadge,
+.InformationWindow__ItemBadge,
+.InformationWindow__TagWeightReference,
 .InformationWindow__Equipment {
   font: inherit;
 }
@@ -794,7 +795,7 @@ body {
 }
 
 .InformationWindow__EntityTag,
-.InformationWindow__AttributeBadge {
+.InformationWindow__ItemBadge {
   display: inline-flex;
   align-items: center;
   color: var(--tag-skill-text);
@@ -803,8 +804,10 @@ body {
   border-radius: 8px;
 }
 
-.InformationWindow__EntityTag {
+.InformationWindow__EntityTag,
+.InformationWindow__ItemBadge {
   gap: 1px;
+  justify-content: center;
   min-width: 44px;
   min-height: 28px;
   padding: 2px;
@@ -841,19 +844,23 @@ body {
   object-position: center bottom;
 }
 
-.InformationWindow__EntityTag .InformationWindow__TagIcon {
+.InformationWindow__EntityTag .InformationWindow__TagIcon,
+.InformationWindow__ItemTag .InformationWindow__TagIcon {
   flex-basis: 18px;
   width: 18px;
   height: 18px;
   border-width: 2px;
 }
 
-.InformationWindow__EntityTag .InformationWindow__SkillRequirement {
+.InformationWindow__EntityTag .InformationWindow__SkillRequirement,
+.InformationWindow__ItemTag .InformationWindow__SkillRequirement {
   min-width: 12px;
   font-size: 13px;
 }
 
-.InformationWindow__AttributeBadge {
+.InformationWindow__TagWeightReference {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
   gap: 4px;
   min-width: 56px;
@@ -865,12 +872,10 @@ body {
   border-radius: 8px;
 }
 
-/* A one-digit item value uses the same outer shape as a one-tag badge. */
-.InformationWindow__ItemBadge {
-  justify-content: center;
-  gap: 1px;
-  min-width: 44px;
-  padding: 2px;
+.InformationWindow__TagWeightReference .InformationWindow__StatusIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .InformationWindow__ItemWeight .InformationWindow__StatusIcon {
@@ -879,7 +884,8 @@ body {
   height: 18px;
 }
 
-.InformationWindow__ItemWeightAmount {
+.InformationWindow__ItemWeightAmount,
+.InformationWindow__TagWeightAmount {
   white-space: nowrap;
 }
 
@@ -985,18 +991,21 @@ body {
 
 .InformationWindow__EntityStatus.state-clickable,
 .InformationWindow__EntityTag.state-clickable,
-.InformationWindow__AttributeBadge.state-clickable,
+.InformationWindow__ItemBadge.state-clickable,
+.InformationWindow__TagWeightReference.state-clickable,
 .InformationWindow__Equipment.state-clickable {
   cursor: pointer;
 }
 
 .InformationWindow__EntityStatus.state-clickable:hover,
 .InformationWindow__EntityTag.state-clickable:hover,
-.InformationWindow__AttributeBadge.state-clickable:hover,
+.InformationWindow__ItemBadge.state-clickable:hover,
+.InformationWindow__TagWeightReference.state-clickable:hover,
 .InformationWindow__Equipment.state-clickable:hover,
 .InformationWindow__EntityStatus.state-clickable:focus-visible,
 .InformationWindow__EntityTag.state-clickable:focus-visible,
-.InformationWindow__AttributeBadge.state-clickable:focus-visible,
+.InformationWindow__ItemBadge.state-clickable:focus-visible,
+.InformationWindow__TagWeightReference.state-clickable:focus-visible,
 .InformationWindow__Equipment.state-clickable:focus-visible {
   filter: brightness(1.08);
   outline: 2px solid #24334d;

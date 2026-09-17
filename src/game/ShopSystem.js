@@ -2,6 +2,7 @@ import { logText, entityText } from './LocalizedLog.js';
 import ItemFactory from './ItemFactory.js';
 import { GAME_AREAS } from './GameAreas.js';
 import { EQUIPMENT_PARTS, createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
+import { GAME_TICK_SECONDS } from './GameClock.js';
 
 // 暫定値。ゲーム時間で計測し、バランス調整時はこの定数だけを変更する。
 export const SHOP_REVEAL_INTERVAL_TICKS = 100;
@@ -9,7 +10,6 @@ export const SHOP_PURCHASE_DELIVERY_TICKS = 600;
 export const SHOP_SET_COUNT = 2;
 export const SHOP_STAMINA_DRAIN_INTERVAL_TICKS = 40;
 export const SHOP_STAMINA_DRAIN = 0.1;
-const GAME_TICK_SECONDS = 1 / 60;
 
 export function getSaleTagCount(value, negotiation) {
   return Math.min(15, Math.max(5, 5 + Math.floor(value / Math.max(1, 10 - negotiation))));
