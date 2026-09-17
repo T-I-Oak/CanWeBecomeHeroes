@@ -77,8 +77,8 @@
     },
     "settings": {
       "lang-store": {
-        "ja": "時間設定",
-        "en": "Time settings"
+        "ja": "設定",
+        "en": "Settings"
       }
     },
     "close": {

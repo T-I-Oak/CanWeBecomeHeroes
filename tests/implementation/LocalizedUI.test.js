@@ -41,7 +41,7 @@ test('UI and historical log text follow language changes without replacing state
     await texts.refreshLanguage();
     refreshLocalizedUI(root, texts);
     flow.refreshLanguage();
-    assert.equal(caption.textContent, 'Time settings');
+  assert.equal(caption.textContent, 'Settings');
     assert.equal(control['aria-label'], 'Game controls');
     assert.equal(control.checked, true);
     assert.match(visibleText.textContent, /dealt 125 damage/);
