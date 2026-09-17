@@ -1,4 +1,4 @@
-export const WEIGHT_GAUGE_MAX = 20;
+export const WEIGHT_GAUGE_MAX = 30;
 
 const WEIGHT_COLOR_STOPS = Object.freeze([
   Object.freeze({ position: 0, color: '#58c96d' }),
