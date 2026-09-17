@@ -5,6 +5,15 @@ function createElement(tagName, className, text = null) {
   return element;
 }
 
+const OPTIONS_GAP_PIXELS = 4;
+
+export function getModalSelectOptionsPlacement({ availableAbove, availableBelow, optionsHeight }) {
+  if (availableBelow >= optionsHeight || availableBelow >= availableAbove) {
+    return { direction: 'below', maximumHeight: availableBelow };
+  }
+  return { direction: 'above', maximumHeight: availableAbove };
+}
+
 /** Renders application-controlled options so the selected option has a stable visual meaning. */
 export default class ModalSelect {
   constructor(select) {
@@ -54,7 +63,23 @@ export default class ModalSelect {
   setOpen(isOpen) {
     this.options.hidden = !isOpen;
     this.trigger.setAttribute('aria-expanded', String(isOpen));
-    if (isOpen) this.renderOptions();
+    if (isOpen) {
+      this.renderOptions();
+      this.placeOptions();
+    }
+  }
+
+  placeOptions() {
+    const bodyBounds = this.container.closest('.ModalDialog__Body').getBoundingClientRect();
+    const triggerBounds = this.trigger.getBoundingClientRect();
+    const optionsHeight = this.options.getBoundingClientRect().height;
+    const placement = getModalSelectOptionsPlacement({
+      availableAbove: triggerBounds.top - bodyBounds.top - OPTIONS_GAP_PIXELS,
+      availableBelow: bodyBounds.bottom - triggerBounds.bottom - OPTIONS_GAP_PIXELS,
+      optionsHeight,
+    });
+    this.options.classList.toggle('state-open-upward', placement.direction === 'above');
+    this.options.style.setProperty('--modal-select-options-maximum-height', `${placement.maximumHeight}px`);
   }
 
   renderOptions() {

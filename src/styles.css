@@ -1071,10 +1071,15 @@ body {
   z-index: 1;
   inset: calc(100% + 4px) 0 auto;
   display: grid;
-  overflow: hidden;
+  max-height: var(--modal-select-options-maximum-height, none);
+  overflow-y: auto;
   border: 1px solid var(--color-modal-control-border);
   border-radius: 6px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 30%);
+}
+
+.ModalSelect__Options.state-open-upward {
+  inset: auto 0 calc(100% + 4px);
 }
 
 .ModalSelect__Options[hidden] {
