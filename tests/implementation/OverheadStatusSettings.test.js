@@ -27,10 +27,10 @@ test('overhead status settings retain supported selections and rotate them every
 test('overhead values use one entity rule for hero and enemy durability, weight, and scaled statuses', () => {
   const hero = { chip: { type: 'hero' }, stamina: 2.5, currentArea: 'preparation', getCarriedWeight: () => 14, getStatus: () => 1.23 };
   const enemy = { chip: { type: 'enemy' }, hp: 4.5, currentArea: 'battle', getCarriedWeight: () => 18, getStatus: () => 2.9 };
-  assert.equal(getOverheadStatusValue(hero, 'power'), 123);
-  assert.equal(getOverheadStatusValue(enemy, 'power'), 290);
-  assert.equal(getOverheadStatusValue(hero, 'durability'), 2.5);
-  assert.equal(getOverheadStatusValue(enemy, 'durability'), 4.5);
+  assert.equal(getOverheadStatusValue(hero, 'power'), 1);
+  assert.equal(getOverheadStatusValue(enemy, 'power'), 2);
+  assert.equal(getOverheadStatusValue(hero, 'durability'), 250);
+  assert.equal(getOverheadStatusValue(enemy, 'durability'), 450);
   assert.equal(getOverheadStatusValue(hero, 'weight'), 14);
   assert.equal(isOverheadStatusVisible(hero, OVERHEAD_STATUS_VISIBILITY.always), true);
   assert.equal(isOverheadStatusVisible(hero, OVERHEAD_STATUS_VISIBILITY.battle), false);

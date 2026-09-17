@@ -40,7 +40,7 @@ export function isOverheadStatusVisible(entity, visibility) {
 }
 
 export function getOverheadStatusValue(entity, status) {
-  if (status === 'durability') return entity.chip.type === 'enemy' ? entity.hp : entity.stamina;
+  if (status === 'durability') return Math.floor((entity.chip.type === 'enemy' ? entity.hp : entity.stamina) * 100);
   if (status === 'weight') return entity.getCarriedWeight();
-  return Math.floor(entity.getStatus(status) * 100);
+  return Math.floor(entity.getStatus(status));
 }
