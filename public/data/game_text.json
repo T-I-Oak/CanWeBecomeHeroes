@@ -149,8 +149,8 @@
     },
     "overheadStatusHelp": {
       "lang-store": {
-        "ja": "選択した項目を1秒ごとに切り替えて表示します。",
-        "en": "Selected values rotate once per second."
+        "ja": "選択した項目をキャラクターの頭上に表示します。",
+        "en": "Show selected values above characters."
       }
     },
     "overheadStatusVisibility": {
