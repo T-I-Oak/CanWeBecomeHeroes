@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GAME_AREA_BASE, GAME_AREAS, getPreparationSubareaBounds, PREPARATION_HEIGHT, PREPARATION_SUBAREA_HEIGHT, SHOP_HEIGHT, WORLD_SIZE } from '../../src/game/GameAreas.js';
-import { BATTLE_AREA_HEIGHT, BATTLE_ENEMY_AREA_HEIGHT, BATTLE_ENEMY_SLOT_COUNT, ENEMY_CHIP_DIAMETER, HERO_CHIP_DIAMETER, HERO_SLOT_SIZE, LARGE_ENEMY_SLOT_SPAN } from '../../src/game/HeroSlotLayout.js';
+import { BATTLE_AREA_HEIGHT, BATTLE_ENEMY_AREA_HEIGHT, BATTLE_ENEMY_SLOT_COUNT, BATTLE_OVERHEAD_DISPLAY_HEIGHT, ENEMY_CHIP_DIAMETER, HERO_CHIP_DIAMETER, HERO_SLOT_SIZE, LARGE_ENEMY_SLOT_SPAN } from '../../src/game/HeroSlotLayout.js';
 
 test('game areas form the fixed world with four preparation subareas', () => {
   assert.equal(PREPARATION_HEIGHT, PREPARATION_SUBAREA_HEIGHT * 4 + GAME_AREA_BASE.preparationSubareaGap * 3);
@@ -9,7 +9,7 @@ test('game areas form the fixed world with four preparation subareas', () => {
   assert.equal(GAME_AREAS.warehouse.height, PREPARATION_HEIGHT);
   assert.equal(GAME_AREAS.battle.width, GAME_AREAS.warehouse.width);
   assert.equal(GAME_AREAS.battle.width, HERO_SLOT_SIZE * BATTLE_ENEMY_SLOT_COUNT);
-  assert.equal(BATTLE_ENEMY_AREA_HEIGHT, HERO_CHIP_DIAMETER * 2);
+  assert.equal(BATTLE_ENEMY_AREA_HEIGHT, BATTLE_OVERHEAD_DISPLAY_HEIGHT + HERO_CHIP_DIAMETER * 2);
   assert.equal(ENEMY_CHIP_DIAMETER.large, HERO_CHIP_DIAMETER * LARGE_ENEMY_SLOT_SPAN);
   assert.equal(GAME_AREAS.battle.height, BATTLE_AREA_HEIGHT);
   assert.equal(SHOP_HEIGHT, PREPARATION_HEIGHT - GAME_AREAS.guild.height - GAME_AREAS.training.height - GAME_AREA_BASE.rightAreaGap * 2);
@@ -23,5 +23,5 @@ test('game areas form the fixed world with four preparation subareas', () => {
     width: GAME_AREAS.preparation.width,
     height: PREPARATION_SUBAREA_HEIGHT,
   });
-  assert.deepEqual(WORLD_SIZE, { width: 2804, height: 1760 });
+  assert.deepEqual(WORLD_SIZE, { width: 2804, height: GAME_AREAS.warehouse.y + PREPARATION_HEIGHT });
 });

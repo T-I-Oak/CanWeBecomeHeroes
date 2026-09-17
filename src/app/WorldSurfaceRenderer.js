@@ -1,5 +1,5 @@
 import { GAME_AREAS, getPreparationSubareaBounds } from '../game/GameAreas.js';
-import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
+import { BATTLE_ENEMY_AREA_HEIGHT, BATTLE_ENEMY_SLOT_TOP, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 
 function drawTiledSurface(context, assets, imagePath, bounds) {
   const { x, y, width, height } = bounds;
@@ -23,7 +23,7 @@ function drawBattleSlotGround(context, assets) {
   const battle = GAME_AREAS.battle;
   const startX = battle.x + (battle.width - HERO_SLOT_SIZE * 6) / 2;
   const rows = [
-    { columns: [0, 1, 2, 3, 4, 5], y: battle.y + (BATTLE_ENEMY_AREA_HEIGHT - HERO_SLOT_SIZE) / 2 },
+    { columns: [0, 1, 2, 3, 4, 5], y: battle.y + BATTLE_ENEMY_SLOT_TOP },
     { columns: [1, 2, 3, 4], y: battle.y + BATTLE_ENEMY_AREA_HEIGHT },
   ];
   rows.forEach(({ columns, y }) => columns.forEach((column) => context.drawImage(image, startX + column * HERO_SLOT_SIZE, y, HERO_SLOT_SIZE, HERO_SLOT_SIZE)));

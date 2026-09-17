@@ -42,6 +42,7 @@ import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
 import TimeSettingsController from './TimeSettingsController.js';
+import OverheadStatusSettingsController from './OverheadStatusSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
@@ -51,6 +52,7 @@ import { drawPreparationHeroPanel, drawTrainingStatusPanel, getTrainingStatusAtP
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { getPreparationEquipmentItemAtPoint, getPreparationEquipmentTagAtPoint, getPreparationStatusAtPoint, getPreparationTagAtPoint } from './PreparationPanelHitTest.js';
 import { getShopItemAtPoint, getShopTagAtPoint } from './ShopPanelHitTest.js';
+import { drawOverheadStatuses } from './OverheadStatusRenderer.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import HeroProgressRepository from '../game/HeroProgressRepository.js';
@@ -150,7 +152,7 @@ export async function startGame() {
     onChange: (entries) => informationLayer.render(entries),
   });
   informationLayer.manager = informationWindows;
-  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); timeSettingsController.updateStatus(); });
+  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); timeSettingsController.updateStatus(); overheadStatusSettingsController.refreshLabels(); });
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
     textRepository,
@@ -208,6 +210,9 @@ export async function startGame() {
   const pauseOnInformation = document.querySelector('#pause-on-information');
   const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
   const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
+  const overheadStatusInputs = [...document.querySelectorAll('input[name="overhead-status"]')];
+  const overheadStatusVisibility = document.querySelector('#overhead-status-visibility');
+  const overheadStatusLabels = [...document.querySelectorAll('[data-overhead-status]')];
   const timeSettingsController = new TimeSettingsController({
     clock,
     dataManager,
@@ -215,6 +220,11 @@ export async function startGame() {
     getHeroes: () => controller.getHeroes(),
     elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, timeSettingsClose, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
     onPauseOnInformationChange: (pauseOnOpen) => informationWindows.setPauseOnOpen(pauseOnOpen),
+  });
+  const overheadStatusSettingsController = new OverheadStatusSettingsController({
+    dataManager,
+    textRepository,
+    elements: { statuses: overheadStatusInputs, visibility: overheadStatusVisibility, statusLabels: overheadStatusLabels },
   });
   document.addEventListener('pointerdown', (event) => {
     const windowElement = event.target.closest?.('.InformationWindow');
@@ -312,6 +322,13 @@ export async function startGame() {
       .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
       .map((hero) => hero.chip));
     board.getRenderChips().forEach((chip) => renderer.draw(chip, time / 1000, { staminaPauseTarget: staminaPauseTargets.has(chip) }));
+    drawOverheadStatuses(
+      context,
+      [...controller.getHeroes(), ...controller.getEnemies()],
+      overheadStatusSettingsController.getSettings(),
+      textRepository,
+      time / 1000,
+    );
     combatEffects.draw(context, assets);
     drawSelectionGuide(context, controller.getSelectionGuide());
     context.restore();

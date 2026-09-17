@@ -206,6 +206,27 @@ body {
   accent-color: #d5ad55;
 }
 
+.SettingsModal__OverheadStatusGroup {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid rgba(243, 219, 164, 0.38);
+}
+
+.SettingsModal__OverheadStatusHelp {
+  color: #e5d4ae;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.SettingsModal__OverheadStatusChoices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px 10px;
+}
+
 .ChipCanvas {
   display: block;
   width: 100%;

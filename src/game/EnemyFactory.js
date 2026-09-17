@@ -1,7 +1,7 @@
 import Chip from '../chips/Chip.js';
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
-import { BATTLE_ENEMY_AREA_HEIGHT, ENEMY_CHIP_DIAMETER, HERO_SLOT_SIZE } from './HeroSlotLayout.js';
+import { BATTLE_ENEMY_SLOT_TOP, ENEMY_CHIP_DIAMETER, HERO_SLOT_SIZE } from './HeroSlotLayout.js';
 import { getEnemyDefinition, getEnemyDefinitionById } from './EnemyCatalog.js';
 import Enemy from './Enemy.js';
 import ItemFactory from './ItemFactory.js';
@@ -14,7 +14,7 @@ const RANK_BY_SIZE = Object.freeze({ small: 'regular', medium: 'midBoss', large:
 function getSlot(slotPosition, span = 1) {
   const area = GAME_AREAS.battle;
   const startX = area.x + (area.width - HERO_SLOT_SIZE * 6) / 2;
-  const top = area.y + (BATTLE_ENEMY_AREA_HEIGHT - HERO_SLOT_SIZE) / 2;
+  const top = area.y + BATTLE_ENEMY_SLOT_TOP;
   const boundsY = top - (span - 1) * HERO_SLOT_SIZE / 2;
   return Object.freeze({
     x: startX + (slotPosition - 1) * HERO_SLOT_SIZE + HERO_SLOT_SIZE * span / 2,

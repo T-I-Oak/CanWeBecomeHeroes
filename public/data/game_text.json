@@ -141,6 +141,36 @@
         "en": "When no allies are resting at Home"
       }
     },
+    "overheadStatus": {
+      "lang-store": {
+        "ja": "頭上表示",
+        "en": "Overhead display"
+      }
+    },
+    "overheadStatusHelp": {
+      "lang-store": {
+        "ja": "選択した項目を1秒ごとに切り替えて表示します。",
+        "en": "Selected values rotate once per second."
+      }
+    },
+    "overheadStatusVisibility": {
+      "lang-store": {
+        "ja": "表示タイミング",
+        "en": "Show"
+      }
+    },
+    "overheadStatusAlways": {
+      "lang-store": {
+        "ja": "常時",
+        "en": "Always"
+      }
+    },
+    "overheadStatusBattle": {
+      "lang-store": {
+        "ja": "戦闘中",
+        "en": "In battle"
+      }
+    },
     "logs": {
       "lang-store": {
         "ja": "ゲームログ",
