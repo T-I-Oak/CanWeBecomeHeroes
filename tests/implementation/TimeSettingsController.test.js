@@ -42,6 +42,7 @@ test('time settings controller owns persisted controls and stamina pause state',
     timeStatus: createElement(),
     timeSettings: createElement({ hidden: true }),
     timeSettingsToggle: createElement(),
+    timeSettingsClose: createElement(),
     speedSlider: createElement(),
     pauseOnInformation: createElement(),
     pauseOnStaminaFull: createElement({ checked: true }),
@@ -55,6 +56,13 @@ test('time settings controller owns persisted controls and stamina pause state',
     getHeroes: () => [hero],
     elements,
   });
+
+  elements.timeSettingsToggle.dispatch('click');
+  assert.equal(elements.timeSettings.hidden, false);
+  assert.equal(clock.pauseReasons.has('time-settings'), true);
+  elements.timeSettingsClose.dispatch('click');
+  assert.equal(elements.timeSettings.hidden, true);
+  assert.equal(clock.pauseReasons.has('time-settings'), false);
 
   controller.updateStaminaPause();
   assert.equal(clock.pauseReasons.has('stamina-full'), true);

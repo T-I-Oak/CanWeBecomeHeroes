@@ -81,6 +81,12 @@
         "en": "Time settings"
       }
     },
+    "close": {
+      "lang-store": {
+        "ja": "閉じる",
+        "en": "Close"
+      }
+    },
     "speed": {
       "lang-store": {
         "ja": "通常速度",

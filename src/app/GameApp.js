@@ -204,6 +204,7 @@ export async function startGame() {
   const timeStatus = document.querySelector('#time-status');
   const timeSettings = document.querySelector('#time-settings');
   const timeSettingsToggle = document.querySelector('#time-settings-toggle');
+  const timeSettingsClose = document.querySelector('#time-settings-close');
   const speedSlider = document.querySelector('#game-speed');
   const pauseOnInformation = document.querySelector('#pause-on-information');
   const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
@@ -213,7 +214,7 @@ export async function startGame() {
     dataManager,
     textRepository,
     getHeroes: () => controller.getHeroes(),
-    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
+    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, timeSettingsClose, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
     onPauseOnInformationChange: (pauseOnOpen) => informationWindows.setPauseOnOpen(pauseOnOpen),
   });
   document.addEventListener('pointerdown', (event) => {

@@ -117,21 +117,45 @@ body {
   background: #ec7b68;
 }
 
-.HudPanel__Settings {
+.SettingsModal__Dialog {
   display: grid;
-  gap: 10px;
-  margin-top: 8px;
-  padding-top: 9px;
-  border-top: 1px solid rgba(243, 219, 164, 0.38);
+  width: min(440px, 100%);
+  gap: 16px;
+  padding: clamp(16px, 4vmin, 28px);
 }
 
-.HudPanel__Settings[hidden] {
-  display: none;
+.SettingsModal__Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(243, 219, 164, 0.38);
 }
 
-.HudPanel__SpeedLabel {
+.SettingsModal__Title {
+  margin: 0;
+  color: #fff4d5;
+  font-size: clamp(19px, 4vmin, 26px);
+}
+
+.SettingsModal__CloseButton {
+  min-width: 66px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 1px solid #d3ad62;
+  border-radius: 6px;
+  color: #2d301f;
+  background: #f6e6be;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.SettingsModal__Field {
   display: grid;
-  gap: 5px;
+  gap: 7px;
   color: #fff4d5;
   font-size: 12px;
   font-weight: 700;
@@ -143,39 +167,42 @@ body {
 }
 
 .HudPanel__SpeedScale {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  --speed-normal-position: 33.333%;
+  position: relative;
+  display: block;
+  height: 1.2em;
   color: #e5d4ae;
   font-size: 11px;
   font-weight: 600;
 }
 
-.HudPanel__SpeedScale span:nth-child(2) {
-  text-align: center;
+.HudPanel__SpeedScale > span {
+  position: absolute;
+  white-space: nowrap;
 }
 
-.HudPanel__SpeedScale span:last-child {
-  text-align: right;
-}
+.HudPanel__SpeedScale > span:first-child { left: 0; }
+.HudPanel__SpeedScale > span:nth-child(2) { left: var(--speed-normal-position); transform: translateX(-50%); }
+.HudPanel__SpeedScale > span:last-child { right: 0; }
 
-.HudPanel__AutomationGroup {
+.SettingsModal__AutomationGroup {
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 
-.HudPanel__AutomationTitle {
+.SettingsModal__AutomationTitle {
   color: #d5ad55;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
-.HudPanel__AutomationOption {
+.SettingsModal__AutomationOption {
   color: #fff4d5;
   font-size: 12px;
   font-weight: 600;
 }
 
-.HudPanel__AutomationOption input {
+.SettingsModal__AutomationOption input {
   accent-color: #d5ad55;
 }
 

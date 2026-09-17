@@ -13,24 +13,30 @@
         <div class="HudPanel__Controls">
           <span class="HudPanel__Status state-running" id="time-status" aria-live="polite"><span data-ui="running"></span></span>
           <button class="HudPanel__PauseButton" id="pause-game" type="button"><span data-ui="pause"></span></button>
-          <button class="HudPanel__SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings"><span data-ui="settings"></span></button>
+          <button class="HudPanel__SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings" data-ui-aria="settings">⚙</button>
         </div>
-        <section class="HudPanel__Settings" id="time-settings" hidden data-ui-aria="settings">
-          <label class="HudPanel__SpeedLabel" for="language-selector"><span data-ui="language"></span>
+      </aside>
+      <aside class="ModalLayer SettingsModal" id="time-settings" hidden data-ui-aria="settings">
+        <section class="ModalDialog SettingsModal__Dialog" role="dialog" aria-modal="true" aria-labelledby="time-settings-title">
+          <header class="SettingsModal__Header">
+            <h2 class="SettingsModal__Title" id="time-settings-title" data-ui="settings"></h2>
+            <button class="SettingsModal__CloseButton" id="time-settings-close" type="button" data-ui="close" data-ui-aria="close"></button>
+          </header>
+          <label class="SettingsModal__Field" for="language-selector"><span data-ui="language"></span>
             <select id="language-selector"></select>
           </label>
-          <label class="HudPanel__SpeedLabel" for="game-speed"><span data-ui="speed"></span>
+          <label class="SettingsModal__Field" for="game-speed"><span data-ui="speed"></span>
             <input class="HudPanel__SpeedSlider" id="game-speed" type="range" min="-1" max="2" step="0.1" value="0" />
             <span class="HudPanel__SpeedScale" aria-hidden="true"><span><span data-ui="slow"></span></span><span><span data-ui="normal"></span></span><span><span data-ui="fast"></span></span></span>
           </label>
-          <div class="HudPanel__AutomationGroup">
-            <span class="HudPanel__AutomationTitle"><span data-ui="autoPause"></span></span>
-            <label class="HudPanel__AutomationOption" for="pause-on-information"><input id="pause-on-information" type="checkbox" checked /> <span data-ui="pauseInformation"></span></label>
-            <label class="HudPanel__AutomationOption" for="pause-on-stamina-full"><input id="pause-on-stamina-full" type="checkbox" /> <span data-ui="pauseStamina"></span></label>
+          <div class="SettingsModal__AutomationGroup">
+            <span class="SettingsModal__AutomationTitle"><span data-ui="autoPause"></span></span>
+            <label class="SettingsModal__AutomationOption" for="pause-on-information"><input id="pause-on-information" type="checkbox" checked /> <span data-ui="pauseInformation"></span></label>
+            <label class="SettingsModal__AutomationOption" for="pause-on-stamina-full"><input id="pause-on-stamina-full" type="checkbox" /> <span data-ui="pauseStamina"></span></label>
           </div>
-          <div class="HudPanel__AutomationGroup">
-            <span class="HudPanel__AutomationTitle"><span data-ui="autoAccelerate"></span></span>
-            <label class="HudPanel__AutomationOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> <span data-ui="accelerateEmpty"></span></label>
+          <div class="SettingsModal__AutomationGroup">
+            <span class="SettingsModal__AutomationTitle"><span data-ui="autoAccelerate"></span></span>
+            <label class="SettingsModal__AutomationOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> <span data-ui="accelerateEmpty"></span></label>
           </div>
         </section>
       </aside>

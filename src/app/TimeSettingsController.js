@@ -27,18 +27,17 @@ export default class TimeSettingsController {
   }
 
   bindEvents() {
-    const { pauseButton, timeSettings, timeSettingsToggle, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation } = this.elements;
+    const { pauseButton, timeSettings, timeSettingsToggle, timeSettingsClose, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation } = this.elements;
     pauseButton.addEventListener('click', () => {
       this.clock.togglePaused();
       this.updateStatus();
     });
     timeSettingsToggle.addEventListener('click', () => {
-      const isOpen = timeSettings.hidden;
-      timeSettings.hidden = !isOpen;
-      timeSettingsToggle.setAttribute('aria-expanded', String(isOpen));
-      if (isOpen) this.clock.pause('time-settings');
-      else this.clock.resume('time-settings');
-      this.updateStatus();
+      this.setDialogOpen(timeSettings.hidden);
+    });
+    timeSettingsClose.addEventListener('click', () => this.setDialogOpen(false));
+    timeSettings.addEventListener('click', (event) => {
+      if (event.target === timeSettings) this.setDialogOpen(false);
     });
     speedSlider.addEventListener('input', (event) => {
       this.settings.speedLog = Number(event.currentTarget.value);
@@ -66,6 +65,16 @@ export default class TimeSettingsController {
 
   get pauseOnInformation() {
     return this.elements.pauseOnInformation.checked;
+  }
+
+  setDialogOpen(isOpen) {
+    this.elements.timeSettings.hidden = !isOpen;
+    this.elements.timeSettingsToggle.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) {
+      this.clock.pause('time-settings');
+      this.elements.timeSettingsClose.focus?.();
+    } else this.clock.resume('time-settings');
+    this.updateStatus();
   }
 
   updateClockSpeed() {
