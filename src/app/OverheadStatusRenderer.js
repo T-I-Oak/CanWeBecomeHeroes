@@ -1,8 +1,9 @@
 import { getStatusVisual } from '../game/StatusVisualCatalog.js';
 import { getOverheadStatusValue, getRotatingOverheadStatus, isOverheadStatusVisible } from '../game/OverheadStatusSettings.js';
 
-const OVERHEAD_STATUS_FONT_SIZE = 16;
+const OVERHEAD_STATUS_FONT_SIZE = 32;
 const OVERHEAD_STATUS_VERTICAL_GAP = 14;
+const OVERHEAD_STATUS_OUTLINE_WIDTH = 6;
 
 export function drawOverheadStatuses(context, entities, settings, textRepository, elapsedSeconds) {
   const status = getRotatingOverheadStatus(settings.statuses, elapsedSeconds);
@@ -24,7 +25,7 @@ export function drawOverheadStatus(context, entity, status, textRepository) {
   context.textAlign = 'center';
   context.textBaseline = 'bottom';
   context.lineJoin = 'round';
-  context.lineWidth = 4;
+  context.lineWidth = OVERHEAD_STATUS_OUTLINE_WIDTH;
   context.strokeStyle = '#182333';
   context.strokeText(label, x, y);
   context.fillStyle = visual.textColor;
