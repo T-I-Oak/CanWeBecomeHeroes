@@ -32,7 +32,7 @@ test('UI and historical log text follow language changes without replacing state
     const control = { dataset: { uiAria: 'controls' }, checked: true, setAttribute(key, value) { this[key] = value; } };
     const root = { querySelectorAll: selector => selector === '[data-ui]' ? [caption] : [control] };
     refreshLocalizedUI(root, texts);
-    assert.equal(caption.textContent, '時間設定');
+    assert.equal(caption.textContent, '設定');
     const flow = new FlowLog({}, log);
     const visibleText = { textContent: japanese };
     const animationNode = {};
@@ -41,7 +41,7 @@ test('UI and historical log text follow language changes without replacing state
     await texts.refreshLanguage();
     refreshLocalizedUI(root, texts);
     flow.refreshLanguage();
-  assert.equal(caption.textContent, 'Settings');
+    assert.equal(caption.textContent, 'Settings');
     assert.equal(control['aria-label'], 'Game controls');
     assert.equal(control.checked, true);
     assert.match(visibleText.textContent, /dealt 125 damage/);
