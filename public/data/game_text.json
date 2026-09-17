@@ -147,12 +147,6 @@
         "en": "Overhead display"
       }
     },
-    "overheadStatusHelp": {
-      "lang-store": {
-        "ja": "選択した項目をキャラクターの頭上に表示します。",
-        "en": "Show selected values above characters."
-      }
-    },
     "overheadStatusVisibility": {
       "lang-store": {
         "ja": "表示タイミング",
