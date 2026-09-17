@@ -42,6 +42,7 @@ import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
 import TimeSettingsController from './TimeSettingsController.js';
+import ModalSelect from './ModalSelect.js';
 import OverheadStatusSettingsController from './OverheadStatusSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
@@ -85,6 +86,7 @@ function drawShopPanel(context, assets, shop, bag, transaction, texts) {
 
 export async function startGame() {
   setupLanguageSelector('#language-selector', ['ja', 'en']);
+  const languageModalSelect = new ModalSelect(document.querySelector('#language-selector'));
   const textRepository = await new GameTextRepository().load();
   const canvas = document.querySelector('#chip-canvas');
   const context = canvas.getContext('2d');
@@ -152,7 +154,7 @@ export async function startGame() {
     onChange: (entries) => informationLayer.render(entries),
   });
   informationLayer.manager = informationWindows;
-  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); timeSettingsController.updateStatus(); overheadStatusSettingsController.refreshLabels(); });
+  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); timeSettingsController.updateStatus(); overheadStatusSettingsController.refreshLabels(); languageModalSelect.refresh(); overheadStatusModalSelect.refresh(); });
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
     textRepository,
@@ -226,6 +228,7 @@ export async function startGame() {
     textRepository,
     elements: { statuses: overheadStatusInputs, visibility: overheadStatusVisibility, statusLabels: overheadStatusLabels },
   });
+  const overheadStatusModalSelect = new ModalSelect(overheadStatusVisibility);
   document.addEventListener('pointerdown', (event) => {
     const windowElement = event.target.closest?.('.InformationWindow');
     informationWindows.focus(windowElement?.dataset.informationWindowId ?? null);

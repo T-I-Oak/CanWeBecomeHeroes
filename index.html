@@ -29,7 +29,9 @@
           <div class="ModalDialog__Body SettingsModal__Body">
             <fieldset class="ModalFormSection">
               <legend class="ModalFormSection__Legend" id="settings-language-section-title" data-ui="language"></legend>
-              <select class="ModalDialog__Select" id="language-selector" aria-labelledby="settings-language-section-title"></select>
+              <div class="ModalSelect">
+                <select id="language-selector" aria-labelledby="settings-language-section-title"></select>
+              </div>
             </fieldset>
             <fieldset class="ModalFormSection">
               <legend class="ModalFormSection__Legend" data-ui="gameProgress"></legend>
@@ -55,11 +57,13 @@
                 <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="durability" /> <span data-overhead-status="durability"></span></label>
                 <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="weight" /> <span data-overhead-status="weight"></span></label>
               </div>
-              <label class="SettingsModal__Field" for="overhead-status-visibility"><span data-ui="overheadStatusVisibility"></span>
-                <select class="ModalDialog__Select" id="overhead-status-visibility">
-                  <option value="always" data-ui="overheadStatusAlways"></option>
-                  <option value="battle" data-ui="overheadStatusBattle"></option>
-                </select>
+              <label class="SettingsModal__Field" for="overhead-status-visibility"><span id="overhead-status-visibility-label" data-ui="overheadStatusVisibility"></span>
+                <span class="ModalSelect">
+                  <select id="overhead-status-visibility" aria-labelledby="overhead-status-visibility-label">
+                    <option value="always" data-ui="overheadStatusAlways"></option>
+                    <option value="battle" data-ui="overheadStatusBattle"></option>
+                  </select>
+                </span>
               </label>
             </fieldset>
           </div>

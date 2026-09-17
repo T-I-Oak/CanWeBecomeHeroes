@@ -20,6 +20,8 @@
   --color-modal-control-surface: #f6e6be;
   --color-modal-control-text: #2d301f;
   --color-modal-control-border: #d3ad62;
+  --color-modal-selected-option: #d5ad55;
+  --color-modal-selected-option-text: #2d301f;
 }
 
 * {
@@ -1033,16 +1035,65 @@ body {
   cursor: pointer;
 }
 
-.ModalDialog__Select {
+.ModalSelect {
+  position: relative;
+  display: block;
+}
+
+.ModalSelect__Native {
+  display: none;
+}
+
+.ModalSelect__Trigger,
+.ModalSelect__Option {
   min-height: 30px;
   padding: 4px 8px;
+  border: 1px solid var(--color-modal-control-border);
   color: var(--color-modal-control-text);
   background: var(--color-modal-control-surface);
-  border: 1px solid var(--color-modal-control-border);
-  border-radius: 6px;
   font: inherit;
   font-size: 12px;
   font-weight: 700;
+  cursor: pointer;
+}
+
+.ModalSelect__Trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: 6px;
+  text-align: start;
+}
+
+.ModalSelect__Options {
+  position: absolute;
+  z-index: 1;
+  inset: calc(100% + 4px) 0 auto;
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--color-modal-control-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 30%);
+}
+
+.ModalSelect__Options[hidden] {
+  display: none;
+}
+
+.ModalSelect__Option {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  text-align: start;
+}
+
+.ModalSelect__Option:last-child {
+  border-bottom-width: 0;
+}
+
+.ModalSelect__Option.state-selected {
+  color: var(--color-modal-selected-option-text);
+  background: var(--color-modal-selected-option);
 }
 
 .ModalDialog__Body {
