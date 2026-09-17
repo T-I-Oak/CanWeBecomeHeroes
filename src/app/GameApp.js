@@ -51,7 +51,6 @@ import { drawPreparationHeroPanel, drawTrainingStatusPanel, getTrainingStatusAtP
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
 import { getPreparationEquipmentItemAtPoint, getPreparationEquipmentTagAtPoint, getPreparationStatusAtPoint, getPreparationTagAtPoint } from './PreparationPanelHitTest.js';
 import { getShopItemAtPoint, getShopTagAtPoint } from './ShopPanelHitTest.js';
-import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import HeroProgressRepository from '../game/HeroProgressRepository.js';

@@ -734,7 +734,10 @@ body {
   left: 0;
   height: var(--weight-fill);
   content: '';
-  background: linear-gradient(to top, #58c96d 0%, #d6be57 55%, #ca7553 100%);
+  background-image: linear-gradient(to top, var(--weight-color-low) 0%, var(--weight-color-middle) 55%, var(--weight-color-high) 100%);
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: 100% 70px;
 }
 
 .InformationWindow__WeightIndicator::after {

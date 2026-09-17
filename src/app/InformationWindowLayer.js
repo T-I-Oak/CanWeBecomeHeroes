@@ -8,7 +8,7 @@ import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
 import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
 import { ENEMY_CHIP_DIAMETER } from '../game/HeroSlotLayout.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
-import { getWeightFillRatio } from '../game/WeightVisual.js';
+import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
@@ -436,6 +436,9 @@ export default class InformationWindowLayer {
     gauge.style.setProperty('--status-frame-color', STATUS_VISUALS.weight.gaugeFrameColor);
     const weight = entity.getCarriedWeight();
     gauge.style.setProperty('--weight-fill', `${getWeightFillRatio(weight) * 100}%`);
+    gauge.style.setProperty('--weight-color-low', WEIGHT_GAUGE_COLORS.low);
+    gauge.style.setProperty('--weight-color-middle', WEIGHT_GAUGE_COLORS.middle);
+    gauge.style.setProperty('--weight-color-high', WEIGHT_GAUGE_COLORS.high);
     gauge.append(
       createStatusIcon('weight'),
       createElement('span', 'InformationWindow__WeightIndicator'),

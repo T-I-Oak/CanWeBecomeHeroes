@@ -1,9 +1,15 @@
 export const WEIGHT_GAUGE_MAX = 30;
 
-const WEIGHT_COLOR_STOPS = Object.freeze([
-  Object.freeze({ position: 0, color: '#58c96d' }),
-  Object.freeze({ position: 0.55, color: '#d6be57' }),
-  Object.freeze({ position: 1, color: '#ca7553' }),
+export const WEIGHT_GAUGE_COLORS = Object.freeze({
+  low: '#58c96d',
+  middle: '#d6be57',
+  high: '#ca7553',
+});
+
+export const WEIGHT_GAUGE_COLOR_STOPS = Object.freeze([
+  Object.freeze({ position: 0, color: WEIGHT_GAUGE_COLORS.low }),
+  Object.freeze({ position: 0.55, color: WEIGHT_GAUGE_COLORS.middle }),
+  Object.freeze({ position: 1, color: WEIGHT_GAUGE_COLORS.high }),
 ]);
 
 export function getWeightFillRatio(weight) {
@@ -20,9 +26,9 @@ function toHex(value) {
 
 export function getWeightGaugeColor(weight) {
   const ratio = getWeightFillRatio(weight);
-  const upperIndex = WEIGHT_COLOR_STOPS.findIndex((stop) => stop.position >= ratio);
-  const upper = WEIGHT_COLOR_STOPS[Math.max(0, upperIndex)];
-  const lower = WEIGHT_COLOR_STOPS[Math.max(0, upperIndex - 1)];
+  const upperIndex = WEIGHT_GAUGE_COLOR_STOPS.findIndex((stop) => stop.position >= ratio);
+  const upper = WEIGHT_GAUGE_COLOR_STOPS[Math.max(0, upperIndex)];
+  const lower = WEIGHT_GAUGE_COLOR_STOPS[Math.max(0, upperIndex - 1)];
   if (lower === upper) return upper.color;
   const localRatio = (ratio - lower.position) / (upper.position - lower.position);
   const lowerChannels = parseHex(lower.color);
