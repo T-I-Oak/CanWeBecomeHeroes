@@ -113,6 +113,17 @@ export function getTrainingStatusGaugeBounds(statusIndex) {
   };
 }
 
+export function getTrainingStatusAtPoint(point) {
+  for (let statusIndex = 0; statusIndex < HERO_STATUS_DEFINITIONS.length; statusIndex += 1) {
+    const { key } = HERO_STATUS_DEFINITIONS[statusIndex];
+    const bounds = getTrainingStatusGaugeBounds(statusIndex);
+    if (point.x >= bounds.x && point.x <= bounds.x + bounds.width && point.y >= bounds.y && point.y <= bounds.y + bounds.height) {
+      return { status: key };
+    }
+  }
+  return null;
+}
+
 export function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
   const highlights = new Map();
   presentation?.gainedCells.forEach(({ stat, value }) => {
