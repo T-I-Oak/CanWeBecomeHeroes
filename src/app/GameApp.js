@@ -1,13 +1,13 @@
 import '../styles.css';
 import AssetLoader from '../chips/AssetLoader.js';
 import ChipBoard from '../chips/ChipBoard.js';
-import ChipRenderer, { createTagAngles, getCenterImagePlacement } from '../chips/ChipRenderer.js';
+import ChipRenderer, { createTagAngles } from '../chips/ChipRenderer.js';
 import ItemPickupController from '../game/ItemPickupController.js';
 import Camera from '../game/Camera.js';
-import { GAME_AREAS, getPreparationSubareaBounds, WORLD_SIZE } from '../game/GameAreas.js';
-import { HERO_PREPARATION_IMAGE_SIZE, PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH } from '../game/PreparationLayout.js';
+import { GAME_AREAS, WORLD_SIZE } from '../game/GameAreas.js';
+import { PREPARATION_LAYOUT } from '../game/PreparationLayout.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
-import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
+import { STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import HeroItemInteractionController from '../game/HeroItemInteractionController.js';
 import EntityRegistry from '../game/EntityRegistry.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
@@ -49,9 +49,9 @@ import TrialRunFlow from './TrialRunFlow.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
 import { drawShopPanel as drawShopPanelPresentation, getRevealedPurchaseEntries, getShopPanelSnapshot, getShopPurchasePresentation, getShopSoldItems, SHOP_PURCHASE_SLOT_GRID } from './ShopPanelPresenter.js';
-import { drawHeroTagList, drawStatusGauge, drawTrainingStatusPanel, drawWeightGauge, getHeroStatusDisplayValue, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
+import { drawPreparationHeroPanel, drawTrainingStatusPanel, getTrainingStatusGaugeBounds, HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
-import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationInformationOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
+import { EQUIPMENT_SLOT_GRID, EQUIPMENT_SLOTS, getPreparationEquipmentOrigin, getPreparationStatusAtPoint, getPreparationTagAtPoint, PREPARATION_TAG_GRID } from './PreparationPanelHitTest.js';
 import { getWeightFillRatio } from '../game/WeightVisual.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
@@ -424,57 +424,15 @@ export async function startGame() {
     const trainingHero = controller.getHeroes().find((hero) => hero.currentArea === 'training');
     drawTrainingStatusPanel(context, assets, trainingHero, trainingHero && training.getPresentation(trainingHero), time);
     preparationHeroes.forEach((hero, index) => {
-      const { x, y, height } = getPreparationSubareaBounds(index);
-      const image = assets.load(hero.chip.centerPath);
-      context.strokeStyle = '#aab4c6';
-      context.lineWidth = 1;
-      context.strokeRect(x, y, PREPARATION_PANEL_WIDTH, height);
-      const characterX = x + PREPARATION_LAYOUT.topPadding;
-      const informationX = getPreparationInformationOrigin(index).x;
-      if (image.complete && image.naturalWidth > 0) {
-        const placement = getCenterImagePlacement(hero.chip.radius);
-        const centerX = characterX + PREPARATION_LAYOUT.characterAreaWidth / 2;
-        const centerY = y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight + PREPARATION_LAYOUT.sectionGap + HERO_PREPARATION_IMAGE_SIZE / 2;
-        context.drawImage(
-          image,
-          centerX + placement.x - placement.size / 2,
-          centerY + placement.y - placement.size / 2,
-          placement.size,
-          placement.size,
-        );
-      }
-      context.fillStyle = '#24334d';
-      context.font = '16px system-ui';
-      context.textBaseline = 'middle';
-      context.textAlign = 'center';
-      context.fillText(`【${textRepository.getHeroLabel(hero)}】`, characterX + PREPARATION_LAYOUT.characterAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
-      context.textAlign = 'start';
-      PREPARATION_STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-        if (key === 'weight') {
-          drawWeightGauge(
-            context,
-            assets,
-            informationX + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
-            y + PREPARATION_LAYOUT.topPadding,
-            hero.getCarriedWeight(),
-          );
-          return;
-        }
-        const value = getHeroStatusDisplayValue(hero, key);
-        drawStatusGauge(
-          context,
-          assets,
-          visual,
-          informationX + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
-          y + PREPARATION_LAYOUT.topPadding,
-          value,
-          hero.maximums[key],
-          key === 'stamina' ? getVitalGaugeColor(value) : '#54c96b',
-        );
+      drawPreparationHeroPanel({
+        context,
+        assets,
+        hero,
+        index,
+        textRepository,
+        definitions: PREPARATION_STATUS_DEFINITIONS,
+        drawEquipmentGrid,
       });
-      context.textBaseline = 'alphabetic';
-      drawEquipmentGrid(context, assets, hero, x, y + PREPARATION_LAYOUT.topPadding);
-      drawHeroTagList(context, assets, hero, informationX, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.statusGaugeHeight + PREPARATION_LAYOUT.sectionGap);
     });
     const staminaPauseTargets = new Set(controller.getHeroes()
       .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
