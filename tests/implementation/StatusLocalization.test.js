@@ -151,6 +151,7 @@ test('status resources render, switch language from cache, and preserve links an
       assert.equal(root.querySelector('.InformationWindow__ItemValue').textContent, '2');
       assert.equal(root.findAll('.InformationWindow__ItemValueIcon').length, 1);
       assert.equal(root.findAll('.InformationWindow__AttributeBadge').length, 2);
+      assert.equal(root.findAll('.InformationWindow__ItemBadgeList').length, 1);
       if (type === 'sword') assert.equal(root.querySelector('.InformationWindow__ItemTargetingNote').textContent, repository.getLabel('weaponTargetingNote'));
       if (lang === 'en') assert.doesNotMatch(root.textContent, /[ぁ-んァ-ヶ一-龠]/);
       const refs = (detail.description ?? []).filter(p => p.type === 'reference');

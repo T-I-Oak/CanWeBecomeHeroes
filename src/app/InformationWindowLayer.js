@@ -474,6 +474,7 @@ export default class InformationWindowLayer {
       }
       body.append(profile);
     }
+    const badgeList = createElement('div', 'InformationWindow__ItemBadgeList');
     const tagList = createElement('div', 'InformationWindow__ItemTagList');
     [...new Set(item.tags)].forEach((tag) => {
       const count = item.tags.filter((current) => current === tag).length;
@@ -487,6 +488,7 @@ export default class InformationWindowLayer {
     const itemProperties = createElement('div', 'InformationWindow__ItemPropertyList');
     const weight = createElement('button', 'InformationWindow__AttributeBadge InformationWindow__ItemWeight state-clickable');
     weight.type = 'button';
+    applyTagSkillVisual(weight, 0);
     weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightAmount', String(item.chip.weight)));
     weight.addEventListener('click', (event) => this.manager.open({
       type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
@@ -497,11 +499,13 @@ export default class InformationWindowLayer {
       className: 'InformationWindow__AttributeBadge InformationWindow__ItemValue',
       label: '',
     });
+    applyTagSkillVisual(value, 0);
     value.append(
       createElement('span', 'InformationWindow__ItemValueAmount', String(item.value)),
     );
     itemProperties.append(weight, value);
-    body.append(tagList, itemProperties);
+    badgeList.append(tagList, itemProperties);
+    body.append(badgeList);
     content.append(body);
     return content;
   }

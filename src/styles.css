@@ -775,11 +775,15 @@ body {
   gap: 8px;
 }
 
-.InformationWindow__ItemTagList,
-.InformationWindow__ItemPropertyList {
+.InformationWindow__ItemBadgeList {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.InformationWindow__ItemTagList,
+.InformationWindow__ItemPropertyList {
+  display: contents;
 }
 
 .InformationWindow__EquipmentList {
