@@ -65,9 +65,7 @@ export default class GameCanvasInput {
   handlePointerUp(event) {
     if (!this.drag || this.drag.pointerId !== event.pointerId) return;
     const point = this.getWorldPoint(event);
-    const selectionTarget = this.drag.startedSelection ? this.controller.getEntityAt(point.x, point.y) : null;
-    const selectionAction = selectionTarget ? this.controller.getSelectionAction(this.drag.entity, selectionTarget) : null;
-    if (selectionAction?.kind !== 'store') this.onReleaseStaminaPause();
+    this.onReleaseStaminaPause();
     if (this.drag.startedSelection) {
       this.controller.updateSelectionHover(point.x, point.y);
       if (!this.controller.completeSelectionAt(point.x, point.y)) this.controller.clearSelection();
