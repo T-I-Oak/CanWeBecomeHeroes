@@ -667,6 +667,7 @@ body {
 
 .InformationWindow__EntityStatus,
 .InformationWindow__EntityTag,
+.InformationWindow__AttributeBadge,
 .InformationWindow__Equipment {
   font: inherit;
 }
@@ -774,6 +775,7 @@ body {
   gap: 8px;
 }
 
+.InformationWindow__ItemTagList,
 .InformationWindow__ItemPropertyList {
   display: flex;
   flex-wrap: wrap;
@@ -787,17 +789,21 @@ body {
   gap: 8px;
 }
 
-.InformationWindow__EntityTag {
+.InformationWindow__EntityTag,
+.InformationWindow__AttributeBadge {
   display: inline-flex;
   align-items: center;
-  gap: 1px;
-  min-width: 44px;
-  min-height: 28px;
-  padding: 2px;
   color: var(--tag-skill-text);
   background: var(--tag-skill-fill);
   border: 2px solid var(--tag-skill-border);
   border-radius: 8px;
+}
+
+.InformationWindow__EntityTag {
+  gap: 1px;
+  min-width: 44px;
+  min-height: 28px;
+  padding: 2px;
 }
 
 .InformationWindow__Equipment {
@@ -843,9 +849,7 @@ body {
   font-size: 13px;
 }
 
-.InformationWindow__ItemProperty {
-  display: inline-flex;
-  align-items: center;
+.InformationWindow__AttributeBadge {
   justify-content: center;
   gap: 4px;
   min-width: 56px;
@@ -857,26 +861,14 @@ body {
   border-radius: 8px;
 }
 
-.InformationWindow__ItemWeight {
-  color: #24334d;
-  background: #e6edf5;
-  border: 2px solid #aab7cb;
-}
-
 .InformationWindow__ItemWeight .InformationWindow__StatusIcon {
   flex-basis: 18px;
   width: 18px;
   height: 18px;
 }
 
-.InformationWindow__ItemWeightTimes {
+.InformationWindow__ItemWeightAmount {
   white-space: nowrap;
-}
-
-.InformationWindow__ItemValue {
-  color: #4f3512;
-  background: #f3d37c;
-  border: 2px solid #b9812f;
 }
 
 .InformationWindow__ItemValue .InformationWindow__ItemValueIcon {
@@ -981,21 +973,18 @@ body {
 
 .InformationWindow__EntityStatus.state-clickable,
 .InformationWindow__EntityTag.state-clickable,
-.InformationWindow__ItemWeight.state-clickable,
-.InformationWindow__ItemValue.state-clickable,
+.InformationWindow__AttributeBadge.state-clickable,
 .InformationWindow__Equipment.state-clickable {
   cursor: pointer;
 }
 
 .InformationWindow__EntityStatus.state-clickable:hover,
 .InformationWindow__EntityTag.state-clickable:hover,
-.InformationWindow__ItemWeight.state-clickable:hover,
-.InformationWindow__ItemValue.state-clickable:hover,
+.InformationWindow__AttributeBadge.state-clickable:hover,
 .InformationWindow__Equipment.state-clickable:hover,
 .InformationWindow__EntityStatus.state-clickable:focus-visible,
 .InformationWindow__EntityTag.state-clickable:focus-visible,
-.InformationWindow__ItemWeight.state-clickable:focus-visible,
-.InformationWindow__ItemValue.state-clickable:focus-visible,
+.InformationWindow__AttributeBadge.state-clickable:focus-visible,
 .InformationWindow__Equipment.state-clickable:focus-visible {
   filter: brightness(1.08);
   outline: 2px solid #24334d;

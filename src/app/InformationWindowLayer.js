@@ -222,10 +222,10 @@ export default class InformationWindowLayer {
     descriptionSection.append(this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
 
     const dataSection = createElement('section', 'InformationWindow__DataSection');
-    const weight = createElement('button', 'InformationWindow__ItemWeight state-clickable');
+    const weight = createElement('button', 'InformationWindow__AttributeBadge InformationWindow__ItemWeight state-clickable');
     weight.type = 'button';
     weight.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: this.textRepository.getName('status', 'weight') }));
-    weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightTimes', `× ${TAGS[tag].weight}`));
+    weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightAmount', String(TAGS[tag].weight)));
     weight.addEventListener('click', (event) => this.manager.open({
       type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
     }));
@@ -474,7 +474,7 @@ export default class InformationWindowLayer {
       }
       body.append(profile);
     }
-    const tagList = createElement('div', 'InformationWindow__EntityTagList');
+    const tagList = createElement('div', 'InformationWindow__ItemTagList');
     [...new Set(item.tags)].forEach((tag) => {
       const count = item.tags.filter((current) => current === tag).length;
       const tagButton = createElement('button', 'InformationWindow__EntityTag state-clickable');
@@ -485,16 +485,16 @@ export default class InformationWindowLayer {
       tagList.append(tagButton);
     });
     const itemProperties = createElement('div', 'InformationWindow__ItemPropertyList');
-    const weight = createElement('button', 'InformationWindow__ItemProperty InformationWindow__ItemWeight state-clickable');
+    const weight = createElement('button', 'InformationWindow__AttributeBadge InformationWindow__ItemWeight state-clickable');
     weight.type = 'button';
-    weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightTimes', `× ${item.chip.weight}`));
+    weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightAmount', String(item.chip.weight)));
     weight.addEventListener('click', (event) => this.manager.open({
       type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
     }));
     const value = this.#createTermReference({
       id: 'item-value',
       parentId: entry.id,
-      className: 'InformationWindow__ItemProperty InformationWindow__ItemValue',
+      className: 'InformationWindow__AttributeBadge InformationWindow__ItemValue',
       label: '',
     });
     value.append(
