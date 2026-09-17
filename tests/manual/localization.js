@@ -19,7 +19,7 @@ for (const kind of ['area', 'facility', 'status', 'tag', 'term']) {
   }
 }
 for (const id of Object.keys(texts.resource.information.item)) {
-  entries.set('item/' + id, { type: 'item', data: { item: { type: id, tags: ['valor', 'fire'], chip: { centerPath: '/assets/items/sword.png', weight: 3 } } } });
+  entries.set('item/' + id, { type: 'item', data: { item: { type: id, tags: ['valor', 'fire'], chip: { centerPath: '/assets/items/sword.png', weight: 3 }, value: 8 } } });
 }
 for (const profession of HERO_PROFESSION_IDS) {
   entries.set('hero/' + profession, { type: 'entity', data: { entity: new HeroFactory().create({ profession, x: 0, y: 0, stamina: 3 }) } });

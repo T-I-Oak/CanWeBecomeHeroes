@@ -9,6 +9,7 @@ import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
 import { ENEMY_CHIP_DIAMETER } from '../game/HeroSlotLayout.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js';
+import { ITEM_VALUE_VISUAL } from '../game/ItemValueVisual.js';
 
 const ENTITY_STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
@@ -94,6 +95,15 @@ function createTermIcon(sizeClass = '') {
   path.setAttribute('d', 'M4 5.5c2.8-.9 5.4-.2 8 1.7 2.6-1.9 5.2-2.6 8-1.7v12c-2.8-.9-5.4-.2-8 1.7-2.6-1.9-5.2-2.6-8-1.7zM12 7.2v12');
   svg.append(path);
   icon.append(svg);
+  return icon;
+}
+
+function createItemValueIcon(sizeClass = '') {
+  const icon = createElement('span', `InformationWindow__ItemValueIcon ${sizeClass}`.trim());
+  const image = document.createElement('img');
+  image.src = resolvePublicAssetPath(ITEM_VALUE_VISUAL.iconPath);
+  image.alt = '';
+  icon.append(image);
   return icon;
 }
 
@@ -227,13 +237,7 @@ export default class InformationWindowLayer {
     if (TAGS[tag].group === 'status') {
       const skillSection = createElement('section', 'InformationWindow__SkillSection InformationWindow__EntityProfile');
       const skillHeader = createElement('h3', 'InformationWindow__SkillHeader');
-      const skillLink = createElement('button', 'InformationWindow__InlineReference state-clickable');
-      skillLink.type = 'button';
-      skillLink.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: this.textRepository.getName('term', 'tag-skill') }));
-      skillLink.append(createTermIcon(), this.textRepository.getName('term', 'tag-skill'));
-      skillLink.addEventListener('click', (event) => this.manager.open({
-        type: 'term', parentId: entry.id, data: { term: 'tag-skill' }, anchor: { x: event.clientX, y: event.clientY },
-      }));
+      const skillLink = this.#createTermReference({ id: 'tag-skill', parentId: entry.id });
       skillHeader.append(skillLink);
       const effectDescription = detail.effectDescription;
       skillSection.append(
@@ -278,7 +282,8 @@ export default class InformationWindowLayer {
     const detail = this.textRepository.getInformationDetail('term', entry.data.term);
     const content = document.createDocumentFragment();
     const title = createElement('header', 'InformationWindow__Title');
-    title.append(createTermIcon(), createElement('h2', 'InformationWindow__Name', detail.name));
+    const icon = entry.data.term === 'item-value' ? createItemValueIcon() : createTermIcon();
+    title.append(icon, createElement('h2', 'InformationWindow__Name', detail.name));
     const body = createElement('div', 'InformationWindow__Body');
     const descriptionSection = createElement('section', 'InformationWindow__EntityProfile InformationWindow__TermProfile');
     descriptionSection.append(
@@ -485,7 +490,16 @@ export default class InformationWindowLayer {
     weight.addEventListener('click', (event) => this.manager.open({
       type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
     }));
-    tagList.append(weight);
+    const value = this.#createTermReference({
+      id: 'item-value',
+      parentId: entry.id,
+      className: 'InformationWindow__ItemValue',
+      label: `[${this.textRepository.getLabel('itemValue')}]`,
+    });
+    value.append(
+      createElement('span', 'InformationWindow__ItemValueAmount', String(item.value)),
+    );
+    tagList.append(weight, value);
     body.append(tagList);
     content.append(body);
     return content;
@@ -536,6 +550,19 @@ export default class InformationWindowLayer {
     reference.append(createTagIcon(id, 'InformationWindow__TagIcon--inline'), label);
     reference.addEventListener('click', (event) => this.manager.open({
       type: 'tag', parentId, data: { tag: id }, anchor: { x: event.clientX, y: event.clientY },
+    }));
+    return reference;
+  }
+
+  #createTermReference({ id, parentId, className = 'InformationWindow__InlineReference', label = null, includeIcon = true }) {
+    const name = this.textRepository.getName('term', id);
+    const reference = createElement('button', `${className} state-clickable`);
+    reference.type = 'button';
+    reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name }));
+    if (includeIcon) reference.append(id === 'item-value' ? createItemValueIcon() : createTermIcon());
+    reference.append(label ?? name);
+    reference.addEventListener('click', (event) => this.manager.open({
+      type: 'term', parentId, data: { term: id }, anchor: { x: event.clientX, y: event.clientY },
     }));
     return reference;
   }

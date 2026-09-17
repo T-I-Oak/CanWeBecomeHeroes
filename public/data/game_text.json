@@ -2,6 +2,7 @@
   "ui": {
     "weaponTargetingNote": { "lang-store": { "ja": "複数の武器を装備している場合、先に装備した武器で攻撃対象が決まります。", "en": "When multiple weapons are equipped, the weapon equipped first determines the attack target." } },
     "language": { "lang-store": { "ja": "言語", "en": "Language" } },
+    "itemValue": { "lang-store": { "ja": "価値", "en": "Value" } },
     "gameProgress": { "lang-store": { "ja": "ゲーム進行", "en": "Game progress" } },
     "logCategory_hero": { "lang-store": { "ja": "キャラクター", "en": "Character" } },
     "logCategory_enemy": { "lang-store": { "ja": "敵", "en": "Enemy" } },
@@ -673,7 +674,7 @@
             "ja": [
               {
                 "type": "text",
-                "value": "買い物袋に入れた装備を売ると、売却額と"
+                "value": "買い物袋に入れた装備を売ると、そのアイテムの[価値]と"
               },
               {
                 "type": "reference",
@@ -715,7 +716,7 @@
             "en": [
               {
                 "type": "text",
-                "value": "Sell the equipment in your shopping bag to receive equipment based on its sale value and your "
+                "value": "Sell the equipment in your shopping bag to receive equipment based on its Value and your "
               },
               {
                 "type": "reference",
@@ -2454,6 +2455,48 @@
               {
                 "type": "text",
                 "value": "Having 1, 3, 5, or 7 of the same tag automatically activates that tag's skill. Its effect grows stronger as the tag count increases. Some tags have no skill."
+              }
+            ]
+          }
+        }
+      },
+      "item-value": {
+        "name": {
+          "lang-store": {
+            "ja": "価値",
+            "en": "Value"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "装備に付与されているタグの価値合計に、タグ数を掛けて求める。タグがない装備の価値は1。ショップでは、買い物袋に入れた装備の価値合計と"
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "negotiation"
+              },
+              {
+                "type": "text",
+                "value": "に応じて、受け取る装備のタグ数が決まる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Calculated by multiplying the total Value of an item's tags by its tag count. Tagless items have a Value of 1. At the Shop, the total Value of the equipment in the shopping bag and "
+              },
+              {
+                "type": "reference",
+                "kind": "status",
+                "id": "negotiation"
+              },
+              {
+                "type": "text",
+                "value": " determine the tag count of the equipment received."
               }
             ]
           }

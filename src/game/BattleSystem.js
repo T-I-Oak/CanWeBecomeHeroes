@@ -1,6 +1,6 @@
 import { logText, entityText } from './LocalizedLog.js';
 import { GAME_AREAS } from './GameAreas.js';
-import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagPrice, getTagWeight } from './TagCatalog.js';
+import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagValue, getTagWeight } from './TagCatalog.js';
 import { createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
 import EnemyFactory from './EnemyFactory.js';
 import UniqueSkillSystem from './UniqueSkillSystem.js';
@@ -295,7 +295,7 @@ export default class BattleSystem {
     item.chip.tagPaths = getTagPaths(item.tags);
     item.chip.tagBaseColors = getTagBaseColors(item.tags);
     item.chip.tagGlyphScales = getTagGlyphScales(item.tags);
-    item.price = getTagPrice(item.tags);
+    item.value = getTagValue(item.tags);
     target.refreshDerivedValues?.();
     this.effects?.tagTransfer(actor, target, 'gem');
   }

@@ -135,7 +135,7 @@ test('status resources render, switch language from cache, and preserve links an
     'shopping-bag', 'hero-license', 'renewal-form',
     ...['head', 'torso', 'feet'].flatMap(part => Array.from({ length: 5 }, (_, i) => `${part}-${i + 1}`)),
   ];
-  const item = { type: 'sword', category: 'weapon', tags: ['valor'], chip: { centerPath: '/assets/items/sword.png', weight: 3 } };
+  const item = { type: 'sword', category: 'weapon', tags: ['valor'], chip: { centerPath: '/assets/items/sword.png', weight: 3 }, value: 2 };
   for (const lang of ['ja', 'en']) {
     setLanguage(lang);
     await repository.refreshLanguage();
@@ -148,6 +148,8 @@ test('status resources render, switch language from cache, and preserve links an
       assert.ok(detail.flavor);
       assert.equal(root.querySelector('.InformationWindow__Name').textContent, detail.name);
       assert.equal(root.querySelector('.InformationWindow__Description').textContent, detail.flavor);
+      assert.equal(root.querySelector('.InformationWindow__ItemValue').textContent, `[${repository.getLabel('itemValue')}]2`);
+      assert.equal(root.findAll('.InformationWindow__ItemValueIcon').length, 1);
       if (type === 'sword') assert.equal(root.querySelector('.InformationWindow__ItemTargetingNote').textContent, repository.getLabel('weaponTargetingNote'));
       if (lang === 'en') assert.doesNotMatch(root.textContent, /[ぁ-んァ-ヶ一-龠]/);
       const refs = (detail.description ?? []).filter(p => p.type === 'reference');
@@ -159,6 +161,10 @@ test('status resources render, switch language from cache, and preserve links an
         assert.equal(manager.entries[1].data[ref.kind], ref.id);
         assert.equal(manager.entries[1].parentId, parent.id);
       });
+      root.querySelector('.InformationWindow__ItemValue').listeners.click({ clientX: 70, clientY: 80 });
+      assert.equal(manager.entries[1].type, 'term');
+      assert.equal(manager.entries[1].data.term, 'item-value');
+      assert.equal(manager.entries[1].parentId, parent.id);
     }
   }
   manager.clear({ includePinned: true });

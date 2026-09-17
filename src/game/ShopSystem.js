@@ -96,7 +96,7 @@ export default class ShopSystem {
 
   trade(hero) {
     const bag = [hero.equipment.rightHand, hero.equipment.leftHand].find((item) => item?.isShoppingBag);
-    const saleValue = (bag?.storedItems ?? []).reduce((total, item) => total + item.price, 0);
+    const saleValue = (bag?.storedItems ?? []).reduce((total, item) => total + item.value, 0);
     const tagBudget = getSaleTagCount(saleValue, hero.getStatus('negotiation'));
     const purchases = Array.from({ length: SHOP_SET_COUNT }, () => this.createPurchaseSet(tagBudget, hero)).flat();
     return { bag, soldItems: [...(bag?.storedItems ?? [])], purchases };
