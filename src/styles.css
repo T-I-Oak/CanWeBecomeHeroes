@@ -17,6 +17,9 @@
   --color-modal-surface-end: #172a20;
   --color-modal-border: #9b7142;
   --color-modal-section-border: rgb(243 219 164 / 38%);
+  --color-modal-control-surface: #f6e6be;
+  --color-modal-control-text: #2d301f;
+  --color-modal-control-border: #d3ad62;
 }
 
 * {
@@ -1020,14 +1023,26 @@ body {
   min-width: 66px;
   min-height: 30px;
   padding: 4px 8px;
-  border: 1px solid #d3ad62;
+  border: 1px solid var(--color-modal-control-border);
   border-radius: 6px;
-  color: #2d301f;
-  background: #f6e6be;
+  color: var(--color-modal-control-text);
+  background: var(--color-modal-control-surface);
   font: inherit;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.ModalDialog__Select {
+  min-height: 30px;
+  padding: 4px 8px;
+  color: var(--color-modal-control-text);
+  background: var(--color-modal-control-surface);
+  border: 1px solid var(--color-modal-control-border);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .ModalDialog__Body {

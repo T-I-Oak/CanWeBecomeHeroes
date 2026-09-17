@@ -29,7 +29,7 @@
           <div class="ModalDialog__Body SettingsModal__Body">
             <fieldset class="ModalFormSection">
               <legend class="ModalFormSection__Legend" id="settings-language-section-title" data-ui="language"></legend>
-              <select id="language-selector" aria-labelledby="settings-language-section-title"></select>
+              <select class="ModalDialog__Select" id="language-selector" aria-labelledby="settings-language-section-title"></select>
             </fieldset>
             <fieldset class="ModalFormSection">
               <legend class="ModalFormSection__Legend" data-ui="gameProgress"></legend>
@@ -56,7 +56,7 @@
                 <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="weight" /> <span data-overhead-status="weight"></span></label>
               </div>
               <label class="SettingsModal__Field" for="overhead-status-visibility"><span data-ui="overheadStatusVisibility"></span>
-                <select id="overhead-status-visibility">
+                <select class="ModalDialog__Select" id="overhead-status-visibility">
                   <option value="always" data-ui="overheadStatusAlways"></option>
                   <option value="battle" data-ui="overheadStatusBattle"></option>
                 </select>
