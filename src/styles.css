@@ -810,6 +810,11 @@ body {
   padding: 2px;
 }
 
+/* Item tags share a row with attribute badges, so the row owns their common inset. */
+.InformationWindow__ItemBadgeList > .InformationWindow__EntityTag {
+  padding-inline: 7px;
+}
+
 .InformationWindow__Equipment {
   display: inline-flex;
   align-items: flex-start;
