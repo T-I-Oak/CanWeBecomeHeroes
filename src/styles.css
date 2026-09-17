@@ -810,14 +810,6 @@ body {
   padding: 2px;
 }
 
-/* A one-digit item value uses the same outer shape as a one-tag badge. */
-.InformationWindow__ItemBadge {
-  justify-content: center;
-  gap: 1px;
-  min-width: 44px;
-  padding: 2px;
-}
-
 .InformationWindow__Equipment {
   display: inline-flex;
   align-items: flex-start;
@@ -871,6 +863,14 @@ body {
   font-size: 13px;
   font-weight: 700;
   border-radius: 8px;
+}
+
+/* A one-digit item value uses the same outer shape as a one-tag badge. */
+.InformationWindow__ItemBadge {
+  justify-content: center;
+  gap: 1px;
+  min-width: 44px;
+  padding: 2px;
 }
 
 .InformationWindow__ItemWeight .InformationWindow__StatusIcon {
