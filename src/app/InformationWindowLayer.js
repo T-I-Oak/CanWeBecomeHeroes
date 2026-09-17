@@ -7,10 +7,10 @@ import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
 
 import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
 import { ENEMY_CHIP_DIAMETER } from '../game/HeroSlotLayout.js';
-import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js';
 import { createInformationElement as createElement } from './InformationWindowElementFactory.js';
 import { applyTagSkillVisual, createChipImage, createEquipmentImage, createItemValueIcon, createLocationIcon, createStatusIcon, createTagIcon, createTermIcon } from './InformationWindowVisualFactory.js';
+import InformationWindowReferenceRenderer from './InformationWindowReferenceRenderer.js';
 
 // The hero detail portrait is 156px for a 192px chip.  Enemy portraits keep
 // this same world-size ratio instead of being normalized to the hero size.
@@ -37,6 +37,7 @@ export default class InformationWindowLayer {
     this.element = element;
     this.manager = manager;
     this.textRepository = textRepository;
+    this.references = new InformationWindowReferenceRenderer({ textRepository, open: (entry) => this.manager.open(entry) });
     this.element.addEventListener('pointerdown', (event) => {
       if (event.target.closest?.('.InformationWindow')) this.manager.setInteracting(true);
     }, true);
@@ -44,7 +45,10 @@ export default class InformationWindowLayer {
     this.element.addEventListener('pointercancel', () => this.manager.setInteracting(false));
   }
 
-  setTextRepository(textRepository) { this.textRepository = textRepository; }
+  setTextRepository(textRepository) {
+    this.textRepository = textRepository;
+    this.references.setTextRepository(textRepository);
+  }
 
   render(entries) {
     const windows = entries.map((entry) => this.#renderWindow(entry));
@@ -126,7 +130,7 @@ export default class InformationWindowLayer {
 
     const body = createElement('div', 'InformationWindow__Body InformationWindow__TagBody');
     const descriptionSection = createElement('section', 'InformationWindow__EntityProfile InformationWindow__TagProfile');
-    descriptionSection.append(this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
+    descriptionSection.append(this.references.createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
 
     const dataSection = createElement('section', 'InformationWindow__DataSection');
     const weight = createElement('button', 'InformationWindow__TagWeightReference state-clickable');
@@ -144,13 +148,13 @@ export default class InformationWindowLayer {
     if (TAGS[tag].group === 'status') {
       const skillSection = createElement('section', 'InformationWindow__SkillSection InformationWindow__EntityProfile');
       const skillHeader = createElement('h3', 'InformationWindow__SkillHeader');
-      const skillLink = this.#createTermReference({ id: 'tag-skill', parentId: entry.id });
+      const skillLink = this.references.createTermReference({ id: 'tag-skill', parentId: entry.id });
       skillHeader.append(skillLink);
       const effectDescription = detail.effectDescription;
       skillSection.append(
         skillHeader,
         Array.isArray(effectDescription)
-          ? this.#createLinkedDescription(effectDescription, entry.id, 'InformationWindow__EntityCombatStyle')
+          ? this.references.createLinkedDescription(effectDescription, entry.id, 'InformationWindow__EntityCombatStyle')
           : createElement('p', 'InformationWindow__EntityCombatStyle', effectDescription),
       );
       const skillList = createElement('div', 'InformationWindow__SkillList');
@@ -179,7 +183,7 @@ export default class InformationWindowLayer {
     content.append(title);
     const body = createElement('div', 'InformationWindow__Body');
     const profile = createElement('section', 'InformationWindow__EntityProfile InformationWindow__StatusProfile');
-    profile.append(this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
+    profile.append(this.references.createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
     body.append(profile);
     content.append(body);
     return content;
@@ -194,7 +198,7 @@ export default class InformationWindowLayer {
     const body = createElement('div', 'InformationWindow__Body');
     const descriptionSection = createElement('section', 'InformationWindow__EntityProfile InformationWindow__TermProfile');
     descriptionSection.append(
-      this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
+      this.references.createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
     );
     body.append(descriptionSection);
     content.append(title, body);
@@ -248,28 +252,9 @@ export default class InformationWindowLayer {
 
   #createEntityProfile(detail, entity = null, parentId = null) {
     const profile = createElement('section', 'InformationWindow__EntityProfile');
-    const combatStyle = this.#createLinkedDescription(detail.combatStyle, parentId, 'InformationWindow__EntityCombatStyle', entity);
-    profile.append(this.#createLinkedDescription(detail.description, parentId), combatStyle);
+    const combatStyle = this.references.createLinkedDescription(detail.combatStyle, parentId, 'InformationWindow__EntityCombatStyle', entity);
+    profile.append(this.references.createLinkedDescription(detail.description, parentId), combatStyle);
     return profile;
-  }
-
-  #createEnemyDefinitionLink({ id, label }, source, parentId) {
-    label = this.textRepository.getName('enemy', id);
-    const definition = getEnemyDefinitionById(id);
-    const link = createElement('button', 'InformationWindow__InlineReference state-clickable');
-    link.type = 'button';
-    const icon = createElement('span', 'InformationWindow__InlineIcon InformationWindow__InlineEnemyIcon');
-    const image = document.createElement('img');
-    image.src = resolvePublicAssetPath(definition.assetPath);
-    image.alt = '';
-    icon.append(image);
-    link.append(icon, label);
-    link.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
-    const openEnemyDefinition = (event) => this.manager.open({
-      type: 'enemy-projection', parentId, data: { source, enemyId: id }, anchor: { x: event.clientX, y: event.clientY },
-    });
-    link.addEventListener('click', openEnemyDefinition);
-    return link;
   }
 
   #renderEnemyProjectionDetail(entry) {
@@ -303,7 +288,7 @@ export default class InformationWindowLayer {
     const profile = createElement('section', 'InformationWindow__EntityProfile');
     profile.append(
       createElement('p', 'InformationWindow__Description', detail.flavor),
-      this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle', entry.data.source),
+        this.references.createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle', entry.data.source),
     );
     body.append(profile);
     const levels = createElement('div', 'InformationWindow__UniqueSkillLevelList');
@@ -374,7 +359,7 @@ export default class InformationWindowLayer {
       const profile = createElement('section', 'InformationWindow__EntityProfile InformationWindow__ItemProfile');
       if (detail.flavor) profile.append(createElement('p', 'InformationWindow__Description', detail.flavor));
       if (detail.description) {
-        profile.append(this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
+        profile.append(this.references.createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'));
       }
       if (item.category === 'weapon') {
         profile.append(createElement('p', 'InformationWindow__ItemTargetingNote', this.textRepository.getLabel('weaponTargetingNote')));
@@ -400,7 +385,7 @@ export default class InformationWindowLayer {
     weight.addEventListener('click', (event) => this.manager.open({
       type: 'status', parentId: entry.id, data: { status: 'weight' }, anchor: { x: event.clientX, y: event.clientY },
     }));
-    const value = this.#createTermReference({
+    const value = this.references.createTermReference({
       id: 'item-value',
       parentId: entry.id,
       className: 'InformationWindow__ItemValue InformationWindow__ItemBadge',
@@ -417,92 +402,6 @@ export default class InformationWindowLayer {
     return content;
   }
 
-  #createLinkedDescription(content, parentId, className = 'InformationWindow__Description', source = null) {
-    const text = createElement('p', className);
-    (Array.isArray(content) ? content : [content]).forEach((part) => {
-      if (typeof part === 'string') text.append(part);
-      else if (part.type === 'text') text.append(part.value);
-      else if (part.type === 'reference') text.append(this.#createReference(part, parentId, source));
-      else if (part.type === 'status') text.append(this.#createStatusReference(part, parentId));
-      else if (part.type === 'tag') text.append(this.#createTagReference(part, parentId));
-      else if (part.type === 'facility') text.append(this.#createFacilityReference(part, parentId));
-      else if (part.type === 'area') text.append(this.#createAreaReference(part, parentId));
-      else if (part.type === 'enemy-definition') text.append(this.#createEnemyDefinitionLink(part, source, parentId));
-    });
-    return text;
-  }
-
-  #createReference({ kind, id }, parentId, source = null) {
-    if (kind === 'enemy-definition') return this.#createEnemyDefinitionLink({ id }, source, parentId);
-    const label = this.textRepository.getName(kind, id);
-    if (!label) throw new RangeError(`Unknown localized reference: ${kind}/${id}`);
-    if (kind === 'status') return this.#createStatusReference({ id, label }, parentId);
-    if (kind === 'tag') return this.#createTagReference({ id, label }, parentId);
-    if (kind === 'area') return this.#createAreaReference({ id, label }, parentId);
-    return this.#createFacilityReference({ id, label }, parentId);
-  }
-
-  #createStatusReference({ id, label }, parentId) {
-    label = this.textRepository.getName('status', id);
-    const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
-    reference.type = 'button';
-    reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
-    reference.append(createStatusIcon(id), label);
-    reference.addEventListener('click', (event) => this.manager.open({
-      type: 'status', parentId, data: { status: id }, anchor: { x: event.clientX, y: event.clientY },
-    }));
-    return reference;
-  }
-
-  #createTagReference({ id, label }, parentId) {
-    label = this.textRepository.getName('tag', id);
-    const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
-    reference.type = 'button';
-    reference.setAttribute('aria-label', this.textRepository.getLabel('openTagInformation', { name: label }));
-    reference.append(createTagIcon(id, 'InformationWindow__TagIcon--inline'), label);
-    reference.addEventListener('click', (event) => this.manager.open({
-      type: 'tag', parentId, data: { tag: id }, anchor: { x: event.clientX, y: event.clientY },
-    }));
-    return reference;
-  }
-
-  #createTermReference({ id, parentId, className = 'InformationWindow__InlineReference', label = null, includeIcon = true }) {
-    const name = this.textRepository.getName('term', id);
-    const reference = createElement('button', `${className} state-clickable`);
-    reference.type = 'button';
-    reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name }));
-    if (includeIcon) reference.append(id === 'item-value' ? createItemValueIcon() : createTermIcon());
-    reference.append(label ?? name);
-    reference.addEventListener('click', (event) => this.manager.open({
-      type: 'term', parentId, data: { term: id }, anchor: { x: event.clientX, y: event.clientY },
-    }));
-    return reference;
-  }
-
-  #createFacilityReference({ id, label }, parentId) {
-    label = this.textRepository.getName('facility', id);
-    const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
-    reference.type = 'button';
-    reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
-    reference.append(createLocationIcon(id), label);
-    reference.addEventListener('click', (event) => this.manager.open({
-      type: 'facility', parentId, data: { facility: id }, anchor: { x: event.clientX, y: event.clientY },
-    }));
-    return reference;
-  }
-
-  #createAreaReference({ id, label }, parentId) {
-    label = this.textRepository.getName('area', id);
-    const reference = createElement('button', 'InformationWindow__InlineReference state-clickable');
-    reference.type = 'button';
-    reference.setAttribute('aria-label', this.textRepository.getLabel('openInformation', { name: label }));
-    reference.append(createLocationIcon(id), label);
-    reference.addEventListener('click', (event) => this.manager.open({
-      type: 'area', parentId, data: { area: id }, anchor: { x: event.clientX, y: event.clientY },
-    }));
-    return reference;
-  }
-
   #renderFacilityDetail(entry) {
     const detail = this.textRepository?.getInformationDetail('facility', entry.data.facility);
     if (!detail) throw new RangeError(`Unknown localized facility: ${entry.data.facility}`);
@@ -515,10 +414,10 @@ export default class InformationWindowLayer {
       const profile = createElement('section', 'InformationWindow__EntityProfile');
       profile.append(
         createElement('p', 'InformationWindow__Description', detail.flavor),
-        this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
+        this.references.createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
       );
       body.append(profile);
-    } else body.append(this.#createLinkedDescription(detail.description, entry.id));
+    } else body.append(this.references.createLinkedDescription(detail.description, entry.id));
     content.append(body);
     return content;
   }
@@ -535,10 +434,10 @@ export default class InformationWindowLayer {
       const profile = createElement('section', 'InformationWindow__EntityProfile');
       profile.append(
         createElement('p', 'InformationWindow__Description', detail.flavor),
-        this.#createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
+        this.references.createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle'),
       );
       body.append(profile);
-    } else body.append(this.#createLinkedDescription(detail.description, entry.id));
+    } else body.append(this.references.createLinkedDescription(detail.description, entry.id));
     content.append(body);
     return content;
   }
