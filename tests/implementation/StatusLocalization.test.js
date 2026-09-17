@@ -152,6 +152,7 @@ test('status resources render, switch language from cache, and preserve links an
       assert.equal(root.findAll('.InformationWindow__ItemValueIcon').length, 1);
       assert.equal(root.findAll('.InformationWindow__AttributeBadge').length, 2);
       assert.equal(root.findAll('.InformationWindow__ItemBadgeList').length, 1);
+      assert.equal(root.findAll('.InformationWindow__ItemBadge').length, 3);
       if (type === 'sword') assert.equal(root.querySelector('.InformationWindow__ItemTargetingNote').textContent, repository.getLabel('weaponTargetingNote'));
       if (lang === 'en') assert.doesNotMatch(root.textContent, /[ぁ-んァ-ヶ一-龠]/);
       const refs = (detail.description ?? []).filter(p => p.type === 'reference');
@@ -204,6 +205,7 @@ test('status resources render, switch language from cache, and preserve links an
       assert.equal(root.querySelector('.InformationWindow__Name').textContent, repository.getName('enemy', definition.id));
       assert.equal(root.findAll('.InformationWindow__EntityTagList').length, 1);
       assert.equal(root.findAll('.InformationWindow__ItemTagList').length, 0);
+      assert.equal(root.findAll('.InformationWindow__ItemBadge').length, 0);
       if (lang === 'en') assert.doesNotMatch(root.textContent, /[ぁ-んァ-ヶ一-龠]/);
       if (definition.id.endsWith('-area') && definition.size !== 'small') {
         root.findAll('.InformationWindow__InlineReference')[0].listeners.click({ clientX: 70, clientY: 80 });

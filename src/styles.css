@@ -810,12 +810,12 @@ body {
   padding: 2px;
 }
 
-/* Item tags share one badge lane with attributes, so the lane owns their metrics. */
-.InformationWindow__ItemBadgeList > .InformationWindow__EntityTag {
+/* A one-digit item value uses the same outer shape as a one-tag badge. */
+.InformationWindow__ItemBadge {
   justify-content: center;
-  gap: 4px;
-  min-width: 56px;
-  padding-inline: 7px;
+  gap: 1px;
+  min-width: 44px;
+  padding: 2px;
 }
 
 .InformationWindow__Equipment {

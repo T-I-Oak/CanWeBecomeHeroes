@@ -478,7 +478,7 @@ export default class InformationWindowLayer {
     const tagList = createElement('div', 'InformationWindow__ItemTagList');
     [...new Set(item.tags)].forEach((tag) => {
       const count = item.tags.filter((current) => current === tag).length;
-      const tagButton = createElement('button', 'InformationWindow__EntityTag state-clickable');
+      const tagButton = createElement('button', 'InformationWindow__EntityTag InformationWindow__ItemBadge state-clickable');
       tagButton.type = 'button';
       applyTagSkillVisual(tagButton, count, tag);
       tagButton.append(createTagIcon(tag, 'InformationWindow__TagIcon--small'), createElement('span', 'InformationWindow__SkillRequirement', String(count)));
@@ -486,7 +486,7 @@ export default class InformationWindowLayer {
       tagList.append(tagButton);
     });
     const itemProperties = createElement('div', 'InformationWindow__ItemPropertyList');
-    const weight = createElement('button', 'InformationWindow__AttributeBadge InformationWindow__ItemWeight state-clickable');
+    const weight = createElement('button', 'InformationWindow__AttributeBadge InformationWindow__ItemBadge InformationWindow__ItemWeight state-clickable');
     weight.type = 'button';
     applyTagSkillVisual(weight, 0);
     weight.append(createStatusIcon('weight'), createElement('span', 'InformationWindow__ItemWeightAmount', String(item.chip.weight)));
@@ -496,7 +496,7 @@ export default class InformationWindowLayer {
     const value = this.#createTermReference({
       id: 'item-value',
       parentId: entry.id,
-      className: 'InformationWindow__AttributeBadge InformationWindow__ItemValue',
+      className: 'InformationWindow__AttributeBadge InformationWindow__ItemBadge InformationWindow__ItemValue',
       label: '',
     });
     applyTagSkillVisual(value, 0);
