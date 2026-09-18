@@ -119,8 +119,6 @@ test('enemy equipment independently rolls each item three-tag candidate set', ()
 
 test('item factory calculates tag weight, value, and equipment assets', () => {
   const item = new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor', 'fire'], x: 100, y: 200 });
-  assert.equal(item.chip.weight, 5);
-  assert.equal(item.value, 8);
   assert.equal(item.fixedStatusTag, 'valor');
   assert.equal(item.equipmentAssets.head, '/assets/items/head-1.png');
   assert.deepEqual(item.chip.tagBaseColors, ['#8d5b3d', '#e1e8f0']);

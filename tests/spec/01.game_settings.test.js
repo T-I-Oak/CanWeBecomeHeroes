@@ -10,6 +10,8 @@ import EnemySpawnSystem from '../../src/game/EnemySpawnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
 import StageController from '../../src/game/StageController.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
+import ItemFactory from '../../src/game/ItemFactory.js';
+import { TAGS } from '../../src/game/TagCatalog.js';
 import {
   GAME_TICKS_PER_HOUR,
   getGuildTimeStatus,
@@ -105,4 +107,21 @@ test('ギルド時間軸は期限と延長見込の合計が7日を超えたと�
   assert.equal(expanded.timelineHours, 392);
   assert.equal(later.remainingHours, 68);
   assert.equal(later.timelineHours, expanded.timelineHours);
+});
+
+test('Itemの重量と価値はタグ表とタグ数により決まる', () => {
+  const expectedValues = {
+    valor: [3, 2], arcane: [2, 3], dexterity: [1, 2], reputation: [2, 3], blessing: [1, 3],
+    iron: [5, 2], cloth: [1, 1], feather: [1, 2], gem: [5, 5], fortune: [1, 3],
+    fire: [2, 2], water: [2, 2], lightning: [2, 3], area: [3, 3], vitality: [1, 3],
+  };
+  Object.entries(expectedValues).forEach(([tag, [weight, value]]) => {
+    assert.deepEqual([TAGS[tag].weight, TAGS[tag].value], [weight, value]);
+  });
+
+  const factory = new ItemFactory();
+  const taggedItem = factory.createWeapon({ weapon: 'sword', tags: ['valor', 'fire'], x: 0, y: 0 });
+  const taglessItem = factory.createWeapon({ weapon: 'staff', tags: [], x: 0, y: 0 });
+  assert.deepEqual([taggedItem.chip.weight, taggedItem.value], [5, 8]);
+  assert.deepEqual([taglessItem.chip.weight, taglessItem.value], [1, 1]);
 });
