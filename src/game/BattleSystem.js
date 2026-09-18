@@ -4,14 +4,13 @@ import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagValue, getTagWe
 import { createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
 import EnemyFactory from './EnemyFactory.js';
 import UniqueSkillSystem from './UniqueSkillSystem.js';
-import { GAME_TICKS_PER_SECOND } from './GameClock.js';
 import CombatTargetingSystem from './CombatTargetingSystem.js';
+import CombatAttributeSystem from './CombatAttributeSystem.js';
+import { getCombatRandomModifier } from './CombatRandom.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
-import { getBattleSlotPosition } from './CombatSlot.js';
 
 const ACTION_GAUGE_BASE_RATE = 13 / 300;
 const ACTION_GAUGE_WEIGHT_SCALE = 25;
-const ATTRIBUTE_TICK_INTERVAL = GAME_TICKS_PER_SECOND;
 export const WEAPON_ATTACKS = Object.freeze({ sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['magic', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['power', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] });
 const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
 const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
@@ -20,7 +19,7 @@ const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 24;
 const KNOCKBACK_TILT_MAX_RADIANS = Math.PI / 12;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
-export function getRandomModifier(random = Math.random) { return 0.8 + random() * 0.4; }
+export function getRandomModifier(random = Math.random) { return getCombatRandomModifier(random); }
 export function getActionGaugeBaseMaximum(actor) { return 15 - actor.getStatus('speed'); }
 export function getActionGaugeMaximum(actor) {
   const baseMaximum = getActionGaugeBaseMaximum(actor);
@@ -30,11 +29,12 @@ export function getActionGaugeMaximum(actor) {
   return baseMaximum * (1 - shortening);
 }
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
-    this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.attributeTicks = 0; this.phantomHeads = [];
+    this.attributeSystem = attributeSystem ?? new CombatAttributeSystem({ board, effects, random, applyDamage: (...args) => this.applyDamage(...args) });
+    this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.phantomHeads = [];
   }
   resetStageState() {
     this.clearPhantomHeads();
@@ -44,7 +44,7 @@ export default class BattleSystem {
     this.stageCompleteTick = null;
     this.victoryDelayTicks = 0;
     this.hasEncounteredEnemy = false;
-    this.attributeTicks = 0;
+    this.attributeSystem.reset();
   }
   hasStageVictory() { return this.victoryTick !== null; }
   isStageComplete() { return this.stageCompleteTick !== null; }
@@ -62,7 +62,7 @@ export default class BattleSystem {
       return;
     }
     const participants = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && isEntityOnBoard(this.board, h) && h.chip.isSettled), ...activeEnemies.filter((e) => e.chip.isSettled)];
-    this.updateAttributes(participants, tickDelta);
+    this.attributeSystem.update(participants, tickDelta);
     participants.forEach((a) => this.updateActor(a, participants, tickDelta));
     const remainingEnemies = this.controller?.getEnemies?.() ?? stageEnemies;
     if (this.hasEncounteredEnemy && remainingEnemies.every((e) => !isEntityOnBoard(this.board, e)) && this.defeatTick === null) {
@@ -77,18 +77,7 @@ export default class BattleSystem {
     this.victoryDelayTicks += delta;
     if (this.victoryDelayTicks >= BATTLE_VICTORY_DELAY_TICKS) this.stageCompleteTick = tick;
   }
-  updateAttributes(participants, delta) {
-    this.attributeTicks += delta;
-    while (this.attributeTicks >= ATTRIBUTE_TICK_INTERVAL) {
-      this.attributeTicks -= ATTRIBUTE_TICK_INTERVAL;
-      participants.forEach((actor) => {
-        const a = actor.attributes;
-        if (a.fire > 0) this.applyDamage(actor.attributeSources?.fire ?? null, actor, 'fire', a.fire * 0.1 * (1 - actor.getTagSkillLevel('cloth') * 0.1));
-        ['fire', 'water', 'lightning'].forEach((key) => { a[key] = Math.max(0, a[key] * 0.95 - 0.1); });
-        actor.chip.attributeValues = a;
-      });
-    }
-  }
+  updateAttributes(participants, delta) { this.attributeSystem.update(participants, delta); }
   updateActor(actor, participants, delta) {
     const max = this.updateActionGaugeMaximum(actor);
     actor.chip.actionGauge = (actor.chip.actionGauge ?? 0) + ACTION_GAUGE_BASE_RATE / (1 + (actor.getCarriedWeight() / ACTION_GAUGE_WEIGHT_SCALE) ** 2) * delta;
@@ -125,21 +114,7 @@ export default class BattleSystem {
     const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * 0.1 * (1 - actor.getTagSkillLevel('cloth') * 0.1));
     return evade > accuracy;
   }
-  applyAttributes(actor, target, coefficient) {
-    ['fire', 'water', 'lightning'].forEach((tag) => {
-      const tagCount = actor.getTagCount(tag);
-      if (!tagCount) return;
-      const luckDegree = Math.max(0, actor.getLuckDegree());
-      const luckRoll = this.random();
-      const applicationRate = luckDegree > 0 ? 1 - Math.min(luckRoll / luckDegree, 1) : 0;
-      const value = tagCount * coefficient * applicationRate * getRandomModifier(this.random);
-      if (value > target.attributes[tag]) {
-        target.attributes[tag] = value;
-        target.attributeSources[tag] = actor;
-      }
-      target.chip.attributeValues = target.attributes;
-    });
-  }
+  applyAttributes(actor, target, coefficient) { this.attributeSystem.applyAttributes(actor, target, coefficient); }
   resolveAction(actor, target, participants, { preserveGaugePresentation = false } = {}) {
     const targets = this.rangeTargets(actor, target, participants); this.actionLogResults = new Map(); this.effects?.attack(actor, actor.getTagCount('area'), { showGaugeAtMaximum: !preserveGaugePresentation }); this.effects?.beginAction(actor);
     targets.forEach(({ target: t, coefficient }) => this.applyAttributes(actor, t, coefficient));
@@ -297,33 +272,8 @@ export default class BattleSystem {
       to: { x: actor.chip.x, y: actor.chip.y },
     });
   }
-  getLightningTargets(target, participants, value) {
-    const targetSlotPosition = getBattleSlotPosition(target);
-    if (targetSlotPosition === null) return [];
-    const opponentsBySlot = new Map(participants
-      .filter((candidate) => candidate !== target && isHeroCombatant(candidate) === isHeroCombatant(target) && isEntityOnBoard(this.board, candidate))
-      .map((candidate) => [getBattleSlotPosition(candidate), candidate])
-      .filter(([slotPosition]) => slotPosition !== null));
-    const maximumDistance = Math.floor(value);
-    return [-1, 1].flatMap((direction) => {
-      const targets = [];
-      for (let distance = 1; distance <= maximumDistance; distance += 1) {
-        const candidate = opponentsBySlot.get(targetSlotPosition + direction * distance);
-        if (!candidate) break;
-        targets.push({ target: candidate, distance });
-      }
-      return targets;
-    }).toSorted((first, second) => first.distance - second.distance || first.target.chip.x - second.target.chip.x);
-  }
-  propagate(actor, target, type, damage, participants) {
-    const value = target.attributes.lightning; if (!value || damage < .01) return;
-    this.getLightningTargets(target, participants, value).forEach(({ target: other, distance }) => {
-      const dealt = damage * (1 - target.getTagSkillLevel('cloth') * .1) * (value * .1 + .3) ** distance;
-      this.effects?.lightningPropagation(target, other);
-      this.effects?.lightningHit(other);
-      this.applyDamage(actor, other, type, dealt, false);
-    });
-  }
+  getLightningTargets(target, participants, value) { return this.attributeSystem.getLightningTargets(target, participants, value); }
+  propagate(actor, target, type, damage, participants) { this.attributeSystem.propagate(actor, target, type, damage, participants); }
   applyDamage(actor, target, type, damage, critical = false) {
     if (target.isPhantomHead) return 0;
     if (damage < .01) return 0; this.applyKnockbackTilt(target, damage); this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
