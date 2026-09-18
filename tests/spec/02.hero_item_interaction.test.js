@@ -10,6 +10,7 @@ import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
 import ShopSystem, { SHOP_PURCHASE_DELIVERY_TICKS } from '../../src/game/ShopSystem.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
+import GameClock from '../../src/game/GameClock.js';
 
 test('買い物袋には倉庫Itemを3個まで格納でき、行き先Itemは格納できない', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
@@ -67,4 +68,25 @@ test('Heroの目的Itemが盤面から消えた場合は、次に装備可能な
   pickupController.update([selectedItem, replacementItem], 0.01);
 
   assert.equal(pickupController.states.get(hero).item, replacementItem);
+});
+
+test('手動で一時停止している間はゲーム状態を更新しない', () => {
+  const clock = new GameClock();
+  clock.togglePaused();
+  let elapsed = 0;
+
+  assert.equal(clock.advance(0.02, (deltaSeconds) => { elapsed += deltaSeconds; }), 0);
+  assert.equal(elapsed, 0);
+});
+
+test('課題選択などのモーダル停止は手動停止とは別の理由として解除できる', () => {
+  const clock = new GameClock();
+  let elapsed = 0;
+  clock.pause('stage-selection');
+
+  assert.equal(clock.advance(0.02, (deltaSeconds) => { elapsed += deltaSeconds; }), 0);
+  assert.equal(clock.paused, false);
+  clock.resume('stage-selection');
+  assert.ok(clock.advance(0.02, (deltaSeconds) => { elapsed += deltaSeconds; }) > 0);
+  assert.ok(elapsed > 0);
 });
