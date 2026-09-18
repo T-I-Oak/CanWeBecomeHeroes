@@ -17,6 +17,7 @@ import EntityRegistry from '../../src/game/EntityRegistry.js';
 import GameClock from '../../src/game/GameClock.js';
 import TrainingSystem, { TRAINING_INTERVAL_TICKS } from '../../src/game/TrainingSystem.js';
 import { getHeroStepDistance } from '../../src/game/MovementSettings.js';
+import { getWarehouseItemCapacity } from '../../src/game/WarehouseCapacity.js';
 
 function createHeroSlotCandidate(id) {
   return { chip: new Chip({ id, type: 'hero', x: 0, y: 0, weight: 1, centerPath: '', tagPaths: [] }), targetSlotId: null, currentSlotId: null };
@@ -36,6 +37,22 @@ test('買い物袋には倉庫Itemを3個まで格納でき、行き先Itemは�
   assert.deepEqual(items.map((item) => controller.storeInShoppingBag(item, bag)), [true, true, true, false]);
   assert.equal(controller.storeInShoppingBag(destination, bag), false);
   assert.equal(bag.storedItems.length, 3);
+});
+
+test('倉庫は配置上限までItemを受け取り、上限を超えるItemは追加しない', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
+  const itemFactory = new ItemFactory();
+  const capacity = getWarehouseItemCapacity();
+  const items = Array.from({ length: capacity + 1 }, (_, index) => itemFactory.createWeapon({
+    weapon: 'sword', tags: [], x: 800 + index, y: 700,
+  }));
+
+  items.slice(0, capacity).forEach((item) => assert.ok(controller.addToWarehouse(item)));
+
+  assert.equal(controller.addToWarehouse(items.at(-1)), null);
+  assert.equal(controller.getWarehouseItemCount(), capacity);
+  assert.equal(board.chips.includes(items.at(-1).chip), false);
 });
 
 test('買い物袋を持つHeroは売却後に2組の装備を受け取り、袋を消費して準備エリアへ帰還する', () => {
