@@ -4,9 +4,10 @@ import ChipBoard from '../../src/chips/ChipBoard.js';
 import Chip from '../../src/chips/Chip.js';
 import HeroItemInteractionController from '../../src/game/HeroItemInteractionController.js';
 import HeroSlotManager from '../../src/game/HeroSlotManager.js';
-import HeroFactory from '../../src/game/HeroFactory.js';
+import HeroFactory, { HERO_PROFESSION_IDS } from '../../src/game/HeroFactory.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 import ItemPickupController from '../../src/game/ItemPickupController.js';
+import RecruitmentController from '../../src/game/RecruitmentController.js';
 import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
 import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TICKS } from '../../src/game/ShopSystem.js';
@@ -102,6 +103,30 @@ test('Heroは指定Itemを拾った後に未装備部位を自動探索し、探
   assert.equal(hero.equipment.head, automaticItem);
   assert.equal(hero.targetArea, 'battle');
   assert.equal(hero.targetSlotId, 'battle-2');
+});
+
+test('エリート課題の完了時は8人から抽選し、既加入のHeroなら新たに加入しない', () => {
+  const recruited = [];
+  const recruitment = new RecruitmentController({
+    random: () => 0.5,
+    onRecruit: (profession) => {
+      recruited.push(profession);
+      return { profession };
+    },
+  });
+  const heroes = [{ profession: HERO_PROFESSION_IDS[0] }, { profession: HERO_PROFESSION_IDS[1] }];
+  const stage = { id: 'elite-recruitment', kind: 'elite' };
+
+  const joined = recruitment.processCompletedStage({ stage, stageState: 'complete', heroes });
+  const duplicate = new RecruitmentController({ random: () => 0, onRecruit: () => assert.fail('既加入Heroは加入しない。') })
+    .processCompletedStage({ stage, stageState: 'complete', heroes });
+
+  assert.equal(joined.candidateProfession, HERO_PROFESSION_IDS[4]);
+  assert.equal(joined.recruited, true);
+  assert.deepEqual(recruited, [HERO_PROFESSION_IDS[4]]);
+  assert.equal(duplicate.candidateProfession, HERO_PROFESSION_IDS[0]);
+  assert.equal(duplicate.recruited, false);
+  assert.equal(duplicate.reason, 'already-joined');
 });
 
 test('手動で一時停止している間はゲーム状態を更新しない', () => {
