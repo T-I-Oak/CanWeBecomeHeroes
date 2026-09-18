@@ -7,6 +7,13 @@ import { unlockClearedTrialMembers } from '../../src/game/TrialCompletionProgres
 import HeroProgressRepository from '../../src/game/HeroProgressRepository.js';
 import CombatStageLifecycle, { BATTLE_VICTORY_DELAY_TICKS } from '../../src/game/CombatStageLifecycle.js';
 import GuildSystem, { GUILD_APPLICATION_TICKS } from '../../src/game/GuildSystem.js';
+import {
+  getOverheadStatusValue,
+  getRotatingOverheadStatus,
+  isOverheadStatusVisible,
+  OVERHEAD_STATUS_VISIBILITY,
+  writeOverheadStatusSettings,
+} from '../../src/game/OverheadStatusSettings.js';
 import StartPartySelection from '../../src/game/StartPartySelection.js';
 import { createRunScenario } from '../../src/game/RunScenario.js';
 import BattleSystem from '../../src/game/BattleSystem.js';
@@ -340,4 +347,21 @@ test('通常速度は1.0倍で、選んだ進行速度は次回も引き継ぐ',
   writeTimeSettings({ speedLog: 1 }, dataManager);
 
   assert.equal(getSpeedFromLog(readTimeSettings(dataManager).speedLog), 2);
+});
+
+test('頭上表示は選択項目を切り替え、耐久値だけを100倍の整数で示す', () => {
+  const values = new Map();
+  const dataManager = { getValue: (key) => values.get(key), setValue: (key, value) => values.set(key, value) };
+  const settings = writeOverheadStatusSettings({ statuses: ['power', 'durability'], visibility: 'battle' }, dataManager);
+  const hero = { chip: { type: 'hero' }, stamina: 2.5, currentArea: 'preparation', getStatus: () => 1.9 };
+  const enemy = { chip: { type: 'enemy' }, hp: 4.5, currentArea: 'battle', getStatus: () => 2.9 };
+
+  assert.equal(getRotatingOverheadStatus(settings.statuses, 0), 'power');
+  assert.equal(getRotatingOverheadStatus(settings.statuses, 1), 'durability');
+  assert.equal(isOverheadStatusVisible(hero, settings.visibility), false);
+  assert.equal(isOverheadStatusVisible(enemy, settings.visibility), true);
+  assert.equal(getOverheadStatusValue(hero, 'power'), 1);
+  assert.equal(getOverheadStatusValue(hero, 'durability'), 250);
+  assert.equal(getOverheadStatusValue(enemy, 'durability'), 450);
+  assert.equal(settings.visibility, OVERHEAD_STATUS_VISIBILITY.battle);
 });
