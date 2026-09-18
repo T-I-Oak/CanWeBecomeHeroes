@@ -1,10 +1,11 @@
 import { entityText, logText } from './LocalizedLog.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 import { WEAPON_ATTACKS, getAttackDamage, getRandomModifier } from './CombatWeaponAttack.js';
+import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 
 export default class CombatActionResolutionSystem {
-  constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionLog, projectionSystem, uniqueSkillSystem, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
-    Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionLog, projectionSystem, uniqueSkillSystem, effects, gameLog, textRepository, random });
+  constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
+    Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, effects, gameLog, textRepository, random });
   }
 
   resolve(actor, target, participants, { preserveGaugePresentation = false } = {}) {
@@ -80,18 +81,19 @@ export default class CombatActionResolutionSystem {
 
   resolveActionUniqueSkill(enemy, participants = []) {
     const reservedSlots = this.projectionSystem.areaHeads.map((head) => head.slotPosition);
-    const { skill, heads } = this.uniqueSkillSystem.resolveOnAction?.(enemy, { reservedSlots }) ?? { skill: null, heads: [] };
-    heads.forEach((head) => this.projectionSystem.launchAreaHead(enemy, head));
-    const cooperatingMinions = skill?.id === 'area-head-rush'
-      ? participants.filter((actor) => actor !== enemy && !isHeroCombatant(actor) && !actor.isPhantomHead && isEntityOnBoard(this.board, actor)
-        && (actor.rank === 'regular' || (skill.level === 2 && actor.rank === 'midBoss')))
-      : [];
-    cooperatingMinions.forEach((actor) => {
-      const target = this.targetingSystem.findTarget(actor, participants);
-      if (target) this.resolve(actor, target, participants, { preserveGaugePresentation: true });
+    this.uniqueSkillEffectSystem.resolve(enemy, UNIQUE_SKILL_TRIGGER.actionCompleted, { reservedSlots }).forEach(({ skill, heads = [] }) => {
+      heads.forEach((head) => this.projectionSystem.launchAreaHead(enemy, head));
+      const cooperatingMinions = skill.id === 'area-head-rush'
+        ? participants.filter((actor) => actor !== enemy && !isHeroCombatant(actor) && !actor.isPhantomHead && isEntityOnBoard(this.board, actor)
+          && (actor.rank === 'regular' || (skill.level === 2 && actor.rank === 'midBoss')))
+        : [];
+      cooperatingMinions.forEach((actor) => {
+        const target = this.targetingSystem.findTarget(actor, participants);
+        if (target) this.resolve(actor, target, participants, { preserveGaugePresentation: true });
+      });
+      if (heads.length > 0 || cooperatingMinions.length > 0) {
+        logText(this.gameLog, this.textRepository, heads.length > 0 ? (cooperatingMinions.length > 0 ? 'logHeadsMinions' : 'logHeads') : 'logMinions', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, count: heads.length, minions: cooperatingMinions.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
+      }
     });
-    if (skill && (heads.length > 0 || cooperatingMinions.length > 0)) {
-      logText(this.gameLog, this.textRepository, heads.length > 0 ? (cooperatingMinions.length > 0 ? 'logHeadsMinions' : 'logHeads') : 'logMinions', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, count: heads.length, minions: cooperatingMinions.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
-    }
   }
 }
