@@ -1,10 +1,9 @@
 import { LARGE_ENEMY_SLOT_SPAN } from './HeroSlotLayout.js';
 import { getUniqueSkillLevelDetail } from './UniqueSkillCatalog.js';
 import { hasUniqueSkillTrigger, UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
+import { isEntityOnBoard } from './CombatParticipant.js';
 
 const INNER_TO_OUTER_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
-
-const onBoard = (board, entity) => board.chips.includes(entity.chip);
 
 export default class UniqueSkillSystem {
   constructor({ board, controller, enemyFactory, random = Math.random } = {}) {
@@ -55,7 +54,7 @@ export default class UniqueSkillSystem {
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {
     const occupied = new Set(reservedSlots);
     const enemies = this.controller?.getEnemies?.() ?? [];
-    enemies.filter((enemy) => enemy !== excludedEnemy && onBoard(this.board, enemy)).forEach((enemy) => {
+    enemies.filter((enemy) => enemy !== excludedEnemy && isEntityOnBoard(this.board, enemy)).forEach((enemy) => {
       const span = enemy.definition.size === 'large' ? LARGE_ENEMY_SLOT_SPAN : 1;
       for (let index = 0; index < span; index += 1) occupied.add(enemy.slotPosition + index);
     });

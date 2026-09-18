@@ -5,11 +5,13 @@ import { createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
 import EnemyFactory from './EnemyFactory.js';
 import UniqueSkillSystem from './UniqueSkillSystem.js';
 import { GAME_TICKS_PER_SECOND } from './GameClock.js';
+import CombatTargetingSystem from './CombatTargetingSystem.js';
+import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
+import { getBattleSlotPosition } from './CombatSlot.js';
 
 const ACTION_GAUGE_BASE_RATE = 13 / 300;
 const ACTION_GAUGE_WEIGHT_SCALE = 25;
 const ATTRIBUTE_TICK_INTERVAL = GAME_TICKS_PER_SECOND;
-const RANGE = [[1], [0.6, 0.7, 0.6], [0.7, 0.8, 0.7], [0.5, 0.7, 0.8, 0.7, 0.5], [0.6, 0.8, 0.9, 0.8, 0.6], [0.6, 0.7, 0.8, 0.9, 0.8, 0.7, 0.6], [0.7, 0.8, 0.9, 1, 0.9, 0.8, 0.7], [0.7, 0.8, 0.9, 1, 1, 1, 0.9, 0.8, 0.7]];
 export const WEAPON_ATTACKS = Object.freeze({ sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['magic', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['power', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] });
 const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
 const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
@@ -17,14 +19,6 @@ const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
 const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 24;
 const KNOCKBACK_TILT_MAX_RADIANS = Math.PI / 12;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
-const isHero = (actor) => actor.chip.type === 'hero';
-const onBoard = (board, entity) => board.chips.includes(entity.chip);
-const getBattleSlotPosition = (actor) => {
-  if (Number.isInteger(actor.slotPosition)) return actor.slotPosition;
-  const match = /^battle-(\d+)$/.exec(actor.currentSlotId ?? '');
-  return match ? Number(match[1]) : null;
-};
-const getRangeSlotSpan = (actor) => actor.definition?.size === 'large' ? 2 : 1;
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 export function getRandomModifier(random = Math.random) { return 0.8 + random() * 0.4; }
 export function getActionGaugeBaseMaximum(actor) { return 15 - actor.getStatus('speed'); }
@@ -36,9 +30,10 @@ export function getActionGaugeMaximum(actor) {
   return baseMaximum * (1 - shortening);
 }
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
+    this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.attributeTicks = 0; this.phantomHeads = [];
   }
   resetStageState() {
@@ -56,7 +51,7 @@ export default class BattleSystem {
   update({ heroes, enemies, tick, tickDelta }) {
     [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => a.clearBattleState?.());
     const stageEnemies = this.controller?.getEnemies?.() ?? enemies;
-    const activeEnemies = [...new Set([...stageEnemies.filter((e) => onBoard(this.board, e)), ...this.phantomHeads.filter((e) => onBoard(this.board, e))])];
+    const activeEnemies = [...new Set([...stageEnemies.filter((e) => isEntityOnBoard(this.board, e)), ...this.phantomHeads.filter((e) => isEntityOnBoard(this.board, e))])];
     if (activeEnemies.length > 0) this.hasEncounteredEnemy = true;
     if (this.battleStartTick === null && activeEnemies.some((e) => e.chip.isSettled)) this.battleStartTick = tick;
     if (this.battleStartTick === null) return;
@@ -66,11 +61,11 @@ export default class BattleSystem {
       heroes.forEach((h) => this.returnSystem?.update(h));
       return;
     }
-    const participants = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && onBoard(this.board, h) && h.chip.isSettled), ...activeEnemies.filter((e) => e.chip.isSettled)];
+    const participants = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && isEntityOnBoard(this.board, h) && h.chip.isSettled), ...activeEnemies.filter((e) => e.chip.isSettled)];
     this.updateAttributes(participants, tickDelta);
     participants.forEach((a) => this.updateActor(a, participants, tickDelta));
     const remainingEnemies = this.controller?.getEnemies?.() ?? stageEnemies;
-    if (this.hasEncounteredEnemy && remainingEnemies.every((e) => !onBoard(this.board, e)) && this.defeatTick === null) {
+    if (this.hasEncounteredEnemy && remainingEnemies.every((e) => !isEntityOnBoard(this.board, e)) && this.defeatTick === null) {
       this.defeatTick = tick;
       this.victoryTick = tick;
       logText(this.gameLog, this.textRepository, 'logVictory', {}, { subject: 'system', level: 'info', channel: 'event' });
@@ -122,57 +117,9 @@ export default class BattleSystem {
     actor.chip.actionGaugeMaximum = maximum;
     return maximum;
   }
-  findTarget(actor, participants) {
-    let candidates = participants.filter((c) => isHero(c) !== isHero(actor) && !c.isPhantomHead && onBoard(this.board, c));
-    const equipment = isHero(actor) ? [actor.equipment.rightHand, actor.equipment.leftHand] : actor.equipment;
-    const distance = (candidate) => Math.hypot(candidate.chip.x - actor.chip.x, candidate.chip.y - actor.chip.y);
-    const selectCandidates = (type) => {
-      if (candidates.length <= 1) return;
-      const equipmentTagCount = (candidate) => Object.values(candidate.equipment).reduce((total, item) => total + (item?.tags?.length ?? 0), 0);
-      const values = candidates.map((candidate) => {
-        if (type === 'sword') return isHero(candidate) ? candidate.stamina : candidate.hp;
-        if (['staff', 'holy-symbol', 'holy-book', 'banner', 'tarot-cards'].includes(type)) return -(isHero(candidate) ? candidate.stamina : candidate.hp);
-        if (type === 'claw') return equipmentTagCount(candidate);
-        if (type === 'orb') return -candidate.getCarriedWeight();
-        if (type === 'shield') return -distance(candidate);
-        if (type === 'bow') return distance(candidate);
-        return null;
-      });
-      if (values[0] === null) return;
-      const best = Math.max(...values);
-      candidates = candidates.filter((candidate, index) => values[index] === best);
-    };
-    equipment.filter((item) => item?.category === 'weapon').forEach((item) => selectCandidates(item.type));
-    return candidates.toSorted((a, b) => (
-      distance(a) - distance(b)
-      || a.chip.x - b.chip.x
-    ))[0] ?? null;
-  }
-  rangeTargets(actor, target, participants) {
-    const coefficients = RANGE[actor.getTagCount('area')];
-    const foes = participants.filter((candidate) => isHero(candidate) !== isHero(actor) && !candidate.isPhantomHead && onBoard(this.board, candidate));
-    const lane = this.createRangeLane(actor, foes);
-    const at = lane.indexOf(target);
-    const center = Math.floor(coefficients.length / 2);
-    return coefficients.map((coefficient, index) => ({ target: lane[at + index - center], coefficient })).filter(({ target: candidate }) => candidate);
-  }
-  createRangeLane(actor, foes) {
-    const slotCount = isHero(actor) ? 6 : 4;
-    const bySlot = new Map(foes.map((foe) => [getBattleSlotPosition(foe), foe]));
-    const hasCompleteSlotPositions = foes.every((foe) => {
-      const slot = getBattleSlotPosition(foe);
-      return Number.isInteger(slot) && slot >= 1 && slot <= slotCount;
-    });
-    if (!hasCompleteSlotPositions) return foes.toSorted((left, right) => left.chip.x - right.chip.x);
-
-    const lane = [];
-    for (let slot = 1; slot <= slotCount; slot += 1) {
-      const foe = bySlot.get(slot) ?? null;
-      lane.push(foe);
-      if (foe) slot += getRangeSlotSpan(foe) - 1;
-    }
-    return lane;
-  }
+  findTarget(actor, participants) { return this.targetingSystem.findTarget(actor, participants); }
+  rangeTargets(actor, target, participants) { return this.targetingSystem.rangeTargets(actor, target, participants); }
+  createRangeLane(actor, foes) { return this.targetingSystem.createRangeLane(actor, foes); }
   isAttackMiss(actor, target) {
     const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * 0.1);
     const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * 0.1 * (1 - actor.getTagSkillLevel('cloth') * 0.1));
@@ -203,14 +150,14 @@ export default class BattleSystem {
     else this.resolveActionUniqueSkill(actor, participants);
   }
   attackTypes(actor) {
-    if (isHero(actor)) return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');
+    if (isHeroCombatant(actor)) return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');
     const weapons = actor.equipment.filter((item) => item.category === 'weapon').map((item) => item.type); return weapons.length ? weapons : ['unarmed'];
   }
   resolveVitality(actor) {
     const tagCount = actor.getTagCount('vitality');
     if (!tagCount || this.random() >= actor.getLuckDegree()) return 0;
     const recovery = tagCount * 0.2;
-    if (isHero(actor)) {
+    if (isHeroCombatant(actor)) {
       const previous = actor.stamina;
       actor.stamina = Math.min(actor.maximums.stamina, actor.stamina + recovery);
       return actor.stamina - previous;
@@ -220,7 +167,7 @@ export default class BattleSystem {
     return actor.hp - previous;
   }
   resolveWeapon(actor, target, type, participants) {
-    if (!onBoard(this.board, target)) return;
+    if (!isEntityOnBoard(this.board, target)) return;
     if (type === 'shield') this.applyShield(actor, participants);
     if (type === 'holy-book') this.applyHolyBook(actor, participants);
     if (type === 'banner') this.applyBanner(actor, participants);
@@ -240,33 +187,33 @@ export default class BattleSystem {
   }
   applyShield(actor, participants) {
     const reduction = actor.getTagCount('iron') * 0.1 + 0.05;
-    participants.filter((candidate) => isHero(candidate) === isHero(actor)).forEach((ally) => {
+    participants.filter((candidate) => isHeroCombatant(candidate) === isHeroCombatant(actor)).forEach((ally) => {
       this.setPhysicalDamageReduction(ally, Math.max(ally.physicalDamageReduction, reduction));
     });
   }
   applyHolyBook(actor, participants) {
     const reduction = actor.getTagCount('cloth') * 0.05 + 0.025;
-    participants.filter((candidate) => isHero(candidate) === isHero(actor)).forEach((ally) => {
+    participants.filter((candidate) => isHeroCombatant(candidate) === isHeroCombatant(actor)).forEach((ally) => {
       ['fire', 'water', 'lightning'].forEach((attribute) => { ally.attributes[attribute] *= 1 - reduction; });
       ally.chip.attributeValues = ally.attributes;
     });
   }
   applyBanner(actor, participants) {
     const gaugeIncrease = actor.getTagCount('reputation') * 0.05 + 0.025;
-    participants.filter((candidate) => candidate !== actor && isHero(candidate) === isHero(actor)).forEach((ally) => {
+    participants.filter((candidate) => candidate !== actor && isHeroCombatant(candidate) === isHeroCombatant(actor)).forEach((ally) => {
       ally.chip.actionGauge = (ally.chip.actionGauge ?? 0) + getActionGaugeBaseMaximum(ally) * gaugeIncrease;
     });
   }
   applyHolySymbol(actor, participants) {
     const recovery = actor.getTagCount('blessing') * 0.05 + 0.05;
-    participants.filter((candidate) => candidate !== actor && isHero(candidate) === isHero(actor)).forEach((ally) => {
-      if (isHero(ally)) ally.stamina = Math.min(ally.maximums.stamina, ally.stamina + recovery);
+    participants.filter((candidate) => candidate !== actor && isHeroCombatant(candidate) === isHeroCombatant(actor)).forEach((ally) => {
+      if (isHeroCombatant(ally)) ally.stamina = Math.min(ally.maximums.stamina, ally.stamina + recovery);
       else ally.hp = Math.min(ally.maximumHp, ally.hp + recovery);
     });
   }
   applyTarotCards(actor, participants) {
     const bonus = actor.getTagCount('fortune') * 0.1 + 0.05;
-    participants.filter((candidate) => candidate !== actor && isHero(candidate) === isHero(actor)).forEach((ally) => {
+    participants.filter((candidate) => candidate !== actor && isHeroCombatant(candidate) === isHeroCombatant(actor)).forEach((ally) => {
       ally.luckBonus = Math.max(ally.luckBonus, bonus);
     });
   }
@@ -289,7 +236,7 @@ export default class BattleSystem {
   }
   applyOrb(actor, target, coefficient) {
     if (this.random() >= (actor.getLuckDegree() + .3) * coefficient) return;
-    const items = (isHero(target) ? Object.values(target.equipment) : target.equipment).filter((item) => item && item.tags.length < 3); const item = items[Math.floor(this.random() * items.length)];
+    const items = (isHeroCombatant(target) ? Object.values(target.equipment) : target.equipment).filter((item) => item && item.tags.length < 3); const item = items[Math.floor(this.random() * items.length)];
     if (!item?.addTag('gem')) return;
     item.chip.weight = getTagWeight(item.tags);
     item.chip.tagPaths = getTagPaths(item.tags);
@@ -300,8 +247,8 @@ export default class BattleSystem {
     this.effects?.tagTransfer(actor, target, 'gem');
   }
   getTheftCandidates(target) {
-    if (!isHero(target)) return target.equipment;
-    return [...(this.controller?.entities?.values?.() ?? [])].filter((entity) => entity.chip.type === 'item' && !entity.isStored && entity.category !== 'destination' && onBoard(this.board, entity));
+    if (!isHeroCombatant(target)) return target.equipment;
+    return [...(this.controller?.entities?.values?.() ?? [])].filter((entity) => entity.chip.type === 'item' && !entity.isStored && entity.category !== 'destination' && isEntityOnBoard(this.board, entity));
   }
   resolveTheft(actor, target) {
     const candidates = this.getTheftCandidates(target);
@@ -322,7 +269,7 @@ export default class BattleSystem {
     return null;
   }
   transferStolenItem(actor, target, item) {
-    if (isHero(actor)) {
+    if (isHeroCombatant(actor)) {
       target.removeEquipment(item);
       this.updateActionGaugeMaximum(target);
       const destination = this.getWarehouseDropPosition();
@@ -354,7 +301,7 @@ export default class BattleSystem {
     const targetSlotPosition = getBattleSlotPosition(target);
     if (targetSlotPosition === null) return [];
     const opponentsBySlot = new Map(participants
-      .filter((candidate) => candidate !== target && isHero(candidate) === isHero(target) && onBoard(this.board, candidate))
+      .filter((candidate) => candidate !== target && isHeroCombatant(candidate) === isHeroCombatant(target) && isEntityOnBoard(this.board, candidate))
       .map((candidate) => [getBattleSlotPosition(candidate), candidate])
       .filter(([slotPosition]) => slotPosition !== null));
     const maximumDistance = Math.floor(value);
@@ -380,7 +327,7 @@ export default class BattleSystem {
   applyDamage(actor, target, type, damage, critical = false) {
     if (target.isPhantomHead) return 0;
     if (damage < .01) return 0; this.applyKnockbackTilt(target, damage); this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
-    if (isHero(target)) {
+    if (isHeroCombatant(target)) {
       target.stamina = Math.max(0, target.stamina - damage);
       this.onDamage?.({ actor, target, type, damage, critical });
       if (target.stamina === 0) this.returnSystem?.begin(target); return damage;
@@ -405,7 +352,7 @@ export default class BattleSystem {
     const { skill, heads } = this.uniqueSkillSystem.resolveOnAction?.(enemy, { reservedSlots }) ?? { skill: null, heads: [] };
     heads.forEach((head) => this.launchAreaHead(enemy, head));
     const cooperatingMinions = skill?.id === 'area-head-rush'
-      ? participants.filter((actor) => actor !== enemy && !isHero(actor) && !actor.isPhantomHead && onBoard(this.board, actor)
+      ? participants.filter((actor) => actor !== enemy && !isHeroCombatant(actor) && !actor.isPhantomHead && isEntityOnBoard(this.board, actor)
         && (actor.rank === 'regular' || (skill.level === 2 && actor.rank === 'midBoss')))
       : [];
     cooperatingMinions.forEach((actor) => {
@@ -441,7 +388,7 @@ export default class BattleSystem {
     }
     this.phantomHeads = this.phantomHeads.filter((current) => current !== head);
     const source = head.projectionSource;
-    if (!animate || !source || !onBoard(this.board, source)) return;
+    if (!animate || !source || !isEntityOnBoard(this.board, source)) return;
     this.controller?.animateChipTransfer?.(head, {
       from: { x: head.chip.x, y: head.chip.y },
       to: { x: source.chip.x, y: source.chip.y },
@@ -473,7 +420,7 @@ export default class BattleSystem {
     if (!this.actionLogResults) return;
     this.actionLogResults.forEach((targets) => targets.forEach((result) => {
       const { actor, target, damage, critical, miss, defeated } = result;
-      const subject = isHero(actor) ? 'hero' : 'enemy'; const values = { actor: entityText(actor), target: entityText(target), damage: Math.round(damage * 100) };
+      const subject = isHeroCombatant(actor) ? 'hero' : 'enemy'; const values = { actor: entityText(actor), target: entityText(target), damage: Math.round(damage * 100) };
       if (defeated) logText(this.gameLog, this.textRepository, 'logDefeat', values, { subject, level: 'info', channel: 'battle' });
       else if (damage >= .01) {
         logText(this.gameLog, this.textRepository, critical ? 'logCritical' : 'logDamage', values, { subject, level: critical ? 'luck' : 'info', channel: 'battle' });
@@ -481,7 +428,7 @@ export default class BattleSystem {
     }));
     this.actionLogResults = null;
   }
-  getEntityLabel(entity) { return isHero(entity) ? `【${this.textRepository?.getHeroLabel(entity) ?? entity.heroId}】` : `【${this.textRepository?.getName('enemy', entity.definition.id) ?? entity.definition.id}】`; }
+  getEntityLabel(entity) { return isHeroCombatant(entity) ? `【${this.textRepository?.getHeroLabel(entity) ?? entity.heroId}】` : `【${this.textRepository?.getName('enemy', entity.definition.id) ?? entity.definition.id}】`; }
   getWarehouseDropPosition() {
     const area = GAME_AREAS.warehouse;
     const margin = 64;
@@ -501,7 +448,7 @@ export default class BattleSystem {
     }).map(({ item }) => item)).flat();
   }
   defeatEnemy(enemy) {
-    if (!onBoard(this.board, enemy)) return;
+    if (!isEntityOnBoard(this.board, enemy)) return;
     const { skill, summons } = this.uniqueSkillSystem.resolveOnDefeated(enemy);
     this.phantomHeads.filter((head) => head.projectionSource === enemy).forEach((head) => this.returnAreaHead(head, { animate: false }));
     if (this.controller?.destroy) this.controller.destroy(enemy, { includeRelated: true });
