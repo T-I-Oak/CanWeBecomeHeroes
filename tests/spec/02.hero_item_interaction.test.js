@@ -12,6 +12,7 @@ import ShopState from '../../src/game/ShopState.js';
 import ShopSystem, { SHOP_PURCHASE_DELIVERY_TICKS } from '../../src/game/ShopSystem.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
 import GameClock from '../../src/game/GameClock.js';
+import { getHeroStepDistance } from '../../src/game/MovementSettings.js';
 
 function createHeroSlotCandidate(id) {
   return { chip: new Chip({ id, type: 'hero', x: 0, y: 0, weight: 1, centerPath: '', tagPaths: [] }), targetSlotId: null, currentSlotId: null };
@@ -114,4 +115,11 @@ test('Heroはスロット到着時に予約を占有へ移し、移動範囲を�
   assert.equal(hero.targetSlotId, null);
   assert.equal(hero.currentSlotId, 'shop-1');
   assert.equal(hero.chip.bounds.width, 224);
+});
+
+test('Heroの1回の移動量は所持重量の二乗に応じて小さくなる', () => {
+  assert.equal(getHeroStepDistance(0), 96);
+  assert.equal(getHeroStepDistance(25), 48);
+  assert.equal(getHeroStepDistance(75), 9.6);
+  assert.ok(Math.abs(getHeroStepDistance(100) - 5.647058823529412) < 0.000000001);
 });
