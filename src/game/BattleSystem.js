@@ -6,6 +6,7 @@ import EnemyFactory from './EnemyFactory.js';
 import UniqueSkillSystem from './UniqueSkillSystem.js';
 import CombatTargetingSystem from './CombatTargetingSystem.js';
 import CombatAttributeSystem from './CombatAttributeSystem.js';
+import CombatDamageSystem from './CombatDamageSystem.js';
 import { getCombatRandomModifier } from './CombatRandom.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
@@ -16,7 +17,6 @@ const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, ta
 const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
 const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
 const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 24;
-const KNOCKBACK_TILT_MAX_RADIANS = Math.PI / 12;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 export function getRandomModifier(random = Math.random) { return getCombatRandomModifier(random); }
@@ -29,11 +29,21 @@ export function getActionGaugeMaximum(actor) {
   return baseMaximum * (1 - shortening);
 }
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
     this.attributeSystem = attributeSystem ?? new CombatAttributeSystem({ board, effects, random, applyDamage: (...args) => this.applyDamage(...args) });
+    this.damageSystem = damageSystem ?? new CombatDamageSystem({
+      random,
+      effects,
+      onDamage,
+      recordDamage: (...args) => this.recordDamage(...args),
+      recordDefeat: (...args) => this.recordDefeat(...args),
+      onHeroDepleted: (hero) => this.returnSystem?.begin(hero),
+      onEnemyDamaged: (enemy) => this.resolveDamageUniqueSkill(enemy),
+      onEnemyDefeated: (enemy) => this.defeatEnemy(enemy),
+    });
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.phantomHeads = [];
   }
   resetStageState() {
@@ -95,10 +105,6 @@ export default class BattleSystem {
       return;
     }
     chip.tilt -= Math.sign(chip.tilt) * ACTION_TILT_RECOVERY_RADIANS;
-  }
-  applyKnockbackTilt(target, damage) {
-    const amount = Math.min(damage * 100, 100) / 100 * KNOCKBACK_TILT_MAX_RADIANS;
-    target.chip.tilt += this.random() < 0.5 ? -amount : amount;
   }
   updateActionGaugeMaximum(actor) {
     const maximum = getActionGaugeMaximum(actor);
@@ -193,22 +199,11 @@ export default class BattleSystem {
     });
   }
   applyPhysicalDamage(actor, target, type, damage, critical, participants) {
-    const absorbed = Math.min(target.physicalDamageReduction, damage);
-    this.setPhysicalDamageReduction(target, Math.max(0, target.physicalDamageReduction - absorbed));
-    const afterProtection = Math.max(0, damage - absorbed * 0.5);
-    const reflected = afterProtection * target.getTagSkillLevel('iron') * 0.2;
-    const dealt = Math.max(0, afterProtection - reflected);
-    this.applyDamage(actor, target, type, dealt, critical);
-    if (reflected >= 0.01) {
-      this.applyDamage(target, actor, 'reflection', reflected);
-      this.propagate(target, actor, 'reflection', reflected, participants);
-    }
-    return dealt;
+    return this.damageSystem.applyPhysicalDamage(actor, target, type, damage, critical, participants, {
+      propagate: (...args) => this.propagate(...args),
+    });
   }
-  setPhysicalDamageReduction(target, value) {
-    target.physicalDamageReduction = value;
-    target.chip.physicalDamageReduction = value;
-  }
+  setPhysicalDamageReduction(target, value) { this.damageSystem.setPhysicalDamageReduction(target, value); }
   applyOrb(actor, target, coefficient) {
     if (this.random() >= (actor.getLuckDegree() + .3) * coefficient) return;
     const items = (isHeroCombatant(target) ? Object.values(target.equipment) : target.equipment).filter((item) => item && item.tags.length < 3); const item = items[Math.floor(this.random() * items.length)];
@@ -274,19 +269,7 @@ export default class BattleSystem {
   }
   getLightningTargets(target, participants, value) { return this.attributeSystem.getLightningTargets(target, participants, value); }
   propagate(actor, target, type, damage, participants) { this.attributeSystem.propagate(actor, target, type, damage, participants); }
-  applyDamage(actor, target, type, damage, critical = false) {
-    if (target.isPhantomHead) return 0;
-    if (damage < .01) return 0; this.applyKnockbackTilt(target, damage); this.effects?.damage(target, damage, critical); if (actor) this.recordDamage(actor, target, damage, critical);
-    if (isHeroCombatant(target)) {
-      target.stamina = Math.max(0, target.stamina - damage);
-      this.onDamage?.({ actor, target, type, damage, critical });
-      if (target.stamina === 0) this.returnSystem?.begin(target); return damage;
-    }
-    target.hp = Math.max(0, target.hp - damage);
-    this.resolveDamageUniqueSkill(target);
-    this.onDamage?.({ actor, target, type, damage, critical });
-    if (target.hp === 0) { if (actor) this.recordDefeat(actor, target); this.defeatEnemy(target); } return damage;
-  }
+  applyDamage(actor, target, type, damage, critical = false) { return this.damageSystem.applyDamage(actor, target, type, damage, critical); }
   resolveDamageUniqueSkill(enemy) {
     const { skill, drops } = this.uniqueSkillSystem.resolveOnDamaged?.(enemy) ?? { skill: null, drops: [] };
     if (drops.length === 0) return;
