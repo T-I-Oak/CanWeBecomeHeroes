@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import RunController, { TRIAL_FINAL_STAGE_NUMBER } from '../../src/game/RunController.js';
 import Camera from '../../src/game/Camera.js';
+import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../../src/game/GameSpeedSettings.js';
 import { unlockClearedTrialMembers } from '../../src/game/TrialCompletionProgress.js';
 import StartPartySelection from '../../src/game/StartPartySelection.js';
 import { createRunScenario } from '../../src/game/RunScenario.js';
@@ -221,4 +222,14 @@ test('ズーム操作はポインタ位置にある盤面を見失わない', ()
   camera.setZoomAtScreenPoint(1.1, pointer.x, pointer.y);
 
   assert.deepEqual(camera.toWorld(pointer.x, pointer.y), worldPoint);
+});
+
+test('通常速度は1.0倍で、選んだ進行速度は次回も引き継ぐ', () => {
+  const values = new Map();
+  const dataManager = { getValue: (key) => values.get(key), setValue: (key, value) => values.set(key, value) };
+
+  assert.equal(getSpeedFromLog(readTimeSettings(dataManager).speedLog), 1);
+  writeTimeSettings({ speedLog: 1 }, dataManager);
+
+  assert.equal(getSpeedFromLog(readTimeSettings(dataManager).speedLog), 2);
 });
