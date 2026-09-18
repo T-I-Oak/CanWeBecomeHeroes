@@ -106,6 +106,17 @@ test('解放済みHeroから選んだ2人で開始し、それぞれ2組ずつ�
   assert.equal(warehouseItems.filter((item) => item.category !== 'destination').length, 20);
 });
 
+test('パーティー選択は新たに選んだHeroを第1にし、第1を再選択しても順序を変えない', () => {
+  const selection = new StartPartySelection({ unlockedProfessionIds: ['swordfighter', 'guard', 'mage'] });
+
+  selection.selectRosterHero('guard');
+  assert.deepEqual(selection.professionIds, ['guard', 'swordfighter']);
+  selection.selectRosterHero('mage');
+  assert.deepEqual(selection.professionIds, ['mage', 'guard']);
+  selection.selectRosterHero('mage');
+  assert.deepEqual(selection.professionIds, ['mage', 'guard']);
+});
+
 test('第N試験は3件の課題候補から1件だけを選んで開始し、選ばなかった敵は出現しない', () => {
   const added = [];
   const enemySpawn = new EnemySpawnSystem({ add: (enemy) => added.push(enemy) });
