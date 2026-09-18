@@ -1,6 +1,5 @@
 import { logText, entityText } from './LocalizedLog.js';
 import { GAME_AREAS } from './GameAreas.js';
-import { createTrendEquipmentSet } from './TrendEquipmentGenerator.js';
 import EnemyFactory from './EnemyFactory.js';
 import UniqueSkillSystem from './UniqueSkillSystem.js';
 import CombatTargetingSystem from './CombatTargetingSystem.js';
@@ -17,17 +16,17 @@ import CombatActionGaugeSystem, {
 import CombatWeaponEffectSystem from './CombatWeaponEffectSystem.js';
 import CombatActionLog from './CombatActionLog.js';
 import CombatProjectionSystem from './CombatProjectionSystem.js';
+import CombatEnemyDefeatSystem from './CombatEnemyDefeatSystem.js';
 import { getCombatRandomModifier } from './CombatRandom.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
 export const WEAPON_ATTACKS = Object.freeze({ sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['magic', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['power', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] });
-const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 export function getRandomModifier(random = Math.random) { return getCombatRandomModifier(random); }
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
@@ -54,6 +53,17 @@ export default class BattleSystem {
       getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
       random,
       actionGaugeSystem,
+    });
+    this.defeatSystem = defeatSystem ?? new CombatEnemyDefeatSystem({
+      board,
+      controller,
+      itemFactory,
+      uniqueSkillSystem: this.uniqueSkillSystem,
+      projectionSystem: this.projectionSystem,
+      getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
+      random,
+      gameLog,
+      textRepository,
     });
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false;
   }
@@ -219,33 +229,8 @@ export default class BattleSystem {
       y: area.y + margin + this.random() * (area.height - margin * 2),
     };
   }
-  createEnemyDrops(enemy) {
-    const config = ENEMY_DROP_SETS[enemy.rank] ?? ENEMY_DROP_SETS.regular;
-    return Array.from({ length: config.setCount }, () => createTrendEquipmentSet({
-      trendTag: enemy.mainTag,
-      tagBudget: config.tagBudget,
-      itemFactory: this.itemFactory,
-      random: this.random,
-      placePart: () => this.getWarehouseDropPosition(),
-    }).map(({ item }) => item)).flat();
-  }
-  defeatEnemy(enemy) {
-    if (!isEntityOnBoard(this.board, enemy)) return;
-    const { skill, summons } = this.uniqueSkillSystem.resolveOnDefeated(enemy);
-    this.projectionSystem.returnAreaHeadsFrom(enemy);
-    if (this.controller?.destroy) this.controller.destroy(enemy, { includeRelated: true });
-    else {
-      this.board.removeChip(enemy.chip);
-      this.controller?.remove(enemy);
-    }
-    this.contributionPoints += enemy.contributionPoints;
-    this.createEnemyDrops(enemy).forEach((item) => this.controller?.addToWarehouse(item));
-    summons.forEach((summon) => {
-      summon.chip.beginDrop();
-      this.controller?.add(summon);
-    });
-    if (skill && summons.length > 0) logText(this.gameLog, this.textRepository, 'logSummon', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, target: entityText(summons[0]), count: summons.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
-  }
+  createEnemyDrops(enemy) { return this.defeatSystem.createEnemyDrops(enemy); }
+  defeatEnemy(enemy) { this.contributionPoints += this.defeatSystem.resolve(enemy); }
   getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }
 }
 export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, BOW_GAUGE_SHORTENING_PER_WEAPON, MAX_BOW_GAUGE_SHORTENING_WEAPONS };
