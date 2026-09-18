@@ -17,16 +17,15 @@ import CombatWeaponEffectSystem from './CombatWeaponEffectSystem.js';
 import CombatActionLog from './CombatActionLog.js';
 import CombatProjectionSystem from './CombatProjectionSystem.js';
 import CombatEnemyDefeatSystem from './CombatEnemyDefeatSystem.js';
-import { getCombatRandomModifier } from './CombatRandom.js';
+import CombatActionResolutionSystem from './CombatActionResolutionSystem.js';
+import { WEAPON_ATTACKS, getAttackDamage, getRandomModifier } from './CombatWeaponAttack.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
-export const WEAPON_ATTACKS = Object.freeze({ sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['magic', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['power', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] });
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
-export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
-export function getRandomModifier(random = Math.random) { return getCombatRandomModifier(random); }
+export { WEAPON_ATTACKS, getAttackDamage, getRandomModifier };
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
@@ -64,6 +63,20 @@ export default class BattleSystem {
       random,
       gameLog,
       textRepository,
+    });
+    this.actionResolutionSystem = actionResolutionSystem ?? new CombatActionResolutionSystem({
+      board,
+      targetingSystem: this.targetingSystem,
+      attributeSystem: this.attributeSystem,
+      weaponEffectSystem: this.weaponEffectSystem,
+      damageSystem: this.damageSystem,
+      actionLog: this.actionLog,
+      projectionSystem: this.projectionSystem,
+      uniqueSkillSystem: this.uniqueSkillSystem,
+      effects,
+      gameLog,
+      textRepository,
+      random,
     });
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false;
   }
@@ -115,7 +128,7 @@ export default class BattleSystem {
   updateActor(actor, participants, delta) {
     if (!this.actionGaugeSystem.advance(actor, delta)) return;
     const target = this.findTarget(actor, participants);
-    if (target) this.resolveAction(actor, target, participants);
+    if (target) this.actionResolutionSystem.resolve(actor, target, participants);
     else if (actor.isPhantomHead) this.projectionSystem.returnAreaHead(actor);
     else this.uniqueSkillSystem.refreshBlessingSkills(actor);
   }
@@ -123,56 +136,12 @@ export default class BattleSystem {
   findTarget(actor, participants) { return this.targetingSystem.findTarget(actor, participants); }
   rangeTargets(actor, target, participants) { return this.targetingSystem.rangeTargets(actor, target, participants); }
   createRangeLane(actor, foes) { return this.targetingSystem.createRangeLane(actor, foes); }
-  isAttackMiss(actor, target) {
-    const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * 0.1);
-    const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * 0.1 * (1 - actor.getTagSkillLevel('cloth') * 0.1));
-    return evade > accuracy;
-  }
+  isAttackMiss(actor, target) { return this.actionResolutionSystem.isAttackMiss(actor, target); }
   applyAttributes(actor, target, coefficient) { this.attributeSystem.applyAttributes(actor, target, coefficient); }
-  resolveAction(actor, target, participants, { preserveGaugePresentation = false } = {}) {
-    const targets = this.rangeTargets(actor, target, participants); this.actionLog.begin(); this.effects?.attack(actor, actor.getTagCount('area'), { showGaugeAtMaximum: !preserveGaugePresentation }); this.effects?.beginAction(actor);
-    targets.forEach(({ target: t, coefficient }) => this.applyAttributes(actor, t, coefficient));
-    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants));
-    this.resolveVitality(actor);
-    this.effects?.endAction(); this.actionLog.flush(); actor.luckBonus = 0;
-    if (actor.isPhantomHead) this.projectionSystem.returnAreaHead(actor);
-    else {
-      this.resolveActionUniqueSkill(actor, participants);
-      this.uniqueSkillSystem.refreshBlessingSkills(actor);
-    }
-  }
-  attackTypes(actor) {
-    if (isHeroCombatant(actor)) return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');
-    const weapons = actor.equipment.filter((item) => item.category === 'weapon').map((item) => item.type); return weapons.length ? weapons : ['unarmed'];
-  }
-  resolveVitality(actor) {
-    const tagCount = actor.getTagCount('vitality');
-    if (!tagCount || this.random() >= actor.getLuckDegree()) return 0;
-    const recovery = tagCount * 0.2;
-    if (isHeroCombatant(actor)) {
-      const previous = actor.stamina;
-      actor.stamina = Math.min(actor.maximums.stamina, actor.stamina + recovery);
-      return actor.stamina - previous;
-    }
-    const previous = actor.hp;
-    actor.hp = Math.min(actor.maximumHp, actor.hp + recovery);
-    return actor.hp - previous;
-  }
-  resolveWeapon(actor, target, type, participants) {
-    if (!isEntityOnBoard(this.board, target)) return;
-    this.weaponEffectSystem.applySupportEffect(actor, type, participants);
-    if (this.isAttackMiss(actor, target)) { this.effects?.miss(target); this.recordMiss(actor, target); return; }
-    const attack = WEAPON_ATTACKS[type];
-    this.rangeTargets(actor, target, participants).forEach(({ target: t, coefficient }) => {
-      const statTag = attack[0] === 'magic' ? 'arcane' : 'valor'; const skillLevel = actor.getTagSkillLevel(statTag); const crit = skillLevel > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus; const damage = getAttackDamage(actor, attack) * coefficient * getRandomModifier(this.random) * (crit ? 1 + skillLevel ** 2 * .1 : 1);
-      if (type === 'orb') this.applyOrb(actor, t, coefficient);
-      if (type === 'claw') this.resolveTheft(actor, t);
-      const dealt = attack[0] === 'power'
-        ? this.applyPhysicalDamage(actor, t, type, damage, crit, participants)
-        : this.applyDamage(actor, t, type, damage, crit);
-      this.propagate(actor, t, type, dealt, participants);
-    });
-  }
+  resolveAction(actor, target, participants, options) { return this.actionResolutionSystem.resolve(actor, target, participants, options); }
+  attackTypes(actor) { return this.actionResolutionSystem.attackTypes(actor); }
+  resolveVitality(actor) { return this.actionResolutionSystem.resolveVitality(actor); }
+  resolveWeapon(actor, target, type, participants) { return this.actionResolutionSystem.resolveWeapon(actor, target, type, participants); }
   applyShield(actor, participants) { this.weaponEffectSystem.applyShield(actor, participants); }
   applyHolyBook(actor, participants) { this.weaponEffectSystem.applyHolyBook(actor, participants); }
   applyBanner(actor, participants) { this.weaponEffectSystem.applyBanner(actor, participants); }
@@ -201,22 +170,7 @@ export default class BattleSystem {
     });
     logText(this.gameLog, this.textRepository, 'logOrb', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, count: drops.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
   }
-  resolveActionUniqueSkill(enemy, participants = []) {
-    const reservedSlots = this.projectionSystem.areaHeads.map((head) => head.slotPosition);
-    const { skill, heads } = this.uniqueSkillSystem.resolveOnAction?.(enemy, { reservedSlots }) ?? { skill: null, heads: [] };
-    heads.forEach((head) => this.projectionSystem.launchAreaHead(enemy, head));
-    const cooperatingMinions = skill?.id === 'area-head-rush'
-      ? participants.filter((actor) => actor !== enemy && !isHeroCombatant(actor) && !actor.isPhantomHead && isEntityOnBoard(this.board, actor)
-        && (actor.rank === 'regular' || (skill.level === 2 && actor.rank === 'midBoss')))
-      : [];
-    cooperatingMinions.forEach((actor) => {
-      const target = this.findTarget(actor, participants);
-      if (target) this.resolveAction(actor, target, participants, { preserveGaugePresentation: true });
-    });
-    if (skill && (heads.length > 0 || cooperatingMinions.length > 0)) {
-      logText(this.gameLog, this.textRepository, heads.length > 0 ? (cooperatingMinions.length > 0 ? 'logHeadsMinions' : 'logHeads') : 'logMinions', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, count: heads.length, minions: cooperatingMinions.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
-    }
-  }
+  resolveActionUniqueSkill(enemy, participants = []) { return this.actionResolutionSystem.resolveActionUniqueSkill(enemy, participants); }
   recordMiss(actor, target) { this.actionLog.recordMiss(actor, target); }
   recordDamage(actor, target, damage, critical) { this.actionLog.recordDamage(actor, target, damage, critical); }
   recordDefeat(actor, target) { this.actionLog.recordDefeat(actor, target); }
