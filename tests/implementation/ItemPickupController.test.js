@@ -31,21 +31,6 @@ test('pickup controller keeps independent active states for multiple heroes', ()
   assert.equal(controller.states.get(secondHero).item, secondItem);
 });
 
-test('pickup controller retargets when another hero removes its target item', () => {
-  const board = new ChipBoard({ width: 3000, height: 2000 });
-  const controller = new ItemPickupController(board, new HeroSlotManager());
-  const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700 });
-  const target = new ItemFactory().createWeapon({ weapon: 'staff', tags: [], x: 800, y: 700 });
-  const replacement = new ItemFactory().createWeapon({ weapon: 'sword', tags: [], x: 900, y: 700 });
-  [hero, target, replacement].forEach((entity) => board.addChip(entity.chip));
-  controller.start(hero, target);
-  board.removeChip(target.chip);
-
-  controller.update([target, replacement], 0.01);
-
-  assert.equal(controller.states.get(hero).item, replacement);
-});
-
 test('pickup controller logs the facility when a hero starts for a reserved destination slot', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const messages = [];

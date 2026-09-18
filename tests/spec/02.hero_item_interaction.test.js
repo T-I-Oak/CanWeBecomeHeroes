@@ -53,3 +53,18 @@ test('買い物袋を持つHeroは売却後に2組の装備を受け取り、袋
   assert.equal(bag.storedItems.length, 0);
   assert.equal(hero.targetArea, 'preparation');
 });
+
+test('Heroの目的Itemが盤面から消えた場合は、次に装備可能なItemへ目標を切り替える', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const pickupController = new ItemPickupController(board, new HeroSlotManager());
+  const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700 });
+  const selectedItem = new ItemFactory().createWeapon({ weapon: 'staff', tags: [], x: 800, y: 700 });
+  const replacementItem = new ItemFactory().createWeapon({ weapon: 'sword', tags: [], x: 900, y: 700 });
+  [hero, selectedItem, replacementItem].forEach((entity) => board.addChip(entity.chip));
+
+  pickupController.start(hero, selectedItem);
+  board.removeChip(selectedItem.chip);
+  pickupController.update([selectedItem, replacementItem], 0.01);
+
+  assert.equal(pickupController.states.get(hero).item, replacementItem);
+});
