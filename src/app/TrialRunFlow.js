@@ -1,7 +1,7 @@
 import { unlockClearedTrialMembers } from '../game/TrialCompletionProgress.js';
 
 export default class TrialRunFlow {
-  constructor({ clock, stageController, runController, recruitmentController, heroProgress, getMembers, getRemainingHours, openStageSelection }) {
+  constructor({ clock, stageController, runController, recruitmentController, heroProgress, getMembers, getRemainingHours, openStageSelection, onRunCompleted = () => {} }) {
     this.clock = clock;
     this.stageController = stageController;
     this.runController = runController;
@@ -10,6 +10,7 @@ export default class TrialRunFlow {
     this.getMembers = getMembers;
     this.getRemainingHours = getRemainingHours;
     this.openStageSelection = openStageSelection;
+    this.onRunCompleted = onRunCompleted;
   }
 
   update(heroes) {
@@ -31,7 +32,10 @@ export default class TrialRunFlow {
       members: this.getMembers(),
       heroProgress: this.heroProgress,
     });
-    if (!this.runController.isActive) this.clock.pause('run-complete');
+    if (!this.runController.isActive) {
+      this.clock.pause('run-complete');
+      if (wasRunActive) this.onRunCompleted({ outcome: this.runController.getOutcome(), members: this.getMembers() });
+    }
     else if (this.stageController.state === 'complete') this.openStageSelection();
   }
 }

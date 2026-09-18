@@ -46,6 +46,8 @@ import ModalSelect from './ModalSelect.js';
 import OverheadStatusSettingsController from './OverheadStatusSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
 import TrialRunFlow from './TrialRunFlow.js';
+import TrialRunResultModal from './TrialRunResultModal.js';
+import { createTrialRunResult } from '../game/TrialRunResult.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
 import { drawShopPanel as drawShopPanelPresentation, getShopPanelSnapshot } from './ShopPanelPresenter.js';
@@ -137,6 +139,7 @@ export async function startGame() {
     },
   });
   const runController = new RunController();
+  const trialRunResultModal = new TrialRunResultModal(document.querySelector('#trial-run-result'), { textRepository });
   const guildSystem = new GuildSystem(returnSystem, {
     getContributionPoints: () => battleSystem.contributionPoints,
     setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
@@ -192,6 +195,7 @@ export async function startGame() {
     getMembers: () => preparationHeroes,
     getRemainingHours: getRemainingTrialHours,
     openStageSelection,
+    onRunCompleted: ({ outcome, members }) => trialRunResultModal.show(createTrialRunResult({ outcome, members })),
   });
 
   function resizeCanvas() {

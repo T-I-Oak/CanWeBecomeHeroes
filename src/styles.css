@@ -1030,6 +1030,14 @@ body {
   background: rgb(18 27 41 / 72%);
 }
 
+.TrialRunResult {
+  background: rgb(8 13 20 / 78%);
+}
+
+.TrialRunResult.state-open {
+  animation: trial-run-result-backdrop-enter 320ms ease-out both;
+}
+
 .ModalDialog {
   --modal-dialog-padding: clamp(14px, 3vmin, 24px);
   --modal-body-gap: 16px;
@@ -1185,6 +1193,131 @@ body {
   color: var(--color-modal-title);
   font-size: 13px;
   font-weight: 800;
+}
+
+.TrialRunResult__Screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(680px, 100%);
+}
+
+.TrialRunResult__Dialog {
+  width: min(640px, 100%);
+}
+
+.TrialRunResult.state-open .TrialRunResult__Dialog {
+  animation: trial-run-result-dialog-enter 520ms 180ms cubic-bezier(.2, .78, .2, 1) both;
+}
+
+.TrialRunResult__Certificate {
+  display: grid;
+  gap: clamp(20px, 4vmin, 34px);
+  min-height: min(500px, 64dvh);
+  padding: clamp(22px, 5vmin, 48px);
+  color: #382f20;
+  background: linear-gradient(135deg, #fff5d6, #ead3a1);
+  border: 1px solid #b78a42;
+  box-shadow: inset 0 0 0 7px rgb(116 72 23 / 22%);
+}
+
+.TrialRunResult__Statement {
+  margin: 0;
+  font-size: clamp(15px, 2.6vmin, 20px);
+  line-height: 1.8;
+}
+
+.TrialRunResult__RecipientList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: Georgia, serif;
+  font-size: clamp(23px, 5vmin, 36px);
+  font-weight: 700;
+  text-align: center;
+}
+
+.TrialRunResult__Recipient {
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgb(93 60 23 / 38%);
+}
+
+.TrialRunResult__Issue {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 8px 16px;
+  font-size: 13px;
+}
+
+.TrialRunResult__Date,
+.TrialRunResult__Issuer {
+  margin: 0;
+}
+
+.TrialRunResult__Issuer {
+  grid-column: 1;
+}
+
+.TrialRunResult__Seal {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  aspect-ratio: 1;
+  color: #8c2c2c;
+  border: 3px double currentColor;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  transform: rotate(-12deg);
+}
+
+.TrialRunResult__FailureMessage {
+  margin: 0;
+  padding: clamp(26px, 7vmin, 60px) clamp(8px, 3vmin, 30px);
+  color: #e6d5bd;
+  font-size: clamp(17px, 3vmin, 23px);
+  line-height: 1.7;
+  text-align: center;
+}
+
+.TrialRunResult__Confetti {
+  position: absolute;
+  z-index: 1;
+  inset: -22dvh 0 auto;
+  height: 42dvh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.TrialRunResult__ConfettiPiece {
+  position: absolute;
+  left: var(--trial-result-confetti-position);
+  width: 9px;
+  height: 16px;
+  background: var(--trial-result-confetti-color);
+}
+
+.TrialRunResult.state-open .TrialRunResult__ConfettiPiece {
+  animation: trial-run-result-confetti-fall 1450ms var(--trial-result-confetti-delay) ease-in both;
+}
+
+@keyframes trial-run-result-backdrop-enter {
+  from { background-color: rgb(8 13 20 / 0%); }
+}
+
+@keyframes trial-run-result-dialog-enter {
+  from { opacity: 0; transform: translateY(-28dvh); }
+}
+
+@keyframes trial-run-result-confetti-fall {
+  from { opacity: 0; transform: translateY(-10dvh) rotate(0deg); }
+  15% { opacity: 1; }
+  to { opacity: 0; transform: translateY(54dvh) rotate(300deg); }
 }
 
 .StartPartySelection__Dialog {

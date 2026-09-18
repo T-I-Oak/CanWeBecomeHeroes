@@ -33,6 +33,7 @@ test('trial run flow pauses only after the run reaches a terminal state', () => 
     isActive: true,
     state: 'active',
     update() { this.isActive = false; this.state = 'expired'; },
+    getOutcome: () => ({ state: 'expired' }),
   };
   const flow = new TrialRunFlow({
     clock: { pause: (reason) => calls.push(reason) },
@@ -48,4 +49,31 @@ test('trial run flow pauses only after the run reaches a terminal state', () => 
   flow.update([]);
 
   assert.deepEqual(calls, ['run-complete']);
+});
+
+test('trial run flow publishes one terminal result when an active run ends', () => {
+  const results = [];
+  const members = [{ heroId: 'Avery', profession: 'swordfighter' }];
+  const runController = {
+    isActive: true,
+    state: 'active',
+    update() { this.isActive = false; this.state = 'cleared'; },
+    getOutcome: () => ({ state: 'cleared' }),
+  };
+  const flow = new TrialRunFlow({
+    clock: { pause() {} },
+    stageController: { currentStage: null, state: 'active', setJoinedCount() {} },
+    runController,
+    recruitmentController: { joinedCount: 0, processCompletedStage() {} },
+    heroProgress: { unlockMany() {} },
+    getMembers: () => members,
+    getRemainingHours: () => 2,
+    openStageSelection() {},
+    onRunCompleted: result => results.push(result),
+  });
+
+  flow.update([]);
+  flow.update([]);
+
+  assert.deepEqual(results, [{ outcome: { state: 'cleared' }, members }]);
 });
