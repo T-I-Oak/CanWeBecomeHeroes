@@ -228,6 +228,33 @@ test('訓練中のHeroは対象ステータスを成長させてスタミナを�
   assert.equal(hero.stamina, 0);
 });
 
+test('戦闘で離脱したHeroは通常装備を失い、行き先Itemだけを倉庫へ戻して準備エリアへ帰還する', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const hero = new HeroFactory().create({
+    profession: 'mage', x: 500, y: 500, stamina: 0, bounds: { x: 0, y: 0, width: 600, height: 400 },
+  });
+  hero.currentArea = 'battle';
+  const weapon = itemFactory.createWeapon({ weapon: 'staff', tags: [], x: 0, y: 0 });
+  const destination = itemFactory.createDestination({ destination: 'hero-license', x: 0, y: 0 });
+  hero.equip(weapon);
+  hero.equip(destination);
+  board.addChip(hero.chip);
+  const returned = [];
+  const discarded = [];
+  const returns = new FacilityReturnSystem(board, new HeroSlotManager(), {
+    onItemReturned: (item) => returned.push(item),
+    onItemDiscarded: (item) => discarded.push(item),
+  });
+
+  returns.begin(hero);
+
+  assert.deepEqual(returned, [destination]);
+  assert.deepEqual(discarded, [weapon]);
+  assert.deepEqual(Object.values(hero.equipment), [null, null, null, null, null]);
+  assert.equal(hero.targetArea, 'preparation');
+});
+
 test('手動で一時停止している間はゲーム状態を更新しない', () => {
   const clock = new GameClock();
   clock.togglePaused();
