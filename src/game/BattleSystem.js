@@ -44,7 +44,7 @@ export default class BattleSystem {
       recordDamage: (...args) => this.recordDamage(...args),
       recordDefeat: (...args) => this.recordDefeat(...args),
       onHeroDepleted: (hero) => this.returnSystem?.begin(hero),
-      onEnemyDamaged: (enemy) => this.damageReactionSystem.resolveEnemyDamage(enemy),
+      onDamageApplied: (damageEvent) => this.damageReactionSystem.resolve(damageEvent),
       onEnemyDefeated: (enemy) => this.defeatEnemy(enemy),
       onDamageResolved: (target) => this.uniqueSkillSystem.refreshBlessingSkills(target),
     });
@@ -169,7 +169,7 @@ export default class BattleSystem {
   getLightningTargets(target, participants, value) { return this.attributeSystem.getLightningTargets(target, participants, value); }
   propagate(actor, target, type, damage, participants) { this.attributeSystem.propagate(actor, target, type, damage, participants); }
   applyDamage(actor, target, type, damage, critical = false) { return this.damageSystem.applyDamage(actor, target, type, damage, critical); }
-  resolveDamageUniqueSkill(enemy) { return this.damageReactionSystem.resolveEnemyDamage(enemy); }
+  resolveDamageUniqueSkill(enemy) { return this.damageReactionSystem.resolve({ target: enemy }); }
   resolveActionUniqueSkill(enemy, participants = []) { return this.actionResolutionSystem.resolveActionUniqueSkill(enemy, participants); }
   recordMiss(actor, target) { this.actionLog.recordMiss(actor, target); }
   recordDamage(actor, target, damage, critical) { this.actionLog.recordDamage(actor, target, damage, critical); }
