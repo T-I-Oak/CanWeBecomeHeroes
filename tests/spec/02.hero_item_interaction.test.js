@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
+import Chip from '../../src/chips/Chip.js';
 import HeroItemInteractionController from '../../src/game/HeroItemInteractionController.js';
 import HeroSlotManager from '../../src/game/HeroSlotManager.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
@@ -11,6 +12,10 @@ import ShopState from '../../src/game/ShopState.js';
 import ShopSystem, { SHOP_PURCHASE_DELIVERY_TICKS } from '../../src/game/ShopSystem.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
 import GameClock from '../../src/game/GameClock.js';
+
+function createHeroSlotCandidate(id) {
+  return { chip: new Chip({ id, type: 'hero', x: 0, y: 0, weight: 1, centerPath: '', tagPaths: [] }), targetSlotId: null, currentSlotId: null };
+}
 
 test('買い物袋には倉庫Itemを3個まで格納でき、行き先Itemは格納できない', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
@@ -89,4 +94,24 @@ test('課題選択などのモーダル停止は手動停止とは別の理由�
   clock.resume('stage-selection');
   assert.ok(clock.advance(0.02, (deltaSeconds) => { elapsed += deltaSeconds; }) > 0);
   assert.ok(elapsed > 0);
+});
+
+test('戦闘Heroは予約済みスロットを除き、2、3、1、4の順に戦闘スロットを確保する', () => {
+  const manager = new HeroSlotManager();
+  const heroes = [1, 2, 3, 4].map(createHeroSlotCandidate);
+
+  assert.deepEqual(heroes.map((hero) => manager.reserve(hero, 'battle').id), ['battle-2', 'battle-3', 'battle-1', 'battle-4']);
+  assert.equal(manager.reserve(createHeroSlotCandidate(5), 'battle'), null);
+});
+
+test('Heroはスロット到着時に予約を占有へ移し、移動範囲をスロット内に制限する', () => {
+  const manager = new HeroSlotManager();
+  const hero = createHeroSlotCandidate(1);
+  manager.reserve(hero, 'shop');
+
+  assert.equal(hero.targetSlotId, 'shop-1');
+  assert.equal(manager.arrive(hero), true);
+  assert.equal(hero.targetSlotId, null);
+  assert.equal(hero.currentSlotId, 'shop-1');
+  assert.equal(hero.chip.bounds.width, 224);
 });
