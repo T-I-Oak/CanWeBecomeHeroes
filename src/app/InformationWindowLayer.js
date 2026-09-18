@@ -2,12 +2,11 @@ import { createInformationElement as createElement } from './InformationWindowEl
 import InformationWindowReferenceRenderer from './InformationWindowReferenceRenderer.js';
 import CatalogInformationRenderer from './CatalogInformationRenderer.js';
 import EntityInformationRenderer from './EntityInformationRenderer.js';
+import InformationWindowPositioner from './InformationWindowPositioner.js';
+import InformationWindowDragController from './InformationWindowDragController.js';
 
 const CATALOG_INFORMATION_TYPES = Object.freeze(['tag', 'status', 'term', 'facility', 'area']);
 const ENTITY_INFORMATION_TYPES = Object.freeze(['entity', 'enemy-projection', 'item', 'unique-skill']);
-const WINDOW_EDGE_MARGIN = 12;
-const WINDOW_ANCHOR_GAP = 16;
-
 function createCompactIcon(isCompact) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.classList.add('InformationWindow__CompactIcon');
@@ -33,6 +32,8 @@ export default class InformationWindowLayer {
     this.references = new InformationWindowReferenceRenderer({ textRepository, open });
     this.catalogRenderer = new CatalogInformationRenderer({ textRepository, references: this.references, open });
     this.entityRenderer = new EntityInformationRenderer({ textRepository, references: this.references, open });
+    this.positioner = new InformationWindowPositioner();
+    this.dragController = new InformationWindowDragController({ manager, positioner: this.positioner });
     this.element.addEventListener('pointerdown', (event) => {
       if (event.target.closest?.('.InformationWindow')) this.manager.setInteracting(true);
     }, true);
@@ -83,57 +84,14 @@ export default class InformationWindowLayer {
     pin.addEventListener('pointerdown', (event) => event.stopPropagation());
     pin.addEventListener('click', (event) => { event.stopPropagation(); this.manager.togglePin(entry.id); });
     title.append(compact, pin);
-    title.addEventListener('pointerdown', (event) => this.#startDrag(event, windowElement, entry));
-  }
-
-  #startDrag(event, windowElement, entry) {
-    if (event.button !== 0 || event.target.closest('.InformationWindow__Pin, .InformationWindow__Compact')) return;
-    const bounds = windowElement.getBoundingClientRect();
-    const offset = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
-    const move = (moveEvent) => {
-      const position = this.#constrainPosition(windowElement, moveEvent.clientX - offset.x, moveEvent.clientY - offset.y);
-      windowElement.style.left = `${position.x}px`;
-      windowElement.style.top = `${position.y}px`;
-      windowElement.style.transform = 'none';
-    };
-    const finish = (upEvent) => {
-      windowElement.removeEventListener('pointermove', move);
-      windowElement.removeEventListener('pointerup', finish);
-      this.manager.setDragging(false);
-      this.manager.setPosition(entry.id, this.#constrainPosition(windowElement, upEvent.clientX - offset.x, upEvent.clientY - offset.y));
-    };
-    this.manager.setDragging(true);
-    windowElement.setPointerCapture(event.pointerId);
-    windowElement.addEventListener('pointermove', move);
-    windowElement.addEventListener('pointerup', finish, { once: true });
-    event.preventDefault();
+    title.addEventListener('pointerdown', (event) => this.dragController.begin(event, windowElement, entry));
   }
 
   #positionWindow(windowElement, entry) {
     const bounds = windowElement.getBoundingClientRect();
-    if (entry.position) {
-      const position = this.#constrainPosition(windowElement, entry.position.x, entry.position.y);
-      windowElement.style.left = `${position.x}px`;
-      windowElement.style.top = `${position.y}px`;
-    } else if (!entry.anchor) {
-      windowElement.style.left = `${Math.max(WINDOW_EDGE_MARGIN, (globalThis.innerWidth - bounds.width) / 2)}px`;
-      windowElement.style.top = `${Math.max(WINDOW_EDGE_MARGIN, (globalThis.innerHeight - bounds.height) / 2)}px`;
-    } else {
-      let x = entry.anchor.x + WINDOW_ANCHOR_GAP;
-      if (x + bounds.width > globalThis.innerWidth - WINDOW_EDGE_MARGIN) x = entry.anchor.x - WINDOW_ANCHOR_GAP - bounds.width;
-      x = Math.max(WINDOW_EDGE_MARGIN, Math.min(x, globalThis.innerWidth - bounds.width - WINDOW_EDGE_MARGIN));
-      const y = Math.max(WINDOW_EDGE_MARGIN, Math.min(entry.anchor.y - 24, globalThis.innerHeight - bounds.height - WINDOW_EDGE_MARGIN));
-      windowElement.style.left = `${x}px`;
-      windowElement.style.top = `${y}px`;
-    }
+    const position = this.positioner.getPosition(bounds, entry);
+    windowElement.style.left = `${position.x}px`;
+    windowElement.style.top = `${position.y}px`;
     windowElement.style.transform = 'none';
-  }
-
-  #constrainPosition(windowElement, x, y) {
-    const bounds = windowElement.getBoundingClientRect();
-    return {
-      x: Math.max(WINDOW_EDGE_MARGIN, Math.min(x, globalThis.innerWidth - bounds.width - WINDOW_EDGE_MARGIN)),
-      y: Math.max(WINDOW_EDGE_MARGIN, Math.min(y, globalThis.innerHeight - bounds.height - WINDOW_EDGE_MARGIN)),
-    };
   }
 }
