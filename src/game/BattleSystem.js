@@ -7,32 +7,29 @@ import UniqueSkillSystem from './UniqueSkillSystem.js';
 import CombatTargetingSystem from './CombatTargetingSystem.js';
 import CombatAttributeSystem from './CombatAttributeSystem.js';
 import CombatDamageSystem from './CombatDamageSystem.js';
+import CombatActionGaugeSystem, {
+  ACTION_GAUGE_BASE_RATE,
+  ACTION_GAUGE_WEIGHT_SCALE,
+  BOW_GAUGE_SHORTENING_PER_WEAPON,
+  getActionGaugeBaseMaximum,
+  getActionGaugeMaximum,
+  MAX_BOW_GAUGE_SHORTENING_WEAPONS,
+} from './CombatActionGaugeSystem.js';
 import { getCombatRandomModifier } from './CombatRandom.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
-const ACTION_GAUGE_BASE_RATE = 13 / 300;
-const ACTION_GAUGE_WEIGHT_SCALE = 25;
 export const WEAPON_ATTACKS = Object.freeze({ sword: ['power', 1], shield: ['power', 1 / 8], claw: ['power', 1 / 8], bow: ['power', 1 / 2], banner: ['magic', 1 / 8], staff: ['magic', 1], 'holy-book': ['magic', 1 / 4], orb: ['power', 1 / 8], 'holy-symbol': ['magic', 1 / 8], 'tarot-cards': ['magic', 1 / 8], unarmed: ['power', 1 / 8] });
 const ENEMY_DROP_SETS = Object.freeze({ regular: Object.freeze({ setCount: 1, tagBudget: 5 }), midBoss: Object.freeze({ setCount: 2, tagBudget: 10 }), boss: Object.freeze({ setCount: 3, tagBudget: 15 }) });
-const BOW_GAUGE_SHORTENING_PER_WEAPON = 0.1;
-const MAX_BOW_GAUGE_SHORTENING_WEAPONS = 5;
-const ACTION_TILT_RECOVERY_RADIANS = Math.PI / 24;
 export const BATTLE_VICTORY_DELAY_TICKS = 200;
 export function getAttackDamage(actor, attack) { const [stat, multiplier] = Array.isArray(attack) ? attack : [attack.stat, attack.multiplier]; return ((actor.getStatus(stat) + 0.5) / (stat === 'magic' ? 4 : 2)) * multiplier; }
 export function getRandomModifier(random = Math.random) { return getCombatRandomModifier(random); }
-export function getActionGaugeBaseMaximum(actor) { return 15 - actor.getStatus('speed'); }
-export function getActionGaugeMaximum(actor) {
-  const baseMaximum = getActionGaugeBaseMaximum(actor);
-  const equipment = Array.isArray(actor.equipment) ? actor.equipment : Object.values(actor.equipment);
-  const bowCount = equipment.filter((item) => item?.category === 'weapon' && item.type === 'bow').length;
-  const shortening = Math.min(bowCount, MAX_BOW_GAUGE_SHORTENING_WEAPONS) * BOW_GAUGE_SHORTENING_PER_WEAPON;
-  return baseMaximum * (1 - shortening);
-}
+export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
+    this.actionGaugeSystem = actionGaugeSystem;
     this.attributeSystem = attributeSystem ?? new CombatAttributeSystem({ board, effects, random, applyDamage: (...args) => this.applyDamage(...args) });
     this.damageSystem = damageSystem ?? new CombatDamageSystem({
       random,
@@ -92,30 +89,13 @@ export default class BattleSystem {
   }
   updateAttributes(participants, delta) { this.attributeSystem.update(participants, delta); }
   updateActor(actor, participants, delta) {
-    const max = this.updateActionGaugeMaximum(actor);
-    actor.chip.actionGauge = (actor.chip.actionGauge ?? 0) + ACTION_GAUGE_BASE_RATE / (1 + (actor.getCarriedWeight() / ACTION_GAUGE_WEIGHT_SCALE) ** 2) * delta;
-    if (actor.chip.actionGauge < max) return;
-    actor.chip.actionGauge = 0;
-    this.restoreActionTilt(actor);
+    if (!this.actionGaugeSystem.advance(actor, delta)) return;
     const target = this.findTarget(actor, participants);
     if (target) this.resolveAction(actor, target, participants);
     else if (actor.isPhantomHead) this.returnAreaHead(actor);
     else this.uniqueSkillSystem.refreshBlessingSkills(actor);
   }
-  restoreActionTilt(actor) {
-    const { chip } = actor;
-    if (Math.abs(chip.tilt) <= ACTION_TILT_RECOVERY_RADIANS) {
-      chip.tilt = 0;
-      return;
-    }
-    chip.tilt -= Math.sign(chip.tilt) * ACTION_TILT_RECOVERY_RADIANS;
-  }
-  updateActionGaugeMaximum(actor) {
-    const maximum = getActionGaugeMaximum(actor);
-    actor.chip.actionGaugeBaseMaximum = getActionGaugeBaseMaximum(actor);
-    actor.chip.actionGaugeMaximum = maximum;
-    return maximum;
-  }
+  updateActionGaugeMaximum(actor) { return this.actionGaugeSystem.updateMaximum(actor); }
   findTarget(actor, participants) { return this.targetingSystem.findTarget(actor, participants); }
   rangeTargets(actor, target, participants) { return this.targetingSystem.rangeTargets(actor, target, participants); }
   createRangeLane(actor, foes) { return this.targetingSystem.createRangeLane(actor, foes); }
