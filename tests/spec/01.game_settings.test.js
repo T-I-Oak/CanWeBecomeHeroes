@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import RunController, { TRIAL_FINAL_STAGE_NUMBER } from '../../src/game/RunController.js';
+import Camera from '../../src/game/Camera.js';
 import { unlockClearedTrialMembers } from '../../src/game/TrialCompletionProgress.js';
 import StartPartySelection from '../../src/game/StartPartySelection.js';
 import { createRunScenario } from '../../src/game/RunScenario.js';
@@ -208,4 +209,16 @@ test('武器は装備順に対象候補を絞り、残った候補は近さと�
   const heroLow = { chip: { type: 'hero', x: 1100, y: 500 }, stamina: 2 };
   [enemyActor, heroHigh, heroLow].forEach((entity) => board.addChip(entity.chip));
   assert.equal(battle.findTarget(enemyActor, [enemyActor, heroHigh, heroLow]), heroHigh);
+});
+
+test('ズーム操作はポインタ位置にある盤面を見失わない', () => {
+  const camera = new Camera({ width: 2400, height: 1800 });
+  const pointer = { x: 240, y: 180 };
+  camera.setViewport(800, 600);
+  camera.setZoom(0.75, 400, 300);
+  const worldPoint = camera.toWorld(pointer.x, pointer.y);
+
+  camera.setZoomAtScreenPoint(1.1, pointer.x, pointer.y);
+
+  assert.deepEqual(camera.toWorld(pointer.x, pointer.y), worldPoint);
 });
