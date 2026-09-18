@@ -83,6 +83,27 @@ test('Heroの目的Itemが盤面から消えた場合は、次に装備可能な
   assert.equal(pickupController.states.get(hero).item, replacementItem);
 });
 
+test('Heroは指定Itemを拾った後に未装備部位を自動探索し、探索後は戦闘スロットへ向かう', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const pickupController = new ItemPickupController(board, new HeroSlotManager());
+  const itemFactory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700, stamina: 3 });
+  const selectedItem = itemFactory.createWeapon({ weapon: 'staff', tags: [], x: 700, y: 700 });
+  const automaticItem = itemFactory.createBodyItem({ part: 'head', tags: [], x: 700, y: 700 });
+  [hero, selectedItem, automaticItem].forEach((entity) => board.addChip(entity.chip));
+
+  pickupController.start(hero, selectedItem);
+  pickupController.update([selectedItem, automaticItem], 0);
+  pickupController.update([selectedItem, automaticItem], 0.3);
+  pickupController.update([selectedItem, automaticItem], 0);
+  pickupController.update([selectedItem, automaticItem], 0.3);
+
+  assert.equal(hero.equipment.rightHand, selectedItem);
+  assert.equal(hero.equipment.head, automaticItem);
+  assert.equal(hero.targetArea, 'battle');
+  assert.equal(hero.targetSlotId, 'battle-2');
+});
+
 test('手動で一時停止している間はゲーム状態を更新しない', () => {
   const clock = new GameClock();
   clock.togglePaused();
