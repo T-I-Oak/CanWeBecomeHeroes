@@ -5,6 +5,7 @@ import Camera from '../../src/game/Camera.js';
 import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../../src/game/GameSpeedSettings.js';
 import { unlockClearedTrialMembers } from '../../src/game/TrialCompletionProgress.js';
 import HeroProgressRepository from '../../src/game/HeroProgressRepository.js';
+import CombatStageLifecycle, { BATTLE_VICTORY_DELAY_TICKS } from '../../src/game/CombatStageLifecycle.js';
 import StartPartySelection from '../../src/game/StartPartySelection.js';
 import { createRunScenario } from '../../src/game/RunScenario.js';
 import BattleSystem from '../../src/game/BattleSystem.js';
@@ -141,6 +142,21 @@ test('試験課題は進行に応じてレベルが上がり、第7試験はボ�
 
   assert.ok(firstChoices.every((choice) => choice.kind === 'regular' && choice.level === 5));
   assert.ok(finalChoices.every((choice) => choice.kind === 'boss' && choice.level === 11));
+});
+
+test('課題の戦闘は敵の着地後に始まり、勝利表示の後に完了する', () => {
+  const lifecycle = new CombatStageLifecycle();
+  const enemy = { chip: { isSettled: false } };
+  lifecycle.markEnemyEncountered([enemy]);
+
+  assert.equal(lifecycle.startWhenReady([enemy], 10), false);
+  enemy.chip.isSettled = true;
+  assert.equal(lifecycle.startWhenReady([enemy], 20), true);
+  assert.equal(lifecycle.markVictory(100), true);
+  lifecycle.updateVictoryDelay(BATTLE_VICTORY_DELAY_TICKS - 1, 299);
+  assert.equal(lifecycle.isComplete(), false);
+  lifecycle.updateVictoryDelay(1, 300);
+  assert.equal(lifecycle.isComplete(), true);
 });
 
 test('試験期限は開始時に7日で、ギルド表示は残り期限と延長見込だけを示す', () => {
