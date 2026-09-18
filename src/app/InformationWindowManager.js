@@ -1,19 +1,20 @@
+import InformationWindowTree from './InformationWindowTree.js';
+
 const PAUSE_REASON = 'information-window';
 
 export default class InformationWindowManager {
-  constructor({ clock, onChange = null, isTargetAlive = null } = {}) {
+  constructor({ clock, onChange = null, isTargetAlive = null, tree = new InformationWindowTree() } = {}) {
     this.clock = clock;
     this.onChange = onChange;
     this.isTargetAlive = isTargetAlive;
     this.pauseOnOpen = false;
-    this.windows = [];
-    this.nextId = 1;
+    this.tree = tree;
     this.isDragging = false;
     this.isInteracting = false;
   }
 
   get entries() {
-    return this.windows.map((entry) => ({ ...entry }));
+    return this.tree.entries;
   }
 
   setPauseOnOpen(enabled) {
@@ -22,62 +23,36 @@ export default class InformationWindowManager {
   }
 
   open({ type, data, parentId = null, anchor = null }) {
-    const existing = this.windows.find((entry) => this.#isSameTarget(entry, type, data));
-    if (existing) return existing;
-    if (parentId !== null && !this.windows.some((entry) => entry.id === parentId)) parentId = null;
-    if (parentId === null) this.windows = this.windows.filter((entry) => entry.pinned);
-    else this.windows = this.windows.filter((entry) => entry.pinned || !this.#isDescendantOf(entry.id, parentId));
-    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId, anchor, position: null, pinned: false, compact: false });
-    this.windows.push(entry);
-    this.#notify();
+    const { entry, changed } = this.tree.open({ type, data, parentId, anchor });
+    if (changed) this.#notify();
     return entry;
   }
 
   focus(id) {
-    if (!id || !this.windows.some((entry) => entry.id === id)) {
-      this.clear();
-      return;
-    }
-    const retained = new Set(this.#getAncestorIds(id));
-    const next = this.windows.filter((entry) => entry.pinned || retained.has(entry.id));
-    if (next.length === this.windows.length) return;
-    this.windows = next;
-    this.#notify();
+    if (this.tree.focus(id)) this.#notify();
   }
 
   clear({ includePinned = false } = {}) {
-    const next = includePinned ? [] : this.windows.filter((entry) => entry.pinned);
-    if (next.length === this.windows.length) return;
-    this.windows = next;
-    this.#notify();
+    if (this.tree.clear({ includePinned })) this.#notify();
   }
 
   togglePin(id) {
-    const index = this.windows.findIndex((entry) => entry.id === id);
-    if (index < 0) return null;
-    const entry = this.windows[index];
-    const next = Object.freeze({ ...entry, pinned: !entry.pinned });
-    this.windows.splice(index, 1, next);
+    const next = this.tree.togglePin(id);
+    if (!next) return null;
     this.#notify();
     return next;
   }
 
   toggleCompact(id) {
-    const index = this.windows.findIndex((entry) => entry.id === id);
-    if (index < 0) return null;
-    const entry = this.windows[index];
-    const next = Object.freeze({ ...entry, compact: !entry.compact });
-    this.windows.splice(index, 1, next);
+    const next = this.tree.toggleCompact(id);
+    if (!next) return null;
     this.#notify();
     return next;
   }
 
   setPosition(id, position) {
-    const index = this.windows.findIndex((entry) => entry.id === id);
-    if (index < 0) return null;
-    const entry = this.windows[index];
-    const next = Object.freeze({ ...entry, position: { x: position.x, y: position.y } });
-    this.windows.splice(index, 1, next);
+    const next = this.tree.setPosition(id, position);
+    if (!next) return null;
     this.#notify();
     return next;
   }
@@ -91,7 +66,7 @@ export default class InformationWindowManager {
   }
 
   refreshDynamicEntries() {
-    if (this.isDragging || this.isInteracting || !this.windows.some((entry) => this.#getTarget(entry))) return;
+    if (this.isDragging || this.isInteracting || !this.tree.entries.some((entry) => this.#getTarget(entry))) return;
     this.onChange?.(this.entries);
   }
 
@@ -101,47 +76,10 @@ export default class InformationWindowManager {
 
   closeInvalidEntries() {
     if (!this.isTargetAlive) return;
-    const invalid = this.windows.filter((entry) => {
+    if (this.tree.removeWhere((entry) => {
       const target = this.#getTarget(entry);
       return target && !this.isTargetAlive(target);
-    });
-    if (invalid.length === 0) return;
-    const ids = new Set(invalid.map((entry) => entry.id));
-    this.windows = this.windows.filter((entry) => !ids.has(entry.id));
-    this.#notify();
-  }
-
-  #getAncestorIds(id) {
-    const ids = [];
-    let currentId = id;
-    while (currentId) {
-      ids.push(currentId);
-      currentId = this.windows.find((entry) => entry.id === currentId)?.parentId ?? null;
-    }
-    return ids;
-  }
-
-  #isDescendantOf(id, ancestorId) {
-    let currentId = this.windows.find((entry) => entry.id === id)?.parentId ?? null;
-    while (currentId) {
-      if (currentId === ancestorId) return true;
-      currentId = this.windows.find((entry) => entry.id === currentId)?.parentId ?? null;
-    }
-    return false;
-  }
-
-  #isSameTarget(entry, type, data) {
-    if (entry.type !== type) return false;
-    if (type === 'tag') return entry.data.tag === data.tag;
-    if (type === 'status') return entry.data.status === data.status;
-    if (type === 'entity') return entry.data.entity === data.entity;
-    if (type === 'item') return entry.data.item === data.item;
-    if (type === 'facility') return entry.data.facility === data.facility;
-    if (type === 'area') return entry.data.area === data.area;
-    if (type === 'term') return entry.data.term === data.term;
-    if (type === 'unique-skill') return entry.data.uniqueSkill.id === data.uniqueSkill.id && entry.data.uniqueSkill.level === data.uniqueSkill.level;
-    if (type === 'enemy-projection') return entry.data.source === data.source && entry.data.enemyId === data.enemyId;
-    return entry.data === data;
+    })) this.#notify();
   }
 
   #getTarget(entry) {
@@ -153,7 +91,7 @@ export default class InformationWindowManager {
 
   #notify() {
     if (this.clock) {
-      if (this.pauseOnOpen && this.windows.some((entry) => !entry.pinned)) this.clock.pause(PAUSE_REASON);
+      if (this.pauseOnOpen && this.tree.hasUnpinnedEntries()) this.clock.pause(PAUSE_REASON);
       else this.clock.resume(PAUSE_REASON);
     }
     this.onChange?.(this.entries);
