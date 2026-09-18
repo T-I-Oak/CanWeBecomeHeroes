@@ -4,6 +4,7 @@ import RunController, { TRIAL_FINAL_STAGE_NUMBER } from '../../src/game/RunContr
 import Camera from '../../src/game/Camera.js';
 import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../../src/game/GameSpeedSettings.js';
 import { unlockClearedTrialMembers } from '../../src/game/TrialCompletionProgress.js';
+import HeroProgressRepository from '../../src/game/HeroProgressRepository.js';
 import StartPartySelection from '../../src/game/StartPartySelection.js';
 import { createRunScenario } from '../../src/game/RunScenario.js';
 import BattleSystem from '../../src/game/BattleSystem.js';
@@ -61,6 +62,22 @@ test('クリアー済みのゲームランは、その時点のメンバーを�
   assert.equal(unlockClearedTrialMembers({ wasRunActive: true, runController: clearedRun, members, heroProgress }), true);
   assert.equal(unlockClearedTrialMembers({ wasRunActive: false, runController: clearedRun, members, heroProgress }), false);
   assert.deepEqual(unlockCalls, [['swordfighter', 'mage']]);
+});
+
+test('試験合格で解放したHeroは次回のパーティー選択に引き継がれる', () => {
+  const values = new Map();
+  const heroProgress = new HeroProgressRepository({ getValue: (key) => values.get(key), setValue: (key, value) => values.set(key, value) });
+  const run = { state: 'cleared' };
+
+  assert.equal(unlockClearedTrialMembers({
+    wasRunActive: true,
+    runController: run,
+    members: [{ profession: 'swordfighter' }, { profession: 'mage' }, { profession: 'guard' }],
+    heroProgress,
+  }), true);
+
+  assert.deepEqual(new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() }).professionIds, ['swordfighter', 'guard']);
+  assert.deepEqual(heroProgress.getUnlockedProfessionIds(), ['swordfighter', 'guard', 'mage']);
 });
 
 test('試験ゲームランは最終ボス勝利前に期限切れなら不合格となる', () => {
