@@ -39,6 +39,26 @@ test('試験ゲームランは第7試験のボス勝利で合格となり、そ�
   assert.deepEqual(unlocked, ['swordfighter', 'mage', 'guard']);
 });
 
+test('ゲームラン中に加入したHeroは、試験クリアーまで解放済みにならない', () => {
+  const unlockCalls = [];
+  const heroProgress = { unlockMany: (professionIds) => unlockCalls.push(professionIds) };
+  const members = [{ profession: 'swordfighter' }, { profession: 'mage' }];
+
+  assert.equal(unlockClearedTrialMembers({ wasRunActive: true, runController: { state: 'active' }, members, heroProgress }), false);
+  assert.deepEqual(unlockCalls, []);
+});
+
+test('クリアー済みのゲームランは、その時点のメンバーを一度だけ解放する', () => {
+  const unlockCalls = [];
+  const heroProgress = { unlockMany: (professionIds) => unlockCalls.push(professionIds) };
+  const members = [{ profession: 'swordfighter' }, { profession: 'mage' }];
+  const clearedRun = { state: 'cleared' };
+
+  assert.equal(unlockClearedTrialMembers({ wasRunActive: true, runController: clearedRun, members, heroProgress }), true);
+  assert.equal(unlockClearedTrialMembers({ wasRunActive: false, runController: clearedRun, members, heroProgress }), false);
+  assert.deepEqual(unlockCalls, [['swordfighter', 'mage']]);
+});
+
 test('試験ゲームランは最終ボス勝利前に期限切れなら不合格となる', () => {
   const run = new RunController();
 
