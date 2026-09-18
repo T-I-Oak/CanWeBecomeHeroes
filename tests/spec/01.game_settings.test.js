@@ -4,6 +4,12 @@ import RunController, { TRIAL_FINAL_STAGE_NUMBER } from '../../src/game/RunContr
 import { unlockClearedTrialMembers } from '../../src/game/TrialCompletionProgress.js';
 import StartPartySelection from '../../src/game/StartPartySelection.js';
 import { createRunScenario } from '../../src/game/RunScenario.js';
+import BattleSystem from '../../src/game/BattleSystem.js';
+import EnemyFactory from '../../src/game/EnemyFactory.js';
+import EnemySpawnSystem from '../../src/game/EnemySpawnSystem.js';
+import ShopState from '../../src/game/ShopState.js';
+import StageController from '../../src/game/StageController.js';
+import EntityRegistry from '../../src/game/EntityRegistry.js';
 
 test('試験ゲームランは第7試験のボス勝利で合格となり、その時点の仲間を解放する', () => {
   const run = new RunController();
@@ -49,4 +55,24 @@ test('解放済みHeroから選んだ2人で開始し、それぞれ2組ずつ�
 
   assert.deepEqual(heroes.map((hero) => hero.profession), ['mage', 'swordfighter']);
   assert.equal(warehouseItems.filter((item) => item.category !== 'destination').length, 20);
+});
+
+test('第N試験は3件の課題候補から1件だけを選んで開始し、選ばなかった敵は出現しない', () => {
+  const added = [];
+  const enemySpawn = new EnemySpawnSystem({ add: (enemy) => added.push(enemy) });
+  const battleSystem = new BattleSystem({ chips: [] }, { controller: {}, itemFactory: {} });
+  const shop = new ShopState({ saleTag: 'valor', nextTag: 'iron' });
+  const entityRegistry = new EntityRegistry();
+  const stages = new StageController({ enemySpawn, battleSystem, enemyFactory: new EnemyFactory(), shopState: shop, entityRegistry, random: () => 0.5 });
+
+  const choices = stages.createStageChoices({ stageNumber: 1 });
+  const stage = stages.selectStage(choices[1].id, { tick: 500 });
+
+  assert.equal(choices.length, 3);
+  assert.equal(stage.id, choices[1].id);
+  assert.equal(stages.state, 'spawning');
+  assert.ok(stage.enemies.every((enemy) => entityRegistry.isAlive(enemy)));
+  assert.ok(choices.filter((choice) => choice.id !== stage.id).flatMap((choice) => choice.enemies).every((enemy) => !entityRegistry.isAlive(enemy)));
+  enemySpawn.update(700);
+  assert.equal(added.length, 1);
 });
