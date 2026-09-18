@@ -274,6 +274,32 @@ test('武器は装備順に対象候補を絞り、残った候補は近さと�
   assert.equal(battle.findTarget(enemyActor, [enemyActor, heroHigh, heroLow]), heroHigh);
 });
 
+test('敵を倒す戦闘行動は貢献ポイントと装備報酬を倉庫へ追加する', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 3 });
+  hero.equip(itemFactory.createWeapon({ weapon: 'sword', tags: [], x: 0, y: 0 }));
+  hero.currentArea = 'battle';
+  hero.chip.height = 0;
+  enemy.chip.height = 0;
+  [hero, enemy].forEach((entity) => board.addChip(entity.chip));
+  const dropped = [];
+  const battle = new BattleSystem(board, {
+    controller: { remove() {}, addToWarehouse: (item) => dropped.push(item) },
+    itemFactory,
+    random: () => 0,
+  });
+
+  battle.update({ heroes: [hero], enemies: [enemy], tick: 0, tickDelta: 1000 });
+  battle.update({ heroes: [hero], enemies: [enemy], tick: 1, tickDelta: 1000 });
+
+  assert.equal(board.chips.includes(enemy.chip), false);
+  assert.equal(battle.contributionPoints, 10);
+  assert.equal(dropped.length, 5);
+  assert.equal(dropped.reduce((total, item) => total + item.tags.length, 0), 5);
+});
+
 test('ズーム操作はポインタ位置にある盤面を見失わない', () => {
   const camera = new Camera({ width: 2400, height: 1800 });
   const pointer = { x: 240, y: 180 };
