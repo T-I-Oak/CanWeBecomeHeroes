@@ -6,6 +6,7 @@ import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../../src/
 import { unlockClearedTrialMembers } from '../../src/game/TrialCompletionProgress.js';
 import HeroProgressRepository from '../../src/game/HeroProgressRepository.js';
 import CombatStageLifecycle, { BATTLE_VICTORY_DELAY_TICKS } from '../../src/game/CombatStageLifecycle.js';
+import GuildSystem, { GUILD_APPLICATION_TICKS } from '../../src/game/GuildSystem.js';
 import StartPartySelection from '../../src/game/StartPartySelection.js';
 import { createRunScenario } from '../../src/game/RunScenario.js';
 import BattleSystem from '../../src/game/BattleSystem.js';
@@ -193,6 +194,25 @@ test('ギルド時間軸は期限と延長見込の合計が7日を超えたと�
   assert.equal(expanded.timelineHours, 392);
   assert.equal(later.remainingHours, 68);
   assert.equal(later.timelineHours, expanded.timelineHours);
+});
+
+test('ギルド利用は貢献ポイントで試験期限を延長してHeroを準備エリアへ帰還させる', () => {
+  let contributionPoints = 100;
+  const returned = [];
+  const hero = new HeroFactory().create({ profession: 'mage', x: 300, y: 300, stamina: 5 });
+  hero.currentArea = 'guild';
+  hero.tags = ['reputation', 'reputation'];
+  const guild = new GuildSystem({ begin: (member) => returned.push(member), update: () => false }, {
+    getContributionPoints: () => contributionPoints,
+    setContributionPoints: (value) => { contributionPoints = value; },
+    random: () => 0,
+  });
+
+  guild.update([hero], GUILD_APPLICATION_TICKS / 60);
+
+  assert.equal(guild.getExtensionHours(), 24);
+  assert.equal(contributionPoints, 16);
+  assert.deepEqual(returned, [hero]);
 });
 
 test('Itemの重量と価値はタグ表とタグ数により決まる', () => {
