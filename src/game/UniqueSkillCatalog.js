@@ -1,7 +1,9 @@
+import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
+
 const VITALITY_SUMMON = Object.freeze({
   id: 'vitality-summon',
   affinityTag: 'vitality',
-  trigger: 'defeated',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.entityDefeated]),
   levels: Object.freeze({
     1: Object.freeze({ summonEnemyDefinitionId: 'small-vitality', summonCount: 2 }),
     2: Object.freeze({ summonEnemyDefinitionId: 'medium-vitality', summonCount: 2 }),
@@ -11,17 +13,17 @@ const VITALITY_SUMMON = Object.freeze({
 const GEM_ORB_RAIN = Object.freeze({
   id: 'gem-orb-rain',
   affinityTag: 'gem',
-  trigger: 'damaged',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.damageReceived]),
   levels: Object.freeze({
-    1: Object.freeze({ chance: 0.5, dropCount: 1, tagCount: 1 }),
-    2: Object.freeze({ chance: 0.5, dropCount: 2, tagCount: 2 }),
+    1: Object.freeze({ dropCount: 1, tagCount: 1 }),
+    2: Object.freeze({ dropCount: 2, tagCount: 2 }),
   }),
 });
 
 const AREA_HEAD_RUSH = Object.freeze({
   id: 'area-head-rush',
   affinityTag: 'area',
-  trigger: 'action',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionCompleted]),
   levels: Object.freeze({
     1: Object.freeze({ headCount: 1 }),
     2: Object.freeze({ headCount: 2 }),
