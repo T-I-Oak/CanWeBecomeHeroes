@@ -15,8 +15,8 @@ const GEM_ORB_RAIN = Object.freeze({
   affinityTag: 'gem',
   triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.damageReceived]),
   levels: Object.freeze({
-    1: Object.freeze({ dropCount: 1, tagCount: 1 }),
-    2: Object.freeze({ dropCount: 2, tagCount: 2 }),
+    1: Object.freeze({ chance: 0.5, dropCount: 1, tagCount: 1 }),
+    2: Object.freeze({ chance: 0.5, dropCount: 2, tagCount: 2 }),
   }),
 });
 

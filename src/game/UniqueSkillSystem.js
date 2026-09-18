@@ -1,6 +1,6 @@
 import { LARGE_ENEMY_SLOT_SPAN } from './HeroSlotLayout.js';
 import { getUniqueSkillLevelDetail } from './UniqueSkillCatalog.js';
-import { shouldActivateUniqueSkill, UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
+import { hasUniqueSkillTrigger, UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 
 const INNER_TO_OUTER_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
 
@@ -14,7 +14,7 @@ export default class UniqueSkillSystem {
   resolveOnDefeated(enemy) {
     if (!enemy.uniqueSkill) return Object.freeze({ skill: null, summons: Object.freeze([]) });
     const skill = getUniqueSkillLevelDetail(enemy.uniqueSkill);
-    if (!shouldActivateUniqueSkill(skill, UNIQUE_SKILL_TRIGGER.entityDefeated, this.random)) return Object.freeze({ skill, summons: Object.freeze([]) });
+    if (!hasUniqueSkillTrigger(skill, UNIQUE_SKILL_TRIGGER.entityDefeated)) return Object.freeze({ skill, summons: Object.freeze([]) });
     if (skill.id !== 'vitality-summon') return Object.freeze({ skill, summons: Object.freeze([]) });
     const summons = this.getAvailableSummonSlots(enemy).slice(0, skill.levelDetail.summonCount).map((slotPosition) => this.enemyFactory.createFromDefinition({
       enemyDefinitionId: skill.levelDetail.summonEnemyDefinitionId,
@@ -32,7 +32,7 @@ export default class UniqueSkillSystem {
   resolveOnDamaged(enemy) {
     if (!enemy.uniqueSkill) return Object.freeze({ skill: null, drops: Object.freeze([]) });
     const skill = getUniqueSkillLevelDetail(enemy.uniqueSkill);
-    if (!shouldActivateUniqueSkill(skill, UNIQUE_SKILL_TRIGGER.damageReceived, this.random) || skill.id !== 'gem-orb-rain') {
+    if (!hasUniqueSkillTrigger(skill, UNIQUE_SKILL_TRIGGER.damageReceived) || skill.id !== 'gem-orb-rain' || this.random() >= skill.levelDetail.chance) {
       return Object.freeze({ skill, drops: Object.freeze([]) });
     }
     const drops = Array.from({ length: skill.levelDetail.dropCount }, () => Object.freeze({
@@ -45,7 +45,7 @@ export default class UniqueSkillSystem {
   resolveOnAction(enemy, { reservedSlots = [] } = {}) {
     if (!enemy.uniqueSkill) return Object.freeze({ skill: null, heads: Object.freeze([]) });
     const skill = getUniqueSkillLevelDetail(enemy.uniqueSkill);
-    if (!shouldActivateUniqueSkill(skill, UNIQUE_SKILL_TRIGGER.actionCompleted, this.random) || skill.id !== 'area-head-rush') return Object.freeze({ skill, heads: Object.freeze([]) });
+    if (!hasUniqueSkillTrigger(skill, UNIQUE_SKILL_TRIGGER.actionCompleted) || skill.id !== 'area-head-rush') return Object.freeze({ skill, heads: Object.freeze([]) });
     const heads = this.getAvailableSummonSlots(null, reservedSlots)
       .slice(0, skill.levelDetail.headCount)
       .map((slotPosition) => this.enemyFactory.createAreaHead({ source: enemy, slotPosition }));
