@@ -9,7 +9,7 @@ import ItemFactory from '../../src/game/ItemFactory.js';
 import ItemPickupController from '../../src/game/ItemPickupController.js';
 import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
-import ShopSystem, { SHOP_PURCHASE_DELIVERY_TICKS } from '../../src/game/ShopSystem.js';
+import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TICKS } from '../../src/game/ShopSystem.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
 import GameClock from '../../src/game/GameClock.js';
 import { getHeroStepDistance } from '../../src/game/MovementSettings.js';
@@ -59,6 +59,13 @@ test('買い物袋を持つHeroは売却後に2組の装備を受け取り、袋
   assert.equal(purchasedItems.length, 10);
   assert.equal(bag.storedItems.length, 0);
   assert.equal(hero.targetArea, 'preparation');
+});
+
+test('ショップの購入タグ数は価値と交渉力で決まり、宝石は購入品強化の判定回数を増やす', () => {
+  assert.equal(getSaleTagCount(0, 0), 5);
+  assert.equal(getSaleTagCount(10, 0), 6);
+  assert.equal(getSaleTagCount(117, 7), 15);
+  assert.deepEqual([0, 1, 2, 3, 4].map(getGemAttempts), [0, 1, 2, 3, 4]);
 });
 
 test('Heroの目的Itemが盤面から消えた場合は、次に装備可能なItemへ目標を切り替える', () => {
