@@ -8,6 +8,7 @@ import HeroFactory, { HERO_PROFESSION_IDS } from '../../src/game/HeroFactory.js'
 import ItemFactory from '../../src/game/ItemFactory.js';
 import ItemPickupController from '../../src/game/ItemPickupController.js';
 import RecruitmentController from '../../src/game/RecruitmentController.js';
+import PreparationHeroProvisioner from '../../src/game/PreparationHeroProvisioner.js';
 import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
 import StaminaRecoverySystem from '../../src/game/StaminaRecoverySystem.js';
 import ShopState from '../../src/game/ShopState.js';
@@ -129,6 +130,34 @@ test('エリート課題の完了時は8人から抽選し、既加入のHeroな
   assert.equal(duplicate.candidateProfession, HERO_PROFESSION_IDS[0]);
   assert.equal(duplicate.recruited, false);
   assert.equal(duplicate.reason, 'already-joined');
+});
+
+test('加入したHeroは落下して準備エリアへ加わり、対応装備2組が倉庫へ追加される', () => {
+  const heroes = [];
+  const warehouseItems = [];
+  const provisioner = new PreparationHeroProvisioner({
+    controller: {
+      add: (hero) => heroes.push(hero),
+      addToWarehouse: (item) => warehouseItems.push(item),
+    },
+    random: () => 0,
+  });
+  const recruitment = new RecruitmentController({
+    random: () => 0.5,
+    onRecruit: (profession) => provisioner.provision({ profession, preparationIndex: 2 }),
+  });
+
+  const result = recruitment.processCompletedStage({
+    stage: { id: 'elite-provision', kind: 'elite' },
+    stageState: 'complete',
+    heroes: [{ profession: HERO_PROFESSION_IDS[0] }, { profession: HERO_PROFESSION_IDS[1] }],
+  });
+
+  assert.equal(result.recruited, true);
+  assert.equal(heroes.length, 1);
+  assert.equal(heroes[0].profession, HERO_PROFESSION_IDS[4]);
+  assert.ok(heroes[0].chip.height > 0);
+  assert.equal(warehouseItems.filter((item) => item.category !== 'destination').length, 10);
 });
 
 test('訓練中のHeroは対象ステータスを成長させてスタミナを消費し、待機エリアでだけ回復する', () => {
