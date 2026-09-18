@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import GameCanvasInput from '../../src/app/GameCanvasInput.js';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import Chip from '../../src/chips/Chip.js';
 import HeroItemInteractionController from '../../src/game/HeroItemInteractionController.js';
@@ -23,6 +24,15 @@ function createHeroSlotCandidate(id) {
   return { chip: new Chip({ id, type: 'hero', x: 0, y: 0, weight: 1, centerPath: '', tagPaths: [] }), targetSlotId: null, currentSlotId: null };
 }
 
+function createCanvas() {
+  return {
+    style: {},
+    addEventListener() {},
+    getBoundingClientRect() { return { left: 0, top: 0 }; },
+    setPointerCapture() {},
+  };
+}
+
 test('買い物袋には倉庫Itemを3個まで格納でき、行き先Itemは格納できない', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
@@ -37,6 +47,27 @@ test('買い物袋には倉庫Itemを3個まで格納でき、行き先Itemは�
   assert.deepEqual(items.map((item) => controller.storeInShoppingBag(item, bag)), [true, true, true, false]);
   assert.equal(controller.storeInShoppingBag(destination, bag), false);
   assert.equal(bag.storedItems.length, 3);
+});
+
+test('自動一時停止中でも袋格納を完了すると、通常の操作終了と同様に停止を解除する', () => {
+  let pauseReleases = 0;
+  const input = new GameCanvasInput(createCanvas(), {
+    camera: { toWorld: (x, y) => ({ x, y }) },
+    controller: {
+      updateSelectionHover() {},
+      completeSelectionAt: () => true,
+    },
+    getCursor: () => '',
+    getInformationTarget: () => null,
+    onInformationTarget() {},
+    onPortalOpen() {},
+    onReleaseStaminaPause: () => { pauseReleases += 1; },
+  });
+  input.drag = { pointerId: 1, entity: { chip: { type: 'item' } }, startedSelection: true, moved: true };
+
+  input.handlePointerUp({ pointerId: 1, clientX: 80, clientY: 40 });
+
+  assert.equal(pauseReleases, 1);
 });
 
 test('倉庫は配置上限までItemを受け取り、上限を超えるItemは追加しない', () => {
