@@ -20,13 +20,14 @@ import CombatEnemyDefeatSystem from './CombatEnemyDefeatSystem.js';
 import CombatActionResolutionSystem from './CombatActionResolutionSystem.js';
 import { WEAPON_ATTACKS, getAttackDamage, getRandomModifier } from './CombatWeaponAttack.js';
 import CombatStageLifecycle, { BATTLE_VICTORY_DELAY_TICKS } from './CombatStageLifecycle.js';
+import CombatDamageReactionSystem from './CombatDamageReactionSystem.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
 export { BATTLE_VICTORY_DELAY_TICKS };
 export { WEAPON_ATTACKS, getAttackDamage, getRandomModifier };
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
@@ -41,7 +42,7 @@ export default class BattleSystem {
       recordDamage: (...args) => this.recordDamage(...args),
       recordDefeat: (...args) => this.recordDefeat(...args),
       onHeroDepleted: (hero) => this.returnSystem?.begin(hero),
-      onEnemyDamaged: (enemy) => this.resolveDamageUniqueSkill(enemy),
+      onEnemyDamaged: (enemy) => this.damageReactionSystem.resolveEnemyDamage(enemy),
       onEnemyDefeated: (enemy) => this.defeatEnemy(enemy),
       onDamageResolved: (target) => this.uniqueSkillSystem.refreshBlessingSkills(target),
     });
@@ -62,6 +63,14 @@ export default class BattleSystem {
       projectionSystem: this.projectionSystem,
       getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
       random,
+      gameLog,
+      textRepository,
+    });
+    this.damageReactionSystem = damageReactionSystem ?? new CombatDamageReactionSystem({
+      controller,
+      itemFactory,
+      uniqueSkillSystem: this.uniqueSkillSystem,
+      getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
       gameLog,
       textRepository,
     });
@@ -157,16 +166,7 @@ export default class BattleSystem {
   getLightningTargets(target, participants, value) { return this.attributeSystem.getLightningTargets(target, participants, value); }
   propagate(actor, target, type, damage, participants) { this.attributeSystem.propagate(actor, target, type, damage, participants); }
   applyDamage(actor, target, type, damage, critical = false) { return this.damageSystem.applyDamage(actor, target, type, damage, critical); }
-  resolveDamageUniqueSkill(enemy) {
-    const { skill, drops } = this.uniqueSkillSystem.resolveOnDamaged?.(enemy) ?? { skill: null, drops: [] };
-    if (drops.length === 0) return;
-    drops.forEach((drop) => {
-      const position = this.getWarehouseDropPosition();
-      const item = this.itemFactory.createWeapon({ weapon: drop.weapon, tags: drop.tags, x: position.x, y: position.y });
-      this.controller?.addToWarehouse?.(item);
-    });
-    logText(this.gameLog, this.textRepository, 'logOrb', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, count: drops.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
-  }
+  resolveDamageUniqueSkill(enemy) { return this.damageReactionSystem.resolveEnemyDamage(enemy); }
   resolveActionUniqueSkill(enemy, participants = []) { return this.actionResolutionSystem.resolveActionUniqueSkill(enemy, participants); }
   recordMiss(actor, target) { this.actionLog.recordMiss(actor, target); }
   recordDamage(actor, target, damage, critical) { this.actionLog.recordDamage(actor, target, damage, critical); }
