@@ -19,13 +19,14 @@ import CombatProjectionSystem from './CombatProjectionSystem.js';
 import CombatEnemyDefeatSystem from './CombatEnemyDefeatSystem.js';
 import CombatActionResolutionSystem from './CombatActionResolutionSystem.js';
 import { WEAPON_ATTACKS, getAttackDamage, getRandomModifier } from './CombatWeaponAttack.js';
+import CombatStageLifecycle, { BATTLE_VICTORY_DELAY_TICKS } from './CombatStageLifecycle.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
-export const BATTLE_VICTORY_DELAY_TICKS = 200;
+export { BATTLE_VICTORY_DELAY_TICKS };
 export { WEAPON_ATTACKS, getAttackDamage, getRandomModifier };
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
@@ -78,32 +79,35 @@ export default class BattleSystem {
       textRepository,
       random,
     });
-    this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false;
+    this.stageLifecycle = stageLifecycle;
+    this.contributionPoints = 0;
   }
+  get battleStartTick() { return this.stageLifecycle.battleStartTick; }
+  set battleStartTick(value) { this.stageLifecycle.battleStartTick = value; }
+  get defeatTick() { return this.stageLifecycle.defeatTick; }
+  set defeatTick(value) { this.stageLifecycle.defeatTick = value; }
+  get victoryTick() { return this.stageLifecycle.victoryTick; }
+  set victoryTick(value) { this.stageLifecycle.victoryTick = value; }
+  get stageCompleteTick() { return this.stageLifecycle.stageCompleteTick; }
+  set stageCompleteTick(value) { this.stageLifecycle.stageCompleteTick = value; }
   get phantomHeads() { return this.projectionSystem.areaHeads; }
   resetStageState() {
     this.projectionSystem.clearAreaHeads();
-    this.battleStartTick = null;
-    this.defeatTick = null;
-    this.victoryTick = null;
-    this.stageCompleteTick = null;
-    this.victoryDelayTicks = 0;
-    this.hasEncounteredEnemy = false;
+    this.stageLifecycle.reset();
     this.attributeSystem.reset();
     this.uniqueSkillSystem.reset?.();
   }
-  hasStageVictory() { return this.victoryTick !== null; }
-  isStageComplete() { return this.stageCompleteTick !== null; }
+  hasStageVictory() { return this.stageLifecycle.hasVictory(); }
+  isStageComplete() { return this.stageLifecycle.isComplete(); }
   update({ heroes, enemies, tick, tickDelta }) {
     [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => a.clearBattleState?.());
     const stageEnemies = this.controller?.getEnemies?.() ?? enemies;
     const activeEnemies = [...new Set([...stageEnemies.filter((e) => isEntityOnBoard(this.board, e)), ...this.projectionSystem.areaHeads.filter((e) => isEntityOnBoard(this.board, e))])];
-    if (activeEnemies.length > 0) this.hasEncounteredEnemy = true;
-    if (this.battleStartTick === null && activeEnemies.some((e) => e.chip.isSettled)) this.battleStartTick = tick;
-    if (this.battleStartTick === null) return;
+    this.stageLifecycle.markEnemyEncountered(activeEnemies);
+    if (!this.stageLifecycle.startWhenReady(activeEnemies, tick)) return;
     if (this.hasStageVictory()) {
       this.projectionSystem.clearAreaHeads();
-      this.updateVictoryDelay(tickDelta, tick);
+      this.stageLifecycle.updateVictoryDelay(tickDelta, tick);
       heroes.forEach((h) => this.returnSystem?.update(h));
       return;
     }
@@ -112,17 +116,10 @@ export default class BattleSystem {
     this.attributeSystem.update(participants, tickDelta);
     participants.forEach((a) => this.updateActor(a, participants, tickDelta));
     const remainingEnemies = this.controller?.getEnemies?.() ?? stageEnemies;
-    if (this.hasEncounteredEnemy && remainingEnemies.every((e) => !isEntityOnBoard(this.board, e)) && this.defeatTick === null) {
-      this.defeatTick = tick;
-      this.victoryTick = tick;
+    if (remainingEnemies.every((enemy) => !isEntityOnBoard(this.board, enemy)) && this.stageLifecycle.markVictory(tick)) {
       logText(this.gameLog, this.textRepository, 'logVictory', {}, { subject: 'system', level: 'info', channel: 'event' });
     }
     heroes.forEach((h) => this.returnSystem?.update(h));
-  }
-  updateVictoryDelay(delta, tick) {
-    if (this.stageCompleteTick !== null) return;
-    this.victoryDelayTicks += delta;
-    if (this.victoryDelayTicks >= BATTLE_VICTORY_DELAY_TICKS) this.stageCompleteTick = tick;
   }
   updateAttributes(participants, delta) { this.attributeSystem.update(participants, delta); }
   updateActor(actor, participants, delta) {
@@ -185,6 +182,6 @@ export default class BattleSystem {
   }
   createEnemyDrops(enemy) { return this.defeatSystem.createEnemyDrops(enemy); }
   defeatEnemy(enemy) { this.contributionPoints += this.defeatSystem.resolve(enemy); }
-  getElapsedTicks(tick) { return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick)); }
+  getElapsedTicks(tick) { return this.stageLifecycle.getElapsedTicks(tick); }
 }
 export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, BOW_GAUGE_SHORTENING_PER_WEAPON, MAX_BOW_GAUGE_SHORTENING_WEAPONS };
