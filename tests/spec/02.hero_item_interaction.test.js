@@ -9,10 +9,12 @@ import ItemFactory from '../../src/game/ItemFactory.js';
 import ItemPickupController from '../../src/game/ItemPickupController.js';
 import RecruitmentController from '../../src/game/RecruitmentController.js';
 import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
+import StaminaRecoverySystem from '../../src/game/StaminaRecoverySystem.js';
 import ShopState from '../../src/game/ShopState.js';
 import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TICKS } from '../../src/game/ShopSystem.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
 import GameClock from '../../src/game/GameClock.js';
+import TrainingSystem, { TRAINING_INTERVAL_TICKS } from '../../src/game/TrainingSystem.js';
 import { getHeroStepDistance } from '../../src/game/MovementSettings.js';
 
 function createHeroSlotCandidate(id) {
@@ -127,6 +129,26 @@ test('エリート課題の完了時は8人から抽選し、既加入のHeroな
   assert.equal(duplicate.candidateProfession, HERO_PROFESSION_IDS[0]);
   assert.equal(duplicate.recruited, false);
   assert.equal(duplicate.reason, 'already-joined');
+});
+
+test('訓練中のHeroは対象ステータスを成長させてスタミナを消費し、待機エリアでだけ回復する', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const hero = new HeroFactory().create({ profession: 'mage', x: 300, y: 300, stamina: 3, bounds: { x: 0, y: 0, width: 600, height: 400 } });
+  hero.currentArea = 'training';
+  board.addChip(hero.chip);
+  const training = new TrainingSystem(board, new HeroSlotManager(), { random: () => 0 });
+
+  training.update([hero], TRAINING_INTERVAL_TICKS / 60);
+
+  assert.equal(hero.maximums.magic, 4);
+  assert.equal(hero.stamina, 2);
+  hero.currentArea = 'preparation';
+  new StaminaRecoverySystem().update([hero], 200 / 60);
+  assert.ok(Math.abs(hero.stamina - 3) < 0.000000001);
+  hero.currentArea = 'warehouse';
+  hero.stamina = 0;
+  new StaminaRecoverySystem().update([hero], 200 / 60);
+  assert.equal(hero.stamina, 0);
 });
 
 test('手動で一時停止している間はゲーム状態を更新しない', () => {
