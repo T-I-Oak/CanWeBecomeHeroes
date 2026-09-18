@@ -43,6 +43,7 @@ export default class BattleSystem {
       onHeroDepleted: (hero) => this.returnSystem?.begin(hero),
       onEnemyDamaged: (enemy) => this.resolveDamageUniqueSkill(enemy),
       onEnemyDefeated: (enemy) => this.defeatEnemy(enemy),
+      onDamageResolved: (target) => this.uniqueSkillSystem.refreshBlessingSkills(target),
     });
     this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.phantomHeads = [];
   }
@@ -73,6 +74,7 @@ export default class BattleSystem {
       return;
     }
     const participants = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && isEntityOnBoard(this.board, h) && h.chip.isSettled), ...activeEnemies.filter((e) => e.chip.isSettled)];
+    participants.forEach((participant) => this.uniqueSkillSystem.initialize(participant));
     this.attributeSystem.update(participants, tickDelta);
     participants.forEach((a) => this.updateActor(a, participants, tickDelta));
     const remainingEnemies = this.controller?.getEnemies?.() ?? stageEnemies;
@@ -98,6 +100,7 @@ export default class BattleSystem {
     const target = this.findTarget(actor, participants);
     if (target) this.resolveAction(actor, target, participants);
     else if (actor.isPhantomHead) this.returnAreaHead(actor);
+    else this.uniqueSkillSystem.refreshBlessingSkills(actor);
   }
   restoreActionTilt(actor) {
     const { chip } = actor;
@@ -129,7 +132,10 @@ export default class BattleSystem {
     this.resolveVitality(actor);
     this.effects?.endAction(); this.flushActionLogs(); actor.luckBonus = 0;
     if (actor.isPhantomHead) this.returnAreaHead(actor);
-    else this.resolveActionUniqueSkill(actor, participants);
+    else {
+      this.resolveActionUniqueSkill(actor, participants);
+      this.uniqueSkillSystem.refreshBlessingSkills(actor);
+    }
   }
   attackTypes(actor) {
     if (isHeroCombatant(actor)) return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');

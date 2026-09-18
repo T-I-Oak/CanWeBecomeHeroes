@@ -6,11 +6,15 @@ import { isEntityOnBoard } from './CombatParticipant.js';
 const INNER_TO_OUTER_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
 
 export default class UniqueSkillSystem {
-  constructor({ board, controller, enemyFactory, ownership = new CombatUniqueSkillOwnership(), random = Math.random } = {}) {
+  constructor({ board, controller, enemyFactory, random = Math.random, ownership = new CombatUniqueSkillOwnership({ random }) } = {}) {
     Object.assign(this, { board, controller, enemyFactory, ownership, random });
   }
 
   reset() { this.ownership.reset(); }
+
+  initialize(entity) { this.ownership.initialize(entity); }
+
+  refreshBlessingSkills(entity) { this.ownership.refreshBlessingSkills(entity); }
 
   replaceTemporarySkills(entity, skills) { this.ownership.replaceTemporarySkills(entity, skills); }
 

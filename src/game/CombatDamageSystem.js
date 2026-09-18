@@ -4,8 +4,8 @@ const MINIMUM_DAMAGE = 0.01;
 const KNOCKBACK_TILT_MAX_RADIANS = Math.PI / 12;
 
 export default class CombatDamageSystem {
-  constructor({ random = Math.random, effects = null, onDamage = null, recordDamage = null, recordDefeat = null, onHeroDepleted = null, onEnemyDamaged = null, onEnemyDefeated = null } = {}) {
-    Object.assign(this, { random, effects, onDamage, recordDamage, recordDefeat, onHeroDepleted, onEnemyDamaged, onEnemyDefeated });
+  constructor({ random = Math.random, effects = null, onDamage = null, recordDamage = null, recordDefeat = null, onHeroDepleted = null, onEnemyDamaged = null, onEnemyDefeated = null, onDamageResolved = null } = {}) {
+    Object.assign(this, { random, effects, onDamage, recordDamage, recordDefeat, onHeroDepleted, onEnemyDamaged, onEnemyDefeated, onDamageResolved });
   }
 
   applyPhysicalDamage(actor, target, type, damage, critical, participants, { propagate } = {}) {
@@ -39,6 +39,7 @@ export default class CombatDamageSystem {
   applyHeroDamage(actor, target, type, damage, critical) {
     target.stamina = Math.max(0, target.stamina - damage);
     this.onDamage?.({ actor, target, type, damage, critical });
+    if (target.stamina > 0) this.onDamageResolved?.(target);
     if (target.stamina === 0) this.onHeroDepleted?.(target);
     return damage;
   }
@@ -47,6 +48,7 @@ export default class CombatDamageSystem {
     target.hp = Math.max(0, target.hp - damage);
     this.onEnemyDamaged?.(target);
     this.onDamage?.({ actor, target, type, damage, critical });
+    if (target.hp > 0) this.onDamageResolved?.(target);
     if (target.hp === 0) {
       if (actor) this.recordDefeat?.(actor, target);
       this.onEnemyDefeated?.(target);

@@ -4,8 +4,6 @@ export const UNIQUE_SKILL_TRIGGER = Object.freeze({
   entityDefeated: 'entity-defeated',
 });
 
-export const BLESSING_RANDOM_SKILL_GRANT_RATE = 0.07;
-
 export function hasUniqueSkillTrigger(skill, trigger) {
   return skill.triggers.includes(trigger);
 }
