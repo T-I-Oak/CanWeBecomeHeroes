@@ -16,6 +16,7 @@ import CombatActionGaugeSystem, {
 } from './CombatActionGaugeSystem.js';
 import CombatWeaponEffectSystem from './CombatWeaponEffectSystem.js';
 import CombatActionLog from './CombatActionLog.js';
+import CombatProjectionSystem from './CombatProjectionSystem.js';
 import { getCombatRandomModifier } from './CombatRandom.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
@@ -26,12 +27,13 @@ export function getAttackDamage(actor, attack) { const [stat, multiplier] = Arra
 export function getRandomModifier(random = Math.random) { return getCombatRandomModifier(random); }
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
     this.actionGaugeSystem = actionGaugeSystem;
     this.actionLog = actionLog ?? new CombatActionLog({ gameLog, textRepository });
+    this.projectionSystem = projectionSystem ?? new CombatProjectionSystem({ board, controller, actionGaugeSystem });
     this.attributeSystem = attributeSystem ?? new CombatAttributeSystem({ board, effects, random, applyDamage: (...args) => this.applyDamage(...args) });
     this.damageSystem = damageSystem ?? new CombatDamageSystem({
       random,
@@ -53,10 +55,11 @@ export default class BattleSystem {
       random,
       actionGaugeSystem,
     });
-    this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false; this.phantomHeads = [];
+    this.contributionPoints = 0; this.battleStartTick = null; this.defeatTick = null; this.victoryTick = null; this.stageCompleteTick = null; this.victoryDelayTicks = 0; this.hasEncounteredEnemy = false;
   }
+  get phantomHeads() { return this.projectionSystem.areaHeads; }
   resetStageState() {
-    this.clearPhantomHeads();
+    this.projectionSystem.clearAreaHeads();
     this.battleStartTick = null;
     this.defeatTick = null;
     this.victoryTick = null;
@@ -71,12 +74,12 @@ export default class BattleSystem {
   update({ heroes, enemies, tick, tickDelta }) {
     [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => a.clearBattleState?.());
     const stageEnemies = this.controller?.getEnemies?.() ?? enemies;
-    const activeEnemies = [...new Set([...stageEnemies.filter((e) => isEntityOnBoard(this.board, e)), ...this.phantomHeads.filter((e) => isEntityOnBoard(this.board, e))])];
+    const activeEnemies = [...new Set([...stageEnemies.filter((e) => isEntityOnBoard(this.board, e)), ...this.projectionSystem.areaHeads.filter((e) => isEntityOnBoard(this.board, e))])];
     if (activeEnemies.length > 0) this.hasEncounteredEnemy = true;
     if (this.battleStartTick === null && activeEnemies.some((e) => e.chip.isSettled)) this.battleStartTick = tick;
     if (this.battleStartTick === null) return;
     if (this.hasStageVictory()) {
-      this.clearPhantomHeads();
+      this.projectionSystem.clearAreaHeads();
       this.updateVictoryDelay(tickDelta, tick);
       heroes.forEach((h) => this.returnSystem?.update(h));
       return;
@@ -103,7 +106,7 @@ export default class BattleSystem {
     if (!this.actionGaugeSystem.advance(actor, delta)) return;
     const target = this.findTarget(actor, participants);
     if (target) this.resolveAction(actor, target, participants);
-    else if (actor.isPhantomHead) this.returnAreaHead(actor);
+    else if (actor.isPhantomHead) this.projectionSystem.returnAreaHead(actor);
     else this.uniqueSkillSystem.refreshBlessingSkills(actor);
   }
   updateActionGaugeMaximum(actor) { return this.actionGaugeSystem.updateMaximum(actor); }
@@ -122,7 +125,7 @@ export default class BattleSystem {
     this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants));
     this.resolveVitality(actor);
     this.effects?.endAction(); this.actionLog.flush(); actor.luckBonus = 0;
-    if (actor.isPhantomHead) this.returnAreaHead(actor);
+    if (actor.isPhantomHead) this.projectionSystem.returnAreaHead(actor);
     else {
       this.resolveActionUniqueSkill(actor, participants);
       this.uniqueSkillSystem.refreshBlessingSkills(actor);
@@ -189,9 +192,9 @@ export default class BattleSystem {
     logText(this.gameLog, this.textRepository, 'logOrb', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, count: drops.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
   }
   resolveActionUniqueSkill(enemy, participants = []) {
-    const reservedSlots = this.phantomHeads.map((head) => head.slotPosition);
+    const reservedSlots = this.projectionSystem.areaHeads.map((head) => head.slotPosition);
     const { skill, heads } = this.uniqueSkillSystem.resolveOnAction?.(enemy, { reservedSlots }) ?? { skill: null, heads: [] };
-    heads.forEach((head) => this.launchAreaHead(enemy, head));
+    heads.forEach((head) => this.projectionSystem.launchAreaHead(enemy, head));
     const cooperatingMinions = skill?.id === 'area-head-rush'
       ? participants.filter((actor) => actor !== enemy && !isHeroCombatant(actor) && !actor.isPhantomHead && isEntityOnBoard(this.board, actor)
         && (actor.rank === 'regular' || (skill.level === 2 && actor.rank === 'midBoss')))
@@ -203,40 +206,6 @@ export default class BattleSystem {
     if (skill && (heads.length > 0 || cooperatingMinions.length > 0)) {
       logText(this.gameLog, this.textRepository, heads.length > 0 ? (cooperatingMinions.length > 0 ? 'logHeadsMinions' : 'logHeads') : 'logMinions', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, count: heads.length, minions: cooperatingMinions.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
     }
-  }
-  launchAreaHead(source, head) {
-    this.phantomHeads.push(head);
-    const maximum = this.updateActionGaugeMaximum(head);
-    head.chip.actionGauge = maximum;
-    const placeHead = () => {
-      if (!this.phantomHeads.includes(head)) return;
-      if (this.controller?.add) this.controller.add(head);
-      else this.board.addChip(head.chip);
-    };
-    const animated = this.controller?.animateChipTransfer?.(head, {
-      from: { x: source.chip.x, y: source.chip.y },
-      to: { x: head.chip.x, y: head.chip.y },
-      onComplete: placeHead,
-    });
-    if (!animated) placeHead();
-  }
-  returnAreaHead(head, { animate = true } = {}) {
-    if (!this.phantomHeads.includes(head)) return;
-    if (this.controller?.destroy) this.controller.destroy(head);
-    else {
-      this.board.removeChip(head.chip);
-      this.controller?.remove?.(head);
-    }
-    this.phantomHeads = this.phantomHeads.filter((current) => current !== head);
-    const source = head.projectionSource;
-    if (!animate || !source || !isEntityOnBoard(this.board, source)) return;
-    this.controller?.animateChipTransfer?.(head, {
-      from: { x: head.chip.x, y: head.chip.y },
-      to: { x: source.chip.x, y: source.chip.y },
-    });
-  }
-  clearPhantomHeads() {
-    [...this.phantomHeads].forEach((head) => this.returnAreaHead(head, { animate: false }));
   }
   recordMiss(actor, target) { this.actionLog.recordMiss(actor, target); }
   recordDamage(actor, target, damage, critical) { this.actionLog.recordDamage(actor, target, damage, critical); }
@@ -263,7 +232,7 @@ export default class BattleSystem {
   defeatEnemy(enemy) {
     if (!isEntityOnBoard(this.board, enemy)) return;
     const { skill, summons } = this.uniqueSkillSystem.resolveOnDefeated(enemy);
-    this.phantomHeads.filter((head) => head.projectionSource === enemy).forEach((head) => this.returnAreaHead(head, { animate: false }));
+    this.projectionSystem.returnAreaHeadsFrom(enemy);
     if (this.controller?.destroy) this.controller.destroy(enemy, { includeRelated: true });
     else {
       this.board.removeChip(enemy.chip);
