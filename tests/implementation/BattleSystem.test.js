@@ -738,11 +738,11 @@ test('one action records one visible battle log per actor and target', () => {
   const records = [];
   const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
-  battle.actionLogResults = new Map();
+  battle.actionLog.begin();
   battle.recordMiss(hero, enemy);
   battle.recordDamage(hero, enemy, 0.1, false);
   battle.recordDamage(hero, enemy, 0.2, true);
-  battle.flushActionLogs();
+  battle.actionLog.flush();
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】は【ゴブリン】に会心ダメージ30を与えた。',
@@ -757,9 +757,9 @@ test('a missed action records a visible unlucky battle log', () => {
   const records = [];
   const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
-  battle.actionLogResults = new Map();
+  battle.actionLog.begin();
   battle.recordMiss(hero, enemy);
-  battle.flushActionLogs();
+  battle.actionLog.flush();
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】の【ゴブリン】への攻撃は外れた。',
@@ -774,10 +774,10 @@ test('a defeat replaces the action damage log with a visible defeat log', () => 
   const records = [];
   const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
-  battle.actionLogResults = new Map();
+  battle.actionLog.begin();
   battle.recordDamage(hero, enemy, 2, false);
   battle.recordDefeat(hero, enemy);
-  battle.flushActionLogs();
+  battle.actionLog.flush();
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】は【ゴブリン】を倒した。',

@@ -15,6 +15,7 @@ import CombatActionGaugeSystem, {
   MAX_BOW_GAUGE_SHORTENING_WEAPONS,
 } from './CombatActionGaugeSystem.js';
 import CombatWeaponEffectSystem from './CombatWeaponEffectSystem.js';
+import CombatActionLog from './CombatActionLog.js';
 import { getCombatRandomModifier } from './CombatRandom.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
@@ -25,11 +26,12 @@ export function getAttackDamage(actor, attack) { const [stat, multiplier] = Arra
 export function getRandomModifier(random = Math.random) { return getCombatRandomModifier(random); }
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ board, controller, enemyFactory, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
     this.actionGaugeSystem = actionGaugeSystem;
+    this.actionLog = actionLog ?? new CombatActionLog({ gameLog, textRepository });
     this.attributeSystem = attributeSystem ?? new CombatAttributeSystem({ board, effects, random, applyDamage: (...args) => this.applyDamage(...args) });
     this.damageSystem = damageSystem ?? new CombatDamageSystem({
       random,
@@ -115,11 +117,11 @@ export default class BattleSystem {
   }
   applyAttributes(actor, target, coefficient) { this.attributeSystem.applyAttributes(actor, target, coefficient); }
   resolveAction(actor, target, participants, { preserveGaugePresentation = false } = {}) {
-    const targets = this.rangeTargets(actor, target, participants); this.actionLogResults = new Map(); this.effects?.attack(actor, actor.getTagCount('area'), { showGaugeAtMaximum: !preserveGaugePresentation }); this.effects?.beginAction(actor);
+    const targets = this.rangeTargets(actor, target, participants); this.actionLog.begin(); this.effects?.attack(actor, actor.getTagCount('area'), { showGaugeAtMaximum: !preserveGaugePresentation }); this.effects?.beginAction(actor);
     targets.forEach(({ target: t, coefficient }) => this.applyAttributes(actor, t, coefficient));
     this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants));
     this.resolveVitality(actor);
-    this.effects?.endAction(); this.flushActionLogs(); actor.luckBonus = 0;
+    this.effects?.endAction(); this.actionLog.flush(); actor.luckBonus = 0;
     if (actor.isPhantomHead) this.returnAreaHead(actor);
     else {
       this.resolveActionUniqueSkill(actor, participants);
@@ -236,37 +238,9 @@ export default class BattleSystem {
   clearPhantomHeads() {
     [...this.phantomHeads].forEach((head) => this.returnAreaHead(head, { animate: false }));
   }
-  recordMiss(actor, target) {
-    if (!this.actionLogResults || !actor || !target) return;
-    const result = this.getActionLogResult(actor, target); result.miss = true;
-  }
-  recordDamage(actor, target, damage, critical) {
-    if (!this.actionLogResults || !actor || !target) return;
-    const result = this.getActionLogResult(actor, target); result.damage += damage; result.critical ||= critical;
-  }
-  recordDefeat(actor, target) {
-    if (!this.actionLogResults || !actor || !target) return;
-    this.getActionLogResult(actor, target).defeated = true;
-  }
-  getActionLogResult(actor, target) {
-    let targets = this.actionLogResults.get(actor);
-    if (!targets) { targets = new Map(); this.actionLogResults.set(actor, targets); }
-    let result = targets.get(target);
-    if (!result) { result = { actor, target, damage: 0, critical: false, miss: false, defeated: false }; targets.set(target, result); }
-    return result;
-  }
-  flushActionLogs() {
-    if (!this.actionLogResults) return;
-    this.actionLogResults.forEach((targets) => targets.forEach((result) => {
-      const { actor, target, damage, critical, miss, defeated } = result;
-      const subject = isHeroCombatant(actor) ? 'hero' : 'enemy'; const values = { actor: entityText(actor), target: entityText(target), damage: Math.round(damage * 100) };
-      if (defeated) logText(this.gameLog, this.textRepository, 'logDefeat', values, { subject, level: 'info', channel: 'battle' });
-      else if (damage >= .01) {
-        logText(this.gameLog, this.textRepository, critical ? 'logCritical' : 'logDamage', values, { subject, level: critical ? 'luck' : 'info', channel: 'battle' });
-      } else if (miss) logText(this.gameLog, this.textRepository, 'logMiss', values, { subject, level: 'unluck', channel: 'battle' });
-    }));
-    this.actionLogResults = null;
-  }
+  recordMiss(actor, target) { this.actionLog.recordMiss(actor, target); }
+  recordDamage(actor, target, damage, critical) { this.actionLog.recordDamage(actor, target, damage, critical); }
+  recordDefeat(actor, target) { this.actionLog.recordDefeat(actor, target); }
   getEntityLabel(entity) { return isHeroCombatant(entity) ? `【${this.textRepository?.getHeroLabel(entity) ?? entity.heroId}】` : `【${this.textRepository?.getName('enemy', entity.definition.id) ?? entity.definition.id}】`; }
   getWarehouseDropPosition() {
     const area = GAME_AREAS.warehouse;
