@@ -10,6 +10,11 @@ import EnemySpawnSystem from '../../src/game/EnemySpawnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
 import StageController from '../../src/game/StageController.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
+import {
+  GAME_TICKS_PER_HOUR,
+  getGuildTimeStatus,
+  GUILD_TIMELINE_STANDARD_HOURS,
+} from '../../src/game/GuildTime.js';
 
 test('試験ゲームランは第7試験のボス勝利で合格となり、その時点の仲間を解放する', () => {
   const run = new RunController();
@@ -75,4 +80,29 @@ test('第N試験は3件の課題候補から1件だけを選んで開始し、�
   assert.ok(choices.filter((choice) => choice.id !== stage.id).flatMap((choice) => choice.enemies).every((enemy) => !entityRegistry.isAlive(enemy)));
   enemySpawn.update(700);
   assert.equal(added.length, 1);
+});
+
+test('試験期限は開始時に7日で、ギルド表示は残り期限と延長見込だけを示す', () => {
+  const status = getGuildTimeStatus({ tick: GAME_TICKS_PER_HOUR * 25, contributionPoints: 200 });
+
+  assert.equal(status.elapsedHours, 25);
+  assert.equal(status.remainingHours, 143);
+  assert.equal(status.estimatedExtensionHours, 24);
+  assert.equal(status.timelineHours, GUILD_TIMELINE_STANDARD_HOURS);
+});
+
+test('ギルド時間軸は期限と延長見込の合計が7日を超えたときだけ拡張し、以後は縮小しない', () => {
+  const expanded = getGuildTimeStatus({ tick: 0, contributionPoints: 240, extensionHours: 200 });
+  const later = getGuildTimeStatus({
+    tick: GAME_TICKS_PER_HOUR * 300,
+    contributionPoints: 0,
+    extensionHours: 200,
+    timelineHours: expanded.timelineHours,
+  });
+
+  assert.equal(expanded.remainingHours, 368);
+  assert.equal(expanded.estimatedExtensionHours, 24);
+  assert.equal(expanded.timelineHours, 392);
+  assert.equal(later.remainingHours, 68);
+  assert.equal(later.timelineHours, expanded.timelineHours);
 });
