@@ -6,7 +6,7 @@ import {
   hasUniqueSkillTrigger,
   UNIQUE_SKILL_TRIGGER,
 } from '../../src/game/UniqueSkillTrigger.js';
-import { getTriggeredIntrinsicUniqueSkill } from '../../src/game/UniqueSkillHookResolver.js';
+import CombatUniqueSkillOwnership from '../../src/game/CombatUniqueSkillOwnership.js';
 
 test('unique skills declare their semantic trigger in one shared catalog', () => {
   assert.equal(BLESSING_RANDOM_SKILL_GRANT_RATE, 0.07);
@@ -22,9 +22,12 @@ test('a matching unique skill enters its hook, while effect-specific chance rema
   assert.equal(gemSkill.levels[1].chance, 0.5);
 });
 
-test('intrinsic unique skills enter only their declared combat hook', () => {
-  const enemy = { uniqueSkill: { id: 'gem-orb-rain', level: 2 } };
+test('combat unique skill ownership combines intrinsic and temporary skills by their declared hooks', () => {
+  const ownership = new CombatUniqueSkillOwnership();
+  const enemy = { uniqueSkill: { id: 'gem-orb-rain', level: 1 } };
 
-  assert.equal(getTriggeredIntrinsicUniqueSkill(enemy, UNIQUE_SKILL_TRIGGER.damageReceived).id, 'gem-orb-rain');
-  assert.equal(getTriggeredIntrinsicUniqueSkill(enemy, UNIQUE_SKILL_TRIGGER.actionCompleted), null);
+  ownership.replaceTemporarySkills(enemy, [{ id: 'area-head-rush', level: 2 }]);
+
+  assert.deepEqual(ownership.getTriggeredSkills(enemy, UNIQUE_SKILL_TRIGGER.damageReceived).map((skill) => skill.id), ['gem-orb-rain']);
+  assert.deepEqual(ownership.getTriggeredSkills(enemy, UNIQUE_SKILL_TRIGGER.actionCompleted).map((skill) => skill.id), ['area-head-rush']);
 });

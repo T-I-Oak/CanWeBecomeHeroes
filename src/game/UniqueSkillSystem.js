@@ -1,19 +1,26 @@
 import { LARGE_ENEMY_SLOT_SPAN } from './HeroSlotLayout.js';
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
-import { getTriggeredIntrinsicUniqueSkill } from './UniqueSkillHookResolver.js';
+import CombatUniqueSkillOwnership from './CombatUniqueSkillOwnership.js';
 import { isEntityOnBoard } from './CombatParticipant.js';
 
 const INNER_TO_OUTER_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
 
 export default class UniqueSkillSystem {
-  constructor({ board, controller, enemyFactory, random = Math.random } = {}) {
-    Object.assign(this, { board, controller, enemyFactory, random });
+  constructor({ board, controller, enemyFactory, ownership = new CombatUniqueSkillOwnership(), random = Math.random } = {}) {
+    Object.assign(this, { board, controller, enemyFactory, ownership, random });
+  }
+
+  reset() { this.ownership.reset(); }
+
+  replaceTemporarySkills(entity, skills) { this.ownership.replaceTemporarySkills(entity, skills); }
+
+  getTriggeredSkill(entity, trigger, skillId) {
+    return this.ownership.getTriggeredSkills(entity, trigger).find((skill) => skill.id === skillId) ?? null;
   }
 
   resolveOnDefeated(enemy) {
-    const skill = getTriggeredIntrinsicUniqueSkill(enemy, UNIQUE_SKILL_TRIGGER.entityDefeated);
+    const skill = this.getTriggeredSkill(enemy, UNIQUE_SKILL_TRIGGER.entityDefeated, 'vitality-summon');
     if (!skill) return Object.freeze({ skill: null, summons: Object.freeze([]) });
-    if (skill.id !== 'vitality-summon') return Object.freeze({ skill, summons: Object.freeze([]) });
     const summons = this.getAvailableSummonSlots(enemy).slice(0, skill.levelDetail.summonCount).map((slotPosition) => this.enemyFactory.createFromDefinition({
       enemyDefinitionId: skill.levelDetail.summonEnemyDefinitionId,
       slotPosition,
@@ -28,8 +35,8 @@ export default class UniqueSkillSystem {
   }
 
   resolveOnDamaged(enemy) {
-    const skill = getTriggeredIntrinsicUniqueSkill(enemy, UNIQUE_SKILL_TRIGGER.damageReceived);
-    if (!skill || skill.id !== 'gem-orb-rain' || this.random() >= skill.levelDetail.chance) {
+    const skill = this.getTriggeredSkill(enemy, UNIQUE_SKILL_TRIGGER.damageReceived, 'gem-orb-rain');
+    if (!skill || this.random() >= skill.levelDetail.chance) {
       return Object.freeze({ skill, drops: Object.freeze([]) });
     }
     const drops = Array.from({ length: skill.levelDetail.dropCount }, () => Object.freeze({
@@ -40,8 +47,8 @@ export default class UniqueSkillSystem {
   }
 
   resolveOnAction(enemy, { reservedSlots = [] } = {}) {
-    const skill = getTriggeredIntrinsicUniqueSkill(enemy, UNIQUE_SKILL_TRIGGER.actionCompleted);
-    if (!skill || skill.id !== 'area-head-rush') return Object.freeze({ skill: null, heads: Object.freeze([]) });
+    const skill = this.getTriggeredSkill(enemy, UNIQUE_SKILL_TRIGGER.actionCompleted, 'area-head-rush');
+    if (!skill) return Object.freeze({ skill: null, heads: Object.freeze([]) });
     const heads = this.getAvailableSummonSlots(null, reservedSlots)
       .slice(0, skill.levelDetail.headCount)
       .map((slotPosition) => this.enemyFactory.createAreaHead({ source: enemy, slotPosition }));

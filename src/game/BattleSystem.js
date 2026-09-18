@@ -55,6 +55,7 @@ export default class BattleSystem {
     this.victoryDelayTicks = 0;
     this.hasEncounteredEnemy = false;
     this.attributeSystem.reset();
+    this.uniqueSkillSystem.reset?.();
   }
   hasStageVictory() { return this.victoryTick !== null; }
   isStageComplete() { return this.stageCompleteTick !== null; }
