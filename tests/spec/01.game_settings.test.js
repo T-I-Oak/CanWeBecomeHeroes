@@ -108,6 +108,24 @@ test('第N試験は3件の課題候補から1件だけを選んで開始し、�
   assert.equal(added.length, 1);
 });
 
+test('試験課題は進行に応じてレベルが上がり、第7試験はボス課題になる', () => {
+  const createController = () => {
+    const board = new ChipBoard({ width: 3000, height: 2000 });
+    return new StageController({
+      enemySpawn: new EnemySpawnSystem({ add: () => {} }),
+      battleSystem: new BattleSystem(board, { controller: {}, itemFactory: {} }),
+      enemyFactory: new EnemyFactory(),
+      random: () => 0.99,
+    });
+  };
+
+  const firstChoices = createController().createStageChoices({ stageNumber: 1 });
+  const finalChoices = createController().createStageChoices({ stageNumber: 7 });
+
+  assert.ok(firstChoices.every((choice) => choice.kind === 'regular' && choice.level === 5));
+  assert.ok(finalChoices.every((choice) => choice.kind === 'boss' && choice.level === 11));
+});
+
 test('試験期限は開始時に7日で、ギルド表示は残り期限と延長見込だけを示す', () => {
   const status = getGuildTimeStatus({ tick: GAME_TICKS_PER_HOUR * 25, contributionPoints: 200 });
 
