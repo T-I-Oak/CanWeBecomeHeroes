@@ -1,6 +1,6 @@
 import { LARGE_ENEMY_SLOT_SPAN } from './HeroSlotLayout.js';
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
-import { isEntityOnBoard } from './CombatParticipant.js';
+import { getEquipmentItems, isEntityOnBoard } from './CombatParticipant.js';
 
 const INNER_TO_OUTER_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
 
@@ -20,6 +20,7 @@ export default class UniqueSkillEffectSystem {
       case 'vitality-summon': return this.resolveVitalitySummon(entity, skill);
       case 'gem-orb-rain': return this.resolveGemOrbRain(skill);
       case 'area-head-rush': return this.resolveAreaHeadRush(entity, skill, context);
+      case 'shadow-fingertips': return this.resolveShadowFingertips(entity, skill, context);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -52,6 +53,18 @@ export default class UniqueSkillEffectSystem {
       .slice(0, skill.levelDetail.headCount)
       .map((slotPosition) => this.enemyFactory.createAreaHead({ source: enemy, slotPosition }));
     return Object.freeze({ skill, heads: Object.freeze(heads) });
+  }
+
+  resolveShadowFingertips(actor, skill, { target = null } = {}) {
+    if (!target || this.random() >= actor.getLuckDegree()) return Object.freeze({ skill, tagRemoval: null });
+    const sourceTags = getEquipmentItems(target).flatMap((item) => item.tags.map((tag, tagIndex) => ({ item, tag, tagIndex })));
+    const sourceTag = sourceTags[Math.floor(this.random() * sourceTags.length)];
+    if (!sourceTag) return Object.freeze({ skill, tagRemoval: null });
+    const destinationItems = skill.levelDetail.transfersTag
+      ? getEquipmentItems(actor).filter((item) => item.category !== 'destination' && item.tags.length < 3)
+      : [];
+    const destinationItem = destinationItems[Math.floor(this.random() * destinationItems.length)] ?? null;
+    return Object.freeze({ skill, tagRemoval: Object.freeze({ sourceItem: sourceTag.item, tagIndex: sourceTag.tagIndex, tag: sourceTag.tag, destinationItem }) });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {

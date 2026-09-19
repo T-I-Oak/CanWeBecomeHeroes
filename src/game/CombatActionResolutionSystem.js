@@ -4,8 +4,8 @@ import { WEAPON_ATTACKS, getAttackDamage, getRandomModifier } from './CombatWeap
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 
 export default class CombatActionResolutionSystem {
-  constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
-    Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, effects, gameLog, textRepository, random });
+  constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
+    Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, effects, gameLog, textRepository, random });
   }
 
   resolve(actor, target, participants, { preserveGaugePresentation = false } = {}) {
@@ -13,6 +13,7 @@ export default class CombatActionResolutionSystem {
     this.actionLog.begin();
     this.effects?.attack(actor, actor.getTagCount('area'), { showGaugeAtMaximum: !preserveGaugePresentation });
     this.effects?.beginAction(actor);
+    this.resolveActionStartedUniqueSkill(actor, target);
     targets.forEach(({ target: rangeTarget, coefficient }) => this.attributeSystem.applyAttributes(actor, rangeTarget, coefficient));
     this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants));
     this.resolveVitality(actor);
@@ -24,6 +25,19 @@ export default class CombatActionResolutionSystem {
       this.resolveActionUniqueSkill(actor, participants);
       this.uniqueSkillSystem.refreshBlessingSkills(actor);
     }
+  }
+
+  resolveActionStartedUniqueSkill(actor, target) {
+    this.uniqueSkillEffectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target }).forEach(({ tagRemoval }) => {
+      if (!tagRemoval) return;
+      const tag = tagRemoval.sourceItem.removeTagAt(tagRemoval.tagIndex);
+      if (!tag) return;
+      tagRemoval.destinationItem?.addTag(tag);
+      target.refreshDerivedValues?.();
+      actor.refreshDerivedValues?.();
+      this.actionGaugeSystem?.updateMaximum(target);
+      this.actionGaugeSystem?.updateMaximum(actor);
+    });
   }
 
   attackTypes(actor) {

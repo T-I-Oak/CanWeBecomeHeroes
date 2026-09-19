@@ -215,6 +215,54 @@ test('gem orb-rain drops its level-specific orb rewards for each successful dama
   assert.deepEqual(drops.map((item) => item.tags), [['gem', 'gem'], ['gem', 'gem']]);
 });
 
+test('shadow fingertips removes a target tag before a missed attack, and Ex2 transfers it to the attacker', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 3 });
+  const sourceItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  hero.equip(sourceItem);
+  hero.currentArea = 'battle';
+  enemy.uniqueSkill = { id: 'shadow-fingertips', level: 2 };
+  enemy.getLuckDegree = () => 1;
+  enemy.chip.height = 0;
+  hero.chip.height = 0;
+  board.addChip(enemy.chip);
+  board.addChip(hero.chip);
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0 });
+  battle.actionResolutionSystem.isAttackMiss = () => true;
+
+  battle.resolveAction(enemy, hero, [enemy, hero]);
+
+  assert.deepEqual(sourceItem.tags, []);
+  assert.equal(sourceItem.value, 1);
+  assert.equal(hero.getCarriedWeight(), 6);
+  assert.equal(enemy.equipment.some((item) => item.tags.includes('valor')), true);
+});
+
+test('shadow fingertips Ex1 removes the tag without adding it to the attacker', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 3 });
+  const sourceItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  hero.equip(sourceItem);
+  hero.currentArea = 'battle';
+  enemy.uniqueSkill = { id: 'shadow-fingertips', level: 1 };
+  enemy.getLuckDegree = () => 1;
+  enemy.chip.height = 0;
+  hero.chip.height = 0;
+  board.addChip(enemy.chip);
+  board.addChip(hero.chip);
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0 });
+  battle.actionResolutionSystem.isAttackMiss = () => true;
+
+  battle.resolveAction(enemy, hero, [enemy, hero]);
+
+  assert.deepEqual(sourceItem.tags, []);
+  assert.equal(enemy.equipment.some((item) => item.tags.includes('valor')), false);
+});
+
 test('last sprout summons into the inner available slots and inherits the defeated enemy battle parameters', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();

@@ -82,6 +82,7 @@ export default class BattleSystem {
       attributeSystem: this.attributeSystem,
       weaponEffectSystem: this.weaponEffectSystem,
       damageSystem: this.damageSystem,
+      actionGaugeSystem,
       actionLog: this.actionLog,
       projectionSystem: this.projectionSystem,
       uniqueSkillSystem: this.uniqueSkillSystem,

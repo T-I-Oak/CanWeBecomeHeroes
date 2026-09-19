@@ -1,4 +1,3 @@
-import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagValue, getTagWeight } from './TagCatalog.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 import { getActionGaugeBaseMaximum } from './CombatActionGaugeSystem.js';
 
@@ -59,11 +58,6 @@ export default class CombatWeaponEffectSystem {
     const items = (isHeroCombatant(target) ? Object.values(target.equipment) : target.equipment).filter((item) => item && item.tags.length < 3);
     const item = items[Math.floor(this.random() * items.length)];
     if (!item?.addTag('gem')) return;
-    item.chip.weight = getTagWeight(item.tags);
-    item.chip.tagPaths = getTagPaths(item.tags);
-    item.chip.tagBaseColors = getTagBaseColors(item.tags);
-    item.chip.tagGlyphScales = getTagGlyphScales(item.tags);
-    item.value = getTagValue(item.tags);
     target.refreshDerivedValues?.();
     this.effects?.tagTransfer(actor, target, 'gem');
   }

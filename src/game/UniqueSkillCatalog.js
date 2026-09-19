@@ -30,10 +30,21 @@ const AREA_HEAD_RUSH = Object.freeze({
   }),
 });
 
+const SHADOW_FINGERTIPS = Object.freeze({
+  id: 'shadow-fingertips',
+  affinityTag: 'dexterity',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionStarted]),
+  levels: Object.freeze({
+    1: Object.freeze({ transfersTag: false }),
+    2: Object.freeze({ transfersTag: true }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
   [AREA_HEAD_RUSH.id]: AREA_HEAD_RUSH,
+  [SHADOW_FINGERTIPS.id]: SHADOW_FINGERTIPS,
 });
 
 export function getUniqueSkillDetail(id) {

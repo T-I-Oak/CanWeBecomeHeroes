@@ -4378,6 +4378,54 @@
             }
           }
         }
+      },
+      "shadow-fingertips": {
+        "name": {
+          "lang-store": {
+            "ja": "影の指先",
+            "en": "Shadow Fingertips"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "目を離した一瞬、装備のタグがそっと消えている。",
+            "en": "In a moment of inattention, a tag quietly vanishes from the equipment."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "攻撃時に、相手の装備からタグを1つ抜き取ることがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "May remove one tag from the target's equipment when attacking."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "抜き取ったタグを消す",
+                "en": "The removed tag disappears"
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "抜き取ったタグを自分の装備へ移す",
+                "en": "Moves the removed tag to the user's equipment"
+              }
+            }
+          }
+        }
       }
     },
     "hero": {

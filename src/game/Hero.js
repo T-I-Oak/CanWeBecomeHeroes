@@ -29,7 +29,7 @@ export default class Hero {
       ? item.category
       : this.equipment.rightHand ? 'leftHand' : 'rightHand';
     this.equipment[slot] = item;
-    this.chip.weight = getTagWeight(this.getTags());
+    this.refreshDerivedValues();
     return slot;
   }
 
@@ -98,7 +98,9 @@ export default class Hero {
   clearEquipment() {
     const equippedItems = Object.values(this.equipment).filter(Boolean);
     Object.keys(this.equipment).forEach((slot) => { this.equipment[slot] = null; });
-    this.chip.weight = getTagWeight(this.tags);
+    this.refreshDerivedValues();
     return equippedItems;
   }
+
+  refreshDerivedValues() { this.chip.weight = getTagWeight(this.getTags()); }
 }

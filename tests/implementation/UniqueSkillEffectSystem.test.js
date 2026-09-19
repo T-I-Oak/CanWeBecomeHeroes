@@ -18,3 +18,23 @@ test('unique skill effects retain every result from one hook', () => {
   assert.deepEqual(effects.map((effect) => effect.drops.length), [1, 2]);
   assert.deepEqual(effects.map((effect) => effect.drops[0].tags.length), [1, 2]);
 });
+
+test('shadow fingertips selects one target tag and an Ex2 destination after its luck check', () => {
+  const sourceItem = { tags: ['valor', 'water'] };
+  const destinationItem = { tags: ['dexterity'] };
+  const actor = { getLuckDegree: () => 0.5, equipment: [destinationItem] };
+  const target = { equipment: [sourceItem] };
+  const skill = { id: 'shadow-fingertips', levelDetail: { transfersTag: true } };
+  const randomValues = [0.4, 0.9, 0];
+  const effectSystem = new UniqueSkillEffectSystem({
+    uniqueSkillSystem: { getTriggeredSkills: () => [skill] },
+    random: () => randomValues.shift(),
+  });
+
+  const [effect] = effectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target });
+
+  assert.equal(effect.tagRemoval.sourceItem, sourceItem);
+  assert.equal(effect.tagRemoval.tagIndex, 1);
+  assert.equal(effect.tagRemoval.tag, 'water');
+  assert.equal(effect.tagRemoval.destinationItem, destinationItem);
+});
