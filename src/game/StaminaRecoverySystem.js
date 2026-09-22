@@ -12,7 +12,8 @@ export default class StaminaRecoverySystem {
       this.elapsed -= GAME_TICK_SECONDS;
       heroes.forEach((hero) => {
         if (hero.currentArea !== 'preparation') return;
-        hero.stamina = Math.min(hero.maximums.stamina, hero.stamina + STAMINA_PER_TICK);
+        if (hero.recoverStamina) hero.recoverStamina(STAMINA_PER_TICK);
+        else hero.stamina = Math.min(hero.maximums.stamina, hero.stamina + STAMINA_PER_TICK);
       });
     }
   }

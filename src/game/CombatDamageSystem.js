@@ -1,4 +1,5 @@
 import { isHeroCombatant } from './CombatParticipant.js';
+import { roundDamage } from './Durability.js';
 
 const MINIMUM_DAMAGE = 0.01;
 const KNOCKBACK_TILT_MAX_RADIANS = Math.PI / 12;
@@ -29,8 +30,10 @@ export default class CombatDamageSystem {
   }
 
   applyDamage(actor, target, type, damage, critical = false, { criticalDamageResolved = false } = {}) {
-    if (target.isPhantomHead || damage < MINIMUM_DAMAGE) return 0;
-    const resolvedDamage = criticalDamageResolved ? damage : this.resolveCriticalDamage(actor, target, damage, critical);
+    if (target.isPhantomHead) return 0;
+    const unroundedDamage = criticalDamageResolved ? damage : this.resolveCriticalDamage(actor, target, damage, critical);
+    const resolvedDamage = roundDamage(unroundedDamage);
+    if (resolvedDamage < MINIMUM_DAMAGE) return 0;
     this.applyKnockbackTilt(target, resolvedDamage);
     this.effects?.damage(target, resolvedDamage, critical);
     if (actor) this.recordDamage?.(actor, target, resolvedDamage, critical);
