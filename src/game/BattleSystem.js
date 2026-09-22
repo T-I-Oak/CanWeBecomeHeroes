@@ -24,28 +24,39 @@ import CombatDamageReactionSystem from './CombatDamageReactionSystem.js';
 import UniqueSkillEffectSystem from './UniqueSkillEffectSystem.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 import CombatConditionSystem from './CombatConditionSystem.js';
+import CombatKnockbackSystem from './CombatKnockbackSystem.js';
 
 export { BATTLE_VICTORY_DELAY_TICKS };
 export { WEAPON_ATTACKS, getAttackDamage, getRandomModifier };
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, uniqueSkillEffectSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, conditionSystem = new CombatConditionSystem(), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, uniqueSkillEffectSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, conditionSystem = new CombatConditionSystem(), knockbackSystem = new CombatKnockbackSystem(board), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ random });
     this.conditionSystem = conditionSystem;
+    this.knockbackSystem = knockbackSystem;
     this.uniqueSkillEffectSystem = uniqueSkillEffectSystem ?? new UniqueSkillEffectSystem({ board, controller, enemyFactory, uniqueSkillSystem: this.uniqueSkillSystem, random });
-    this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
+    this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board, { isTargetable: (combatant) => !this.knockbackSystem.isKnockedBack(combatant) });
     this.actionGaugeSystem = actionGaugeSystem;
     this.actionLog = actionLog ?? new CombatActionLog({ gameLog, textRepository });
     this.projectionSystem = projectionSystem ?? new CombatProjectionSystem({ board, controller, actionGaugeSystem });
-    this.attributeSystem = attributeSystem ?? new CombatAttributeSystem({ board, effects, random, applyDamage: (...args) => this.applyDamage(...args) });
+    this.attributeSystem = attributeSystem ?? new CombatAttributeSystem({
+      board,
+      effects,
+      random,
+      applyDamage: (...args) => this.applyDamage(...args),
+      isTargetable: (combatant) => !this.knockbackSystem.isKnockedBack(combatant),
+    });
     this.damageSystem = damageSystem ?? new CombatDamageSystem({
       random,
       effects,
       onDamage,
       recordDamage: (...args) => this.recordDamage(...args),
       recordDefeat: (...args) => this.recordDefeat(...args),
-      onHeroDepleted: (hero) => this.returnSystem?.begin(hero),
+      onHeroDepleted: (hero) => {
+        this.knockbackSystem.cancel(hero);
+        this.returnSystem?.begin(hero);
+      },
       onDamageApplied: (damageEvent) => this.damageReactionSystem.resolve(damageEvent),
       onEnemyDefeated: (enemy) => this.defeatEnemy(enemy),
       onDamageResolved: (target) => this.uniqueSkillSystem.refreshBlessingSkills(target),
@@ -76,6 +87,7 @@ export default class BattleSystem {
       itemFactory,
       uniqueSkillEffectSystem: this.uniqueSkillEffectSystem,
       getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
+      knockbackSystem: this.knockbackSystem,
       gameLog,
       textRepository,
     });
@@ -91,6 +103,7 @@ export default class BattleSystem {
       uniqueSkillSystem: this.uniqueSkillSystem,
       uniqueSkillEffectSystem: this.uniqueSkillEffectSystem,
       conditionSystem: this.conditionSystem,
+      knockbackSystem: this.knockbackSystem,
       effects,
       gameLog,
       textRepository,
@@ -118,6 +131,7 @@ export default class BattleSystem {
   hasStageVictory() { return this.stageLifecycle.hasVictory(); }
   isStageComplete() { return this.stageLifecycle.isComplete(); }
   update({ heroes, enemies, tick, tickDelta }) {
+    this.knockbackSystem.update();
     [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => {
       a.clearBattleState?.();
       this.conditionSystem.clearCombatant(a);
@@ -132,9 +146,11 @@ export default class BattleSystem {
       heroes.forEach((h) => this.returnSystem?.update(h));
       return;
     }
-    const participants = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && isEntityOnBoard(this.board, h) && h.chip.isSettled), ...activeEnemies.filter((e) => e.chip.isSettled)];
+    const effectRecipients = [...heroes.filter((h) => h.currentArea === 'battle' && !h.targetArea && isEntityOnBoard(this.board, h)), ...activeEnemies];
+    this.attributeSystem.update(effectRecipients, tickDelta);
+    const participants = effectRecipients.filter((combatant) => !this.knockbackSystem.isKnockedBack(combatant)
+      && combatant.currentArea === 'battle' && !combatant.targetArea && combatant.chip.isSettled);
     participants.forEach((participant) => this.uniqueSkillSystem.initialize(participant));
-    this.attributeSystem.update(participants, tickDelta);
     participants.forEach((a) => this.updateActor(a, participants, tickDelta));
     const remainingEnemies = this.controller?.getEnemies?.() ?? stageEnemies;
     if (remainingEnemies.every((enemy) => !isEntityOnBoard(this.board, enemy)) && this.stageLifecycle.markVictory(tick)) {
@@ -193,7 +209,10 @@ export default class BattleSystem {
     };
   }
   createEnemyDrops(enemy) { return this.defeatSystem.createEnemyDrops(enemy); }
-  defeatEnemy(enemy) { this.contributionPoints += this.defeatSystem.resolve(enemy); }
+  defeatEnemy(enemy) {
+    this.knockbackSystem.cancel(enemy);
+    this.contributionPoints += this.defeatSystem.resolve(enemy);
+  }
   getElapsedTicks(tick) { return this.stageLifecycle.getElapsedTicks(tick); }
 }
 export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, BOW_GAUGE_SHORTENING_PER_WEAPON, MAX_BOW_GAUGE_SHORTENING_WEAPONS };

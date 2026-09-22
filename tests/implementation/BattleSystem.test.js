@@ -591,6 +591,93 @@ test('lightning propagates only through contiguous opponent slots', () => {
   assert.equal(separated.hp, 10);
 });
 
+test('a knocked-back combatant blocks lightning propagation at its vacant slot', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const enemyFactory = new EnemyFactory();
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 500, y: 500, stamina: 10, maximums: { stamina: 10 } });
+  hero.currentArea = 'battle';
+  hero.currentSlotId = 'battle-2';
+  const source = enemyFactory.createInitialEncounter({ slotPosition: 3, maximumHp: 10 });
+  const knockedBack = enemyFactory.createInitialEncounter({ slotPosition: 4, maximumHp: 10 });
+  const beyondGap = enemyFactory.createInitialEncounter({ slotPosition: 5, maximumHp: 10 });
+  source.attributes.lightning = 3;
+  [hero, source, knockedBack, beyondGap].forEach((entity) => board.addChip(entity.chip));
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  battle.knockbackSystem.begin(knockedBack, 100);
+  battle.propagate(hero, source, 'sword', 1, [hero, source, knockedBack, beyondGap]);
+
+  assert.equal(knockedBack.hp, 10);
+  assert.equal(beyondGap.hp, 10);
+});
+
+test('a knocked-back combatant is excluded from attack candidates', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 500, y: 500, stamina: 3 });
+  hero.currentArea = 'battle';
+  hero.currentSlotId = 'battle-2';
+  const enemy = new EnemyFactory().createInitialEncounter({ maximumHp: 10 });
+  [hero, enemy].forEach((entity) => board.addChip(entity.chip));
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  battle.knockbackSystem.begin(hero, 100);
+
+  assert.equal(battle.findTarget(enemy, [hero, enemy]), null);
+});
+
+test('a knocked-back hero continues to receive and decay attributes', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 500, y: 500, stamina: 3, maximums: { stamina: 3 } });
+  hero.currentArea = 'battle';
+  hero.currentSlotId = 'battle-2';
+  hero.attributes.fire = 2;
+  hero.attributes.water = 2;
+  hero.attributes.lightning = 2;
+  const enemy = new EnemyFactory().createInitialEncounter({ maximumHp: 10 });
+  [hero, enemy].forEach((entity) => {
+    entity.chip.height = 0;
+    entity.chip.verticalVelocity = 0;
+    board.addChip(entity.chip);
+  });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} } });
+
+  battle.knockbackSystem.begin(hero, 100);
+  battle.update({ heroes: [hero], enemies: [enemy], tick: 1, tickDelta: 60 });
+
+  assert.equal(hero.stamina, 2.8);
+  assert.ok(Math.abs(hero.attributes.fire - 1.8) < 1e-9);
+  assert.ok(Math.abs(hero.attributes.water - 1.8) < 1e-9);
+  assert.ok(Math.abs(hero.attributes.lightning - 1.8) < 1e-9);
+});
+
+test('fire depletion during knockback starts the normal hero return and cancels knockback', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 500, y: 500, stamina: 1, maximums: { stamina: 3 } });
+  hero.currentArea = 'battle';
+  hero.currentSlotId = 'battle-2';
+  hero.attributes.fire = 20;
+  const enemy = new EnemyFactory().createInitialEncounter({ maximumHp: 10 });
+  [hero, enemy].forEach((entity) => {
+    entity.chip.height = 0;
+    entity.chip.verticalVelocity = 0;
+    board.addChip(entity.chip);
+  });
+  let returnedHero = null;
+  const battle = new BattleSystem(board, {
+    controller: {},
+    itemFactory: new ItemFactory(),
+    logger: { info: () => {} },
+    returnSystem: { begin: (combatant) => { returnedHero = combatant; }, update: () => false },
+  });
+
+  battle.knockbackSystem.begin(hero, 100);
+  battle.update({ heroes: [hero], enemies: [enemy], tick: 1, tickDelta: 60 });
+
+  assert.equal(hero.stamina, 0);
+  assert.equal(returnedHero, hero);
+  assert.equal(battle.knockbackSystem.isKnockedBack(hero), false);
+});
+
 test('vitality recovers a fixed 0.2 per tag after a successful luck check', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();

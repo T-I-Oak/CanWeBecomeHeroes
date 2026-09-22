@@ -98,6 +98,17 @@ test('enemy maximums can cap its status independently of the default maximum', (
   assert.equal(enemy.getStatus('power'), 3);
 });
 
+test('iron medium and large enemies use their counterblow definitions and assets', () => {
+  const factory = new EnemyFactory();
+  const golem = factory.createFromDefinition({ enemyDefinitionId: 'medium-iron', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const talos = factory.createFromDefinition({ enemyDefinitionId: 'large-iron', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(golem.uniqueSkill, { id: 'iron-counterblow', level: 1 });
+  assert.equal(golem.chip.centerPath, '/assets/enemies/medium-iron.png');
+  assert.deepEqual(talos.uniqueSkill, { id: 'iron-counterblow', level: 2 });
+  assert.equal(talos.chip.centerPath, '/assets/enemies/large-iron.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },

@@ -4,12 +4,13 @@ import { WEAPON_ATTACKS, getAttackDamage, getRandomModifier } from './CombatWeap
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 
 export default class CombatActionResolutionSystem {
-  constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
-    Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, effects, gameLog, textRepository, random });
+  constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, knockbackSystem = null, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
+    Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, knockbackSystem, effects, gameLog, textRepository, random });
   }
 
   resolve(actor, target, participants, { preserveGaugePresentation = false } = {}) {
     const targets = this.targetingSystem.rangeTargets(actor, target, participants);
+    this.knockbackSystem?.beginAction();
     this.actionLog.begin();
     this.effects?.attack(actor, actor.getTagCount('area'), { showGaugeAtMaximum: !preserveGaugePresentation });
     this.effects?.beginAction(actor);
@@ -26,6 +27,7 @@ export default class CombatActionResolutionSystem {
       this.uniqueSkillSystem.refreshBlessingSkills(actor);
     }
     this.conditionSystem.clearTwoEdgedSword(actor);
+    this.knockbackSystem?.resolveAction();
   }
 
   resolveActionStartedUniqueSkill(actor, target, participants) {

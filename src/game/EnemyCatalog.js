@@ -99,6 +99,14 @@ export const ENEMY_CATALOG = Object.freeze({
     id: 'large-valor', size: 'large', tagAffinity: 'valor', nameKey: 'enemy.largeValor', assetPath: '/assets/enemies/large-valor.png', intrinsicTags: Object.freeze(['valor']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'battle-frenzy', level: 2 }),
   }),
+  'medium-iron': Object.freeze({
+    id: 'medium-iron', size: 'medium', tagAffinity: 'iron', nameKey: 'enemy.mediumIron', assetPath: '/assets/enemies/medium-iron.png', intrinsicTags: Object.freeze(['iron']), baseHp: 2, baseContributionPoints: 50,
+    uniqueSkill: Object.freeze({ id: 'iron-counterblow', level: 1 }),
+  }),
+  'large-iron': Object.freeze({
+    id: 'large-iron', size: 'large', tagAffinity: 'iron', nameKey: 'enemy.largeIron', assetPath: '/assets/enemies/large-iron.png', intrinsicTags: Object.freeze(['iron']), baseHp: 2, baseContributionPoints: 250,
+    uniqueSkill: Object.freeze({ id: 'iron-counterblow', level: 2 }),
+  }),
   'phantom-area-head': Object.freeze({
     id: 'phantom-area-head', size: 'small', tagAffinity: 'area', nameKey: 'enemy.phantomAreaHead', assetPath: '/assets/enemies/small-area-head.png', intrinsicTags: Object.freeze(['area']), baseHp: 0, baseContributionPoints: 0,
   }),

@@ -7,8 +7,8 @@ const ATTRIBUTE_TICK_INTERVAL = GAME_TICKS_PER_SECOND;
 const ATTRIBUTE_KEYS = Object.freeze(['fire', 'water', 'lightning']);
 
 export default class CombatAttributeSystem {
-  constructor({ board, effects = null, random = Math.random, applyDamage }) {
-    Object.assign(this, { board, effects, random, applyDamage });
+  constructor({ board, effects = null, random = Math.random, applyDamage, isTargetable = () => true }) {
+    Object.assign(this, { board, effects, random, applyDamage, isTargetable });
     this.elapsedTicks = 0;
   }
 
@@ -48,7 +48,7 @@ export default class CombatAttributeSystem {
     const targetSlotPosition = getBattleSlotPosition(target);
     if (targetSlotPosition === null) return [];
     const opponentsBySlot = new Map(participants
-      .filter((candidate) => candidate !== target && isHeroCombatant(candidate) === isHeroCombatant(target) && isEntityOnBoard(this.board, candidate))
+      .filter((candidate) => candidate !== target && isHeroCombatant(candidate) === isHeroCombatant(target) && isEntityOnBoard(this.board, candidate) && this.isTargetable(candidate))
       .map((candidate) => [getBattleSlotPosition(candidate), candidate])
       .filter(([slotPosition]) => slotPosition !== null));
     return [-1, 1].flatMap((direction) => {

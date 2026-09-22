@@ -13,9 +13,11 @@ test('regular encounter definitions provide complete concrete patterns for the a
   });
 });
 
-test('elite and boss patterns include each implemented mid-boss and boss', () => {
-  assert.deepEqual(COMBINATION_PATTERNS.elite.map(({ main }) => main), ['medium-vitality', 'medium-gem', 'medium-area']);
-  assert.deepEqual(COMBINATION_PATTERNS.boss.map(({ main }) => main), ['large-vitality', 'large-gem', 'large-area']);
+test('elite and boss patterns include each implemented mid-boss and boss with its regular supports', () => {
+  assert.deepEqual(COMBINATION_PATTERNS.elite.map(({ main }) => main), ['medium-vitality', 'medium-gem', 'medium-area', 'medium-iron']);
+  assert.deepEqual(COMBINATION_PATTERNS.boss.map(({ main }) => main), ['large-vitality', 'large-gem', 'large-area', 'large-iron']);
+  assert.deepEqual(COMBINATION_PATTERNS.elite.at(-1), { main: 'medium-iron', support1: 'small-fire', support2: 'small-vitality' });
+  assert.deepEqual(COMBINATION_PATTERNS.boss.at(-1), { main: 'large-iron', support1: 'small-fire', support2: 'small-vitality' });
 });
 
 test('regular difficulty derives enemy count and each enemy tag budget from its level', () => {
