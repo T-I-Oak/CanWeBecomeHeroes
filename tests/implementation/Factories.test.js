@@ -109,6 +109,17 @@ test('iron medium and large enemies use their counterblow definitions and assets
   assert.equal(talos.chip.centerPath, '/assets/enemies/large-iron.png');
 });
 
+test('arcane medium and large enemies use their reflection definitions and assets', () => {
+  const factory = new EnemyFactory();
+  const lich = factory.createFromDefinition({ enemyDefinitionId: 'medium-arcane', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const medusa = factory.createFromDefinition({ enemyDefinitionId: 'large-arcane', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(lich.uniqueSkill, { id: 'arcane-reflection', level: 1 });
+  assert.equal(lich.chip.centerPath, '/assets/enemies/medium-arcane.png');
+  assert.deepEqual(medusa.uniqueSkill, { id: 'arcane-reflection', level: 2 });
+  assert.equal(medusa.chip.centerPath, '/assets/enemies/large-arcane.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },

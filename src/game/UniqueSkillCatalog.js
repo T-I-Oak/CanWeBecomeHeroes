@@ -60,6 +60,16 @@ const IRON_COUNTERBLOW = Object.freeze({
   }),
 });
 
+const ARCANE_REFLECTION = Object.freeze({
+  id: 'arcane-reflection',
+  affinityTag: 'arcane',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.attributeReceived]),
+  levels: Object.freeze({
+    1: Object.freeze({ reductionRate: 0.5 }),
+    2: Object.freeze({ reductionRate: 0.75 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
@@ -67,6 +77,7 @@ export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [SHADOW_FINGERTIPS.id]: SHADOW_FINGERTIPS,
   [BATTLE_FRENZY.id]: BATTLE_FRENZY,
   [IRON_COUNTERBLOW.id]: IRON_COUNTERBLOW,
+  [ARCANE_REFLECTION.id]: ARCANE_REFLECTION,
 });
 
 export function getUniqueSkillDetail(id) {

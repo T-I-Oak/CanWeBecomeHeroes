@@ -2,6 +2,7 @@ export const UNIQUE_SKILL_TRIGGER = Object.freeze({
   actionStarted: 'action-started',
   actionCompleted: 'action-completed',
   damageReceived: 'damage-received',
+  attributeReceived: 'attribute-received',
   entityDefeated: 'entity-defeated',
 });
 

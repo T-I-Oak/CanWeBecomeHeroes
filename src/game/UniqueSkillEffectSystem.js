@@ -23,6 +23,7 @@ export default class UniqueSkillEffectSystem {
       case 'shadow-fingertips': return this.resolveShadowFingertips(entity, skill, context);
       case 'battle-frenzy': return this.resolveBattleFrenzy(skill);
       case 'iron-counterblow': return this.resolveIronCounterblow(skill, context);
+      case 'arcane-reflection': return this.resolveArcaneReflection(skill, context);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -81,6 +82,11 @@ export default class UniqueSkillEffectSystem {
       damage: damageEvent.damage,
       level: skill.level,
     }) });
+  }
+
+  resolveArcaneReflection(skill, { attributeEvent } = {}) {
+    if (!attributeEvent?.actor || !attributeEvent.attribute || attributeEvent.value <= 0) return Object.freeze({ skill, attributeReflection: null });
+    return Object.freeze({ skill, attributeReflection: Object.freeze({ reductionRate: skill.levelDetail.reductionRate }) });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {
