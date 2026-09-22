@@ -50,12 +50,23 @@ const BATTLE_FRENZY = Object.freeze({
   }),
 });
 
+const IRON_COUNTERBLOW = Object.freeze({
+  id: 'iron-counterblow',
+  affinityTag: 'iron',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.damageReceived]),
+  levels: Object.freeze({
+    1: Object.freeze({ knockbackDistanceMultiplier: 1 }),
+    2: Object.freeze({ knockbackDistanceMultiplier: 2 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
   [AREA_HEAD_RUSH.id]: AREA_HEAD_RUSH,
   [SHADOW_FINGERTIPS.id]: SHADOW_FINGERTIPS,
   [BATTLE_FRENZY.id]: BATTLE_FRENZY,
+  [IRON_COUNTERBLOW.id]: IRON_COUNTERBLOW,
 });
 
 export function getUniqueSkillDetail(id) {

@@ -22,6 +22,7 @@ export default class UniqueSkillEffectSystem {
       case 'area-head-rush': return this.resolveAreaHeadRush(entity, skill, context);
       case 'shadow-fingertips': return this.resolveShadowFingertips(entity, skill, context);
       case 'battle-frenzy': return this.resolveBattleFrenzy(skill);
+      case 'iron-counterblow': return this.resolveIronCounterblow(skill, context);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -70,6 +71,16 @@ export default class UniqueSkillEffectSystem {
 
   resolveBattleFrenzy(skill) {
     return Object.freeze({ skill, twoEdgedSwordMultiplier: skill.levelDetail.twoEdgedSwordMultiplier });
+  }
+
+  resolveIronCounterblow(skill, { damageEvent } = {}) {
+    if (!damageEvent?.actor || damageEvent.damage <= 0) return Object.freeze({ skill, knockback: null });
+    return Object.freeze({ skill, knockback: Object.freeze({
+      actor: damageEvent.actor,
+      target: damageEvent.target,
+      damage: damageEvent.damage,
+      level: skill.level,
+    }) });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {

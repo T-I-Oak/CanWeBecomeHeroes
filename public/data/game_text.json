@@ -4304,6 +4304,86 @@
           }
         }
       },
+      "medium-iron": {
+        "name": {
+          "lang-store": {
+            "ja": "ゴーレム",
+            "en": "Golem"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "岩と鉄で組まれた、古代の守り手。重い一撃を受けるほど、相手を遠ざける。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "An ancient guardian of stone and iron. The heavier the blow it takes, the farther it drives its attacker away."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "物理攻撃を受けると、相手を吹き飛ばす。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Knocks attackers away when struck by physical attacks."
+              }
+            ]
+          }
+        }
+      },
+      "large-iron": {
+        "name": {
+          "lang-store": {
+            "ja": "タロス",
+            "en": "Talos"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "青銅の巨躯に、果てのない守護の使命を宿した自動人形。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A bronze colossus animated by an endless duty to guard."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "物理攻撃を受けると、相手を大きく吹き飛ばす。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Greatly knocks attackers away when struck by physical attacks."
+              }
+            ]
+          }
+        }
+      },
       "phantom-area-head": {
         "name": {
           "lang-store": {
@@ -4560,6 +4640,54 @@
               "lang-store": {
                 "ja": "与える・受ける会心ダメージが4倍になる。",
                 "en": "Critical damage dealt and received is quadrupled."
+              }
+            }
+          }
+        }
+      },
+      "iron-counterblow": {
+        "name": {
+          "lang-store": {
+            "ja": "巨像の反撃",
+            "en": "Colossus Counterblow"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "巨像に打ち込んだ一撃は、大地を揺るがす反動となって返ってくる。",
+            "en": "A blow struck against the colossus returns as a shock that shakes the ground."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "物理攻撃を受けたとき、相手を吹き飛ばす。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "When struck by a physical attack, knocks the attacker away."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "相手を少し吹き飛ばす。",
+                "en": "Knocks the attacker back a short distance."
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "相手をかなり吹き飛ばす。",
+                "en": "Knocks the attacker back a great distance."
               }
             }
           }

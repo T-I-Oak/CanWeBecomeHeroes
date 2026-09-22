@@ -15,13 +15,14 @@ const RANGE_COEFFICIENTS = Object.freeze([
 const LOWEST_DURABILITY_WEAPONS = Object.freeze(['staff', 'holy-symbol', 'holy-book', 'banner', 'tarot-cards']);
 
 export default class CombatTargetingSystem {
-  constructor(board) {
+  constructor(board, { isTargetable = () => true } = {}) {
     this.board = board;
+    this.isTargetable = isTargetable;
   }
 
   findTarget(actor, participants) {
     let candidates = participants.filter((candidate) => isHeroCombatant(candidate) !== isHeroCombatant(actor)
-      && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate));
+      && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate) && this.isTargetable(candidate));
     const equipment = isHeroCombatant(actor) ? [actor.equipment.rightHand, actor.equipment.leftHand] : actor.equipment;
     const distance = (candidate) => Math.hypot(candidate.chip.x - actor.chip.x, candidate.chip.y - actor.chip.y);
     const narrowCandidates = (weaponType) => {
@@ -48,7 +49,7 @@ export default class CombatTargetingSystem {
   rangeTargets(actor, target, participants) {
     const coefficients = RANGE_COEFFICIENTS[actor.getTagCount('area')];
     const foes = participants.filter((candidate) => isHeroCombatant(candidate) !== isHeroCombatant(actor)
-      && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate));
+      && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate) && this.isTargetable(candidate));
     const lane = this.createRangeLane(actor, foes);
     const targetIndex = lane.indexOf(target);
     const centerIndex = Math.floor(coefficients.length / 2);
