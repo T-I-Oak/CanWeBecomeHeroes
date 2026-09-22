@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createTagAngles, getActionGaugePresentationRatio, getCenterImagePlacement, getPhysicalShieldPresentation, getStaminaPauseWavePresentation } from '../../src/chips/ChipRenderer.js';
+import { createTagAngles, getActionGaugePresentationRatio, getCenterImagePlacement, getContainedImageSize, getPhysicalShieldPresentation, getStaminaPauseWavePresentation } from '../../src/chips/ChipRenderer.js';
 
 test('tag angles keep the same interval for two and three tags', () => {
   const slotCount = 8;
@@ -28,6 +28,11 @@ test('center image is scaled from the bottom center of the chip', () => {
   assert.equal(placement.x, 0);
   assert.equal(placement.y, 15);
   assert.equal(placement.y + placement.size / 2, 100);
+});
+
+test('center images retain their source aspect ratio inside the common square drawing box', () => {
+  assert.deepEqual(getContainedImageSize(1024, 1536, 170), { width: 113.33333333333333, height: 170 });
+  assert.deepEqual(getContainedImageSize(1536, 1024, 170), { width: 170, height: 113.33333333333333 });
 });
 
 test('physical shield presentation strengthens with physical damage reduction', () => {

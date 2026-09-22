@@ -3984,6 +3984,28 @@
           }
         }
       },
+      "medium-water": {
+        "name": { "lang-store": { "ja": "クラーケン", "en": "Kraken" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "深い海から伸びる巨大な触手の主。渦巻く水をまとい、獲物を押し流す。" }],
+          "en": [{ "type": "text", "value": "Master of immense tentacles reaching from the deep. It wraps itself in swirling water and sweeps prey away." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "水をまとい、その勢いを攻撃へ乗せる。" }],
+          "en": [{ "type": "text", "value": "Cloaks itself in water and carries its force into every attack." }]
+        } }
+      },
+      "large-water": {
+        "name": { "lang-store": { "ja": "リヴァイアサン", "en": "Leviathan" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "深海を支配する、うねる巨獣。まとった海の力を一撃へ注ぎ込み、戦場を飲み込む。" }],
+          "en": [{ "type": "text", "value": "A surging beast that rules the abyss. It pours the sea's force into each blow and swallows the battlefield whole." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "大量の水をまとい、その勢いを攻撃へ乗せる。" }],
+          "en": [{ "type": "text", "value": "Cloaks itself in a great volume of water and carries its force into every attack." }]
+        } }
+      },
       "small-vitality": {
         "name": {
           "lang-store": {
@@ -4947,6 +4969,21 @@
               }
             }
           }
+        }
+      },
+      "water-deep-sea-surge": {
+        "name": { "lang-store": { "ja": "深海のうねり", "en": "Deep Sea Surge" } },
+        "flavor": { "lang-store": {
+          "ja": "深海の水圧が、一撃ごとに牙をむく。",
+          "en": "The pressure of the deep bares its fangs with every strike."
+        } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "攻撃時、自身に水属性を付与する。水属性が付与されている量に応じて、与えるダメージが増加する。" }],
+          "en": [{ "type": "text", "value": "When attacking, applies water to itself. Damage dealt increases with the amount of water applied." }]
+        } },
+        "levels": {
+          "1": { "description": { "lang-store": { "ja": "自身に少し水属性を付与する。", "en": "Applies a little water to itself." } } },
+          "2": { "description": { "lang-store": { "ja": "自身にかなり水属性を付与する。", "en": "Applies much water to itself." } } }
         }
       },
       "shadow-fingertips": {

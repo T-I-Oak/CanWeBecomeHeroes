@@ -119,6 +119,14 @@ export const ENEMY_CATALOG = Object.freeze({
     id: 'medium-cloth', size: 'medium', tagAffinity: 'cloth', nameKey: 'enemy.mediumCloth', assetPath: '/assets/enemies/medium-cloth.png', intrinsicTags: Object.freeze(['cloth']), baseHp: 2, baseContributionPoints: 50,
     uniqueSkill: Object.freeze({ id: 'cloth-night-familiars', level: 1 }),
   }),
+  'medium-water': Object.freeze({
+    id: 'medium-water', size: 'medium', tagAffinity: 'water', nameKey: 'enemy.mediumWater', assetPath: '/assets/enemies/medium-water.png', intrinsicTags: Object.freeze(['water']), baseHp: 2, baseContributionPoints: 50,
+    uniqueSkill: Object.freeze({ id: 'water-deep-sea-surge', level: 1 }),
+  }),
+  'large-water': Object.freeze({
+    id: 'large-water', size: 'large', tagAffinity: 'water', nameKey: 'enemy.largeWater', assetPath: '/assets/enemies/large-water.png', intrinsicTags: Object.freeze(['water']), baseHp: 2, baseContributionPoints: 250,
+    uniqueSkill: Object.freeze({ id: 'water-deep-sea-surge', level: 2 }),
+  }),
   'large-cloth': Object.freeze({
     id: 'large-cloth', size: 'large', tagAffinity: 'cloth', nameKey: 'enemy.largeCloth', assetPath: '/assets/enemies/large-cloth.png', intrinsicTags: Object.freeze(['cloth']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'cloth-night-familiars', level: 2 }),

@@ -58,6 +58,53 @@ test('night familiars stop after the last opponent has left the candidates', () 
   assert.equal(damages.length, 1);
 });
 
+test('deep sea surge applies its water value to the owner before resolving all weapon damage', () => {
+  const actor = { getTagCount: (tag) => tag === 'water' ? 4 : 0 };
+  const target = {};
+  const appliedAttributes = [];
+  const resolution = new CombatActionResolutionSystem({
+    conditionSystem: { applyTwoEdgedSword: () => {} },
+    attributeSystem: { applySelfAttribute: (...arguments_) => appliedAttributes.push(arguments_) },
+    uniqueSkillEffectSystem: {
+      resolve: () => [{
+        selfAttribute: { attribute: 'water', value: 4 },
+        waterDamageBonusRate: 0.5,
+      }],
+    },
+  });
+
+  const modifiers = resolution.resolveActionStartedUniqueSkill(actor, target, [actor, target]);
+
+  assert.deepEqual(appliedAttributes, [[actor, 'water', 4]]);
+  assert.equal(modifiers.waterDamageBonusRate, 0.5);
+});
+
+test('deep sea surge turns every successful weapon hit critical and adds the current water value to damage', () => {
+  const actor = {
+    chip: { type: 'hero' },
+    attributes: { water: 4 },
+    getStatus: () => 3,
+    getTagSkillLevel: () => 0,
+    getLuckDegree: () => 1,
+  };
+  const target = { chip: { type: 'enemy' }, attributes: { water: 0 }, getLuckDegree: () => 0, getTagSkillLevel: () => 0 };
+  const physicalDamages = [];
+  const resolution = new CombatActionResolutionSystem({
+    board: { chips: [target.chip] },
+    targetingSystem: { rangeTargets: () => [{ target, coefficient: 1 }] },
+    attributeSystem: { propagate: () => {} },
+    weaponEffectSystem: { applySupportEffect: () => {} },
+    damageSystem: { applyPhysicalDamage: (...arguments_) => physicalDamages.push(arguments_) },
+    random: () => 0,
+  });
+
+  resolution.resolveWeapon(actor, target, 'sword', [actor, target], { waterDamageBonusRate: 0.5 });
+
+  assert.equal(physicalDamages.length, 1);
+  assert.equal(physicalDamages[0][4], true);
+  assert.equal(physicalDamages[0][3], 4.2);
+});
+
 test('night familiar visuals use one asset at distinct positions around the owner', () => {
   const effects = new CombatEffectSystem();
   const source = { chip: { x: 100, y: 120, height: 20, radius: 64 } };

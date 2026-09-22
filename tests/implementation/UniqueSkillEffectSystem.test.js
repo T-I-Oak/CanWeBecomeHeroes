@@ -60,3 +60,15 @@ test('night familiars expose the Ex-specific familiar count after an action', ()
 
   assert.equal(effect.familiarCount, 6);
 });
+
+test('deep sea surge exposes the owner water value and the Ex-specific damage bonus', () => {
+  const actor = { getTagCount: () => 3 };
+  const effectSystem = new UniqueSkillEffectSystem({
+    uniqueSkillSystem: { getTriggeredSkills: () => [{ id: 'water-deep-sea-surge', level: 1, levelDetail: { waterDamageBonusRate: 0.5 } }] },
+  });
+
+  const [effect] = effectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted);
+
+  assert.deepEqual(effect.selfAttribute, { attribute: 'water', value: 3 });
+  assert.equal(effect.waterDamageBonusRate, 0.5);
+});

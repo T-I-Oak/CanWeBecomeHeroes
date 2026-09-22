@@ -80,6 +80,16 @@ const CLOTH_NIGHT_FAMILIARS = Object.freeze({
   }),
 });
 
+const WATER_DEEP_SEA_SURGE = Object.freeze({
+  id: 'water-deep-sea-surge',
+  affinityTag: 'water',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionStarted]),
+  levels: Object.freeze({
+    1: Object.freeze({ waterDamageBonusRate: 0.5 }),
+    2: Object.freeze({ waterDamageBonusRate: 1 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
@@ -89,6 +99,7 @@ export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [IRON_COUNTERBLOW.id]: IRON_COUNTERBLOW,
   [ARCANE_REFLECTION.id]: ARCANE_REFLECTION,
   [CLOTH_NIGHT_FAMILIARS.id]: CLOTH_NIGHT_FAMILIARS,
+  [WATER_DEEP_SEA_SURGE.id]: WATER_DEEP_SEA_SURGE,
 });
 
 export function getUniqueSkillDetail(id) {

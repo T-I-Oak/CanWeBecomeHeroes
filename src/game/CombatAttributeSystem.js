@@ -52,6 +52,10 @@ export default class CombatAttributeSystem {
     return true;
   }
 
+  applySelfAttribute(actor, attribute, value) {
+    this.assignAttribute(actor, attribute, value, actor);
+  }
+
   assignAttribute(target, attribute, value, source) {
     if (value > target.attributes[attribute]) {
       target.attributes[attribute] = value;
