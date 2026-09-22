@@ -38,3 +38,15 @@ test('shadow fingertips selects one target tag and an Ex2 destination after its 
   assert.equal(effect.tagRemoval.tag, 'water');
   assert.equal(effect.tagRemoval.destinationItem, destinationItem);
 });
+
+test('arcane reflection exposes the level-specific attribute reduction as a reaction intent', () => {
+  const effectSystem = new UniqueSkillEffectSystem({
+    uniqueSkillSystem: { getTriggeredSkills: () => [{ id: 'arcane-reflection', level: 2, levelDetail: { reductionRate: 0.75 } }] },
+  });
+
+  const [effect] = effectSystem.resolve({}, UNIQUE_SKILL_TRIGGER.attributeReceived, {
+    attributeEvent: { actor: {}, target: {}, attribute: 'lightning', value: 4 },
+  });
+
+  assert.deepEqual(effect.attributeReflection, { reductionRate: 0.75 });
+});

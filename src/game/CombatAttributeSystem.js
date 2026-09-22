@@ -7,8 +7,8 @@ const ATTRIBUTE_TICK_INTERVAL = GAME_TICKS_PER_SECOND;
 const ATTRIBUTE_KEYS = Object.freeze(['fire', 'water', 'lightning']);
 
 export default class CombatAttributeSystem {
-  constructor({ board, effects = null, random = Math.random, applyDamage, isTargetable = () => true }) {
-    Object.assign(this, { board, effects, random, applyDamage, isTargetable });
+  constructor({ board, effects = null, random = Math.random, applyDamage, isTargetable = () => true, resolveAttributeReactions = () => [] }) {
+    Object.assign(this, { board, effects, random, applyDamage, isTargetable, resolveAttributeReactions });
     this.elapsedTicks = 0;
   }
 
@@ -36,12 +36,28 @@ export default class CombatAttributeSystem {
       const luckDegree = Math.max(0, actor.getLuckDegree());
       const applicationRate = luckDegree > 0 ? 1 - Math.min(this.random() / luckDegree, 1) : 0;
       const value = tagCount * coefficient * applicationRate * getCombatRandomModifier(this.random);
-      if (value > target.attributes[tag]) {
-        target.attributes[tag] = value;
-        target.attributeSources[tag] = actor;
-      }
-      target.chip.attributeValues = target.attributes;
+      this.applyAttribute(actor, target, tag, value);
     });
+  }
+
+  applyAttribute(actor, target, attribute, value) {
+    const previousValue = target.attributes[attribute];
+    if (value <= previousValue) return false;
+    const reactions = this.resolveAttributeReactions(Object.freeze({ actor, target, attribute, value, previousValue }));
+    const reductionRate = Math.max(0, ...reactions.map((reaction) => reaction.reductionRate));
+    const reflectedValue = value * reductionRate;
+    const remainingValue = value - reflectedValue;
+    this.assignAttribute(target, attribute, Math.max(previousValue, remainingValue), actor);
+    if (reflectedValue > 0) this.assignAttribute(actor, attribute, reflectedValue, target);
+    return true;
+  }
+
+  assignAttribute(target, attribute, value, source) {
+    if (value > target.attributes[attribute]) {
+      target.attributes[attribute] = value;
+      target.attributeSources[attribute] = source;
+    }
+    target.chip.attributeValues = target.attributes;
   }
 
   getLightningTargets(target, participants, value) {

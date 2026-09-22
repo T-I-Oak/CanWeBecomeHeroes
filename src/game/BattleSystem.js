@@ -25,17 +25,19 @@ import UniqueSkillEffectSystem from './UniqueSkillEffectSystem.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 import CombatConditionSystem from './CombatConditionSystem.js';
 import CombatKnockbackSystem from './CombatKnockbackSystem.js';
+import CombatAttributeReactionSystem from './CombatAttributeReactionSystem.js';
 
 export { BATTLE_VICTORY_DELAY_TICKS };
 export { WEAPON_ATTACKS, getAttackDamage, getRandomModifier };
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, uniqueSkillEffectSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, conditionSystem = new CombatConditionSystem(), knockbackSystem = new CombatKnockbackSystem(board), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, uniqueSkillEffectSystem = null, targetingSystem = null, attributeSystem = null, attributeReactionSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, conditionSystem = new CombatConditionSystem(), knockbackSystem = new CombatKnockbackSystem(board), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ random });
     this.conditionSystem = conditionSystem;
     this.knockbackSystem = knockbackSystem;
     this.uniqueSkillEffectSystem = uniqueSkillEffectSystem ?? new UniqueSkillEffectSystem({ board, controller, enemyFactory, uniqueSkillSystem: this.uniqueSkillSystem, random });
+    this.attributeReactionSystem = attributeReactionSystem ?? new CombatAttributeReactionSystem({ uniqueSkillEffectSystem: this.uniqueSkillEffectSystem });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board, { isTargetable: (combatant) => !this.knockbackSystem.isKnockedBack(combatant) });
     this.actionGaugeSystem = actionGaugeSystem;
     this.actionLog = actionLog ?? new CombatActionLog({ gameLog, textRepository });
@@ -46,6 +48,7 @@ export default class BattleSystem {
       random,
       applyDamage: (...args) => this.applyDamage(...args),
       isTargetable: (combatant) => !this.knockbackSystem.isKnockedBack(combatant),
+      resolveAttributeReactions: (attributeEvent) => this.attributeReactionSystem.resolve(attributeEvent),
     });
     this.damageSystem = damageSystem ?? new CombatDamageSystem({
       random,

@@ -3424,6 +3424,86 @@
           }
         }
       },
+      "medium-arcane": {
+        "name": {
+          "lang-store": {
+            "ja": "リッチ",
+            "en": "Lich"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "古い魔術とともに蘇った、不死の術者。相手の放った力さえ、自らの呪文へ編み直す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "An undying spellcaster revived with ancient magic. It weaves even an opponent's power back into its own spells."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "受けた属性を和らげ、相手へ跳ね返す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Softens received attributes and reflects them onto the attacker."
+              }
+            ]
+          }
+        }
+      },
+      "large-arcane": {
+        "name": {
+          "lang-store": {
+            "ja": "メデューサ",
+            "en": "Medusa"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "蛇の髪に古い魔力を宿す怪物。放たれた属性を絡め取り、より強く相手へ返す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A monster whose serpent hair bears ancient magic. It catches incoming attributes and returns them with greater force."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "受けた属性の多くを和らげ、相手へ跳ね返す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Greatly softens received attributes and reflects them onto the attacker."
+              }
+            ]
+          }
+        }
+      },
       "small-reputation": {
         "name": {
           "lang-store": {
@@ -4688,6 +4768,54 @@
               "lang-store": {
                 "ja": "相手をかなり吹き飛ばす。",
                 "en": "Knocks the attacker back a great distance."
+              }
+            }
+          }
+        }
+      },
+      "arcane-reflection": {
+        "name": {
+          "lang-store": {
+            "ja": "反照の呪術",
+            "en": "Reflective Hex"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "放たれた元素は魔鏡に映り、主へと折り返される。",
+            "en": "Elements cast into the magic mirror turn back toward their source."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "炎・水・雷属性を受けたとき、その一部を相手に跳ね返す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "When receiving fire, water, or lightning, reflects part of it onto the attacker."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "受けた属性を少し跳ね返す。",
+                "en": "Reflects a little of the received attribute."
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "受けた属性をかなり跳ね返す。",
+                "en": "Reflects much of the received attribute."
               }
             }
           }
