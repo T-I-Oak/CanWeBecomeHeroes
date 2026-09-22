@@ -58,6 +58,8 @@ export default class BattleSystem {
       recordDefeat: (...args) => this.recordDefeat(...args),
       onHeroDepleted: (hero) => {
         this.knockbackSystem.cancel(hero);
+        this.conditionSystem.clearCombatant(hero);
+        this.effects?.clearNightFamiliars?.(hero);
         this.returnSystem?.begin(hero);
       },
       onDamageApplied: (damageEvent) => this.damageReactionSystem.resolve(damageEvent),
@@ -91,6 +93,8 @@ export default class BattleSystem {
       uniqueSkillEffectSystem: this.uniqueSkillEffectSystem,
       getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
       knockbackSystem: this.knockbackSystem,
+      conditionSystem: this.conditionSystem,
+      effects,
       gameLog,
       textRepository,
     });
@@ -130,6 +134,7 @@ export default class BattleSystem {
     this.attributeSystem.reset();
     this.uniqueSkillSystem.reset?.();
     this.conditionSystem.reset();
+    this.effects?.clearNightFamiliars?.();
   }
   hasStageVictory() { return this.stageLifecycle.hasVictory(); }
   isStageComplete() { return this.stageLifecycle.isComplete(); }
@@ -214,6 +219,8 @@ export default class BattleSystem {
   createEnemyDrops(enemy) { return this.defeatSystem.createEnemyDrops(enemy); }
   defeatEnemy(enemy) {
     this.knockbackSystem.cancel(enemy);
+    this.conditionSystem.clearCombatant(enemy);
+    this.effects?.clearNightFamiliars?.(enemy);
     this.contributionPoints += this.defeatSystem.resolve(enemy);
   }
   getElapsedTicks(tick) { return this.stageLifecycle.getElapsedTicks(tick); }

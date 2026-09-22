@@ -120,6 +120,17 @@ test('arcane medium and large enemies use their reflection definitions and asset
   assert.equal(medusa.chip.centerPath, '/assets/enemies/large-arcane.png');
 });
 
+test('cloth medium and large enemies use their night familiar definitions and assets', () => {
+  const factory = new EnemyFactory();
+  const wraith = factory.createFromDefinition({ enemyDefinitionId: 'medium-cloth', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const dracula = factory.createFromDefinition({ enemyDefinitionId: 'large-cloth', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(wraith.uniqueSkill, { id: 'cloth-night-familiars', level: 1 });
+  assert.equal(wraith.chip.centerPath, '/assets/enemies/medium-cloth.png');
+  assert.deepEqual(dracula.uniqueSkill, { id: 'cloth-night-familiars', level: 2 });
+  assert.equal(dracula.chip.centerPath, '/assets/enemies/large-cloth.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },

@@ -24,6 +24,7 @@ export default class UniqueSkillEffectSystem {
       case 'battle-frenzy': return this.resolveBattleFrenzy(skill);
       case 'iron-counterblow': return this.resolveIronCounterblow(skill, context);
       case 'arcane-reflection': return this.resolveArcaneReflection(skill, context);
+      case 'cloth-night-familiars': return this.resolveClothNightFamiliars(skill);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -87,6 +88,10 @@ export default class UniqueSkillEffectSystem {
   resolveArcaneReflection(skill, { attributeEvent } = {}) {
     if (!attributeEvent?.actor || !attributeEvent.attribute || attributeEvent.value <= 0) return Object.freeze({ skill, attributeReflection: null });
     return Object.freeze({ skill, attributeReflection: Object.freeze({ reductionRate: skill.levelDetail.reductionRate }) });
+  }
+
+  resolveClothNightFamiliars(skill) {
+    return Object.freeze({ skill, familiarCount: skill.levelDetail.familiarCount });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {

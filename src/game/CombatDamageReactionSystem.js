@@ -2,12 +2,13 @@ import { entityText, logText } from './LocalizedLog.js';
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 
 export default class CombatDamageReactionSystem {
-  constructor({ controller, itemFactory, uniqueSkillEffectSystem, getWarehouseDropPosition, knockbackSystem = null, gameLog = null, textRepository = null }) {
-    Object.assign(this, { controller, itemFactory, uniqueSkillEffectSystem, getWarehouseDropPosition, knockbackSystem, gameLog, textRepository });
+  constructor({ controller, itemFactory, uniqueSkillEffectSystem, getWarehouseDropPosition, knockbackSystem = null, conditionSystem = null, effects = null, gameLog = null, textRepository = null }) {
+    Object.assign(this, { controller, itemFactory, uniqueSkillEffectSystem, getWarehouseDropPosition, knockbackSystem, conditionSystem, effects, gameLog, textRepository });
   }
 
   resolve(damageEvent) {
     const { target } = damageEvent;
+    if (this.conditionSystem?.removeNightFamiliar(target)) this.effects?.removeNightFamiliar(target);
     this.uniqueSkillEffectSystem.resolve(target, UNIQUE_SKILL_TRIGGER.damageReceived, { damageEvent }).forEach(({ skill, drops = [], knockback = null }) => {
       if (knockback) this.knockbackSystem?.queueIronCounterblow(knockback);
       if (drops.length === 0) return;

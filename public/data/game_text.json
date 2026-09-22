@@ -3624,6 +3624,86 @@
           }
         }
       },
+      "medium-cloth": {
+        "name": {
+          "lang-store": {
+            "ja": "レイス",
+            "en": "Wraith"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "夜の墓所をさまよう、ぼろ布をまとった亡霊。静かな羽音を呼び寄せ、獲物を闇へ追い込む。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A rag-wrapped spirit that haunts the tombs at night. It calls quiet wingbeats to drive prey into the dark."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "攻撃後に使い魔を呼び、次の攻撃でけしかける。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Calls familiars after attacking, then sets them upon foes on its next attack."
+              }
+            ]
+          }
+        }
+      },
+      "large-cloth": {
+        "name": {
+          "lang-store": {
+            "ja": "ドラキュラ",
+            "en": "Dracula"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "古い城に君臨する夜の貴族。羽音の群れを従え、逃げ場のない闇へ相手を追い詰める。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A nocturnal noble who reigns over an ancient castle. With a flock of wingbeats at his command, he corners foes in inescapable darkness."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "多くの使い魔を呼び、次の攻撃でけしかける。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Calls many familiars, then sets them upon foes on its next attack."
+              }
+            ]
+          }
+        }
+      },
       "small-dexterity": {
         "name": {
           "lang-store": {
@@ -4816,6 +4896,54 @@
               "lang-store": {
                 "ja": "受けた属性をかなり跳ね返す。",
                 "en": "Reflects much of the received attribute."
+              }
+            }
+          }
+        }
+      },
+      "cloth-night-familiars": {
+        "name": {
+          "lang-store": {
+            "ja": "夜の使い魔",
+            "en": "Night Familiars"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "闇を裂く羽音が、夜の主の命に応える。",
+            "en": "Wingbeats that tear through the dark answer the call of their nocturnal master."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "攻撃後、使い魔を呼び出す。使い魔は次の攻撃時に相手へ飛びかかり、ダメージを受けるたびに1体消える。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "After attacking, calls familiars. They leap at opponents on the next attack, and one vanishes each time their master takes damage."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "使い魔を3体呼び出す。",
+                "en": "Calls 3 familiars."
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "使い魔を6体呼び出す。",
+                "en": "Calls 6 familiars."
               }
             }
           }
