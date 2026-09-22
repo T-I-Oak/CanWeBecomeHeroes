@@ -131,6 +131,17 @@ test('cloth medium and large enemies use their night familiar definitions and as
   assert.equal(dracula.chip.centerPath, '/assets/enemies/large-cloth.png');
 });
 
+test('water medium and large enemies use their deep sea surge definitions and assets', () => {
+  const factory = new EnemyFactory();
+  const kraken = factory.createFromDefinition({ enemyDefinitionId: 'medium-water', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const leviathan = factory.createFromDefinition({ enemyDefinitionId: 'large-water', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(kraken.uniqueSkill, { id: 'water-deep-sea-surge', level: 1 });
+  assert.equal(kraken.chip.centerPath, '/assets/enemies/medium-water.png');
+  assert.deepEqual(leviathan.uniqueSkill, { id: 'water-deep-sea-surge', level: 2 });
+  assert.equal(leviathan.chip.centerPath, '/assets/enemies/large-water.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },

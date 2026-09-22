@@ -17,9 +17,9 @@ export default class CombatActionResolutionSystem {
     this.effects?.attack(actor, actor.getTagCount('area'), { showGaugeAtMaximum: !preserveGaugePresentation });
     this.effects?.beginAction(actor);
     this.resolveNightFamiliarAttacks(actor, participants);
-    this.resolveActionStartedUniqueSkill(actor, target, participants);
+    const actionModifiers = this.resolveActionStartedUniqueSkill(actor, target, participants);
     targets.forEach(({ target: rangeTarget, coefficient }) => this.attributeSystem.applyAttributes(actor, rangeTarget, coefficient));
-    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants));
+    this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants, actionModifiers));
     this.resolveVitality(actor);
     this.effects?.endAction();
     this.actionLog.flush();
@@ -34,8 +34,11 @@ export default class CombatActionResolutionSystem {
   }
 
   resolveActionStartedUniqueSkill(actor, target, participants) {
-    this.uniqueSkillEffectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target }).forEach(({ tagRemoval, twoEdgedSwordMultiplier }) => {
+    let waterDamageBonusRate = 0;
+    this.uniqueSkillEffectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target }).forEach(({ tagRemoval, twoEdgedSwordMultiplier, selfAttribute = null, waterDamageBonusRate: effectWaterDamageBonusRate = 0 }) => {
       if (twoEdgedSwordMultiplier) participants.forEach((combatant) => this.conditionSystem.applyTwoEdgedSword(combatant, twoEdgedSwordMultiplier));
+      if (selfAttribute) this.attributeSystem.applySelfAttribute(actor, selfAttribute.attribute, selfAttribute.value);
+      waterDamageBonusRate = Math.max(waterDamageBonusRate, effectWaterDamageBonusRate);
       if (!tagRemoval) return;
       const tag = tagRemoval.sourceItem.removeTagAt(tagRemoval.tagIndex);
       if (!tag) return;
@@ -45,6 +48,7 @@ export default class CombatActionResolutionSystem {
       this.actionGaugeSystem?.updateMaximum(target);
       this.actionGaugeSystem?.updateMaximum(actor);
     });
+    return Object.freeze({ waterDamageBonusRate });
   }
 
   attackTypes(actor) {
@@ -89,7 +93,7 @@ export default class CombatActionResolutionSystem {
     }
   }
 
-  resolveWeapon(actor, target, type, participants) {
+  resolveWeapon(actor, target, type, participants, { waterDamageBonusRate = 0 } = {}) {
     if (!isEntityOnBoard(this.board, target)) return;
     this.weaponEffectSystem.applySupportEffect(actor, type, participants);
     if (this.isAttackMiss(actor, target)) {
@@ -101,8 +105,12 @@ export default class CombatActionResolutionSystem {
     this.targetingSystem.rangeTargets(actor, target, participants).forEach(({ target: rangeTarget, coefficient }) => {
       const statTag = attack[0] === 'magic' ? 'arcane' : 'valor';
       const skillLevel = actor.getTagSkillLevel(statTag);
-      const critical = skillLevel > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus;
-      const damage = getAttackDamage(actor, attack) * coefficient * getRandomModifier(this.random) * (critical ? 1 + skillLevel ** 2 * 0.1 : 1);
+      const tagCritical = skillLevel > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus;
+      const waterValue = waterDamageBonusRate > 0 ? actor.attributes.water : 0;
+      const waterCritical = waterValue > 0;
+      const critical = tagCritical || waterCritical;
+      const damage = getAttackDamage(actor, attack) * coefficient * getRandomModifier(this.random)
+        * (tagCritical ? 1 + skillLevel ** 2 * 0.1 : 1) * (1 + waterValue * waterDamageBonusRate);
       if (type === 'orb') this.weaponEffectSystem.applyOrb(actor, rangeTarget, coefficient);
       if (type === 'claw') this.weaponEffectSystem.resolveTheft(actor, rangeTarget);
       const dealt = attack[0] === 'power'

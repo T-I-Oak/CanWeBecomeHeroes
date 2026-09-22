@@ -25,6 +25,7 @@ export default class UniqueSkillEffectSystem {
       case 'iron-counterblow': return this.resolveIronCounterblow(skill, context);
       case 'arcane-reflection': return this.resolveArcaneReflection(skill, context);
       case 'cloth-night-familiars': return this.resolveClothNightFamiliars(skill);
+      case 'water-deep-sea-surge': return this.resolveWaterDeepSeaSurge(entity, skill);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -92,6 +93,10 @@ export default class UniqueSkillEffectSystem {
 
   resolveClothNightFamiliars(skill) {
     return Object.freeze({ skill, familiarCount: skill.levelDetail.familiarCount });
+  }
+
+  resolveWaterDeepSeaSurge(actor, skill) {
+    return Object.freeze({ skill, selfAttribute: Object.freeze({ attribute: 'water', value: actor.getTagCount('water') }), waterDamageBonusRate: skill.levelDetail.waterDamageBonusRate });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {

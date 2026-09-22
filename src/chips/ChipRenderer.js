@@ -2,9 +2,15 @@ const DEFAULT_TAG_SLOT_COUNT = 8;
 export const CENTER_IMAGE_SCALE = 0.85;
 const CHIP_RIM_WIDTH_RATIO = 0.065;
 
-function drawImageCover(context, image, x, y, size) {
+export function getContainedImageSize(imageWidth, imageHeight, boxSize) {
+  const scale = Math.min(boxSize / imageWidth, boxSize / imageHeight);
+  return { width: imageWidth * scale, height: imageHeight * scale };
+}
+
+function drawImageContain(context, image, x, y, size) {
   if (!image.complete || image.naturalWidth === 0) return;
-  context.drawImage(image, x - size / 2, y - size / 2, size, size);
+  const { width, height } = getContainedImageSize(image.naturalWidth, image.naturalHeight, size);
+  context.drawImage(image, x - width / 2, y - height / 2, width, height);
 }
 
 export function drawFramedTag(context, assets, path, baseColor, glyphScale = 1, x, y, size) {
@@ -16,7 +22,7 @@ export function drawFramedTag(context, assets, path, baseColor, glyphScale = 1, 
   context.beginPath();
   context.arc(x, y, size * 0.43, 0, Math.PI * 2);
   context.fill();
-  drawImageCover(context, assets.load(path), x, y, size * glyphScale);
+  drawImageContain(context, assets.load(path), x, y, size * glyphScale);
   context.lineWidth = Math.max(1, size * 0.035);
   context.strokeStyle = 'rgba(255, 255, 255, 0.78)';
   context.beginPath();
@@ -110,7 +116,7 @@ export default class ChipRenderer {
     context.save();
     context.translate(centerImage.x, centerImage.y);
     if (chip.flipped) context.scale(-1, 1);
-    drawImageCover(context, this.assets.load(chip.centerPath), 0, 0, centerImage.size);
+    drawImageContain(context, this.assets.load(chip.centerPath), 0, 0, centerImage.size);
     context.restore();
     context.restore();
 
@@ -166,7 +172,7 @@ export default class ChipRenderer {
     this.context.translate(x, y);
     this.context.scale(pulse, pulse);
     this.context.globalAlpha = presentation.alpha;
-    drawImageCover(this.context, image, 0, 0, size);
+    drawImageContain(this.context, image, 0, 0, size);
     this.context.restore();
   }
 
@@ -193,7 +199,7 @@ export default class ChipRenderer {
       this.context.globalAlpha = 0.72 + magnitude * 0.22;
       // 足元の位置を固定して拡大・縮小する。付与値が小さい間は足元だけに
       // 見え、強い付与値では同じ基点からチップ全体を囲む。
-      drawImageCover(this.context, image, 0, -size / 2, size);
+      drawImageContain(this.context, image, 0, -size / 2, size);
       this.context.restore();
     });
   }
