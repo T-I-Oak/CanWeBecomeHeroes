@@ -4,6 +4,8 @@ import { getTagBaseColors, getTagGlyphScales } from './TagCatalog.js';
 const ATTACK_DURATION = 0.42;
 const HIT_RECOVERY = 0.34;
 const TAG_TRANSFER_DURATION = 0.32;
+const NIGHT_FAMILIAR_FLIGHT_DURATION = 0.28;
+const NIGHT_FAMILIAR_ASSET_PATH = '/assets/effects/night-familiar.png';
 
 function visualPosition(chip) {
   return {
@@ -20,6 +22,9 @@ export default class CombatEffectSystem {
     this.popups = [];
     this.lightning = [];
     this.tagTransfers = [];
+    this.nightFamiliars = new Map();
+    this.nightFamiliarFlights = [];
+    this.elapsedSeconds = 0;
     this.actionResults = null;
   }
 
@@ -91,7 +96,35 @@ export default class CombatEffectSystem {
     this.tagTransfers.push({ from: from.chip, to: to.chip, tag, elapsed: 0, duration: TAG_TRANSFER_DURATION });
   }
 
+  summonNightFamiliars(source, count) {
+    this.nightFamiliars.set(source.chip, { source: source.chip, count });
+  }
+
+  removeNightFamiliar(source) {
+    const familiars = this.nightFamiliars.get(source.chip);
+    if (!familiars) return;
+    if (familiars.count <= 1) this.nightFamiliars.delete(source.chip);
+    else familiars.count -= 1;
+  }
+
+  consumeNightFamiliars(source) {
+    this.nightFamiliars.delete(source.chip);
+  }
+
+  clearNightFamiliars(source = null) {
+    if (source) this.nightFamiliars.delete(source.chip);
+    else this.nightFamiliars.clear();
+    this.nightFamiliarFlights = source
+      ? this.nightFamiliarFlights.filter((effect) => effect.source !== source.chip)
+      : [];
+  }
+
+  launchNightFamiliar(source, target, index, count) {
+    this.nightFamiliarFlights.push({ source: source.chip, target: target.chip, index, count, elapsed: 0 });
+  }
+
   update(deltaSeconds) {
+    this.elapsedSeconds += deltaSeconds;
     this.attacks = this.attacks.filter((effect) => {
       effect.elapsed += deltaSeconds;
       const ratio = Math.min(1, effect.elapsed / ATTACK_DURATION);
@@ -132,6 +165,8 @@ export default class CombatEffectSystem {
     this.lightning = this.lightning.filter((effect) => effect.elapsed < effect.duration);
     this.tagTransfers.forEach((effect) => { effect.elapsed += deltaSeconds; });
     this.tagTransfers = this.tagTransfers.filter((effect) => effect.elapsed < effect.duration);
+    this.nightFamiliarFlights.forEach((effect) => { effect.elapsed += deltaSeconds; });
+    this.nightFamiliarFlights = this.nightFamiliarFlights.filter((effect) => effect.elapsed < NIGHT_FAMILIAR_FLIGHT_DURATION);
   }
 
   draw(context, assets = null) {
@@ -180,6 +215,22 @@ export default class CombatEffectSystem {
       );
       context.restore();
     });
+    if (assets) {
+      this.nightFamiliars.forEach((familiars) => {
+        for (let index = 0; index < familiars.count; index += 1) this.drawNightFamiliar(context, assets, this.getNightFamiliarOrbitPosition(familiars.source, index, familiars.count));
+      });
+      this.nightFamiliarFlights.forEach((effect) => {
+        const progress = Math.min(1, effect.elapsed / NIGHT_FAMILIAR_FLIGHT_DURATION);
+        const from = this.getNightFamiliarOrbitPosition(effect.source, effect.index, effect.count);
+        const to = visualPosition(effect.target);
+        this.drawNightFamiliar(context, assets, {
+          x: from.x + (to.x - from.x) * progress,
+          y: from.y + (to.y - from.y) * progress - Math.sin(progress * Math.PI) * 26,
+          size: from.size * (1 - progress * 0.2),
+          angle: from.angle + progress * 0.6,
+        });
+      });
+    }
     this.popups.forEach((effect) => {
       const position = visualPosition(effect.chip);
       const ratio = effect.elapsed / effect.duration;
@@ -195,6 +246,28 @@ export default class CombatEffectSystem {
       context.strokeText(label, position.x, y);
       context.fillText(label, position.x, y);
     });
+    context.restore();
+  }
+
+  getNightFamiliarOrbitPosition(source, index, count) {
+    const sourcePosition = visualPosition(source);
+    const phase = this.elapsedSeconds * 4 + index * Math.PI * 2 / count;
+    const orbitRadius = source.radius * 1.05;
+    return {
+      x: sourcePosition.x + Math.cos(phase) * orbitRadius,
+      y: sourcePosition.y + Math.sin(phase) * orbitRadius * 0.54 - source.radius * 0.15,
+      size: Math.max(28, source.radius * 0.58),
+      angle: Math.sin(phase) * 0.18,
+    };
+  }
+
+  drawNightFamiliar(context, assets, { x, y, size, angle }) {
+    const asset = assets.load(NIGHT_FAMILIAR_ASSET_PATH);
+    if (!asset.complete || asset.naturalWidth === 0) return;
+    context.save();
+    context.translate(x, y);
+    context.rotate(angle);
+    context.drawImage(asset, -size / 2, -size / 2, size, size);
     context.restore();
   }
 }

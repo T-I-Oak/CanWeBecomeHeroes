@@ -50,3 +50,13 @@ test('arcane reflection exposes the level-specific attribute reduction as a reac
 
   assert.deepEqual(effect.attributeReflection, { reductionRate: 0.75 });
 });
+
+test('night familiars expose the Ex-specific familiar count after an action', () => {
+  const effectSystem = new UniqueSkillEffectSystem({
+    uniqueSkillSystem: { getTriggeredSkills: () => [{ id: 'cloth-night-familiars', level: 2, levelDetail: { familiarCount: 6 } }] },
+  });
+
+  const [effect] = effectSystem.resolve({}, UNIQUE_SKILL_TRIGGER.actionCompleted);
+
+  assert.equal(effect.familiarCount, 6);
+});

@@ -115,6 +115,14 @@ export const ENEMY_CATALOG = Object.freeze({
     id: 'large-arcane', size: 'large', tagAffinity: 'arcane', nameKey: 'enemy.largeArcane', assetPath: '/assets/enemies/large-arcane.png', intrinsicTags: Object.freeze(['arcane']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'arcane-reflection', level: 2 }),
   }),
+  'medium-cloth': Object.freeze({
+    id: 'medium-cloth', size: 'medium', tagAffinity: 'cloth', nameKey: 'enemy.mediumCloth', assetPath: '/assets/enemies/medium-cloth.png', intrinsicTags: Object.freeze(['cloth']), baseHp: 2, baseContributionPoints: 50,
+    uniqueSkill: Object.freeze({ id: 'cloth-night-familiars', level: 1 }),
+  }),
+  'large-cloth': Object.freeze({
+    id: 'large-cloth', size: 'large', tagAffinity: 'cloth', nameKey: 'enemy.largeCloth', assetPath: '/assets/enemies/large-cloth.png', intrinsicTags: Object.freeze(['cloth']), baseHp: 2, baseContributionPoints: 250,
+    uniqueSkill: Object.freeze({ id: 'cloth-night-familiars', level: 2 }),
+  }),
   'phantom-area-head': Object.freeze({
     id: 'phantom-area-head', size: 'small', tagAffinity: 'area', nameKey: 'enemy.phantomAreaHead', assetPath: '/assets/enemies/small-area-head.png', intrinsicTags: Object.freeze(['area']), baseHp: 0, baseContributionPoints: 0,
   }),

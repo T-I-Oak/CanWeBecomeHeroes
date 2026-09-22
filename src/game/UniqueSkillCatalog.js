@@ -70,6 +70,16 @@ const ARCANE_REFLECTION = Object.freeze({
   }),
 });
 
+const CLOTH_NIGHT_FAMILIARS = Object.freeze({
+  id: 'cloth-night-familiars',
+  affinityTag: 'cloth',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionCompleted]),
+  levels: Object.freeze({
+    1: Object.freeze({ familiarCount: 3 }),
+    2: Object.freeze({ familiarCount: 6 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
@@ -78,6 +88,7 @@ export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [BATTLE_FRENZY.id]: BATTLE_FRENZY,
   [IRON_COUNTERBLOW.id]: IRON_COUNTERBLOW,
   [ARCANE_REFLECTION.id]: ARCANE_REFLECTION,
+  [CLOTH_NIGHT_FAMILIARS.id]: CLOTH_NIGHT_FAMILIARS,
 });
 
 export function getUniqueSkillDetail(id) {

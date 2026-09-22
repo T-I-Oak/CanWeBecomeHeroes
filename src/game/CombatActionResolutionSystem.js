@@ -3,6 +3,8 @@ import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 import { WEAPON_ATTACKS, getAttackDamage, getRandomModifier } from './CombatWeaponAttack.js';
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 
+const NIGHT_FAMILIAR_ATTACK = Object.freeze(['power', 1 / 8]);
+
 export default class CombatActionResolutionSystem {
   constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, knockbackSystem = null, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
     Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, knockbackSystem, effects, gameLog, textRepository, random });
@@ -14,6 +16,7 @@ export default class CombatActionResolutionSystem {
     this.actionLog.begin();
     this.effects?.attack(actor, actor.getTagCount('area'), { showGaugeAtMaximum: !preserveGaugePresentation });
     this.effects?.beginAction(actor);
+    this.resolveNightFamiliarAttacks(actor, participants);
     this.resolveActionStartedUniqueSkill(actor, target, participants);
     targets.forEach(({ target: rangeTarget, coefficient }) => this.attributeSystem.applyAttributes(actor, rangeTarget, coefficient));
     this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants));
@@ -72,6 +75,20 @@ export default class CombatActionResolutionSystem {
     return actor.hp - previous;
   }
 
+  resolveNightFamiliarAttacks(actor, participants) {
+    const familiarCount = this.conditionSystem.consumeNightFamiliars(actor);
+    if (familiarCount === 0) return;
+    this.effects?.consumeNightFamiliars(actor);
+    for (let index = 0; index < familiarCount; index += 1) {
+      const opponents = this.targetingSystem.getOpponents(actor, participants);
+      if (opponents.length === 0) return;
+      const target = opponents[Math.floor(this.random() * opponents.length)];
+      const damage = getAttackDamage(actor, NIGHT_FAMILIAR_ATTACK) * getRandomModifier(this.random);
+      this.effects?.launchNightFamiliar(actor, target, index, familiarCount);
+      this.damageSystem.applyPhysicalDamage(actor, target, 'night-familiar', damage, false, participants, { propagate: (...args) => this.propagate(...args) });
+    }
+  }
+
   resolveWeapon(actor, target, type, participants) {
     if (!isEntityOnBoard(this.board, target)) return;
     this.weaponEffectSystem.applySupportEffect(actor, type, participants);
@@ -99,7 +116,11 @@ export default class CombatActionResolutionSystem {
 
   resolveActionUniqueSkill(enemy, participants = []) {
     const reservedSlots = this.projectionSystem.areaHeads.map((head) => head.slotPosition);
-    this.uniqueSkillEffectSystem.resolve(enemy, UNIQUE_SKILL_TRIGGER.actionCompleted, { reservedSlots }).forEach(({ skill, heads = [] }) => {
+    this.uniqueSkillEffectSystem.resolve(enemy, UNIQUE_SKILL_TRIGGER.actionCompleted, { reservedSlots }).forEach(({ skill, heads = [], familiarCount = 0 }) => {
+      if (familiarCount > 0) {
+        this.conditionSystem.summonNightFamiliars(enemy, familiarCount);
+        this.effects?.summonNightFamiliars(enemy, familiarCount);
+      }
       heads.forEach((head) => this.projectionSystem.launchAreaHead(enemy, head));
       const cooperatingMinions = skill.id === 'area-head-rush'
         ? participants.filter((actor) => actor !== enemy && !isHeroCombatant(actor) && !actor.isPhantomHead && isEntityOnBoard(this.board, actor)

@@ -21,8 +21,7 @@ export default class CombatTargetingSystem {
   }
 
   findTarget(actor, participants) {
-    let candidates = participants.filter((candidate) => isHeroCombatant(candidate) !== isHeroCombatant(actor)
-      && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate) && this.isTargetable(candidate));
+    let candidates = this.getOpponents(actor, participants);
     const equipment = isHeroCombatant(actor) ? [actor.equipment.rightHand, actor.equipment.leftHand] : actor.equipment;
     const distance = (candidate) => Math.hypot(candidate.chip.x - actor.chip.x, candidate.chip.y - actor.chip.y);
     const narrowCandidates = (weaponType) => {
@@ -46,10 +45,14 @@ export default class CombatTargetingSystem {
     return candidates.toSorted((left, right) => distance(left) - distance(right) || left.chip.x - right.chip.x)[0] ?? null;
   }
 
+  getOpponents(actor, participants) {
+    return participants.filter((candidate) => isHeroCombatant(candidate) !== isHeroCombatant(actor)
+      && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate) && this.isTargetable(candidate));
+  }
+
   rangeTargets(actor, target, participants) {
     const coefficients = RANGE_COEFFICIENTS[actor.getTagCount('area')];
-    const foes = participants.filter((candidate) => isHeroCombatant(candidate) !== isHeroCombatant(actor)
-      && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate) && this.isTargetable(candidate));
+    const foes = this.getOpponents(actor, participants);
     const lane = this.createRangeLane(actor, foes);
     const targetIndex = lane.indexOf(target);
     const centerIndex = Math.floor(coefficients.length / 2);
