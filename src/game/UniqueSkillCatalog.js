@@ -40,11 +40,22 @@ const SHADOW_FINGERTIPS = Object.freeze({
   }),
 });
 
+const BATTLE_FRENZY = Object.freeze({
+  id: 'battle-frenzy',
+  affinityTag: 'valor',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionStarted]),
+  levels: Object.freeze({
+    1: Object.freeze({ twoEdgedSwordMultiplier: 2 }),
+    2: Object.freeze({ twoEdgedSwordMultiplier: 4 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
   [AREA_HEAD_RUSH.id]: AREA_HEAD_RUSH,
   [SHADOW_FINGERTIPS.id]: SHADOW_FINGERTIPS,
+  [BATTLE_FRENZY.id]: BATTLE_FRENZY,
 });
 
 export function getUniqueSkillDetail(id) {

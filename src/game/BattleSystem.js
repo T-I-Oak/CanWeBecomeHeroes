@@ -23,14 +23,16 @@ import CombatStageLifecycle, { BATTLE_VICTORY_DELAY_TICKS } from './CombatStageL
 import CombatDamageReactionSystem from './CombatDamageReactionSystem.js';
 import UniqueSkillEffectSystem from './UniqueSkillEffectSystem.js';
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
+import CombatConditionSystem from './CombatConditionSystem.js';
 
 export { BATTLE_VICTORY_DELAY_TICKS };
 export { WEAPON_ATTACKS, getAttackDamage, getRandomModifier };
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, uniqueSkillEffectSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, uniqueSkillEffectSystem = null, targetingSystem = null, attributeSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, conditionSystem = new CombatConditionSystem(), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ random });
+    this.conditionSystem = conditionSystem;
     this.uniqueSkillEffectSystem = uniqueSkillEffectSystem ?? new UniqueSkillEffectSystem({ board, controller, enemyFactory, uniqueSkillSystem: this.uniqueSkillSystem, random });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board);
     this.actionGaugeSystem = actionGaugeSystem;
@@ -47,6 +49,7 @@ export default class BattleSystem {
       onDamageApplied: (damageEvent) => this.damageReactionSystem.resolve(damageEvent),
       onEnemyDefeated: (enemy) => this.defeatEnemy(enemy),
       onDamageResolved: (target) => this.uniqueSkillSystem.refreshBlessingSkills(target),
+      conditionSystem: this.conditionSystem,
     });
     this.weaponEffectSystem = weaponEffectSystem ?? new CombatWeaponEffectSystem({
       board,
@@ -87,6 +90,7 @@ export default class BattleSystem {
       projectionSystem: this.projectionSystem,
       uniqueSkillSystem: this.uniqueSkillSystem,
       uniqueSkillEffectSystem: this.uniqueSkillEffectSystem,
+      conditionSystem: this.conditionSystem,
       effects,
       gameLog,
       textRepository,
@@ -109,11 +113,15 @@ export default class BattleSystem {
     this.stageLifecycle.reset();
     this.attributeSystem.reset();
     this.uniqueSkillSystem.reset?.();
+    this.conditionSystem.reset();
   }
   hasStageVictory() { return this.stageLifecycle.hasVictory(); }
   isStageComplete() { return this.stageLifecycle.isComplete(); }
   update({ heroes, enemies, tick, tickDelta }) {
-    [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => a.clearBattleState?.());
+    [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => {
+      a.clearBattleState?.();
+      this.conditionSystem.clearCombatant(a);
+    });
     const stageEnemies = this.controller?.getEnemies?.() ?? enemies;
     const activeEnemies = [...new Set([...stageEnemies.filter((e) => isEntityOnBoard(this.board, e)), ...this.projectionSystem.areaHeads.filter((e) => isEntityOnBoard(this.board, e))])];
     this.stageLifecycle.markEnemyEncountered(activeEnemies);

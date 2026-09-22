@@ -1,7 +1,9 @@
 import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
+import { getItemDefinitionAssetPath } from '../game/ItemFactory.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { createInformationElement } from './InformationWindowElementFactory.js';
 import { createItemValueIcon, createLocationIcon, createStatusIcon, createTagIcon, createTermIcon } from './InformationWindowVisualFactory.js';
+import { createDefinitionInformationTarget } from './InformationTarget.js';
 
 export default class InformationWindowReferenceRenderer {
   constructor({ textRepository, open }) {
@@ -11,23 +13,25 @@ export default class InformationWindowReferenceRenderer {
 
   setTextRepository(textRepository) { this.textRepository = textRepository; }
 
-  createLinkedDescription(content, parentId, className = 'InformationWindow__Description', source = null) {
+  createLinkedDescription(content, parentId, className = 'InformationWindow__Description') {
     const text = createInformationElement('p', className);
     (Array.isArray(content) ? content : [content]).forEach((part) => {
       if (typeof part === 'string') text.append(part);
       else if (part.type === 'text') text.append(part.value);
-      else if (part.type === 'reference') text.append(this.createReference(part, parentId, source));
+      else if (part.type === 'reference') text.append(this.createReference(part, parentId));
       else if (part.type === 'status') text.append(this.createStatusReference(part, parentId));
       else if (part.type === 'tag') text.append(this.createTagReference(part, parentId));
+      else if (part.type === 'term') text.append(this.createTermReference({ id: part.id, parentId }));
       else if (part.type === 'facility') text.append(this.createFacilityReference(part, parentId));
       else if (part.type === 'area') text.append(this.createAreaReference(part, parentId));
-      else if (part.type === 'enemy-definition') text.append(this.createEnemyDefinitionReference(part, source, parentId));
+      else if (part.type === 'enemy-definition') text.append(this.createEnemyDefinitionReference(part, parentId));
     });
     return text;
   }
 
-  createReference({ kind, id }, parentId, source = null) {
-    if (kind === 'enemy-definition') return this.createEnemyDefinitionReference({ id }, source, parentId);
+  createReference({ kind, id }, parentId) {
+    if (kind === 'enemy-definition') return this.createEnemyDefinitionReference({ id }, parentId);
+    if (kind === 'item') return this.createItemDefinitionReference({ id }, parentId);
     const label = this.textRepository.getName(kind, id);
     if (!label) throw new RangeError(`Unknown localized reference: ${kind}/${id}`);
     if (kind === 'status') return this.createStatusReference({ id, label }, parentId);
@@ -82,7 +86,7 @@ export default class InformationWindowReferenceRenderer {
     return this.#createReferenceButton({ label, icon: createLocationIcon(id), type: 'area', parentId, data: { area: id } });
   }
 
-  createEnemyDefinitionReference({ id }, source, parentId) {
+  createEnemyDefinitionReference({ id }, parentId) {
     const label = this.textRepository.getName('enemy', id);
     const definition = getEnemyDefinitionById(id);
     const icon = createInformationElement('span', 'InformationWindow__InlineIcon InformationWindow__InlineEnemyIcon');
@@ -93,9 +97,25 @@ export default class InformationWindowReferenceRenderer {
     return this.#createReferenceButton({
       label,
       icon,
-      type: 'enemy-projection',
+      type: 'definition',
       parentId,
-      data: { source, enemyId: id },
+      data: { target: createDefinitionInformationTarget('enemy', id) },
+    });
+  }
+
+  createItemDefinitionReference({ id }, parentId) {
+    const label = this.textRepository.getName('item', id);
+    const icon = createInformationElement('span', 'InformationWindow__InlineIcon InformationWindow__InlineItemIcon');
+    const image = document.createElement('img');
+    image.src = resolvePublicAssetPath(getItemDefinitionAssetPath(id));
+    image.alt = '';
+    icon.append(image);
+    return this.#createReferenceButton({
+      label,
+      icon,
+      type: 'definition',
+      parentId,
+      data: { target: createDefinitionInformationTarget('item', id) },
     });
   }
 

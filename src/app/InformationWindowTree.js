@@ -2,13 +2,11 @@ function isSameTarget(entry, type, data) {
   if (entry.type !== type) return false;
   if (type === 'tag') return entry.data.tag === data.tag;
   if (type === 'status') return entry.data.status === data.status;
-  if (type === 'entity') return entry.data.entity === data.entity;
-  if (type === 'item') return entry.data.item === data.item;
+  if (type === 'instance') return entry.data.target.instanceId === data.target.instanceId;
+  if (type === 'definition') return entry.data.target.kind === data.target.kind && entry.data.target.definitionId === data.target.definitionId;
   if (type === 'facility') return entry.data.facility === data.facility;
   if (type === 'area') return entry.data.area === data.area;
   if (type === 'term') return entry.data.term === data.term;
-  if (type === 'unique-skill') return entry.data.uniqueSkill.id === data.uniqueSkill.id && entry.data.uniqueSkill.level === data.uniqueSkill.level;
-  if (type === 'enemy-projection') return entry.data.source === data.source && entry.data.enemyId === data.enemyId;
   return entry.data === data;
 }
 

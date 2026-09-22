@@ -21,6 +21,16 @@ export function getHeroProfessionDefinition(profession) {
   return definition;
 }
 
+export function getHeroDefinitionById(heroId) {
+  const profession = HERO_PROFESSION_IDS.find((id) => PROFESSIONS[id].heroId === heroId);
+  if (!profession) throw new RangeError(`Unknown hero definition: ${heroId}`);
+  return PROFESSIONS[profession];
+}
+
+export function getHeroDefinitionAssetPath(heroId) {
+  return `/assets/heroes/${getHeroDefinitionById(heroId).asset}.png`;
+}
+
 export default class HeroFactory {
   createRandom({ x, y, random = Math.random, bounds = null, stamina = 0 }) {
     return this.create({ profession: HERO_PROFESSION_IDS[Math.floor(random() * HERO_PROFESSION_IDS.length)], x, y, bounds, stamina });

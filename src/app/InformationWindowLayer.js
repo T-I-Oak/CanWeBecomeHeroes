@@ -5,8 +5,8 @@ import EntityInformationRenderer from './EntityInformationRenderer.js';
 import InformationWindowPositioner from './InformationWindowPositioner.js';
 import InformationWindowDragController from './InformationWindowDragController.js';
 
-const CATALOG_INFORMATION_TYPES = Object.freeze(['tag', 'status', 'term', 'facility', 'area']);
-const ENTITY_INFORMATION_TYPES = Object.freeze(['entity', 'enemy-projection', 'item', 'unique-skill']);
+const CATALOG_INFORMATION_TYPES = Object.freeze(['tag', 'status', 'term', 'facility', 'area', 'definition']);
+const ENTITY_INFORMATION_TYPES = Object.freeze(['instance']);
 function createCompactIcon(isCompact) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.classList.add('InformationWindow__CompactIcon');
@@ -24,14 +24,21 @@ function createCompactIcon(isCompact) {
 }
 
 export default class InformationWindowLayer {
-  constructor(element, manager, textRepository = null) {
+  constructor(element, manager, textRepository = null, assets = null) {
     this.element = element;
     this.manager = manager;
     this.textRepository = textRepository;
     const open = (entry) => this.manager.open(entry);
     this.references = new InformationWindowReferenceRenderer({ textRepository, open });
-    this.catalogRenderer = new CatalogInformationRenderer({ textRepository, references: this.references, open });
-    this.entityRenderer = new EntityInformationRenderer({ textRepository, references: this.references, open });
+    this.catalogRenderer = new CatalogInformationRenderer({ textRepository, references: this.references, open, assets });
+    this.entityRenderer = new EntityInformationRenderer({
+      textRepository,
+      references: this.references,
+      open,
+      getInstance: (target) => this.manager?.getInstance(target),
+      createInstanceTarget: (entity) => this.manager?.entityRegistry ? this.manager.createInstanceTarget(entity) : null,
+      assets,
+    });
     this.positioner = new InformationWindowPositioner();
     this.dragController = new InformationWindowDragController({ manager, positioner: this.positioner });
     this.element.addEventListener('pointerdown', (event) => {
@@ -46,6 +53,11 @@ export default class InformationWindowLayer {
     this.references.setTextRepository(textRepository);
     this.catalogRenderer.setTextRepository(textRepository);
     this.entityRenderer.setTextRepository(textRepository);
+  }
+
+  setManager(manager) {
+    this.manager = manager;
+    this.dragController.setManager(manager);
   }
 
   render(entries) {
@@ -74,12 +86,14 @@ export default class InformationWindowLayer {
     const compact = createElement('button', `InformationWindow__Compact${entry.compact ? ' is-compact' : ''}`);
     compact.type = 'button';
     compact.setAttribute('aria-label', this.textRepository.getLabel(entry.compact ? 'normalSize' : 'compactSize'));
+    compact.setAttribute('aria-pressed', String(entry.compact));
     compact.append(createCompactIcon(entry.compact));
     compact.addEventListener('pointerdown', (event) => event.stopPropagation());
     compact.addEventListener('click', (event) => { event.stopPropagation(); this.manager.toggleCompact(entry.id); });
     const pin = createElement('button', `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`);
     pin.type = 'button';
     pin.setAttribute('aria-label', this.textRepository.getLabel(entry.pinned ? 'unpin' : 'pin'));
+    pin.setAttribute('aria-pressed', String(entry.pinned));
     pin.textContent = '📌';
     pin.addEventListener('pointerdown', (event) => event.stopPropagation());
     pin.addEventListener('click', (event) => { event.stopPropagation(); this.manager.togglePin(entry.id); });

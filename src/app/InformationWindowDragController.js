@@ -1,8 +1,16 @@
 export default class InformationWindowDragController {
   constructor({ manager, positioner }) { Object.assign(this, { manager, positioner }); }
 
+  setManager(manager) {
+    this.manager = manager;
+  }
+
   begin(event, windowElement, entry) {
-    if (event.button !== 0 || event.target.closest('.InformationWindow__Pin, .InformationWindow__Compact')) return;
+    if (!this.manager) throw new Error('InformationWindowDragController requires an InformationWindowManager.');
+    if (event.button !== 0 || event.target.closest('.InformationWindow__Pin, .InformationWindow__Compact')) return false;
+    // A document-level focus handler may re-render the information-window tree.
+    // Keep this pointer sequence on the existing window until the drag finishes.
+    event.stopPropagation();
     const bounds = windowElement.getBoundingClientRect();
     const offset = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
     const getPosition = (pointerEvent) => this.positioner.constrain(bounds, pointerEvent.clientX - offset.x, pointerEvent.clientY - offset.y);
@@ -23,5 +31,6 @@ export default class InformationWindowDragController {
     windowElement.addEventListener('pointermove', move);
     windowElement.addEventListener('pointerup', finish, { once: true });
     event.preventDefault();
+    return true;
   }
 }

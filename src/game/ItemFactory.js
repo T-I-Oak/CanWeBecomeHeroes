@@ -4,14 +4,20 @@ import { ATTRIBUTE_TAGS, TAGS, getTagBaseColors, getTagGlyphScales, getTagIndex,
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
 
-const WEAPONS = Object.freeze({
+export const WEAPONS = Object.freeze({
   sword: 'valor', shield: 'iron', staff: 'arcane', 'holy-book': 'cloth', claw: 'dexterity',
   bow: 'feather', orb: 'gem', banner: 'reputation', 'holy-symbol': 'blessing', 'tarot-cards': 'fortune',
 });
-const DESTINATIONS = Object.freeze({
+export const DESTINATIONS = Object.freeze({
   'shopping-bag': 'shop', 'hero-license': 'training', 'renewal-form': 'guild',
 });
 export const DESTINATION_TYPES = Object.freeze(Object.keys(DESTINATIONS));
+
+export function getItemDefinitionAssetPath(type) {
+  if (WEAPONS[type] || DESTINATIONS[type]) return `/assets/items/hand-${type}.png`;
+  if (/^(head|torso|feet)-[1-5]$/.test(type)) return `/assets/items/${type}.png`;
+  throw new RangeError(`Unknown item definition: ${type}`);
+}
 const TAG_PATTERNS = Object.freeze([[0, 0], [1, 0], [0, 1], [2, 0], [1, 1], [0, 2], [1, 2], [2, 1]]);
 const STATUS_TAGS = Object.freeze(Object.keys(TAGS).filter((tag) => TAGS[tag].group === 'status'));
 

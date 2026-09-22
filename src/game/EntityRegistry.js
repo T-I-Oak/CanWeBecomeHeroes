@@ -6,10 +6,17 @@
 export default class EntityRegistry {
   constructor() {
     this.liveEntities = new Set();
+    this.instanceIds = new WeakMap();
+    this.entitiesByInstanceId = new Map();
+    this.nextInstanceId = 1;
   }
 
   register(entity) {
-    if (entity) this.liveEntities.add(entity);
+    if (!entity) return entity;
+    const instanceId = this.instanceIds.get(entity) ?? `entity-${this.nextInstanceId++}`;
+    this.instanceIds.set(entity, instanceId);
+    this.entitiesByInstanceId.set(instanceId, entity);
+    this.liveEntities.add(entity);
     return entity;
   }
 
@@ -22,12 +29,22 @@ export default class EntityRegistry {
   destroy(entity, { includeRelated = false } = {}) {
     if (!entity) return false;
     const removed = this.liveEntities.delete(entity);
+    const instanceId = this.instanceIds.get(entity);
+    if (instanceId) this.entitiesByInstanceId.delete(instanceId);
     if (includeRelated) this.#relatedItems(entity).forEach((item) => this.destroy(item, { includeRelated: true }));
     return removed;
   }
 
   isAlive(entity) {
     return this.liveEntities.has(entity);
+  }
+
+  getInstanceId(entity) {
+    return this.instanceIds.get(entity) ?? null;
+  }
+
+  getByInstanceId(instanceId) {
+    return this.entitiesByInstanceId.get(instanceId) ?? null;
   }
 
   #relatedItems(entity) {

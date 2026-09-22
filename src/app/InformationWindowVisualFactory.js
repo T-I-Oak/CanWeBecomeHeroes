@@ -69,15 +69,6 @@ export function createItemValueIcon(sizeClass = '') {
   return icon;
 }
 
-export function createChipImage(path) {
-  const image = createInformationElement('span', 'InformationWindow__ChipImage');
-  const asset = document.createElement('img');
-  asset.src = resolvePublicAssetPath(path);
-  asset.alt = '';
-  image.append(asset);
-  return image;
-}
-
 export function createEquipmentImage(path) {
   const image = createInformationElement('span', 'InformationWindow__EquipmentImage');
   const asset = document.createElement('img');

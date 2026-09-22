@@ -113,6 +113,47 @@ test('area mid-boss and boss carry head rush at their respective levels', () => 
   assert.deepEqual(getEnemyDefinition({ size: 'large', tagAffinity: 'area' }).uniqueSkill, { id: 'area-head-rush', level: 2 });
 });
 
+test('dexterity mid-boss and boss define their names, assets, and shadow fingertips levels', () => {
+  const werewolf = getEnemyDefinition({ size: 'medium', tagAffinity: 'dexterity' });
+  const tengu = getEnemyDefinition({ size: 'large', tagAffinity: 'dexterity' });
+
+  assert.equal(textRepository.getName('enemy', werewolf.id), 'ウェアウルフ');
+  assert.equal(werewolf.assetPath, '/assets/enemies/medium-dexterity.png');
+  assert.deepEqual(werewolf.uniqueSkill, { id: 'shadow-fingertips', level: 1 });
+  assert.equal(textRepository.getName('enemy', tengu.id), '天狗');
+  assert.equal(tengu.assetPath, '/assets/enemies/large-dexterity.png');
+  assert.deepEqual(tengu.uniqueSkill, { id: 'shadow-fingertips', level: 2 });
+});
+
+test('valor mid-boss and boss define battle frenzy at their respective levels', () => {
+  const ogre = getEnemyDefinition({ size: 'medium', tagAffinity: 'valor' });
+  const cyclops = getEnemyDefinition({ size: 'large', tagAffinity: 'valor' });
+
+  assert.equal(ogre.nameKey, 'enemy.mediumValor');
+  assert.equal(ogre.assetPath, '/assets/enemies/medium-valor.png');
+  assert.deepEqual(ogre.uniqueSkill, { id: 'battle-frenzy', level: 1 });
+  assert.equal(cyclops.nameKey, 'enemy.largeValor');
+  assert.equal(cyclops.assetPath, '/assets/enemies/large-valor.png');
+  assert.deepEqual(cyclops.uniqueSkill, { id: 'battle-frenzy', level: 2 });
+});
+
+test('combat conditions scale a critical by the higher multiplier and clear after damage or an action', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const actor = new EnemyFactory().createInitialEncounter();
+  const target = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 10, maximums: { stamina: 10 } });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), random: () => 0 });
+
+  battle.conditionSystem.applyTwoEdgedSword(actor, 2);
+  battle.conditionSystem.applyTwoEdgedSword(target, 4);
+
+  assert.equal(battle.applyDamage(actor, target, 'magic', 0.5, true), 2);
+  assert.equal(battle.conditionSystem.getTwoEdgedSwordMultiplier(target), 1);
+
+  battle.actionResolutionSystem.resolve(actor, target, [actor, target]);
+
+  assert.equal(battle.conditionSystem.getTwoEdgedSwordMultiplier(actor), 1);
+});
+
 test('area head inherits its source tags, attacks immediately, and returns after its action', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
@@ -666,6 +707,37 @@ test('claw steals the highest available eligible item tier for heroes and enemie
   assert.equal(enemyBattle.resolveTheft(enemyThief, targetHero), warehouseItem);
   assert.deepEqual(enemyThief.equipment, [warehouseItem]);
   assert.equal(entities.size, 0);
+});
+
+test('claw transfers between same-side combatants through the target equipment', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const heroThief = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3 });
+  const targetHero = new HeroFactory().create({ profession: 'swordfighter', x: 200, y: 100, stamina: 3 });
+  const heroItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  targetHero.equip(heroItem);
+  const heroDrops = [];
+  const heroBattle = new BattleSystem(board, {
+    controller: { addToWarehouse: (item) => heroDrops.push(item) }, itemFactory, random: () => 0, logger: { info: () => {} },
+  });
+
+  assert.equal(heroBattle.resolveTheft(heroThief, targetHero), heroItem);
+  assert.equal(targetHero.equipment.rightHand, null);
+  assert.deepEqual(heroDrops, [heroItem]);
+
+  const enemyThief = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  enemyThief.tags = ['dexterity', 'dexterity', 'dexterity'];
+  enemyThief.equipment = [];
+  enemyThief.refreshDerivedValues();
+  const targetEnemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  const enemyItem = itemFactory.createWeapon({ weapon: 'staff', tags: ['arcane'], x: 0, y: 0 });
+  targetEnemy.equipment = [enemyItem];
+  targetEnemy.refreshDerivedValues();
+  const enemyBattle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0, logger: { info: () => {} } });
+
+  assert.equal(enemyBattle.resolveTheft(enemyThief, targetEnemy), enemyItem);
+  assert.deepEqual(targetEnemy.equipment, []);
+  assert.deepEqual(enemyThief.equipment, [enemyItem]);
 });
 
 test('claw proceeds to lower theft tiers when a higher tag tier is absent', () => {

@@ -3,15 +3,17 @@ import '../../src/styles.css';
 import GameTextRepository from '../../src/game/GameTextRepository.js';
 import InformationWindowLayer from '../../src/app/InformationWindowLayer.js';
 import InformationWindowManager from '../../src/app/InformationWindowManager.js';
+import EntityRegistry from '../../src/game/EntityRegistry.js';
+import { createDefinitionInformationTarget } from '../../src/app/InformationTarget.js';
 import HeroFactory, { HERO_PROFESSION_IDS } from '../../src/game/HeroFactory.js';
-import EnemyFactory from '../../src/game/EnemyFactory.js';
 import { setupLanguageSelector, onLanguageChange } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 
 setupLanguageSelector('#language', ['ja', 'en']);
 const texts = await new GameTextRepository().load();
 const layer = new InformationWindowLayer(document.querySelector('#windows'), null, texts);
-const manager = new InformationWindowManager({ onChange: entries => layer.render(entries) });
-layer.manager = manager;
+const entityRegistry = new EntityRegistry();
+const manager = new InformationWindowManager({ entityRegistry, onChange: entries => layer.render(entries) });
+layer.setManager(manager);
 const entries = new Map();
 for (const kind of ['area', 'facility', 'status', 'tag', 'term']) {
   for (const id of Object.keys(texts.resource.information[kind])) {
@@ -19,14 +21,17 @@ for (const kind of ['area', 'facility', 'status', 'tag', 'term']) {
   }
 }
 for (const id of Object.keys(texts.resource.information.item)) {
-  entries.set('item/' + id, { type: 'item', data: { item: { type: id, tags: ['valor', 'fire'], chip: { centerPath: '/assets/items/sword.png', weight: 3 }, value: 8 } } });
+  const item = { type: id, tags: ['valor', 'fire'], chip: { type: 'item', centerPath: '/assets/items/sword.png', weight: 3 }, value: 8 };
+  entityRegistry.register(item);
+  entries.set('item/' + id, { type: 'instance', data: { target: manager.createInstanceTarget(item) } });
 }
 for (const profession of HERO_PROFESSION_IDS) {
-  entries.set('hero/' + profession, { type: 'entity', data: { entity: new HeroFactory().create({ profession, x: 0, y: 0, stamina: 3 }) } });
+  const hero = new HeroFactory().create({ profession, x: 0, y: 0, stamina: 3 });
+  entityRegistry.register(hero);
+  entries.set('hero/' + profession, { type: 'instance', data: { target: manager.createInstanceTarget(hero) } });
 }
-const source = new EnemyFactory().createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 1, totalTagCount: 5 });
 for (const id of Object.keys(texts.resource.information['unique-skill'])) {
-  entries.set('unique-skill/' + id, { type: 'unique-skill', data: { uniqueSkill: { id, level: 2 }, source } });
+  entries.set('unique-skill/' + id, { type: 'definition', data: { target: createDefinitionInformationTarget('unique-skill', id) } });
 }
 const selector = document.querySelector('#detail');
 for (const key of entries.keys()) selector.add(new Option(key, key));

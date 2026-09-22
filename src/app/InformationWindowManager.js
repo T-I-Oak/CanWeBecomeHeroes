@@ -1,12 +1,13 @@
 import InformationWindowTree from './InformationWindowTree.js';
+import { createInstanceInformationTarget } from './InformationTarget.js';
 
 const PAUSE_REASON = 'information-window';
 
 export default class InformationWindowManager {
-  constructor({ clock, onChange = null, isTargetAlive = null, tree = new InformationWindowTree() } = {}) {
+  constructor({ clock, onChange = null, entityRegistry = null, tree = new InformationWindowTree() } = {}) {
     this.clock = clock;
     this.onChange = onChange;
-    this.isTargetAlive = isTargetAlive;
+    this.entityRegistry = entityRegistry;
     this.pauseOnOpen = false;
     this.tree = tree;
     this.isDragging = false;
@@ -26,6 +27,15 @@ export default class InformationWindowManager {
     const { entry, changed } = this.tree.open({ type, data, parentId, anchor });
     if (changed) this.#notify();
     return entry;
+  }
+
+  createInstanceTarget(entity) {
+    if (!this.entityRegistry) throw new Error('InformationWindowManager requires an EntityRegistry to create instance targets.');
+    return createInstanceInformationTarget(entity, this.entityRegistry);
+  }
+
+  getInstance(target) {
+    return target?.instanceId ? this.entityRegistry?.getByInstanceId(target.instanceId) ?? null : null;
   }
 
   focus(id) {
@@ -66,7 +76,7 @@ export default class InformationWindowManager {
   }
 
   refreshDynamicEntries() {
-    if (this.isDragging || this.isInteracting || !this.tree.entries.some((entry) => this.#getTarget(entry))) return;
+    if (this.isDragging || this.isInteracting || !this.tree.entries.some((entry) => entry.type === 'instance')) return;
     this.onChange?.(this.entries);
   }
 
@@ -75,18 +85,10 @@ export default class InformationWindowManager {
   }
 
   closeInvalidEntries() {
-    if (!this.isTargetAlive) return;
     if (this.tree.removeWhere((entry) => {
-      const target = this.#getTarget(entry);
-      return target && !this.isTargetAlive(target);
+      if (entry.type === 'instance') return !this.getInstance(entry.data.target);
+      return false;
     })) this.#notify();
-  }
-
-  #getTarget(entry) {
-    if (entry.type === 'entity') return entry.data.entity;
-    if (entry.type === 'item') return entry.data.item;
-    if (entry.type === 'enemy-projection') return entry.data.source;
-    return null;
   }
 
   #notify() {

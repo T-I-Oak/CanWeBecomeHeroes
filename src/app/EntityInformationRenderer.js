@@ -3,42 +3,40 @@ import { TAG_DISPLAY_GRID } from '../game/TagDisplayLayout.js';
 import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
 import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
-import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
-import { ENEMY_CHIP_DIAMETER } from '../game/HeroSlotLayout.js';
 import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js';
 import { createInformationElement } from './InformationWindowElementFactory.js';
-import { applyTagSkillVisual, createChipImage, createEquipmentImage, createStatusIcon, createTagIcon } from './InformationWindowVisualFactory.js';
-
-const ENTITY_PORTRAIT_SCALE = 156 / 192;
+import { applyTagSkillVisual, createEquipmentImage, createStatusIcon, createTagIcon } from './InformationWindowVisualFactory.js';
+import { createDefinitionInformationTarget } from './InformationTarget.js';
+import { createInformationWindowChipPreview } from './InformationWindowChipPreview.js';
 
 export default class EntityInformationRenderer {
-  constructor({ textRepository, references, open }) {
+  constructor({ textRepository, references, open, getInstance, createInstanceTarget, assets = null }) {
     this.textRepository = textRepository;
     this.references = references;
     this.open = open;
+    this.getInstance = getInstance;
+    this.createInstanceTarget = createInstanceTarget;
+    this.assets = assets;
   }
 
   setTextRepository(textRepository) { this.textRepository = textRepository; }
 
   render(entry) {
-    if (entry.type === 'entity') return this.#renderEntityDetail(entry);
-    if (entry.type === 'enemy-projection') return this.#renderEnemyProjectionDetail(entry);
-    if (entry.type === 'item') return this.#renderItemDetail(entry);
-    if (entry.type === 'unique-skill') return this.#renderUniqueSkillDetail(entry);
-    throw new RangeError(`Unsupported entity information type: ${entry.type}`);
+    const entity = entry.type === 'instance' ? this.getInstance(entry.data.target) : null;
+    if (!entity) throw new RangeError(`Unknown information instance: ${entry.data.target?.instanceId ?? 'legacy target'}`);
+    if (entity.chip.type === 'item') return this.#renderItemDetail(entry, entity);
+    return this.#renderEntityDetail(entry, entity);
   }
 
-  #renderEntityDetail(entry) {
-    const { entity } = entry.data;
+  #renderEntityDetail(entry, entity) {
     const isEnemy = entity.chip.type === 'enemy';
     const displayName = isEnemy ? this.textRepository.getName('enemy', entity.definition.id) : `【${this.textRepository.getHeroLabel(entity)}】`;
     const content = document.createDocumentFragment();
-    const title = createInformationElement('header', 'InformationWindow__Title InformationWindow__EntityTitle');
-    title.style.setProperty('--entity-portrait-size', `${entity.chip.radius * 2 * ENTITY_PORTRAIT_SCALE}px`);
-    title.append(createChipImage(entity.chip.centerPath), createInformationElement('h2', 'InformationWindow__Name', displayName));
+    const title = createInformationElement('header', 'InformationWindow__Title');
+    title.append(createInformationWindowChipPreview(entity.chip, this.assets), createInformationElement('h2', 'InformationWindow__Name', displayName));
     const body = createInformationElement('div', 'InformationWindow__EntityPanel');
     const detail = isEnemy ? this.textRepository.getInformationDetail('enemy', entity.definition.id) : this.textRepository.getInformationDetail('hero', entity.heroId);
-    if (detail) body.append(this.#createEntityProfile(detail, entity, entry.id));
+    if (detail) body.append(this.#createEntityProfile(detail, entry.id));
     body.append(this.#createEntityInformation(entity, entry, isEnemy));
     body.append(this.#createEquipmentList(entity, entry.id, isEnemy));
     content.append(title, body);
@@ -72,56 +70,24 @@ export default class EntityInformationRenderer {
     return button;
   }
 
-  #createEntityProfile(detail, entity, parentId) {
+  #createEntityProfile(detail, parentId) {
     const profile = createInformationElement('section', 'InformationWindow__EntityProfile');
     profile.append(
       this.references.createLinkedDescription(detail.description, parentId),
-      this.references.createLinkedDescription(detail.combatStyle, parentId, 'InformationWindow__EntityCombatStyle', entity),
+      this.references.createLinkedDescription(detail.combatStyle, parentId, 'InformationWindow__EntityCombatStyle'),
     );
     return profile;
   }
 
-  #renderEnemyProjectionDetail(entry) {
-    const definition = getEnemyDefinitionById(entry.data.enemyId);
-    const projection = Object.create(entry.data.source);
-    projection.definition = definition;
-    projection.uniqueSkill = null;
-    projection.chip = { ...entry.data.source.chip, type: 'enemy', radius: ENEMY_CHIP_DIAMETER.small / 2, centerPath: definition.assetPath };
-    return this.#renderEntityDetail({ ...entry, data: { entity: projection } });
-  }
-
-  #createUniqueSkillButton(uniqueSkill, parentId, source) {
+  #createUniqueSkillButton(uniqueSkill, parentId) {
     const detail = getUniqueSkillDetail(uniqueSkill.id);
     const button = createInformationElement('button', `InformationWindow__UniqueSkill state-clickable level-${uniqueSkill.level}`);
     button.type = 'button';
     button.append(createTagIcon(detail.affinityTag), createInformationElement('span', 'InformationWindow__UniqueSkillMark', `Ex${uniqueSkill.level}`));
     button.addEventListener('click', (event) => this.open({
-      type: 'unique-skill', parentId, data: { uniqueSkill, source }, anchor: { x: event.clientX, y: event.clientY },
+      type: 'definition', parentId, data: { target: createDefinitionInformationTarget('unique-skill', uniqueSkill.id) }, anchor: { x: event.clientX, y: event.clientY },
     }));
     return button;
-  }
-
-  #renderUniqueSkillDetail(entry) {
-    const { uniqueSkill } = entry.data;
-    const detail = this.textRepository.getInformationDetail('unique-skill', uniqueSkill.id);
-    const content = document.createDocumentFragment();
-    const title = createInformationElement('header', `InformationWindow__Title InformationWindow__UniqueSkillTitle level-${uniqueSkill.level}`);
-    title.append(createTagIcon(getUniqueSkillDetail(uniqueSkill.id).affinityTag), createInformationElement('h2', 'InformationWindow__Name', detail.name));
-    const body = createInformationElement('div', 'InformationWindow__Body');
-    const profile = createInformationElement('section', 'InformationWindow__EntityProfile');
-    profile.append(
-      createInformationElement('p', 'InformationWindow__Description', detail.flavor),
-      this.references.createLinkedDescription(detail.description, entry.id, 'InformationWindow__EntityCombatStyle', entry.data.source),
-    );
-    const levels = createInformationElement('div', 'InformationWindow__UniqueSkillLevelList');
-    Object.entries(detail.levels).forEach(([level, levelDetail]) => {
-      const levelItem = createInformationElement('div', `InformationWindow__UniqueSkillLevel level-${level}`);
-      levelItem.append(createInformationElement('span', 'InformationWindow__UniqueSkillLevelName', `Ex${level}`), createInformationElement('span', 'InformationWindow__UniqueSkillLevelEffect', levelDetail.description));
-      levels.append(levelItem);
-    });
-    body.append(profile, levels);
-    content.append(title, body);
-    return content;
   }
 
   #createEntityStatusGauge({ entry, status, current, maximum }) {
@@ -161,12 +127,11 @@ export default class EntityInformationRenderer {
     return gauge;
   }
 
-  #renderItemDetail(entry) {
-    const { item } = entry.data;
+  #renderItemDetail(entry, item) {
     const detail = this.textRepository.getInformationDetail('item', item.type) ?? { name: item.type };
     const content = document.createDocumentFragment();
     const title = createInformationElement('header', 'InformationWindow__Title');
-    title.append(createChipImage(item.chip.centerPath), createInformationElement('h2', 'InformationWindow__Name', detail.name));
+    title.append(createInformationWindowChipPreview(item.chip, this.assets), createInformationElement('h2', 'InformationWindow__Name', detail.name));
     const body = createInformationElement('div', 'InformationWindow__Body');
     if (detail.flavor || detail.description) body.append(this.#createItemProfile(detail, item, entry.id));
     body.append(this.#createItemBadgeList(item, entry.id));
@@ -238,7 +203,11 @@ export default class EntityInformationRenderer {
     const tags = createInformationElement('span', 'InformationWindow__EquipmentTags');
     item.tags.forEach((tag) => tags.append(createTagIcon(tag, 'InformationWindow__TagIcon--small')));
     button.append(tags);
-    button.addEventListener('click', (event) => this.open({ type: 'item', parentId, data: { item }, anchor: { x: event.clientX, y: event.clientY } }));
+    button.addEventListener('click', (event) => {
+      const target = this.createInstanceTarget(item);
+      if (!target) throw new Error('Equipment information requires an EntityRegistry.');
+      this.open({ type: 'instance', parentId, data: { target }, anchor: { x: event.clientX, y: event.clientY } });
+    });
     return button;
   }
 }

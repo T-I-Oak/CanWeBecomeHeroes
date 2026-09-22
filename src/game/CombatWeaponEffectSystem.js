@@ -62,13 +62,13 @@ export default class CombatWeaponEffectSystem {
     this.effects?.tagTransfer(actor, target, 'gem');
   }
 
-  getTheftCandidates(target) {
-    if (!isHeroCombatant(target)) return target.equipment;
+  getTheftCandidates(actor, target) {
+    if (!(isHeroCombatant(target) && !isHeroCombatant(actor))) return Object.values(target.equipment).filter(Boolean);
     return [...(this.controller?.entities?.values?.() ?? [])].filter((entity) => entity.chip.type === 'item' && !entity.isStored && entity.category !== 'destination' && isEntityOnBoard(this.board, entity));
   }
 
   resolveTheft(actor, target) {
-    const candidates = this.getTheftCandidates(target);
+    const candidates = this.getTheftCandidates(actor, target);
     const skillLevel = actor.getTagSkillLevel('dexterity');
     for (let tagCount = 3; tagCount >= 0; tagCount -= 1) {
       if (!candidates.some((item) => item.tags.length >= tagCount) || skillLevel < tagCount) continue;
@@ -84,9 +84,12 @@ export default class CombatWeaponEffectSystem {
   }
 
   transferStolenItem(actor, target, item) {
+    const isWarehouseSource = isHeroCombatant(target) && !isHeroCombatant(actor);
+    const source = isWarehouseSource ? { x: item.chip.x, y: item.chip.y } : { x: target.chip.x, y: target.chip.y };
+    if (isWarehouseSource) this.controller?.remove?.(item);
+    else this.removeEquipment(target, item);
+
     if (isHeroCombatant(actor)) {
-      target.removeEquipment(item);
-      this.actionGaugeSystem.updateMaximum(target);
       const destination = this.getWarehouseDropPosition();
       const completeTransfer = () => {
         item.chip.x = destination.x;
@@ -98,11 +101,21 @@ export default class CombatWeaponEffectSystem {
       if (!animated) completeTransfer();
       return;
     }
-    const source = { x: item.chip.x, y: item.chip.y };
-    this.controller?.remove?.(item);
     const recipient = actor.projectionSource ?? actor;
     recipient.addEquipment(item);
     this.actionGaugeSystem.updateMaximum(recipient);
     this.controller?.animateItemTransfer?.(item, { from: source, to: { x: actor.chip.x, y: actor.chip.y } });
+  }
+
+  removeEquipment(owner, item) {
+    if (owner.removeEquipment?.(item)) {
+      this.actionGaugeSystem.updateMaximum(owner);
+      return;
+    }
+    const slot = Object.entries(owner.equipment).find(([, equippedItem]) => equippedItem === item)?.[0];
+    if (!slot) return;
+    owner.equipment[slot] = null;
+    owner.refreshDerivedValues?.();
+    this.actionGaugeSystem.updateMaximum(owner);
   }
 }

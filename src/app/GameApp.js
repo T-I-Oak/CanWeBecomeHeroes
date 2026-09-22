@@ -150,13 +150,13 @@ export async function startGame() {
   const facilitySwing = new FacilitySwingSystem();
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const renderer = new ChipRenderer(context, assets);
-  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository);
+  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository, assets);
   const informationWindows = new InformationWindowManager({
     clock,
-    isTargetAlive: (target) => entityRegistry.isAlive(target),
+    entityRegistry,
     onChange: (entries) => informationLayer.render(entries),
   });
-  informationLayer.manager = informationWindows;
+  informationLayer.setManager(informationWindows);
   onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); timeSettingsController.updateStatus(); overheadStatusSettingsController.refreshLabels(); languageModalSelect.refresh(); overheadStatusModalSelect.refresh(); });
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
@@ -168,7 +168,7 @@ export async function startGame() {
       clock.resume('stage-selection');
     },
     onTagSelect: (tag, anchor) => informationWindows.open({ type: 'tag', data: { tag }, anchor }),
-    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'entity', data: { entity: enemy }, anchor }),
+    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'instance', data: { target: informationWindows.createInstanceTarget(enemy) }, anchor }),
   });
 
   function openStageSelection(stageNumber = stageController.stageNumber + 1) {
@@ -258,11 +258,8 @@ export async function startGame() {
       if (area) return { type: 'area', data: { area } };
       if (status) return { type: 'status', data: status };
       if (tag) return { type: 'tag', data: { tag } };
-      if (slotItem) return { type: 'item', data: { item: slotItem } };
-      if (entity) return {
-        type: entity.chip.type === 'item' ? 'item' : 'entity',
-        data: entity.chip.type === 'item' ? { item: entity } : { entity },
-      };
+      if (slotItem) return { type: 'instance', data: { target: informationWindows.createInstanceTarget(slotItem) } };
+      if (entity) return { type: 'instance', data: { target: informationWindows.createInstanceTarget(entity) } };
       return null;
     },
     onInformationTarget: (target, event) => informationWindows.open({ ...target, anchor: { x: event.clientX, y: event.clientY } }),

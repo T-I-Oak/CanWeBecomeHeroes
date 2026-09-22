@@ -249,14 +249,6 @@ body {
 }
 
 @media (max-width: 960px) {
-  .InformationWindow .InformationWindow__EntityTitle {
-    min-height: 104px;
-  }
-  .InformationWindow .InformationWindow__EntityTitle > .InformationWindow__ChipImage {
-    flex-basis: 80px;
-    width: 80px;
-    height: 80px;
-  }
   .InformationWindow .InformationWindow__EntityPanel {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -278,7 +270,12 @@ body {
   background: linear-gradient(135deg, #263b2a, #172a20);
   border-bottom: 2px solid #9b7142;
   border-radius: 10px 10px 0 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
 }
+
+.InformationWindow__Title:active { cursor: grabbing; }
 
 .InformationWindow__Compact,
 .InformationWindow__Pin {
@@ -312,12 +309,26 @@ body {
 
 .InformationWindow__Compact:hover,
 .InformationWindow__Compact:focus-visible,
-.InformationWindow__Compact.is-compact,
 .InformationWindow__Pin:hover,
-.InformationWindow__Pin:focus-visible,
+.InformationWindow__Pin:focus-visible {
+  background: rgb(247 237 207 / 16%);
+  border-color: #c99d58;
+}
+
+.InformationWindow__Compact.is-compact,
 .InformationWindow__Pin.is-pinned {
-  background: #765124;
-  border-color: #e6b960;
+  color: #263b2a;
+  background: #e6b960;
+  border-color: #f7edcf;
+  box-shadow: inset 0 0 0 1px #765124;
+}
+
+.InformationWindow__Compact.is-compact:hover,
+.InformationWindow__Compact.is-compact:focus-visible,
+.InformationWindow__Pin.is-pinned:hover,
+.InformationWindow__Pin.is-pinned:focus-visible {
+  background: #f2cc72;
+  border-color: #fff7de;
 }
 
 .InformationWindow__Name {
@@ -344,6 +355,7 @@ body {
 
 .InformationWindow__DataSection {
   display: grid;
+  justify-items: start;
   gap: 7px;
 }
 
@@ -356,14 +368,11 @@ body {
   gap: 4px;
 }
 
-.InformationWindow__DataSection .InformationWindow__ItemWeight {
-  justify-self: start;
-}
-
 .InformationWindow__TermIcon {
   display: inline-grid;
-  width: 38px;
-  height: 38px;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 2px solid #b9c8df;
   border-radius: 50%;
@@ -538,22 +547,9 @@ body {
   object-fit: contain;
 }
 
-.InformationWindow__ChipImage {
-  display: grid;
-  flex: 0 0 48px;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  overflow: hidden;
-  background: #f8fafc;
-  border: 3px solid #c6d0df;
-  border-radius: 50%;
-}
-
-.InformationWindow__ChipImage img {
-  width: 85%;
-  height: 85%;
-  object-fit: contain;
+.InformationWindow__ChipPreview {
+  display: block;
+  flex: 0 0 auto;
 }
 
 .InformationWindow__TagIcon--small {
@@ -642,16 +638,6 @@ body {
   color: #526170;
   font-size: 12px;
   line-height: 1.4;
-}
-
-.InformationWindow__EntityTitle {
-  min-height: calc(var(--entity-portrait-size) + 24px);
-}
-
-.InformationWindow__EntityTitle > .InformationWindow__ChipImage {
-  flex-basis: var(--entity-portrait-size);
-  width: var(--entity-portrait-size);
-  height: var(--entity-portrait-size);
 }
 
 .InformationWindow__EntityInformation {

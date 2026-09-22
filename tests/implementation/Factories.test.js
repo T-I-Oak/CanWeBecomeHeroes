@@ -35,6 +35,16 @@ test('hero aggregates equipped item tags into status and chip weight', () => {
   assert.equal(hero.chip.weight, 9);
 });
 
+test('character weight includes intrinsic tags and every equipped item weight', () => {
+  const hero = new HeroFactory().create({ profession: 'mage', x: 100, y: 200 });
+  const itemFactory = new ItemFactory();
+  hero.equip(itemFactory.createWeapon({ weapon: 'sword', tags: ['valor', 'fire'], x: 100, y: 200 }));
+  hero.equip(itemFactory.createWeapon({ weapon: 'staff', tags: [], x: 100, y: 200 }));
+
+  assert.equal(hero.getCarriedWeight(), 10);
+  assert.equal(hero.chip.weight, 10);
+});
+
 test('hero derives luck degree from its current stamina and blessing or fortune skill level', () => {
   const chip = { weight: 0 };
   const noLuckHero = new Hero({ profession: 'test', name: {}, tags: [], chip, maximums: { luck: 7 } });

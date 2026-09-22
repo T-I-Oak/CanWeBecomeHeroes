@@ -1,4 +1,5 @@
-import { getEffectiveTagCount, getStatusValue, getTagBaseColors, getTagGlyphScales, getTagPaths, getTagWeight } from './TagCatalog.js';
+import { getEffectiveTagCount, getStatusValue, getTagBaseColors, getTagGlyphScales, getTagPaths } from './TagCatalog.js';
+import { getCarriedWeight } from './CarriedWeight.js';
 import { getLuckDegree } from './Luck.js';
 
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
@@ -58,7 +59,7 @@ export default class Enemy {
   }
 
   getCarriedWeight() {
-    return getTagWeight(this.getTags());
+    return getCarriedWeight(this.tags, this.equipment);
   }
 
   clearBattleState() {
@@ -91,8 +92,7 @@ export default class Enemy {
   }
 
   refreshDerivedValues() {
-    const tags = this.getTags();
-    this.chip.weight = getTagWeight(tags);
+    this.chip.weight = this.getCarriedWeight();
     this.chip.tagPaths = getTagPaths(this.tags);
     this.chip.tagBaseColors = getTagBaseColors(this.tags);
     this.chip.tagGlyphScales = getTagGlyphScales(this.tags);

@@ -21,6 +21,7 @@ export default class UniqueSkillEffectSystem {
       case 'gem-orb-rain': return this.resolveGemOrbRain(skill);
       case 'area-head-rush': return this.resolveAreaHeadRush(entity, skill, context);
       case 'shadow-fingertips': return this.resolveShadowFingertips(entity, skill, context);
+      case 'battle-frenzy': return this.resolveBattleFrenzy(skill);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -65,6 +66,10 @@ export default class UniqueSkillEffectSystem {
       : [];
     const destinationItem = destinationItems[Math.floor(this.random() * destinationItems.length)] ?? null;
     return Object.freeze({ skill, tagRemoval: Object.freeze({ sourceItem: sourceTag.item, tagIndex: sourceTag.tagIndex, tag: sourceTag.tag, destinationItem }) });
+  }
+
+  resolveBattleFrenzy(skill) {
+    return Object.freeze({ skill, twoEdgedSwordMultiplier: skill.levelDetail.twoEdgedSwordMultiplier });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {

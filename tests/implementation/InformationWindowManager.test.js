@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import GameClock from '../../src/game/GameClock.js';
 import InformationWindowManager, { INFORMATION_WINDOW_PAUSE_REASON } from '../../src/app/InformationWindowManager.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
+import { createDefinitionInformationTarget } from '../../src/app/InformationTarget.js';
 
 test('information windows retain the tapped branch and close its descendants', () => {
   const manager = new InformationWindowManager();
@@ -86,11 +87,11 @@ test('pinned windows survive outside focus and do not pause the game', () => {
   const clock = new GameClock();
   const manager = new InformationWindowManager({ clock });
   manager.setPauseOnOpen(true);
-  const pinned = manager.open({ type: 'entity', data: { entity: { name: '世界樹A' } } });
+  const pinned = manager.open({ type: 'tag', data: { tag: 'valor' } });
   manager.togglePin(pinned.id);
   assert.equal(clock.pauseReasons.has(INFORMATION_WINDOW_PAUSE_REASON), false);
 
-  const transient = manager.open({ type: 'tag', data: { tag: 'valor' } });
+  const transient = manager.open({ type: 'status', data: { status: 'power' } });
   assert.equal(clock.pauseReasons.has(INFORMATION_WINDOW_PAUSE_REASON), true);
   manager.focus(null);
 
@@ -100,14 +101,17 @@ test('pinned windows survive outside focus and do not pause the game', () => {
 });
 
 test('different entity instances with the same name open independently', () => {
-  const manager = new InformationWindowManager();
-  const first = { name: '歩く世界樹' };
-  const second = { name: '歩く世界樹' };
-  const firstEntry = manager.open({ type: 'entity', data: { entity: first } });
+  const registry = new EntityRegistry();
+  const manager = new InformationWindowManager({ entityRegistry: registry });
+  const first = { type: 'sword', name: '歩く世界樹', chip: { type: 'item' } };
+  const second = { type: 'sword', name: '歩く世界樹', chip: { type: 'item' } };
+  registry.register(first);
+  registry.register(second);
+  const firstEntry = manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(first) } });
   manager.togglePin(firstEntry.id);
-  const secondEntry = manager.open({ type: 'entity', data: { entity: second } });
+  const secondEntry = manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(second) } });
   assert.equal(manager.entries.length, 2);
-  assert.equal(secondEntry.data.entity, second);
+  assert.equal(manager.getInstance(secondEntry.data.target), second);
 });
 
 test('a pinned information window retains its dragged position', () => {
@@ -147,9 +151,14 @@ test('language refresh redraws the same window entries without changing their pr
 
 test('dynamic entity and item entries refresh unless a window is being dragged', () => {
   let changes = 0;
-  const manager = new InformationWindowManager({ onChange: () => { changes += 1; } });
-  manager.open({ type: 'entity', data: { entity: { chip: { type: 'hero' } } } });
-  manager.open({ type: 'item', data: { item: { chip: { type: 'item' } } } });
+  const registry = new EntityRegistry();
+  const manager = new InformationWindowManager({ entityRegistry: registry, onChange: () => { changes += 1; } });
+  const hero = { heroId: 'swordfighter', chip: { type: 'hero' } };
+  const item = { type: 'sword', chip: { type: 'item' } };
+  registry.register(hero);
+  registry.register(item);
+  manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(hero) } });
+  manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(item) } });
   changes = 0;
   manager.refreshDynamicEntries();
   assert.equal(changes, 1);
@@ -164,33 +173,70 @@ test('dynamic entity and item entries refresh unless a window is being dragged',
 
 test('destroyed entity information windows close even when pinned', () => {
   const registry = new EntityRegistry();
-  const manager = new InformationWindowManager({ isTargetAlive: (target) => registry.isAlive(target) });
-  const enemy = { hp: 3, chip: { type: 'enemy' } };
+  const manager = new InformationWindowManager({ entityRegistry: registry });
+  const enemy = { hp: 3, definition: { id: 'small-valor' }, chip: { type: 'enemy' } };
   registry.register(enemy);
-  const entry = manager.open({ type: 'entity', data: { entity: enemy } });
+  const entry = manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(enemy) } });
   manager.togglePin(entry.id);
   registry.destroy(enemy);
   manager.closeInvalidEntries();
   assert.equal(manager.entries.length, 0);
 });
 
-test('projected enemy information windows close when their source is destroyed', () => {
+test('instance information targets identify live instances and close only their destroyed window', () => {
   const registry = new EntityRegistry();
-  const manager = new InformationWindowManager({ isTargetAlive: (target) => registry.isAlive(target) });
+  const manager = new InformationWindowManager({ entityRegistry: registry });
+  const first = { type: 'sword', chip: { type: 'item' } };
+  const second = { type: 'sword', chip: { type: 'item' } };
+  registry.register(first);
+  registry.register(second);
+
+  const firstTarget = manager.createInstanceTarget(first);
+  const secondTarget = manager.createInstanceTarget(second);
+  const firstEntry = manager.open({ type: 'instance', data: { target: firstTarget } });
+  manager.togglePin(firstEntry.id);
+  const duplicate = manager.open({ type: 'instance', data: { target: firstTarget } });
+  const secondEntry = manager.open({ type: 'instance', data: { target: secondTarget } });
+
+  assert.equal(duplicate.id, firstEntry.id);
+  assert.notEqual(firstTarget.instanceId, secondTarget.instanceId);
+  assert.equal(manager.getInstance(firstTarget), first);
+  assert.equal(manager.entries.length, 2);
+
+  registry.destroy(first);
+  manager.closeInvalidEntries();
+
+  assert.deepEqual(manager.entries.map((entry) => entry.id), [secondEntry.id]);
+  assert.equal(manager.getInstance(firstTarget), null);
+  assert.equal(manager.getInstance(secondTarget), second);
+});
+
+test('static enemy definition information remains open when an unrelated instance is destroyed', () => {
+  const registry = new EntityRegistry();
+  const manager = new InformationWindowManager({ entityRegistry: registry });
   const source = { hp: 3, chip: { type: 'enemy' } };
   registry.register(source);
-  manager.open({ type: 'enemy-projection', data: { source, enemyId: 'phantom-area-head' } });
+  manager.open({ type: 'definition', data: { target: createDefinitionInformationTarget('enemy', 'phantom-area-head') } });
   registry.destroy(source);
   manager.closeInvalidEntries();
-  assert.equal(manager.entries.length, 0);
+  assert.equal(manager.entries.length, 1);
+});
+
+test('unique skill information is shared by Ex level', () => {
+  const manager = new InformationWindowManager();
+  const target = createDefinitionInformationTarget('unique-skill', 'area-head-rush');
+  const ex1 = manager.open({ type: 'definition', data: { target } });
+  const ex2 = manager.open({ type: 'definition', data: { target } });
+  assert.equal(ex2.id, ex1.id);
+  assert.equal(manager.entries.length, 1);
 });
 
 test('item information windows remain open when an item moves and close when it is destroyed', () => {
   const registry = new EntityRegistry();
-  const manager = new InformationWindowManager({ isTargetAlive: (target) => registry.isAlive(target) });
-  const item = { chip: { type: 'item' } };
+  const manager = new InformationWindowManager({ entityRegistry: registry });
+  const item = { type: 'sword', chip: { type: 'item' } };
   registry.register(item);
-  manager.open({ type: 'item', data: { item } });
+  manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(item) } });
   manager.closeInvalidEntries();
   assert.equal(manager.entries.length, 1);
 

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import gameText from '../../public/data/game_text.json' with { type: 'json' };
 import { expandLanguageResource, setLanguage } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import GameTextRepository from '../../src/game/GameTextRepository.js';
@@ -8,6 +9,14 @@ import FlowLog from '../../src/app/FlowLog.js';
 import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import { refreshLocalizedUI } from '../../src/app/LocalizedUI.js';
 import { drawGuildPanel } from '../../src/app/GuildPanel.js';
+
+test('markup localization attributes reference defined UI labels', async () => {
+  const markup = await readFile(new URL('../../index.html', import.meta.url), 'utf8');
+  const texts = await new GameTextRepository({ loadResource: async () => expandLanguageResource(gameText) }).load();
+  const labelIds = [...markup.matchAll(/data-ui(?:-aria)?="([^"]+)"/g)].map(([, id]) => id);
+
+  labelIds.forEach((id) => assert.doesNotThrow(() => texts.getLabel(id)));
+});
 
 test('UI and historical log text follow language changes without replacing state', async () => {
   const original = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
