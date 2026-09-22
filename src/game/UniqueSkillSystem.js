@@ -1,63 +1,17 @@
-import { LARGE_ENEMY_SLOT_SPAN } from './HeroSlotLayout.js';
-import { getUniqueSkillLevelDetail } from './UniqueSkillCatalog.js';
-
-const INNER_TO_OUTER_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
-
-const onBoard = (board, entity) => board.chips.includes(entity.chip);
+import CombatUniqueSkillOwnership from './CombatUniqueSkillOwnership.js';
 
 export default class UniqueSkillSystem {
-  constructor({ board, controller, enemyFactory, random = Math.random } = {}) {
-    Object.assign(this, { board, controller, enemyFactory, random });
+  constructor({ random = Math.random, ownership = new CombatUniqueSkillOwnership({ random }) } = {}) {
+    Object.assign(this, { ownership, random });
   }
 
-  resolveOnDefeated(enemy) {
-    if (!enemy.uniqueSkill) return Object.freeze({ skill: null, summons: Object.freeze([]) });
-    const skill = getUniqueSkillLevelDetail(enemy.uniqueSkill);
-    if (skill.trigger !== 'defeated') return Object.freeze({ skill, summons: Object.freeze([]) });
-    if (skill.id !== 'vitality-summon') return Object.freeze({ skill, summons: Object.freeze([]) });
-    const summons = this.getAvailableSummonSlots(enemy).slice(0, skill.levelDetail.summonCount).map((slotPosition) => this.enemyFactory.createFromDefinition({
-      enemyDefinitionId: skill.levelDetail.summonEnemyDefinitionId,
-      slotPosition,
-      maximumHp: enemy.maximumHp,
-      totalTagCount: enemy.totalTagCount,
-      maximums: enemy.maximums,
-      weaponCount: enemy.weaponCount,
-      contributionMultiplier: enemy.contributionMultiplier,
-      random: this.random,
-    }));
-    return Object.freeze({ skill, summons: Object.freeze(summons) });
-  }
+  reset() { this.ownership.reset(); }
 
-  resolveOnDamaged(enemy) {
-    if (!enemy.uniqueSkill) return Object.freeze({ skill: null, drops: Object.freeze([]) });
-    const skill = getUniqueSkillLevelDetail(enemy.uniqueSkill);
-    if (skill.trigger !== 'damaged' || skill.id !== 'gem-orb-rain' || this.random() >= skill.levelDetail.chance) {
-      return Object.freeze({ skill, drops: Object.freeze([]) });
-    }
-    const drops = Array.from({ length: skill.levelDetail.dropCount }, () => Object.freeze({
-      weapon: 'orb',
-      tags: Object.freeze(Array.from({ length: skill.levelDetail.tagCount }, () => 'gem')),
-    }));
-    return Object.freeze({ skill, drops: Object.freeze(drops) });
-  }
+  initialize(entity) { this.ownership.initialize(entity); }
 
-  resolveOnAction(enemy, { reservedSlots = [] } = {}) {
-    if (!enemy.uniqueSkill) return Object.freeze({ skill: null, heads: Object.freeze([]) });
-    const skill = getUniqueSkillLevelDetail(enemy.uniqueSkill);
-    if (skill.trigger !== 'action' || skill.id !== 'area-head-rush') return Object.freeze({ skill, heads: Object.freeze([]) });
-    const heads = this.getAvailableSummonSlots(null, reservedSlots)
-      .slice(0, skill.levelDetail.headCount)
-      .map((slotPosition) => this.enemyFactory.createAreaHead({ source: enemy, slotPosition }));
-    return Object.freeze({ skill, heads: Object.freeze(heads) });
-  }
+  refreshBlessingSkills(entity) { this.ownership.refreshBlessingSkills(entity); }
 
-  getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {
-    const occupied = new Set(reservedSlots);
-    const enemies = this.controller?.getEnemies?.() ?? [];
-    enemies.filter((enemy) => enemy !== excludedEnemy && onBoard(this.board, enemy)).forEach((enemy) => {
-      const span = enemy.definition.size === 'large' ? LARGE_ENEMY_SLOT_SPAN : 1;
-      for (let index = 0; index < span; index += 1) occupied.add(enemy.slotPosition + index);
-    });
-    return INNER_TO_OUTER_SLOT_ORDER.filter((slotPosition) => !occupied.has(slotPosition));
-  }
+  replaceTemporarySkills(entity, skills) { this.ownership.replaceTemporarySkills(entity, skills); }
+
+  getTriggeredSkills(entity, trigger) { return this.ownership.getTriggeredSkills(entity, trigger); }
 }

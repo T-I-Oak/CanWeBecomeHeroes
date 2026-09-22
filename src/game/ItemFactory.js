@@ -1,17 +1,23 @@
 import Chip from '../chips/Chip.js';
 import Item from './Item.js';
-import { ATTRIBUTE_TAGS, TAGS, getTagBaseColors, getTagGlyphScales, getTagIndex, getTagPaths, getTagPrice, getTagWeight, sortTags } from './TagCatalog.js';
+import { ATTRIBUTE_TAGS, TAGS, getTagBaseColors, getTagGlyphScales, getTagIndex, getTagPaths, getTagValue, getTagWeight, sortTags } from './TagCatalog.js';
 import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
 
-const WEAPONS = Object.freeze({
+export const WEAPONS = Object.freeze({
   sword: 'valor', shield: 'iron', staff: 'arcane', 'holy-book': 'cloth', claw: 'dexterity',
   bow: 'feather', orb: 'gem', banner: 'reputation', 'holy-symbol': 'blessing', 'tarot-cards': 'fortune',
 });
-const DESTINATIONS = Object.freeze({
+export const DESTINATIONS = Object.freeze({
   'shopping-bag': 'shop', 'hero-license': 'training', 'renewal-form': 'guild',
 });
 export const DESTINATION_TYPES = Object.freeze(Object.keys(DESTINATIONS));
+
+export function getItemDefinitionAssetPath(type) {
+  if (WEAPONS[type] || DESTINATIONS[type]) return `/assets/items/hand-${type}.png`;
+  if (/^(head|torso|feet)-[1-5]$/.test(type)) return `/assets/items/${type}.png`;
+  throw new RangeError(`Unknown item definition: ${type}`);
+}
 const TAG_PATTERNS = Object.freeze([[0, 0], [1, 0], [0, 1], [2, 0], [1, 1], [0, 2], [1, 2], [2, 1]]);
 const STATUS_TAGS = Object.freeze(Object.keys(TAGS).filter((tag) => TAGS[tag].group === 'status'));
 
@@ -54,8 +60,7 @@ export default class ItemFactory {
   createWeapon({ weapon, tags, x, y }) {
     const orderedTags = sortTags(tags);
     const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(orderedTags)), centerPath: `/assets/items/hand-${weapon}.png`, tagPaths: getTagPaths(orderedTags), tagBaseColors: getTagBaseColors(orderedTags), tagGlyphScales: getTagGlyphScales(orderedTags), bounds: GAME_AREAS.warehouse });
-    const item = new Item({ type: weapon, category: 'weapon', tags: orderedTags, chip, equipmentAssets: assetPaths(orderedTags) });
-    item.price = getTagPrice(orderedTags);
+    const item = new Item({ type: weapon, category: 'weapon', tags: orderedTags, chip, equipmentAssets: assetPaths(orderedTags), value: getTagValue(orderedTags) });
     item.fixedStatusTag = WEAPONS[weapon];
     return item;
   }
@@ -63,8 +68,7 @@ export default class ItemFactory {
   createDestination({ destination, x, y }) {
     const tags = [];
     const chip = new Chip({ id: 0, type: 'item', x, y, weight: 1, centerPath: `/assets/items/hand-${destination}.png`, tagPaths: [], tagBaseColors: [], tagGlyphScales: [], bounds: GAME_AREAS.warehouse, fillColor: AREA_THEME[DESTINATIONS[destination]].chipFill });
-    const item = new Item({ type: destination, category: 'destination', tags, chip, equipmentAssets: assetPaths(tags) });
-    item.price = 1;
+    const item = new Item({ type: destination, category: 'destination', tags, chip, equipmentAssets: assetPaths(tags), value: 1 });
     item.destination = DESTINATIONS[destination];
     return item;
   }
@@ -83,8 +87,7 @@ export default class ItemFactory {
     const orderedTags = sortTags(tags);
     const imageNumber = orderedTags.length === 0 ? 1 + Math.floor(random() * 5) : Number(assetPaths(orderedTags)[part].match(/-(\d+)\.png$/)[1]);
     const chip = new Chip({ id: 0, type: 'item', x, y, weight: Math.max(1, getTagWeight(orderedTags)), centerPath: `/assets/items/${part}-${imageNumber}.png`, tagPaths: getTagPaths(orderedTags), tagBaseColors: getTagBaseColors(orderedTags), tagGlyphScales: getTagGlyphScales(orderedTags), bounds: GAME_AREAS.warehouse });
-    const item = new Item({ type: `${part}-${imageNumber}`, category: part, tags: orderedTags, chip, equipmentAssets: assetPaths(orderedTags) });
-    item.price = getTagPrice(orderedTags);
+    const item = new Item({ type: `${part}-${imageNumber}`, category: part, tags: orderedTags, chip, equipmentAssets: assetPaths(orderedTags), value: getTagValue(orderedTags) });
     return item;
   }
 }

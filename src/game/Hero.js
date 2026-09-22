@@ -1,4 +1,5 @@
-import { getEffectiveTagCount, getStatusValue, getTagWeight } from './TagCatalog.js';
+import { getEffectiveTagCount, getStatusValue } from './TagCatalog.js';
+import { getCarriedWeight } from './CarriedWeight.js';
 import { getHeroStepDistance } from './MovementSettings.js';
 import { getLuckDegree } from './Luck.js';
 
@@ -29,7 +30,7 @@ export default class Hero {
       ? item.category
       : this.equipment.rightHand ? 'leftHand' : 'rightHand';
     this.equipment[slot] = item;
-    this.chip.weight = getTagWeight(this.getTags());
+    this.refreshDerivedValues();
     return slot;
   }
 
@@ -72,7 +73,7 @@ export default class Hero {
   }
 
   getCarriedWeight() {
-    return getTagWeight(this.getTags());
+    return getCarriedWeight(this.tags, Object.values(this.equipment));
   }
 
   getStepDistance() {
@@ -98,7 +99,9 @@ export default class Hero {
   clearEquipment() {
     const equippedItems = Object.values(this.equipment).filter(Boolean);
     Object.keys(this.equipment).forEach((slot) => { this.equipment[slot] = null; });
-    this.chip.weight = getTagWeight(this.tags);
+    this.refreshDerivedValues();
     return equippedItems;
   }
+
+  refreshDerivedValues() { this.chip.weight = this.getCarriedWeight(); }
 }

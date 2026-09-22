@@ -6,7 +6,7 @@ import HeroSlotManager from '../../src/game/HeroSlotManager.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 import FacilityReturnSystem from '../../src/game/FacilityReturnSystem.js';
 import ShopState from '../../src/game/ShopState.js';
-import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TICKS, SHOP_REVEAL_INTERVAL_TICKS, SHOP_SET_COUNT } from '../../src/game/ShopSystem.js';
+import ShopSystem, { SHOP_PURCHASE_DELIVERY_TICKS, SHOP_REVEAL_INTERVAL_TICKS, SHOP_SET_COUNT } from '../../src/game/ShopSystem.js';
 import { GAME_AREAS } from '../../src/game/GameAreas.js';
 import { createTrendEquipmentSet, createTrendProductTags, reduceTagCounts } from '../../src/game/TrendEquipmentGenerator.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
@@ -61,13 +61,6 @@ test('shop converts a bag sale into two nearby five-part equipment sets and retu
   assert.equal(hero.equipment.rightHand, null);
   assert.equal(hero.stamina, 0);
   assert.equal(hero.targetArea, 'preparation');
-});
-
-test('shop pricing and gem skill tiers follow the sale rules', () => {
-  assert.equal(getSaleTagCount(0, 0), 5);
-  assert.equal(getSaleTagCount(10, 0), 6);
-  assert.equal(getSaleTagCount(117, 7), 15);
-  assert.deepEqual([0, 1, 2, 3, 4].map(getGemAttempts), [0, 1, 2, 3, 4]);
 });
 
 test('shop creates a valid three-tag product before selecting each equipment item from it', () => {

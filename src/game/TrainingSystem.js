@@ -1,9 +1,9 @@
 import { logText, entityText } from './LocalizedLog.js';
 import FacilityReturnSystem from './FacilityReturnSystem.js';
+import { GAME_TICK_SECONDS } from './GameClock.js';
 
 export const TRAINING_INTERVAL_TICKS = 200;
 export const TRAINING_RESULT_DISPLAY_TICKS = 120;
-const GAME_TICK_SECONDS = 1 / 60;
 const STAT_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck', 'stamina']);
 const MAXIMUM_STAT_VALUE = 7;
 

@@ -38,6 +38,17 @@ export function createStaticChipPreviewDrawer(canvas, chip, previewSize, assets)
   return draw;
 }
 
+/** Creates a decorative Canvas element that uses the gameplay ChipRenderer. */
+export function createStaticChipPreviewCanvas(chip, previewSize, assets, className = 'InformationWindow__ChipPreview') {
+  const canvas = document.createElement('canvas');
+  canvas.className = className;
+  canvas.width = previewSize;
+  canvas.height = previewSize;
+  canvas.setAttribute('aria-hidden', 'true');
+  if (assets && canvas.getContext?.('2d')) createStaticChipPreviewDrawer(canvas, chip, previewSize, assets);
+  return canvas;
+}
+
 /** Draws a non-animated chip preview and redraws it after every asset loads. */
 export function drawStaticChipPreview(canvas, chip, previewSize, assets) {
   createStaticChipPreviewDrawer(canvas, chip, previewSize, assets);

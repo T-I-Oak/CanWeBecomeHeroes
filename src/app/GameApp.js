@@ -1,18 +1,15 @@
 import '../styles.css';
 import AssetLoader from '../chips/AssetLoader.js';
 import ChipBoard from '../chips/ChipBoard.js';
-import ChipRenderer, { createTagAngles, getCenterImagePlacement } from '../chips/ChipRenderer.js';
+import ChipRenderer, { createTagAngles } from '../chips/ChipRenderer.js';
 import ItemPickupController from '../game/ItemPickupController.js';
 import Camera from '../game/Camera.js';
-import { GAME_AREAS, getPreparationSubareaBounds, WORLD_SIZE } from '../game/GameAreas.js';
-import { HERO_PREPARATION_IMAGE_SIZE, PREPARATION_LAYOUT, PREPARATION_PANEL_WIDTH } from '../game/PreparationLayout.js';
+import { GAME_AREAS, WORLD_SIZE } from '../game/GameAreas.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
-import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import HeroItemInteractionController from '../game/HeroItemInteractionController.js';
 import EntityRegistry from '../game/EntityRegistry.js';
 import HeroSlotManager from '../game/HeroSlotManager.js';
 import GameClock from '../game/GameClock.js';
-import { AREA_THEME } from '../game/AreaTheme.js';
 import StaminaRecoverySystem from '../game/StaminaRecoverySystem.js';
 import FacilitySwingSystem from '../game/FacilitySwingSystem.js';
 import GameLog from '../game/GameLog.js';
@@ -26,14 +23,12 @@ import BattleSystem from '../game/BattleSystem.js';
 import CombatEffectSystem from '../game/CombatEffectSystem.js';
 import ItemFactory from '../game/ItemFactory.js';
 import EnemySpawnSystem from '../game/EnemySpawnSystem.js';
-import { BATTLE_ENEMY_AREA_HEIGHT, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 import { drawGuildPanel } from './GuildPanel.js';
 import { getGuildTimeStatus, GUILD_TIMELINE_STANDARD_HOURS } from '../game/GuildTime.js';
 import { drawFacilitySlots } from './FacilitySlotRenderer.js';
 import { drawFacilityNameplates } from './FacilityNameplateRenderer.js';
 import { drawAreaNameplates } from './AreaNameplateRenderer.js';
 import createLocationNameplateBoundsRegistry from './LocationNameplateBoundsRegistry.js';
-import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
 import RunController from '../game/RunController.js';
@@ -43,292 +38,30 @@ import EnemyFactory from '../game/EnemyFactory.js';
 import StageSelectionModal from './StageSelectionModal.js';
 import InformationWindowManager from './InformationWindowManager.js';
 import InformationWindowLayer from './InformationWindowLayer.js';
-import { getTagBadgeVisual } from '../game/TagSkillVisualCatalog.js';
 import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
-import { getSpeedFromLog, readTimeSettings, writeTimeSettings } from '../game/GameSpeedSettings.js';
-import { getWeightFillRatio } from '../game/WeightVisual.js';
+import TimeSettingsController from './TimeSettingsController.js';
+import ModalSelect from './ModalSelect.js';
+import OverheadStatusSettingsController from './OverheadStatusSettingsController.js';
+import GameCanvasInput from './GameCanvasInput.js';
+import TrialRunFlow from './TrialRunFlow.js';
+import TrialRunResultModal from './TrialRunResultModal.js';
+import { createTrialRunResult } from '../game/TrialRunResult.js';
+import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
+import { drawSelectionGuide } from './SelectionGuideRenderer.js';
+import { drawShopPanel as drawShopPanelPresentation, getShopPanelSnapshot } from './ShopPanelPresenter.js';
+import { drawPreparationHeroPanel, drawTrainingStatusPanel, getTrainingStatusAtPoint, PREPARATION_HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
+import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
+import { getPreparationEquipmentItemAtPoint, getPreparationEquipmentTagAtPoint, getPreparationStatusAtPoint, getPreparationTagAtPoint } from './PreparationPanelHitTest.js';
+import { getShopItemAtPoint, getShopTagAtPoint } from './ShopPanelHitTest.js';
+import { drawOverheadStatuses } from './OverheadStatusRenderer.js';
 import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import HeroProgressRepository from '../game/HeroProgressRepository.js';
 import StartPartySelection from '../game/StartPartySelection.js';
 import StartPartySelectionModal from './StartPartySelectionModal.js';
 import { createRunScenario } from '../game/RunScenario.js';
-import { unlockClearedTrialMembers } from '../game/TrialCompletionProgress.js';
-
-const EQUIPMENT_SLOTS = Object.freeze(['head', 'torso', 'rightHand', 'leftHand', 'feet']);
-const STATUS_DEFINITIONS = Object.freeze([
-  { key: 'power', visual: STATUS_VISUALS.power },
-  { key: 'magic', visual: STATUS_VISUALS.magic },
-  { key: 'speed', visual: STATUS_VISUALS.speed },
-  { key: 'negotiation', visual: STATUS_VISUALS.negotiation },
-  { key: 'luck', visual: STATUS_VISUALS.luck },
-  { key: 'stamina', visual: STATUS_VISUALS.stamina },
-]);
-const WEIGHT_STATUS_DEFINITION = Object.freeze({ key: 'weight', visual: STATUS_VISUALS.weight });
-const PREPARATION_STATUS_DEFINITIONS = Object.freeze([...STATUS_DEFINITIONS, WEIGHT_STATUS_DEFINITION]);
-const TAG_GRID = Object.freeze([
-  Object.freeze(['valor', 'arcane', 'dexterity', 'reputation', 'blessing']),
-  Object.freeze(['iron', 'cloth', 'feather', 'gem', 'fortune']),
-  Object.freeze(['fire', 'water', 'lightning', 'area', 'vitality']),
-]);
-
-function drawStatusGauge(context, assets, visual, x, y, value, maximum, activeColor = '#54c96b', { highlightedCells = [], highlightPhase = 0 } = {}) {
-  const { statusGaugeWidth: width, statusGaugeHeight: height, statusIconSize, statusIconTopPadding, statusIconSegmentGap, statusGaugeHorizontalPadding: inset, statusGaugeBottomPadding, statusSegmentHeight, statusSegmentGap: gap } = PREPARATION_LAYOUT;
-  const capacity = 7;
-  context.fillStyle = visual.gaugeFrameColor;
-  context.beginPath();
-  context.roundRect(x, y, width, height, 9);
-  context.fill();
-  const icon = assets.load(visual.iconPath);
-  if (icon.complete && icon.naturalWidth > 0) {
-    context.drawImage(icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
-  }
-  for (let index = 0; index < capacity; index += 1) {
-    const segmentY = y + height - statusGaugeBottomPadding - statusSegmentHeight - index * (statusSegmentHeight + gap);
-    const fillRatio = Math.max(0, Math.min(1, value - index));
-    context.fillStyle = index < maximum ? '#9da9ba' : '#46536a';
-    context.beginPath();
-    context.roundRect(x + inset, segmentY, width - inset * 2, statusSegmentHeight, 4);
-    context.fill();
-    if (fillRatio > 0) {
-      context.save();
-      context.beginPath();
-      context.rect(x + inset, segmentY, (width - inset * 2) * fillRatio, statusSegmentHeight);
-      context.clip();
-      context.fillStyle = activeColor;
-      context.beginPath();
-      context.roundRect(x + inset, segmentY, width - inset * 2, statusSegmentHeight, 4);
-      context.fill();
-      context.restore();
-    }
-    if (highlightedCells.includes(index + 1)) {
-      const glow = 0.55 + Math.sin(highlightPhase) * 0.25;
-      context.save();
-      context.fillStyle = `rgba(255, 215, 91, ${glow})`;
-      context.shadowColor = '#fff3af';
-      context.shadowBlur = 7;
-      context.fill();
-      context.strokeStyle = '#fff4ba';
-      context.lineWidth = 2;
-      context.stroke();
-      context.restore();
-    }
-  }
-}
-
-function drawWeightGauge(context, assets, x, y, weight) {
-  const {
-    statusGaugeWidth: width,
-    statusGaugeHeight: height,
-    statusIconSize,
-    statusIconTopPadding,
-  } = PREPARATION_LAYOUT;
-  const visual = STATUS_VISUALS.weight;
-  const indicatorTop = y + 33;
-  const indicatorHeight = 70;
-  const indicatorBottom = indicatorTop + indicatorHeight;
-  const topInset = 4;
-  const bottomInset = 12;
-  const fillRatio = getWeightFillRatio(weight);
-
-  context.fillStyle = visual.gaugeFrameColor;
-  context.beginPath();
-  context.roundRect(x, y, width, height, 9);
-  context.fill();
-
-  const icon = assets.load(visual.iconPath);
-  if (icon.complete && icon.naturalWidth > 0) {
-    context.drawImage(icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
-  }
-
-  context.save();
-  context.beginPath();
-  context.moveTo(x + topInset, indicatorTop);
-  context.lineTo(x + width - topInset, indicatorTop);
-  context.lineTo(x + width - bottomInset, indicatorBottom);
-  context.lineTo(x + bottomInset, indicatorBottom);
-  context.closePath();
-  context.fillStyle = '#46536a';
-  context.fill();
-  context.clip();
-  const gradient = context.createLinearGradient(0, indicatorBottom, 0, indicatorTop);
-  gradient.addColorStop(0, '#58c96d');
-  gradient.addColorStop(0.55, '#d6be57');
-  gradient.addColorStop(1, '#ca7553');
-  context.fillStyle = gradient;
-  context.fillRect(x, indicatorBottom - indicatorHeight * fillRatio, width, indicatorHeight * fillRatio);
-  context.restore();
-
-  context.strokeStyle = '#9da9ba';
-  context.lineWidth = 1;
-  context.beginPath();
-  context.moveTo(x + topInset, indicatorTop);
-  context.lineTo(x + width - topInset, indicatorTop);
-  context.lineTo(x + width - bottomInset, indicatorBottom);
-  context.lineTo(x + bottomInset, indicatorBottom);
-  context.closePath();
-  context.stroke();
-
-  context.fillStyle = '#f3f6fa';
-  context.font = 'bold 14px system-ui';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.fillText(String(weight), x + width / 2, y + height - 10);
-  context.textAlign = 'start';
-  context.textBaseline = 'alphabetic';
-}
-
-function getTrainingStatusPanelLayout() {
-  const area = GAME_AREAS.training;
-  const slotOrigin = getFacilitySlotOrigin('training');
-  return {
-    x: slotOrigin.x + HERO_SLOT_SIZE + 24,
-    y: area.y + (area.height - PREPARATION_LAYOUT.statusGaugeHeight) / 2,
-  };
-}
-
-function getTrainingStatusGaugeBounds(statusIndex) {
-  const panel = getTrainingStatusPanelLayout();
-  const { statusColumnWidth, statusColumnGap, statusGaugeWidth, statusGaugeHeight } = PREPARATION_LAYOUT;
-  return {
-    x: panel.x + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2,
-    y: panel.y,
-    width: statusGaugeWidth,
-    height: statusGaugeHeight,
-  };
-}
-
-function drawTrainingStatusPanel(context, assets, hero, presentation, time) {
-  const highlightsByStat = new Map();
-  presentation?.gainedCells.forEach(({ stat, value }) => {
-    const cells = highlightsByStat.get(stat) ?? [];
-    cells.push(value);
-    highlightsByStat.set(stat, cells);
-  });
-  STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-    const value = hero ? (key === 'stamina' ? hero.stamina : Math.floor(hero.getStatus(key))) : 0;
-    const maximum = hero ? hero.maximums[key] : 0;
-    const bounds = getTrainingStatusGaugeBounds(statIndex);
-    drawStatusGauge(
-      context,
-      assets,
-      visual,
-      bounds.x,
-      bounds.y,
-      value,
-      maximum,
-      key === 'stamina' ? getVitalGaugeColor(value) : '#54c96b',
-      { highlightedCells: highlightsByStat.get(key) ?? [], highlightPhase: time / 180 },
-    );
-  });
-}
-
-function drawTextAtVisualCenter(context, text, x, centerY) {
-  const metrics = context.measureText(text);
-  context.textBaseline = 'alphabetic';
-  context.fillText(text, x, centerY + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2);
-}
-
-function drawFramedTag(context, assets, tagPath, baseColor, glyphScale = 1, x, y, size) {
-  const centerX = x + size / 2;
-  const centerY = y + size / 2;
-  context.fillStyle = '#17253d';
-  context.beginPath();
-  context.arc(centerX, centerY, size * 0.5, 0, Math.PI * 2);
-  context.fill();
-  context.fillStyle = baseColor ?? '#e1e8f0';
-  context.beginPath();
-  context.arc(centerX, centerY, size * 0.43, 0, Math.PI * 2);
-  context.fill();
-  const icon = assets.load(tagPath);
-  const glyphSize = size * glyphScale;
-  if (icon.complete && icon.naturalWidth > 0) context.drawImage(icon, x + (size - glyphSize) / 2, y + (size - glyphSize) / 2, glyphSize, glyphSize);
-  context.lineWidth = Math.max(1, size * 0.035);
-  context.strokeStyle = 'rgba(255, 255, 255, 0.78)';
-  context.beginPath();
-  context.arc(centerX, centerY, size * 0.43 - context.lineWidth / 2, 0, Math.PI * 2);
-  context.stroke();
-}
-
-function drawTagList(context, assets, hero, x, y) {
-  const { statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagIconSize, tagIconNumberGap, tagRowGap } = PREPARATION_LAYOUT;
-  context.font = 'bold 14px system-ui';
-  context.textAlign = 'center';
-  TAG_GRID.forEach((row, rowIndex) => {
-    row.forEach((tag, columnIndex) => {
-      const count = hero.getTagCount(tag);
-      const cellX = x + columnIndex * (statusColumnWidth + statusColumnGap);
-      const badgeX = cellX + (statusColumnWidth - tagBadgeWidth) / 2;
-      const badgeY = y + rowIndex * (tagBadgeHeight + tagRowGap);
-      const visual = getTagBadgeVisual(tag, count);
-      context.fillStyle = visual.fill;
-      context.strokeStyle = visual.border;
-      context.lineWidth = 1;
-      context.beginPath();
-      context.roundRect(badgeX, badgeY, tagBadgeWidth, tagBadgeHeight, 6);
-      context.fill();
-      context.stroke();
-      const tagY = badgeY + (tagBadgeHeight - tagIconSize) / 2;
-      drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], badgeX + 3, tagY, tagIconSize);
-      context.fillStyle = visual.text;
-      drawTextAtVisualCenter(context, String(count), badgeX + tagBadgeWidth - 9 - tagIconNumberGap, badgeY + tagBadgeHeight / 2);
-    });
-  });
-  context.textAlign = 'start';
-  context.textBaseline = 'alphabetic';
-}
-
-function isPointInRect(point, x, y, width, height) {
-  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
-}
-
-function getPreparationTagAtPoint(point, heroes) {
-  const { statusGaugeHeight, sectionGap, statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagRowGap, topPadding } = PREPARATION_LAYOUT;
-  for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
-    const bounds = getPreparationSubareaBounds(heroIndex);
-    const informationX = bounds.x + topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
-    const tagStartY = bounds.y + topPadding + statusGaugeHeight + sectionGap;
-    for (let rowIndex = 0; rowIndex < TAG_GRID.length; rowIndex += 1) {
-      for (let columnIndex = 0; columnIndex < TAG_GRID[rowIndex].length; columnIndex += 1) {
-        const badgeX = informationX + columnIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - tagBadgeWidth) / 2;
-        const badgeY = tagStartY + rowIndex * (tagBadgeHeight + tagRowGap);
-        if (isPointInRect(point, badgeX, badgeY, tagBadgeWidth, tagBadgeHeight)) return TAG_GRID[rowIndex][columnIndex];
-      }
-    }
-  }
-  return null;
-}
-
-function getPreparationStatusAtPoint(point, heroes) {
-  const { statusGaugeHeight, statusColumnWidth, statusColumnGap, statusGaugeWidth, topPadding } = PREPARATION_LAYOUT;
-  for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
-    const hero = heroes[heroIndex];
-    const bounds = getPreparationSubareaBounds(heroIndex);
-    const informationX = bounds.x + topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
-    const gaugeY = bounds.y + topPadding;
-    for (let statusIndex = 0; statusIndex < PREPARATION_STATUS_DEFINITIONS.length; statusIndex += 1) {
-      const { key } = PREPARATION_STATUS_DEFINITIONS[statusIndex];
-      const gaugeX = informationX + statusIndex * (statusColumnWidth + statusColumnGap) + (statusColumnWidth - statusGaugeWidth) / 2;
-      if (!isPointInRect(point, gaugeX, gaugeY, statusGaugeWidth, statusGaugeHeight)) continue;
-      return { status: key };
-    }
-  }
-  return null;
-}
-
-function getTrainingStatusAtPoint(point, hero) {
-  for (let statusIndex = 0; statusIndex < STATUS_DEFINITIONS.length; statusIndex += 1) {
-    const { key } = STATUS_DEFINITIONS[statusIndex];
-    const bounds = getTrainingStatusGaugeBounds(statusIndex);
-    // The icon is intentionally small.  The whole gauge is the interaction target,
-    // so training status remains usable with both mouse and touch input.
-    if (!isPointInRect(point, bounds.x, bounds.y, bounds.width, bounds.height)) continue;
-    return { status: key };
-  }
-  return null;
-}
 
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
@@ -348,252 +81,14 @@ function getChipTagAtPoint(entity, point) {
   return tagIndex >= 0 ? tags[tagIndex] : null;
 }
 
-function drawItemSlot(context, assets, item, slotX, slotY) {
-  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
-  context.fillStyle = item?.category === 'destination' ? AREA_THEME[item.destination].chipFill : '#eef1f6';
-  context.strokeStyle = '#aab4c6';
-  context.lineWidth = 2;
-  context.beginPath();
-  context.roundRect(slotX, slotY, slotSize, slotSize, 8);
-  context.fill();
-  context.stroke();
-  if (!item) return;
-  const image = assets.load(item.chip.centerPath);
-  const imageSize = slotSize - PREPARATION_LAYOUT.equipmentImagePadding * 2;
-  const imageX = slotX + (slotSize - imageSize) / 2;
-  const imageY = slotY + slotSize - imageSize;
-  if (image.complete && image.naturalWidth > 0) context.drawImage(image, imageX, imageY, imageSize, imageSize);
-  const tagWidth = item.chip.tagPaths.length * PREPARATION_LAYOUT.equipmentTagIconSize
-    + Math.max(0, item.chip.tagPaths.length - 1) * PREPARATION_LAYOUT.equipmentTagGap;
-  const tagStartX = slotX + (slotSize - tagWidth) / 2;
-  item.chip.tagPaths.forEach((tagPath, tagIndex) => {
-    const tagX = tagStartX + tagIndex * (PREPARATION_LAYOUT.equipmentTagIconSize + PREPARATION_LAYOUT.equipmentTagGap);
-    drawFramedTag(context, assets, tagPath, item.chip.tagBaseColors[tagIndex], item.chip.tagGlyphScales[tagIndex], tagX, slotY + 2, PREPARATION_LAYOUT.equipmentTagIconSize);
-  });
-}
-
-function getItemSlotTagAtPoint(point, item, slotX, slotY) {
-  if (!item) return null;
-  const tagSize = PREPARATION_LAYOUT.equipmentTagIconSize;
-  const tagGap = PREPARATION_LAYOUT.equipmentTagGap;
-  const tagWidth = item.chip.tagPaths.length * tagSize + Math.max(0, item.chip.tagPaths.length - 1) * tagGap;
-  const tagStartX = slotX + (PREPARATION_LAYOUT.equipmentSlotSize - tagWidth) / 2;
-  const tagIndex = item.tags.findIndex((tag, index) => isPointInRect(point, tagStartX + index * (tagSize + tagGap), slotY + 2, tagSize, tagSize));
-  return tagIndex >= 0 ? item.tags[tagIndex] : null;
-}
-
-function getItemSlotAtPoint(point, item, slotX, slotY) {
-  if (!item) return null;
-  return isPointInRect(point, slotX, slotY, PREPARATION_LAYOUT.equipmentSlotSize, PREPARATION_LAYOUT.equipmentSlotSize) ? item : null;
-}
-
-function drawEquipmentGrid(context, assets, hero, x, y) {
-  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
-  const gap = PREPARATION_LAYOUT.equipmentGap;
-  const startX = x
-    + PREPARATION_LAYOUT.topPadding
-    + PREPARATION_LAYOUT.characterAreaWidth
-    + PREPARATION_LAYOUT.areaGap
-    + PREPARATION_LAYOUT.informationAreaWidth
-    + PREPARATION_LAYOUT.areaGap;
-  const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
-  EQUIPMENT_SLOTS.forEach((slot) => {
-    const [column, row] = positions[slot];
-    const slotX = startX + column * (slotSize + gap);
-    const slotY = y + row * (slotSize + gap);
-    drawItemSlot(context, assets, hero.equipment[slot], slotX, slotY);
-  });
-}
-
-function getPreparationItemTagAtPoint(point, heroes) {
-  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
-  const gap = PREPARATION_LAYOUT.equipmentGap;
-  const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
-  for (let index = 0; index < heroes.length; index += 1) {
-    const hero = heroes[index];
-    const bounds = getPreparationSubareaBounds(index);
-    const startX = bounds.x
-      + PREPARATION_LAYOUT.topPadding
-      + PREPARATION_LAYOUT.characterAreaWidth
-      + PREPARATION_LAYOUT.areaGap
-      + PREPARATION_LAYOUT.informationAreaWidth
-      + PREPARATION_LAYOUT.areaGap;
-    for (const slot of EQUIPMENT_SLOTS) {
-      const [column, row] = positions[slot];
-      const tag = getItemSlotTagAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), bounds.y + PREPARATION_LAYOUT.topPadding + row * (slotSize + gap));
-      if (tag) return tag;
-    }
-  }
-  return null;
-}
-
-function getPreparationItemAtPoint(point, heroes) {
-  const slotSize = PREPARATION_LAYOUT.equipmentSlotSize;
-  const gap = PREPARATION_LAYOUT.equipmentGap;
-  const positions = Object.freeze({ head: [1, 0], rightHand: [0, 1], torso: [1, 1], leftHand: [2, 1], feet: [1, 2] });
-  for (let index = 0; index < heroes.length; index += 1) {
-    const hero = heroes[index];
-    const bounds = getPreparationSubareaBounds(index);
-    const startX = bounds.x
-      + PREPARATION_LAYOUT.topPadding
-      + PREPARATION_LAYOUT.characterAreaWidth
-      + PREPARATION_LAYOUT.areaGap
-      + PREPARATION_LAYOUT.informationAreaWidth
-      + PREPARATION_LAYOUT.areaGap;
-    for (const slot of EQUIPMENT_SLOTS) {
-      const [column, row] = positions[slot];
-      const item = getItemSlotAtPoint(point, hero.equipment[slot], startX + column * (slotSize + gap), bounds.y + PREPARATION_LAYOUT.topPadding + row * (slotSize + gap));
-      if (item) return item;
-    }
-  }
-  return null;
-}
-
 function drawShopPanel(context, assets, shop, bag, transaction, texts) {
-  if (!shop) return;
-  const area = GAME_AREAS.shop;
-  const layout = getShopLayout(area);
-  const drawTrend = (label, tag, board) => {
-    const panelCenterX = board.x + board.width / 2;
-    const { x: boardX, y, width: boardWidth, height: boardHeight } = board;
-    context.fillStyle = '#263b2a';
-    context.strokeStyle = '#9b7142';
-    context.lineWidth = 4;
-    context.beginPath();
-    context.roundRect(boardX, y, boardWidth, boardHeight, 8);
-    context.fill();
-    context.stroke();
-
-    context.fillStyle = '#f2e8c8';
-    context.font = 'bold 16px system-ui';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText(label, panelCenterX, y + 26);
-    drawFramedTag(context, assets, `/assets/tags/${tag}.png`, getTagBaseColors([tag])[0], getTagGlyphScales([tag])[0], panelCenterX - 24, y + 44, 48);
-  };
-  drawTrend(texts.getLabel('shopSale'), shop.saleTag, layout.saleBoards.sale);
-  drawTrend(texts.getLabel('shopNext'), shop.nextTag, layout.saleBoards.next);
-
-  const bagSize = 48;
-  const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, arrowX, purchaseX } = layout.transaction;
-  const bagImage = assets.load('/assets/items/hand-shopping-bag.png');
-  if (bagImage.complete && bagImage.naturalWidth > 0) context.drawImage(bagImage, bagX, bagY, bagSize, bagSize);
-  Array.from({ length: 3 }, (_, index) => {
-    drawItemSlot(context, assets, transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null, sellX + index * (slotSize + gap), sellItemsTop);
-  });
-  const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
-  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
-  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
-  purchaseSlots.forEach(([column, row], index) => {
-    const purchase = transaction?.purchases[purchaseSetStart + index];
-    drawItemSlot(context, assets, index < revealedInSet ? purchase.item : null, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
-  });
-  const arrowY = sellItemsTop + slotSize / 2;
-  const arrowWidth = SHOP_TRANSACTION_ARROW_WIDTH;
-  const arrowHeight = 30;
-  context.fillStyle = '#f7f0d7';
-  context.strokeStyle = '#9b7142';
-  context.lineWidth = 3;
-  context.beginPath();
-  context.moveTo(arrowX, arrowY - arrowHeight / 2);
-  context.lineTo(arrowX + arrowWidth - 14, arrowY - arrowHeight / 2);
-  context.lineTo(arrowX + arrowWidth - 14, arrowY - arrowHeight);
-  context.lineTo(arrowX + arrowWidth, arrowY);
-  context.lineTo(arrowX + arrowWidth - 14, arrowY + arrowHeight);
-  context.lineTo(arrowX + arrowWidth - 14, arrowY + arrowHeight / 2);
-  context.lineTo(arrowX, arrowY + arrowHeight / 2);
-  context.closePath();
-  context.fill();
-  context.stroke();
-  context.textAlign = 'start';
-  context.textBaseline = 'alphabetic';
-}
-
-function getShopTagAtPoint(point, shop, bag, transaction) {
-  if (!shop) return null;
-  const layout = getShopLayout(GAME_AREAS.shop);
-  const trendSize = 48;
-  const trendTag = [
-    { tag: shop.saleTag, board: layout.saleBoards.sale },
-    { tag: shop.nextTag, board: layout.saleBoards.next },
-  ].find(({ board }) => isPointInRect(point, board.x + board.width / 2 - trendSize / 2, board.y + 44, trendSize, trendSize));
-  if (trendTag) return trendTag.tag;
-
-  const { slotSize, gap, top, sellItemsTop, sellX, purchaseX } = layout.transaction;
-  const soldItems = Array.from({ length: 3 }, (_, index) => transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null);
-  for (let index = 0; index < soldItems.length; index += 1) {
-    const tag = getItemSlotTagAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
-    if (tag) return tag;
-  }
-  const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
-  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
-  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
-  for (let index = 0; index < purchaseSlots.length; index += 1) {
-    if (index >= revealedInSet) continue;
-    const [column, row] = purchaseSlots[index];
-    const tag = getItemSlotTagAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
-    if (tag) return tag;
-  }
-  return null;
-}
-
-function getShopItemAtPoint(point, shop, bag, transaction) {
-  if (!shop) return null;
-  const layout = getShopLayout(GAME_AREAS.shop);
-  const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, purchaseX } = layout.transaction;
-  if (bag && isPointInRect(point, bagX, bagY, 48, 48)) return bag;
-  const soldItems = Array.from({ length: 3 }, (_, index) => transaction?.soldItems[index] ?? bag?.storedItems[index] ?? null);
-  for (let index = 0; index < soldItems.length; index += 1) {
-    const item = getItemSlotAtPoint(point, soldItems[index], sellX + index * (slotSize + gap), sellItemsTop);
-    if (item) return item;
-  }
-  const purchaseSlots = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
-  const purchaseSetStart = (transaction?.deliveredSets ?? 0) * purchaseSlots.length;
-  const revealedInSet = Math.max(0, (transaction?.revealed ?? 0) - purchaseSetStart);
-  for (let index = 0; index < revealedInSet && index < purchaseSlots.length; index += 1) {
-    const [column, row] = purchaseSlots[index];
-    const item = getItemSlotAtPoint(point, transaction?.purchases[purchaseSetStart + index]?.item, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap));
-    if (item) return item;
-  }
-  return null;
-}
-
-function drawTiledBackground(context, assets, imagePath, bounds) {
-  const { x, y, width, height } = bounds;
-  const image = assets.load(imagePath);
-  if (!image.complete || image.naturalWidth === 0) return;
-  const pattern = context.createPattern(image, 'repeat');
-  if (!pattern) return;
-  context.save();
-  context.beginPath();
-  context.rect(x, y, width, height);
-  context.clip();
-  context.translate(x, y);
-  context.fillStyle = pattern;
-  context.fillRect(0, 0, width, height);
-  context.restore();
-}
-
-function drawAreaBackground(context, assets, areaName) {
-  drawTiledBackground(context, assets, `/assets/background/${areaName}.png`, GAME_AREAS[areaName]);
-}
-
-function drawBattleSlotGround(context, assets) {
-  const image = assets.load('/assets/background/trampled-ground.png');
-  if (!image.complete || image.naturalWidth === 0) return;
-  const battle = GAME_AREAS.battle;
-  const startX = battle.x + (battle.width - HERO_SLOT_SIZE * 6) / 2;
-  const rows = [
-    { columns: [0, 1, 2, 3, 4, 5], y: battle.y + (BATTLE_ENEMY_AREA_HEIGHT - HERO_SLOT_SIZE) / 2 },
-    { columns: [1, 2, 3, 4], y: battle.y + BATTLE_ENEMY_AREA_HEIGHT },
-  ];
-  rows.forEach(({ columns, y }) => {
-    columns.forEach((column) => context.drawImage(image, startX + column * HERO_SLOT_SIZE, y, HERO_SLOT_SIZE, HERO_SLOT_SIZE));
-  });
+  const snapshot = getShopPanelSnapshot(shop, bag, transaction);
+  drawShopPanelPresentation({ context, assets, snapshot, texts, layout: getShopLayout(GAME_AREAS.shop), drawItemSlot, drawFramedTag, getTagBaseColors, getTagGlyphScales, arrowWidth: SHOP_TRANSACTION_ARROW_WIDTH });
 }
 
 export async function startGame() {
   setupLanguageSelector('#language-selector', ['ja', 'en']);
+  const languageModalSelect = new ModalSelect(document.querySelector('#language-selector'));
   const textRepository = await new GameTextRepository().load();
   const canvas = document.querySelector('#chip-canvas');
   const context = canvas.getContext('2d');
@@ -644,6 +139,7 @@ export async function startGame() {
     },
   });
   const runController = new RunController();
+  const trialRunResultModal = new TrialRunResultModal(document.querySelector('#trial-run-result'), { textRepository });
   const guildSystem = new GuildSystem(returnSystem, {
     getContributionPoints: () => battleSystem.contributionPoints,
     setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
@@ -654,14 +150,14 @@ export async function startGame() {
   const facilitySwing = new FacilitySwingSystem();
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const renderer = new ChipRenderer(context, assets);
-  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository);
+  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository, assets);
   const informationWindows = new InformationWindowManager({
     clock,
-    isTargetAlive: (target) => entityRegistry.isAlive(target),
+    entityRegistry,
     onChange: (entries) => informationLayer.render(entries),
   });
-  informationLayer.manager = informationWindows;
-  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); updateTimeStatus(); });
+  informationLayer.setManager(informationWindows);
+  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); timeSettingsController.updateStatus(); overheadStatusSettingsController.refreshLabels(); languageModalSelect.refresh(); overheadStatusModalSelect.refresh(); });
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
     textRepository,
@@ -672,7 +168,7 @@ export async function startGame() {
       clock.resume('stage-selection');
     },
     onTagSelect: (tag, anchor) => informationWindows.open({ type: 'tag', data: { tag }, anchor }),
-    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'entity', data: { entity: enemy }, anchor }),
+    onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'instance', data: { target: informationWindows.createInstanceTarget(enemy) }, anchor }),
   });
 
   function openStageSelection(stageNumber = stageController.stageNumber + 1) {
@@ -690,6 +186,17 @@ export async function startGame() {
   }
 
   openStageSelection(1);
+  const trialRunFlow = new TrialRunFlow({
+    clock,
+    stageController,
+    runController,
+    recruitmentController,
+    heroProgress,
+    getMembers: () => preparationHeroes,
+    getRemainingHours: getRemainingTrialHours,
+    openStageSelection,
+    onRunCompleted: ({ outcome, members }) => trialRunResultModal.show(createTrialRunResult({ outcome, members })),
+  });
 
   function resizeCanvas() {
     const bounds = canvas.getBoundingClientRect();
@@ -704,230 +211,61 @@ export async function startGame() {
   const timeStatus = document.querySelector('#time-status');
   const timeSettings = document.querySelector('#time-settings');
   const timeSettingsToggle = document.querySelector('#time-settings-toggle');
+  const timeSettingsClose = document.querySelector('#time-settings-close');
   const speedSlider = document.querySelector('#game-speed');
   const pauseOnInformation = document.querySelector('#pause-on-information');
   const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
   const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
-  const timeSettingsDataManager = dataManager;
-  let persistedTimeSettings = readTimeSettings(timeSettingsDataManager);
-  let speedLog = persistedTimeSettings.speedLog;
-  let staminaPauseArmed = true;
-  let isAccelerated = false;
-
-  speedSlider.value = String(speedLog);
-  pauseOnInformation.checked = persistedTimeSettings.pauseOnInformation;
-  pauseOnStaminaFull.checked = persistedTimeSettings.pauseOnStaminaFull;
-  accelerateWithoutPreparation.checked = persistedTimeSettings.accelerateWithoutPreparation;
-  function saveTimeSettings() {
-    persistedTimeSettings = writeTimeSettings({
-      speedLog,
-      pauseOnInformation: pauseOnInformation.checked,
-      pauseOnStaminaFull: pauseOnStaminaFull.checked,
-      accelerateWithoutPreparation: accelerateWithoutPreparation.checked,
-    }, timeSettingsDataManager);
-  }
-  function updateClockSpeed() {
-    const hasPreparationCompanion = controller.getHeroes().some((hero) => hero.currentArea === 'preparation');
-    isAccelerated = accelerateWithoutPreparation.checked && !hasPreparationCompanion;
-    clock.setSpeed(getSpeedFromLog(speedLog) * (isAccelerated ? 2 : 1));
-  }
-
-  function updateTimeStatus() {
-    const autoPaused = clock.pauseReasons.has('stamina-full') || clock.pauseReasons.has('information-window');
-    const settingsPaused = clock.pauseReasons.has('time-settings');
-    const status = textRepository.getLabel(clock.paused || settingsPaused ? 'paused' : autoPaused ? 'autoPaused' : isAccelerated ? 'accelerated' : 'running');
-    const state = clock.paused || settingsPaused ? 'state-paused' : autoPaused ? 'state-auto-paused' : isAccelerated ? 'state-accelerated' : 'state-running';
-    timeStatus.textContent = status;
-    timeStatus.className = `HudPanel__Status ${state}`;
-    pauseButton.textContent = textRepository.getLabel(clock.paused ? 'resume' : 'pause');
-  }
-
-  function updateStaminaPause() {
-    if (!pauseOnStaminaFull.checked) {
-      staminaPauseArmed = true;
-      clock.resume('stamina-full');
-      return;
-    }
-    const hasFullPreparationCompanion = controller.getHeroes().some((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina);
-    if (!hasFullPreparationCompanion) {
-      staminaPauseArmed = true;
-      clock.resume('stamina-full');
-    } else if (staminaPauseArmed) {
-      clock.pause('stamina-full');
-    }
-  }
-
-  function releaseStaminaPause() {
-    staminaPauseArmed = false;
-    clock.resume('stamina-full');
-    updateTimeStatus();
-  }
-
-  pauseButton.addEventListener('click', () => {
-    clock.togglePaused();
-    updateTimeStatus();
+  const overheadStatusInputs = [...document.querySelectorAll('input[name="overhead-status"]')];
+  const overheadStatusVisibility = document.querySelector('#overhead-status-visibility');
+  const overheadStatusLabels = [...document.querySelectorAll('[data-overhead-status]')];
+  const timeSettingsController = new TimeSettingsController({
+    clock,
+    dataManager,
+    textRepository,
+    getHeroes: () => controller.getHeroes(),
+    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, timeSettingsClose, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
+    onPauseOnInformationChange: (pauseOnOpen) => informationWindows.setPauseOnOpen(pauseOnOpen),
   });
-  timeSettingsToggle.addEventListener('click', () => {
-    const isOpen = timeSettings.hidden;
-    timeSettings.hidden = !isOpen;
-    timeSettingsToggle.setAttribute('aria-expanded', String(isOpen));
-    if (isOpen) clock.pause('time-settings');
-    else clock.resume('time-settings');
-    updateTimeStatus();
+  const overheadStatusSettingsController = new OverheadStatusSettingsController({
+    dataManager,
+    textRepository,
+    elements: { statuses: overheadStatusInputs, visibility: overheadStatusVisibility, statusLabels: overheadStatusLabels },
   });
-  speedSlider.addEventListener('input', (event) => {
-    speedLog = Number(event.currentTarget.value);
-    speedSlider.value = String(speedLog);
-    saveTimeSettings();
-    updateClockSpeed();
-    updateTimeStatus();
-  });
-  informationWindows.setPauseOnOpen(pauseOnInformation.checked);
-  pauseOnInformation.addEventListener('change', (event) => {
-    informationWindows.setPauseOnOpen(event.currentTarget.checked);
-    saveTimeSettings();
-    updateTimeStatus();
-  });
-  pauseOnStaminaFull.addEventListener('change', () => {
-    saveTimeSettings();
-    updateStaminaPause();
-    updateTimeStatus();
-  });
-  accelerateWithoutPreparation.addEventListener('change', () => {
-    saveTimeSettings();
-    updateClockSpeed();
-    updateTimeStatus();
-  });
-  updateClockSpeed();
-  updateTimeStatus();
+  const overheadStatusModalSelect = new ModalSelect(overheadStatusVisibility);
   document.addEventListener('pointerdown', (event) => {
     const windowElement = event.target.closest?.('.InformationWindow');
     informationWindows.focus(windowElement?.dataset.informationWindowId ?? null);
   });
-  let drag = null;
-
-  function drawChipSelectionGuide() {
-    const guide = controller.getSelectionGuide();
-    if (!guide) return;
-    context.save();
-    const drawLink = (source, target, color) => {
-      context.strokeStyle = color;
-      context.lineWidth = 4;
-      context.setLineDash([10, 8]);
-      context.beginPath();
-      context.moveTo(source.chip.x, source.chip.y - source.chip.height);
-      context.lineTo(target.chip.x, target.chip.y - target.chip.height);
-      context.stroke();
-    };
-    guide.links.forEach((link) => drawLink(link.source, link.target, '#54c96b'));
-    if (!guide.source) {
-      context.setLineDash([]);
-      context.restore();
-      return;
-    }
-    const source = guide.source.chip;
-    const target = guide.target?.chip;
-    const color = target ? (guide.valid ? '#54c96b' : '#d88989') : '#88b6e8';
-    context.strokeStyle = color;
-    context.fillStyle = `${color}33`;
-    context.lineWidth = 4;
-    context.setLineDash([10, 8]);
-    context.beginPath();
-    context.moveTo(source.x, source.y - source.height);
-    context.lineTo(guide.pointerX, guide.pointerY);
-    context.stroke();
-    context.setLineDash([]);
-    context.beginPath();
-    context.arc(source.x, source.y - source.height, source.radius + 7, 0, Math.PI * 2);
-    context.stroke();
-    if (target) {
-      context.beginPath();
-      context.arc(target.x, target.y - target.height, target.radius + 8, 0, Math.PI * 2);
-      context.fill();
-      context.stroke();
-    }
-    context.restore();
-  }
-
-  canvas.addEventListener('pointerdown', (event) => {
-    event.preventDefault();
-    const bounds = canvas.getBoundingClientRect();
-    const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    const entity = controller.getEntityAt(point.x, point.y);
-    drag = {
-      pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastY: event.clientY,
-      moved: false, entity, startedSelection: false,
-    };
-    canvas.setPointerCapture(event.pointerId);
-  }, { passive: false });
-  canvas.addEventListener('pointermove', (event) => {
-    const bounds = canvas.getBoundingClientRect();
-    const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    if (!drag || drag.pointerId !== event.pointerId) {
-      canvas.style.cursor = isWarehousePortalAtPoint(context, point) ? 'pointer' : '';
-      return;
-    }
-    const totalDistance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
-    if (totalDistance > 6 && !drag.moved) {
-      drag.moved = true;
-      drag.startedSelection = Boolean(drag.entity && !controller.hasSelectionSource() && controller.beginSelection(drag.entity));
-    }
-    if (drag.startedSelection) controller.updateSelectionHover(point.x, point.y);
-    if (drag.moved && !drag.entity) camera.panByScreen(event.clientX - drag.lastX, event.clientY - drag.lastY);
-    drag.lastX = event.clientX;
-    drag.lastY = event.clientY;
-  }, { passive: false });
-  canvas.addEventListener('pointerup', (event) => {
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    const bounds = canvas.getBoundingClientRect();
-    const point = camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
-    const selectionTarget = drag.startedSelection ? controller.getEntityAt(point.x, point.y) : null;
-    const selectionAction = selectionTarget ? controller.getSelectionAction(drag.entity, selectionTarget) : null;
-    if (selectionAction?.kind !== 'store') releaseStaminaPause();
-    if (drag.startedSelection) {
-      controller.updateSelectionHover(point.x, point.y);
-      if (!controller.completeSelectionAt(point.x, point.y)) controller.clearSelection();
-    }
-    if (!drag.moved) {
-      if (isWarehousePortalAtPoint(context, point)) {
-        window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer');
-        drag = null;
-        return;
-      }
+  new GameCanvasInput(canvas, {
+    camera,
+    controller,
+    getCursor: (point) => (isWarehousePortalAtPoint(context, point) ? 'pointer' : ''),
+    getInformationTarget: (point) => {
+      if (isWarehousePortalAtPoint(context, point)) return { type: 'portal' };
       const facility = nameplateBounds.getFacilityAtPoint(point);
       const area = nameplateBounds.getAreaAtPoint(point);
-      const status = getPreparationStatusAtPoint(point, preparationHeroes)
-        ?? getTrainingStatusAtPoint(point, controller.getHeroes().find((hero) => hero.currentArea === 'training'));
+      const status = getPreparationStatusAtPoint(point, preparationHeroes, PREPARATION_HERO_STATUS_DEFINITIONS)
+        ?? getTrainingStatusAtPoint(point);
       const tag = getPreparationTagAtPoint(point, preparationHeroes)
-        ?? getPreparationItemTagAtPoint(point, preparationHeroes)
+        ?? getPreparationEquipmentTagAtPoint(point, preparationHeroes)
         ?? getShopTagAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction())
         ?? getChipTagAtPoint(controller.getEntityAt(point.x, point.y) ?? {}, point);
-      const slotItem = getPreparationItemAtPoint(point, preparationHeroes)
+      const slotItem = getPreparationEquipmentItemAtPoint(point, preparationHeroes)
         ?? getShopItemAtPoint(point, shop, controller.getShoppingBag(), shopSystem.getTransaction());
       const entity = controller.getEntityAt(point.x, point.y);
-      if (facility) informationWindows.open({ type: 'facility', data: { facility }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (area) informationWindows.open({ type: 'area', data: { area }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (status) informationWindows.open({ type: 'status', data: status, anchor: { x: event.clientX, y: event.clientY } });
-      else if (tag) informationWindows.open({ type: 'tag', data: { tag }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (slotItem) informationWindows.open({ type: 'item', data: { item: slotItem }, anchor: { x: event.clientX, y: event.clientY } });
-      else if (entity) informationWindows.open({
-        type: entity.chip.type === 'item' ? 'item' : 'entity',
-        data: entity.chip.type === 'item' ? { item: entity } : { entity },
-        anchor: { x: event.clientX, y: event.clientY },
-      });
-    }
-    drag = null;
+      if (facility) return { type: 'facility', data: { facility } };
+      if (area) return { type: 'area', data: { area } };
+      if (status) return { type: 'status', data: status };
+      if (tag) return { type: 'tag', data: { tag } };
+      if (slotItem) return { type: 'instance', data: { target: informationWindows.createInstanceTarget(slotItem) } };
+      if (entity) return { type: 'instance', data: { target: informationWindows.createInstanceTarget(entity) } };
+      return null;
+    },
+    onInformationTarget: (target, event) => informationWindows.open({ ...target, anchor: { x: event.clientX, y: event.clientY } }),
+    onPortalOpen: () => window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer'),
+    onReleaseStaminaPause: () => timeSettingsController.releaseStaminaPause(),
   });
-  canvas.addEventListener('pointercancel', () => {
-    if (drag?.startedSelection) controller.clearSelection();
-    drag = null;
-  });
-  canvas.addEventListener('wheel', (event) => {
-    event.preventDefault();
-    const bounds = canvas.getBoundingClientRect();
-    const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
-    camera.setZoomAtScreenPoint(camera.zoom * factor, event.clientX - bounds.left, event.clientY - bounds.top);
-  }, { passive: false });
 
   let previousTime = performance.now();
   function render(time) {
@@ -939,8 +277,8 @@ export async function startGame() {
       combatEffects.update(simulationDeltaSeconds);
       controller.update(simulationDeltaSeconds);
       staminaRecovery.update(controller.getHeroes(), simulationDeltaSeconds);
-      updateStaminaPause();
-      updateClockSpeed();
+      timeSettingsController.updateStaminaPause();
+      timeSettingsController.updateClockSpeed();
       training.update(controller.getHeroes(), simulationDeltaSeconds);
       guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
@@ -948,34 +286,18 @@ export async function startGame() {
       informationWindows.closeInvalidEntries();
       informationWindows.refreshDynamicEntries();
       stageController.update();
-      recruitmentController.processCompletedStage({
-        stage: stageController.currentStage,
-        stageState: stageController.state,
-        heroes: controller.getHeroes(),
-      });
-      stageController.setJoinedCount(recruitmentController.joinedCount);
-      const wasRunActive = runController.isActive;
-      runController.update({
-        remainingHours: getRemainingTrialHours(),
-        stage: stageController.currentStage,
-        stageState: stageController.state,
-      });
-      unlockClearedTrialMembers({ wasRunActive, runController, members: preparationHeroes, heroProgress });
-      if (!runController.isActive) clock.pause('run-complete');
-      else if (stageController.state === 'complete') openStageSelection();
+      trialRunFlow.update(controller.getHeroes());
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
     });
     controller.updateVisuals();
-    updateStaminaPause();
-    updateClockSpeed();
-    updateTimeStatus();
+    timeSettingsController.updateStaminaPause();
+    timeSettingsController.updateClockSpeed();
+    timeSettingsController.updateStatus();
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     context.save();
     context.scale(camera.zoom, camera.zoom);
     context.translate(-camera.x, -camera.y);
-    ['warehouse', 'battle', 'shop', 'guild', 'training'].forEach((areaName) => drawAreaBackground(context, assets, areaName));
-    preparationHeroes.forEach((_, index) => drawTiledBackground(context, assets, '/assets/background/preparation.png', getPreparationSubareaBounds(index)));
-    drawBattleSlotGround(context, assets);
+    drawWorldSurfaces(context, assets, preparationHeroes.length);
     drawFacilityNameplates(context, assets, textRepository, nameplateBounds);
     drawAreaNameplates(context, assets, textRepository, nameplateBounds);
     drawWarehouseMetadata(context);
@@ -992,64 +314,27 @@ export async function startGame() {
     const trainingHero = controller.getHeroes().find((hero) => hero.currentArea === 'training');
     drawTrainingStatusPanel(context, assets, trainingHero, trainingHero && training.getPresentation(trainingHero), time);
     preparationHeroes.forEach((hero, index) => {
-      const { x, y, height } = getPreparationSubareaBounds(index);
-      const image = assets.load(hero.chip.centerPath);
-      context.strokeStyle = '#aab4c6';
-      context.lineWidth = 1;
-      context.strokeRect(x, y, PREPARATION_PANEL_WIDTH, height);
-      const characterX = x + PREPARATION_LAYOUT.topPadding;
-      const informationX = characterX + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap;
-      if (image.complete && image.naturalWidth > 0) {
-        const placement = getCenterImagePlacement(hero.chip.radius);
-        const centerX = characterX + PREPARATION_LAYOUT.characterAreaWidth / 2;
-        const centerY = y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight + PREPARATION_LAYOUT.sectionGap + HERO_PREPARATION_IMAGE_SIZE / 2;
-        context.drawImage(
-          image,
-          centerX + placement.x - placement.size / 2,
-          centerY + placement.y - placement.size / 2,
-          placement.size,
-          placement.size,
-        );
-      }
-      context.fillStyle = '#24334d';
-      context.font = '16px system-ui';
-      context.textBaseline = 'middle';
-      context.textAlign = 'center';
-      context.fillText(`【${textRepository.getHeroLabel(hero)}】`, characterX + PREPARATION_LAYOUT.characterAreaWidth / 2, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight / 2);
-      context.textAlign = 'start';
-      PREPARATION_STATUS_DEFINITIONS.forEach(({ key, visual }, statIndex) => {
-        if (key === 'weight') {
-          drawWeightGauge(
-            context,
-            assets,
-            informationX + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
-            y + PREPARATION_LAYOUT.topPadding,
-            hero.getCarriedWeight(),
-          );
-          return;
-        }
-        const value = key === 'stamina' ? hero.stamina : Math.floor(hero.getStatus(key));
-        drawStatusGauge(
-          context,
-          assets,
-          visual,
-          informationX + statIndex * (PREPARATION_LAYOUT.statusColumnWidth + PREPARATION_LAYOUT.statusColumnGap) + (PREPARATION_LAYOUT.statusColumnWidth - PREPARATION_LAYOUT.statusGaugeWidth) / 2,
-          y + PREPARATION_LAYOUT.topPadding,
-          value,
-          hero.maximums[key],
-          key === 'stamina' ? getVitalGaugeColor(value) : '#54c96b',
-        );
+      drawPreparationHeroPanel({
+        context,
+        assets,
+        hero,
+        index,
+        textRepository,
       });
-      context.textBaseline = 'alphabetic';
-      drawEquipmentGrid(context, assets, hero, x, y + PREPARATION_LAYOUT.topPadding);
-      drawTagList(context, assets, hero, informationX, y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.statusGaugeHeight + PREPARATION_LAYOUT.sectionGap);
     });
     const staminaPauseTargets = new Set(controller.getHeroes()
       .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
       .map((hero) => hero.chip));
     board.getRenderChips().forEach((chip) => renderer.draw(chip, time / 1000, { staminaPauseTarget: staminaPauseTargets.has(chip) }));
+    drawOverheadStatuses(
+      context,
+      [...controller.getHeroes(), ...controller.getEnemies()],
+      overheadStatusSettingsController.getSettings(),
+      textRepository,
+      time / 1000,
+    );
     combatEffects.draw(context, assets);
-    drawChipSelectionGuide();
+    drawSelectionGuide(context, controller.getSelectionGuide());
     context.restore();
     requestAnimationFrame(render);
   }

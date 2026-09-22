@@ -13,30 +13,66 @@
         <div class="HudPanel__Controls">
           <span class="HudPanel__Status state-running" id="time-status" aria-live="polite"><span data-ui="running"></span></span>
           <button class="HudPanel__PauseButton" id="pause-game" type="button"><span data-ui="pause"></span></button>
-          <button class="HudPanel__SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings"><span data-ui="settings"></span></button>
+          <button class="HudPanel__SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings" data-ui-aria="settings">⚙ <span data-ui="settings"></span></button>
         </div>
-        <section class="HudPanel__Settings" id="time-settings" hidden data-ui-aria="settings">
-          <label class="HudPanel__SpeedLabel" for="language-selector"><span data-ui="language"></span>
-            <select id="language-selector"></select>
-          </label>
-          <label class="HudPanel__SpeedLabel" for="game-speed"><span data-ui="speed"></span>
-            <input class="HudPanel__SpeedSlider" id="game-speed" type="range" min="-1" max="2" step="0.1" value="0" />
-            <span class="HudPanel__SpeedScale" aria-hidden="true"><span><span data-ui="slow"></span></span><span><span data-ui="normal"></span></span><span><span data-ui="fast"></span></span></span>
-          </label>
-          <div class="HudPanel__AutomationGroup">
-            <span class="HudPanel__AutomationTitle"><span data-ui="autoPause"></span></span>
-            <label class="HudPanel__AutomationOption" for="pause-on-information"><input id="pause-on-information" type="checkbox" checked /> <span data-ui="pauseInformation"></span></label>
-            <label class="HudPanel__AutomationOption" for="pause-on-stamina-full"><input id="pause-on-stamina-full" type="checkbox" /> <span data-ui="pauseStamina"></span></label>
-          </div>
-          <div class="HudPanel__AutomationGroup">
-            <span class="HudPanel__AutomationTitle"><span data-ui="autoAccelerate"></span></span>
-            <label class="HudPanel__AutomationOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> <span data-ui="accelerateEmpty"></span></label>
+      </aside>
+      <aside class="ModalLayer SettingsModal" id="time-settings" hidden data-ui-aria="settings">
+        <section class="ModalDialog SettingsModal__Dialog" role="dialog" aria-modal="true" aria-labelledby="time-settings-title">
+          <header class="ModalDialog__Header">
+            <div class="ModalDialog__Heading">
+              <h2 class="ModalDialog__Title" id="time-settings-title" data-ui="settings"></h2>
+            </div>
+            <div class="ModalDialog__HeaderActions">
+              <button class="ModalDialog__DismissButton" id="time-settings-close" type="button" data-ui="close" data-ui-aria="close"></button>
+            </div>
+          </header>
+          <div class="ModalDialog__Body SettingsModal__Body">
+            <fieldset class="ModalFormSection">
+              <legend class="ModalFormSection__Legend" id="settings-language-section-title" data-ui="language"></legend>
+              <div class="ModalSelect">
+                <select id="language-selector" aria-labelledby="settings-language-section-title"></select>
+              </div>
+            </fieldset>
+            <fieldset class="ModalFormSection">
+              <legend class="ModalFormSection__Legend" data-ui="gameProgress"></legend>
+              <label class="SettingsModal__Field" for="game-speed"><span data-ui="speed"></span>
+                <input class="HudPanel__SpeedSlider" id="game-speed" type="range" min="-1" max="2" step="0.1" value="0" />
+                <span class="HudPanel__SpeedScale" aria-hidden="true"><span><span data-ui="slow"></span></span><span><span data-ui="normal"></span></span><span><span data-ui="fast"></span></span></span>
+              </label>
+              <div class="SettingsModal__ControlGroup">
+                <span class="SettingsModal__ControlLabel" data-ui="autoPause"></span>
+                <label class="SettingsModal__ControlOption" for="pause-on-information"><input id="pause-on-information" type="checkbox" checked /> <span data-ui="pauseInformation"></span></label>
+                <label class="SettingsModal__ControlOption" for="pause-on-stamina-full"><input id="pause-on-stamina-full" type="checkbox" /> <span data-ui="pauseStamina"></span></label>
+              </div>
+              <label class="SettingsModal__ControlOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> <span data-ui="autoAccelerate"></span>: <span data-ui="accelerateEmpty"></span></label>
+            </fieldset>
+            <fieldset class="ModalFormSection">
+              <legend class="ModalFormSection__Legend" data-ui="overheadStatus"></legend>
+              <div class="SettingsModal__OverheadStatusChoices">
+                <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="power" /> <span data-overhead-status="power"></span></label>
+                <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="magic" /> <span data-overhead-status="magic"></span></label>
+                <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="speed" /> <span data-overhead-status="speed"></span></label>
+                <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="negotiation" /> <span data-overhead-status="negotiation"></span></label>
+                <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="luck" /> <span data-overhead-status="luck"></span></label>
+                <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="durability" /> <span data-overhead-status="durability"></span></label>
+                <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="weight" /> <span data-overhead-status="weight"></span></label>
+              </div>
+              <label class="SettingsModal__Field" for="overhead-status-visibility"><span id="overhead-status-visibility-label" data-ui="overheadStatusVisibility"></span>
+                <span class="ModalSelect">
+                  <select id="overhead-status-visibility" aria-labelledby="overhead-status-visibility-label">
+                    <option value="always" data-ui="overheadStatusAlways"></option>
+                    <option value="battle" data-ui="overheadStatusBattle"></option>
+                  </select>
+                </span>
+              </label>
+            </fieldset>
           </div>
         </section>
       </aside>
       <aside class="FlowLog" id="flow-log" data-ui-aria="logs"></aside>
       <aside class="ModalLayer StartPartySelection" id="start-party-selection" hidden></aside>
-      <aside class="ModalLayer StageSelection" id="stage-selection" data-ui-aria="routes" hidden></aside>
+      <aside class="ModalLayer StageSelection" id="stage-selection" data-ui-aria="chooseRoute" hidden></aside>
+      <aside class="ModalLayer TrialRunResult" id="trial-run-result" hidden></aside>
       <aside class="InformationWindowLayer" id="information-windows" data-ui-aria="informationWindows"></aside>
     </main>
     <script type="module" src="/src/main.js"></script>

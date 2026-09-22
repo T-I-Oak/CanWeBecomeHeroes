@@ -10,6 +10,18 @@
   --color-level-luck: #bd7b00;
   --color-level-unluck: #a64b61;
   --color-level-warning: #c46a10;
+
+  --color-modal-text: #f4ead2;
+  --color-modal-title: #fff4d5;
+  --color-modal-surface-start: #263b2a;
+  --color-modal-surface-end: #172a20;
+  --color-modal-border: #9b7142;
+  --color-modal-section-border: rgb(243 219 164 / 38%);
+  --color-modal-control-surface: #f6e6be;
+  --color-modal-control-text: #2d301f;
+  --color-modal-control-border: #d3ad62;
+  --color-modal-selected-option: #d5ad55;
+  --color-modal-selected-option-text: #2d301f;
 }
 
 * {
@@ -117,21 +129,20 @@ body {
   background: #ec7b68;
 }
 
-.HudPanel__Settings {
-  display: grid;
-  gap: 10px;
-  margin-top: 8px;
-  padding-top: 9px;
-  border-top: 1px solid rgba(243, 219, 164, 0.38);
+.SettingsModal__Dialog {
+  width: min(440px, 100%);
+  --modal-dialog-padding: clamp(16px, 4vmin, 28px);
+  --modal-body-gap: 14px;
 }
 
-.HudPanel__Settings[hidden] {
-  display: none;
+.SettingsModal__Body {
+  display: grid;
+  gap: var(--modal-body-gap);
 }
 
-.HudPanel__SpeedLabel {
+.SettingsModal__Field {
   display: grid;
-  gap: 5px;
+  gap: 7px;
   color: #fff4d5;
   font-size: 12px;
   font-weight: 700;
@@ -143,40 +154,49 @@ body {
 }
 
 .HudPanel__SpeedScale {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  --speed-normal-position: 33.333%;
+  position: relative;
+  display: block;
+  height: 1.2em;
   color: #e5d4ae;
   font-size: 11px;
   font-weight: 600;
 }
 
-.HudPanel__SpeedScale span:nth-child(2) {
-  text-align: center;
+.HudPanel__SpeedScale > span {
+  position: absolute;
+  white-space: nowrap;
 }
 
-.HudPanel__SpeedScale span:last-child {
-  text-align: right;
-}
+.HudPanel__SpeedScale > span:first-child { left: 0; }
+.HudPanel__SpeedScale > span:nth-child(2) { left: var(--speed-normal-position); transform: translateX(-50%); }
+.HudPanel__SpeedScale > span:last-child { right: 0; }
 
-.HudPanel__AutomationGroup {
+.SettingsModal__ControlGroup {
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 
-.HudPanel__AutomationTitle {
-  color: #d5ad55;
-  font-size: 11px;
+.SettingsModal__ControlLabel {
+  color: #fff4d5;
+  font-size: 12px;
   font-weight: 800;
 }
 
-.HudPanel__AutomationOption {
+.SettingsModal__ControlOption {
   color: #fff4d5;
   font-size: 12px;
   font-weight: 600;
 }
 
-.HudPanel__AutomationOption input {
+.SettingsModal__ControlOption input {
   accent-color: #d5ad55;
+}
+
+.SettingsModal__OverheadStatusChoices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px 10px;
 }
 
 .ChipCanvas {
@@ -229,14 +249,6 @@ body {
 }
 
 @media (max-width: 960px) {
-  .InformationWindow .InformationWindow__EntityTitle {
-    min-height: 104px;
-  }
-  .InformationWindow .InformationWindow__EntityTitle > .InformationWindow__ChipImage {
-    flex-basis: 80px;
-    width: 80px;
-    height: 80px;
-  }
   .InformationWindow .InformationWindow__EntityPanel {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -258,7 +270,12 @@ body {
   background: linear-gradient(135deg, #263b2a, #172a20);
   border-bottom: 2px solid #9b7142;
   border-radius: 10px 10px 0 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
 }
+
+.InformationWindow__Title:active { cursor: grabbing; }
 
 .InformationWindow__Compact,
 .InformationWindow__Pin {
@@ -292,12 +309,26 @@ body {
 
 .InformationWindow__Compact:hover,
 .InformationWindow__Compact:focus-visible,
-.InformationWindow__Compact.is-compact,
 .InformationWindow__Pin:hover,
-.InformationWindow__Pin:focus-visible,
+.InformationWindow__Pin:focus-visible {
+  background: rgb(247 237 207 / 16%);
+  border-color: #c99d58;
+}
+
+.InformationWindow__Compact.is-compact,
 .InformationWindow__Pin.is-pinned {
-  background: #765124;
-  border-color: #e6b960;
+  color: #263b2a;
+  background: #e6b960;
+  border-color: #f7edcf;
+  box-shadow: inset 0 0 0 1px #765124;
+}
+
+.InformationWindow__Compact.is-compact:hover,
+.InformationWindow__Compact.is-compact:focus-visible,
+.InformationWindow__Pin.is-pinned:hover,
+.InformationWindow__Pin.is-pinned:focus-visible {
+  background: #f2cc72;
+  border-color: #fff7de;
 }
 
 .InformationWindow__Name {
@@ -324,6 +355,7 @@ body {
 
 .InformationWindow__DataSection {
   display: grid;
+  justify-items: start;
   gap: 7px;
 }
 
@@ -336,14 +368,11 @@ body {
   gap: 4px;
 }
 
-.InformationWindow__DataSection .InformationWindow__ItemWeight {
-  justify-self: start;
-}
-
 .InformationWindow__TermIcon {
   display: inline-grid;
-  width: 38px;
-  height: 38px;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 2px solid #b9c8df;
   border-radius: 50%;
@@ -355,6 +384,21 @@ body {
   display: block;
   width: 70%;
   height: 70%;
+}
+
+.InformationWindow__ItemValueIcon {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+}
+
+.InformationWindow__ItemValueIcon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 
@@ -411,7 +455,8 @@ body {
 
 .InformationWindow__InlineReference .InformationWindow__StatusIcon,
 .InformationWindow__InlineReference .InformationWindow__TagIcon,
-.InformationWindow__InlineReference .InformationWindow__LocationIcon {
+.InformationWindow__InlineReference .InformationWindow__LocationIcon,
+.InformationWindow__InlineReference .InformationWindow__ItemValueIcon {
   flex: 0 0 1.4em;
   width: 1.4em;
   height: 1.4em;
@@ -502,22 +547,9 @@ body {
   object-fit: contain;
 }
 
-.InformationWindow__ChipImage {
-  display: grid;
-  flex: 0 0 48px;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  overflow: hidden;
-  background: #f8fafc;
-  border: 3px solid #c6d0df;
-  border-radius: 50%;
-}
-
-.InformationWindow__ChipImage img {
-  width: 85%;
-  height: 85%;
-  object-fit: contain;
+.InformationWindow__ChipPreview {
+  display: block;
+  flex: 0 0 auto;
 }
 
 .InformationWindow__TagIcon--small {
@@ -608,16 +640,6 @@ body {
   line-height: 1.4;
 }
 
-.InformationWindow__EntityTitle {
-  min-height: calc(var(--entity-portrait-size) + 24px);
-}
-
-.InformationWindow__EntityTitle > .InformationWindow__ChipImage {
-  flex-basis: var(--entity-portrait-size);
-  width: var(--entity-portrait-size);
-  height: var(--entity-portrait-size);
-}
-
 .InformationWindow__EntityInformation {
   display: grid;
   gap: 8px;
@@ -631,6 +653,8 @@ body {
 
 .InformationWindow__EntityStatus,
 .InformationWindow__EntityTag,
+.InformationWindow__ItemBadge,
+.InformationWindow__TagWeightReference,
 .InformationWindow__Equipment {
   font: inherit;
 }
@@ -707,7 +731,10 @@ body {
   left: 0;
   height: var(--weight-fill);
   content: '';
-  background: linear-gradient(to top, #58c96d 0%, #d6be57 55%, #ca7553 100%);
+  background-image: linear-gradient(to top, var(--weight-color-low) 0%, var(--weight-color-middle) 55%, var(--weight-color-high) 100%);
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: 100% 70px;
 }
 
 .InformationWindow__WeightIndicator::after {
@@ -735,6 +762,17 @@ body {
   gap: 8px;
 }
 
+.InformationWindow__ItemBadgeList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.InformationWindow__ItemTagList,
+.InformationWindow__ItemPropertyList {
+  display: contents;
+}
+
 .InformationWindow__EquipmentList {
   grid-template-columns: repeat(3, 72px);
   grid-template-rows: repeat(3, 72px);
@@ -742,17 +780,23 @@ body {
   gap: 8px;
 }
 
-.InformationWindow__EntityTag {
+.InformationWindow__EntityTag,
+.InformationWindow__ItemBadge {
   display: inline-flex;
   align-items: center;
-  gap: 1px;
-  min-width: 44px;
-  min-height: 28px;
-  padding: 2px;
   color: var(--tag-skill-text);
   background: var(--tag-skill-fill);
   border: 2px solid var(--tag-skill-border);
   border-radius: 8px;
+}
+
+.InformationWindow__EntityTag,
+.InformationWindow__ItemBadge {
+  gap: 1px;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 28px;
+  padding: 2px;
 }
 
 .InformationWindow__Equipment {
@@ -786,33 +830,38 @@ body {
   object-position: center bottom;
 }
 
-.InformationWindow__EntityTag .InformationWindow__TagIcon {
+.InformationWindow__EntityTag .InformationWindow__TagIcon,
+.InformationWindow__ItemTag .InformationWindow__TagIcon {
   flex-basis: 18px;
   width: 18px;
   height: 18px;
   border-width: 2px;
 }
 
-.InformationWindow__EntityTag .InformationWindow__SkillRequirement {
+.InformationWindow__EntityTag .InformationWindow__SkillRequirement,
+.InformationWindow__ItemTag .InformationWindow__SkillRequirement {
   min-width: 12px;
   font-size: 13px;
 }
 
-.InformationWindow__ItemWeight {
+.InformationWindow__TagWeightReference {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
   min-width: 56px;
   min-height: 28px;
-  padding: 2px;
-  color: #24334d;
+  padding: 2px 7px;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
-  background: #e6edf5;
-  border: 2px solid #aab7cb;
   border-radius: 8px;
+}
+
+.InformationWindow__TagWeightReference .InformationWindow__StatusIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .InformationWindow__ItemWeight .InformationWindow__StatusIcon {
@@ -821,8 +870,20 @@ body {
   height: 18px;
 }
 
-.InformationWindow__ItemWeightTimes {
+.InformationWindow__ItemWeightAmount,
+.InformationWindow__TagWeightAmount {
   white-space: nowrap;
+}
+
+.InformationWindow__ItemValue .InformationWindow__ItemValueIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.InformationWindow__ItemValueAmount {
+  min-width: 1ch;
+  text-align: end;
 }
 
 .InformationWindow__EquipmentTags {
@@ -916,18 +977,21 @@ body {
 
 .InformationWindow__EntityStatus.state-clickable,
 .InformationWindow__EntityTag.state-clickable,
-.InformationWindow__ItemWeight.state-clickable,
+.InformationWindow__ItemBadge.state-clickable,
+.InformationWindow__TagWeightReference.state-clickable,
 .InformationWindow__Equipment.state-clickable {
   cursor: pointer;
 }
 
 .InformationWindow__EntityStatus.state-clickable:hover,
 .InformationWindow__EntityTag.state-clickable:hover,
-.InformationWindow__ItemWeight.state-clickable:hover,
+.InformationWindow__ItemBadge.state-clickable:hover,
+.InformationWindow__TagWeightReference.state-clickable:hover,
 .InformationWindow__Equipment.state-clickable:hover,
 .InformationWindow__EntityStatus.state-clickable:focus-visible,
 .InformationWindow__EntityTag.state-clickable:focus-visible,
-.InformationWindow__ItemWeight.state-clickable:focus-visible,
+.InformationWindow__ItemBadge.state-clickable:focus-visible,
+.InformationWindow__TagWeightReference.state-clickable:focus-visible,
 .InformationWindow__Equipment.state-clickable:focus-visible {
   filter: brightness(1.08);
   outline: 2px solid #24334d;
@@ -952,27 +1016,306 @@ body {
   background: rgb(18 27 41 / 72%);
 }
 
+.TrialRunResult {
+  background: rgb(8 13 20 / 78%);
+}
+
+.TrialRunResult.state-open {
+  animation: trial-run-result-backdrop-enter 320ms ease-out both;
+}
+
 .ModalDialog {
+  --modal-dialog-padding: clamp(14px, 3vmin, 24px);
+  --modal-body-gap: 16px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   max-height: calc(100dvh - 20px);
-  overflow-y: auto;
-  color: #f4ead2;
-  background: linear-gradient(145deg, #263b2a, #172a20);
-  border: 4px solid #9b7142;
+  overflow: hidden;
+  color: var(--color-modal-text);
+  background: linear-gradient(145deg, var(--color-modal-surface-start), var(--color-modal-surface-end));
+  border: 4px solid var(--color-modal-border);
   border-radius: 14px;
   box-shadow: 0 18px 54px rgb(0 0 0 / 45%);
+}
+
+.ModalDialog__Header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: var(--modal-dialog-padding) var(--modal-dialog-padding) 0;
+}
+
+.ModalDialog__Heading {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.ModalDialog__Title {
+  margin: 0;
+  color: var(--color-modal-title);
+  font-size: clamp(19px, 4vmin, 28px);
+}
+
+.ModalDialog__Subtitle {
+  margin: 0;
+  color: #d8cba8;
+  font-size: 14px;
+}
+
+.ModalDialog__HeaderActions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+.ModalDialog__DismissButton {
+  min-width: 66px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-modal-control-border);
+  border-radius: 6px;
+  color: var(--color-modal-control-text);
+  background: var(--color-modal-control-surface);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ModalSelect {
+  position: relative;
+  display: block;
+}
+
+.ModalSelect__Native {
+  display: none;
+}
+
+.ModalSelect__Trigger,
+.ModalSelect__Option {
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-modal-control-border);
+  color: var(--color-modal-control-text);
+  background: var(--color-modal-control-surface);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ModalSelect__Trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: 6px;
+  text-align: start;
+}
+
+.ModalSelect__Options {
+  position: absolute;
+  z-index: 1;
+  inset: calc(100% + 4px) 0 auto;
+  display: grid;
+  max-height: var(--modal-select-options-maximum-height, none);
+  overflow-y: auto;
+  border: 1px solid var(--color-modal-control-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 30%);
+}
+
+.ModalSelect__Options.state-open-upward {
+  inset: auto 0 calc(100% + 4px);
+}
+
+.ModalSelect__Options[hidden] {
+  display: none;
+}
+
+.ModalSelect__Option {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  text-align: start;
+}
+
+.ModalSelect__Option:last-child {
+  border-bottom-width: 0;
+}
+
+.ModalSelect__Option.state-selected {
+  color: var(--color-modal-selected-option-text);
+  background: var(--color-modal-selected-option);
+}
+
+.ModalDialog__Body {
+  min-height: 0;
+  padding: var(--modal-body-gap) var(--modal-dialog-padding);
+  overflow-y: auto;
+}
+
+.ModalDialog__Footer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 var(--modal-dialog-padding) var(--modal-dialog-padding);
+}
+
+.ModalFormSection {
+  display: grid;
+  min-inline-size: 0;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 12px 12px;
+  background: rgb(255 255 255 / 4%);
+  border: 1px solid var(--color-modal-section-border);
+  border-radius: 8px;
+}
+
+.ModalFormSection__Legend {
+  padding: 0 6px;
+  color: var(--color-modal-title);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.TrialRunResult__Screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(680px, 100%);
+}
+
+.TrialRunResult__Dialog {
+  width: min(640px, 100%);
+}
+
+.TrialRunResult.state-open .TrialRunResult__Dialog {
+  animation: trial-run-result-dialog-enter 520ms 180ms cubic-bezier(.2, .78, .2, 1) both;
+}
+
+.TrialRunResult__Certificate {
+  display: grid;
+  gap: clamp(20px, 4vmin, 34px);
+  min-height: min(500px, 64dvh);
+  padding: clamp(22px, 5vmin, 48px);
+  color: #382f20;
+  background: linear-gradient(135deg, #fff5d6, #ead3a1);
+  border: 1px solid #b78a42;
+  box-shadow: inset 0 0 0 7px rgb(116 72 23 / 22%);
+}
+
+.TrialRunResult__Statement {
+  margin: 0;
+  font-size: clamp(15px, 2.6vmin, 20px);
+  line-height: 1.8;
+}
+
+.TrialRunResult__RecipientList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: Georgia, serif;
+  font-size: clamp(23px, 5vmin, 36px);
+  font-weight: 700;
+  text-align: center;
+}
+
+.TrialRunResult__Recipient {
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgb(93 60 23 / 38%);
+}
+
+.TrialRunResult__Issue {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 8px 16px;
+  font-size: 13px;
+}
+
+.TrialRunResult__Date,
+.TrialRunResult__Issuer {
+  margin: 0;
+}
+
+.TrialRunResult__Issuer {
+  grid-column: 1;
+}
+
+.TrialRunResult__Seal {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  aspect-ratio: 1;
+  color: #8c2c2c;
+  border: 3px double currentColor;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  transform: rotate(-12deg);
+}
+
+.TrialRunResult__FailureMessage {
+  margin: 0;
+  padding: clamp(26px, 7vmin, 60px) clamp(8px, 3vmin, 30px);
+  color: #e6d5bd;
+  font-size: clamp(17px, 3vmin, 23px);
+  line-height: 1.7;
+  text-align: center;
+}
+
+.TrialRunResult__Confetti {
+  position: absolute;
+  z-index: 1;
+  inset: -22dvh 0 auto;
+  height: 42dvh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.TrialRunResult__ConfettiPiece {
+  position: absolute;
+  left: var(--trial-result-confetti-position);
+  width: 9px;
+  height: 16px;
+  background: var(--trial-result-confetti-color);
+}
+
+.TrialRunResult.state-open .TrialRunResult__ConfettiPiece {
+  animation: trial-run-result-confetti-fall 1450ms var(--trial-result-confetti-delay) ease-in both;
+}
+
+@keyframes trial-run-result-backdrop-enter {
+  from { background-color: rgb(8 13 20 / 0%); }
+}
+
+@keyframes trial-run-result-dialog-enter {
+  from { opacity: 0; transform: translateY(-28dvh); }
+}
+
+@keyframes trial-run-result-confetti-fall {
+  from { opacity: 0; transform: translateY(-10dvh) rotate(0deg); }
+  15% { opacity: 1; }
+  to { opacity: 0; transform: translateY(54dvh) rotate(300deg); }
 }
 
 .StartPartySelection__Dialog {
   --party-chip-size: min(17vw, 17vh, 132px);
   --party-gap: min(3vw, 3vh, 20px);
-  display: grid;
-  justify-items: center;
-  gap: var(--party-gap);
+  --modal-body-gap: var(--party-gap);
   width: min(680px, 100%);
-  padding: clamp(12px, 3vmin, 24px);
+  --modal-dialog-padding: clamp(12px, 3vmin, 24px);
 }
 
-.StartPartySelection__Title { margin: 0; font-size: clamp(18px, 4vmin, 28px); }
+.StartPartySelection__Dialog .ModalDialog__Header { justify-content: center; }
+.StartPartySelection__Dialog .ModalDialog__Body { display: grid; justify-items: center; }
 .StartPartySelection__Roster { display: grid; grid-template-columns: repeat(4, var(--party-chip-size)); gap: var(--party-gap); }
 .StartPartySelection__Slot {
   display: grid;
@@ -996,29 +1339,17 @@ body {
 
 .StageSelection__Dialog {
   width: min(920px, 100%);
-  padding: 22px;
+  --modal-dialog-padding: 22px;
+  --modal-body-gap: 18px;
 }
 
-.StageSelection__Title,
-.StageSelection__Subtitle {
-  margin: 0;
+.StageSelection__Dialog .ModalDialog__Heading {
   text-align: center;
-}
-
-.StageSelection__Title {
-  font-size: 26px;
-}
-
-.StageSelection__Subtitle {
-  margin-top: 4px;
-  color: #d8cba8;
-  font-size: 14px;
 }
 
 .StageSelection__Options {
   display: grid;
   gap: 12px;
-  margin-top: 18px;
 }
 
 .StageSelection__Option {
@@ -1251,7 +1582,7 @@ body {
 
   .StageSelection__Dialog {
     max-height: calc(100dvh - 20px);
-    padding: 14px;
+    --modal-dialog-padding: 14px;
   }
 
 }

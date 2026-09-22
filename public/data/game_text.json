@@ -2,6 +2,14 @@
   "ui": {
     "weaponTargetingNote": { "lang-store": { "ja": "複数の武器を装備している場合、先に装備した武器で攻撃対象が決まります。", "en": "When multiple weapons are equipped, the weapon equipped first determines the attack target." } },
     "language": { "lang-store": { "ja": "言語", "en": "Language" } },
+    "trialCertificateTitle": { "lang-store": { "ja": "勇者試験 合格証明書", "en": "Hero Trial Certificate" } },
+    "trialCertificateStatement": { "lang-store": { "ja": "ここに、下記の者が勇者試験に合格したことを証明します。", "en": "This certifies that the following individuals have passed the Hero Trial." } },
+    "trialCertificateDate": { "lang-store": { "ja": "認定日", "en": "Date of certification" } },
+    "trialCertificateIssuer": { "lang-store": { "ja": "勇者ギルド試験委員会", "en": "Hero Guild Examination Committee" } },
+    "trialCertificateSeal": { "lang-store": { "ja": "認定印", "en": "Certified" } },
+    "trialFailureTitle": { "lang-store": { "ja": "不合格通知", "en": "Notice of Failure" } },
+    "trialFailureMessage": { "lang-store": { "ja": "今回の勇者試験は不合格となりました。", "en": "You did not pass this Hero Trial." } },
+    "gameProgress": { "lang-store": { "ja": "ゲーム進行", "en": "Game progress" } },
     "logCategory_hero": { "lang-store": { "ja": "キャラクター", "en": "Character" } },
     "logCategory_enemy": { "lang-store": { "ja": "敵", "en": "Enemy" } },
     "logCategory_system": { "lang-store": { "ja": "システム", "en": "System" } },
@@ -77,8 +85,14 @@
     },
     "settings": {
       "lang-store": {
-        "ja": "時間設定",
-        "en": "Time settings"
+        "ja": "設定",
+        "en": "Settings"
+      }
+    },
+    "close": {
+      "lang-store": {
+        "ja": "閉じる",
+        "en": "Close"
       }
     },
     "speed": {
@@ -135,16 +149,34 @@
         "en": "When no allies are resting at Home"
       }
     },
+    "overheadStatus": {
+      "lang-store": {
+        "ja": "頭上表示",
+        "en": "Overhead display"
+      }
+    },
+    "overheadStatusVisibility": {
+      "lang-store": {
+        "ja": "表示タイミング",
+        "en": "Show"
+      }
+    },
+    "overheadStatusAlways": {
+      "lang-store": {
+        "ja": "常時",
+        "en": "Always"
+      }
+    },
+    "overheadStatusBattle": {
+      "lang-store": {
+        "ja": "戦闘中",
+        "en": "In battle"
+      }
+    },
     "logs": {
       "lang-store": {
         "ja": "ゲームログ",
         "en": "Game log"
-      }
-    },
-    "routes": {
-      "lang-store": {
-        "ja": "進路選択",
-        "en": "Route selection"
       }
     },
     "informationWindows": {
@@ -642,7 +674,11 @@
             "ja": [
               {
                 "type": "text",
-                "value": "買い物袋に入れた装備を売ると、売却額と"
+                "value": "買い物袋に入れた装備を売ると、そのアイテムの"
+              },
+              {
+                "type": "term",
+                "id": "item-value"
               },
               {
                 "type": "reference",
@@ -684,7 +720,15 @@
             "en": [
               {
                 "type": "text",
-                "value": "Sell the equipment in your shopping bag to receive equipment based on its sale value and your "
+                "value": "Sell the equipment in your shopping bag to receive equipment based on its "
+              },
+              {
+                "type": "term",
+                "id": "item-value"
+              },
+              {
+                "type": "text",
+                "value": " and your "
               },
               {
                 "type": "reference",
@@ -2427,6 +2471,30 @@
             ]
           }
         }
+      },
+      "item-value": {
+        "name": {
+          "lang-store": {
+            "ja": "価値",
+            "en": "Value"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "アイテムに付いたタグの種類や数によって決まる値。ショップでは、買い物袋に入れたアイテムの価値が高いほど、多くのタグが付いた装備を受け取れる。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A value determined by the types and number of tags on an item. At the Shop, higher-value items in the shopping bag yield equipment with more tags."
+              }
+            ]
+          }
+        }
       }
     },
     "item": {
@@ -4024,31 +4092,13 @@
             "ja": [
               {
                 "type": "text",
-                "value": "アクション時、"
-              },
-              {
-                "type": "reference",
-                "kind": "enemy-definition",
-                "id": "phantom-area-head"
-              },
-              {
-                "type": "text",
-                "value": "をひとつ伸ばして追加攻撃する。"
+                "value": "攻撃後、龍の首をひとつ伸ばして追加攻撃する。"
               }
             ],
             "en": [
               {
                 "type": "text",
-                "value": "When acting, extends "
-              },
-              {
-                "type": "reference",
-                "kind": "enemy-definition",
-                "id": "phantom-area-head"
-              },
-              {
-                "type": "text",
-                "value": " once for an additional attack."
+                "value": "After attacking, extends one Dragon Head for a follow-up attack."
               }
             ]
           }
@@ -4082,31 +4132,173 @@
             "ja": [
               {
                 "type": "text",
-                "value": "アクション時、"
-              },
-              {
-                "type": "reference",
-                "kind": "enemy-definition",
-                "id": "phantom-area-head"
-              },
-              {
-                "type": "text",
-                "value": "をふたつ伸ばして追加攻撃する。"
+                "value": "攻撃後、龍の首をふたつ伸ばして追加攻撃する。"
               }
             ],
             "en": [
               {
                 "type": "text",
-                "value": "When acting, extends "
-              },
-              {
-                "type": "reference",
-                "kind": "enemy-definition",
-                "id": "phantom-area-head"
-              },
+                "value": "After attacking, extends two Dragon Heads for follow-up attacks."
+              }
+            ]
+          }
+        }
+      },
+      "medium-dexterity": {
+        "name": {
+          "lang-store": {
+            "ja": "ウェアウルフ",
+            "en": "Werewolf"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
               {
                 "type": "text",
-                "value": " twice for additional attacks."
+                "value": "夜の森を駆ける、鋭い爪を持つ獣人。素早く懐へ潜り込み、相手の装備から力を奪う。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A clawed beastkin that races through the night forest. It darts in close and steals power from its foe's equipment."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "相手の装備からタグを1つ抜き取ることがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "May remove one tag from the target's equipment."
+              }
+            ]
+          }
+        }
+      },
+      "large-dexterity": {
+        "name": {
+          "lang-store": {
+            "ja": "天狗",
+            "en": "Tengu"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "山風とともに舞い降りる、翼持つ剣士。ひと太刀の間に、相手の装備から力をさらっていく。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A winged swordsman descending with the mountain wind. In the space of one cut, it snatches power from its foe's equipment."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "相手の装備から抜き取ったタグを、自身の装備へ移すことがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "May move a removed tag from the target's equipment onto its own equipment."
+              }
+            ]
+          }
+        }
+      },
+      "medium-valor": {
+        "name": {
+          "lang-store": {
+            "ja": "オーガ",
+            "en": "Ogre"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "荒々しい棍棒を振るう、巨躯の鬼。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A hulking brute that swings a savage club."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "戦場にいる全員を諸刃の剣状態にする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Puts everyone on the battlefield into the Two-Edged Sword state."
+              }
+            ]
+          }
+        }
+      },
+      "large-valor": {
+        "name": {
+          "lang-store": {
+            "ja": "サイクロプス",
+            "en": "Cyclops"
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "ひとつ目で戦場を睨む、山のような巨人。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "A mountain-like giant that glares across the battlefield with its single eye."
+              }
+            ]
+          }
+        },
+        "combatStyle": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "戦場にいる全員を、より強い諸刃の剣状態にする。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Puts everyone on the battlefield into a stronger Two-Edged Sword state."
               }
             ]
           }
@@ -4163,7 +4355,7 @@
         },
         "flavor": {
           "lang-store": {
-            "ja": "倒れた巨木の根から、なお新しい芽が伸びる。",
+            "ja": "倒れた大樹の根元から、なお新たな命が芽吹く。",
             "en": "New shoots still rise from the roots of the fallen giant."
           }
         },
@@ -4172,7 +4364,7 @@
             "ja": [
               {
                 "type": "text",
-                "value": "倒されると、空いている敵の位置へ眷属を呼び出す。"
+                "value": "倒されても、眷属を呼び出して戦いを続ける。"
               }
             ],
             "en": [
@@ -4187,16 +4379,16 @@
           "1": {
             "description": {
               "lang-store": {
-                "ja": "マンドラゴラを最大2体召喚",
-                "en": "Summons up to 2 Mandragoras"
+                "ja": "マンドラゴラを最大2体呼び出す。",
+                "en": "Calls up to 2 Mandragoras."
               }
             }
           },
           "2": {
             "description": {
               "lang-store": {
-                "ja": "トレントを最大2体召喚",
-                "en": "Summons up to 2 Treants"
+                "ja": "トレントを最大2体呼び出す。",
+                "en": "Calls up to 2 Treants."
               }
             }
           }
@@ -4220,7 +4412,16 @@
             "ja": [
               {
                 "type": "text",
-                "value": "ダメージを受けると、倉庫に宝珠を落とすことがある。"
+                "value": "ダメージを受けると、倉庫に"
+              },
+              {
+                "type": "reference",
+                "kind": "item",
+                "id": "orb"
+              },
+              {
+                "type": "text",
+                "value": "を落とすことがある。"
               }
             ],
             "en": [
@@ -4235,16 +4436,16 @@
           "1": {
             "description": {
               "lang-store": {
-                "ja": "50%で宝石タグ1の宝珠を1個落とす",
-                "en": "50% chance to drop 1 orb with 1 Gem tag"
+                "ja": "宝珠を1個落とすことがある。",
+                "en": "May drop 1 orb."
               }
             }
           },
           "2": {
             "description": {
               "lang-store": {
-                "ja": "50%で宝石タグ2の宝珠を2個落とす",
-                "en": "50% chance to drop 2 orbs with 2 Gem tags"
+                "ja": "宝珠を2個落とすことがある。",
+                "en": "May drop 2 orbs."
               }
             }
           }
@@ -4259,7 +4460,7 @@
         },
         "flavor": {
           "lang-store": {
-            "ja": "巨体から伸びた首が、遠くの相手へ食らいつく。",
+            "ja": "幾つもの首がうごめき、獲物へ一斉に襲いかかる。",
             "en": "Heads stretch from the immense body to sink their fangs into distant foes."
           }
         },
@@ -4268,7 +4469,7 @@
             "ja": [
               {
                 "type": "text",
-                "value": "行動後、"
+                "value": "攻撃後、"
               },
               {
                 "type": "reference",
@@ -4277,13 +4478,13 @@
               },
               {
                 "type": "text",
-                "value": "が追加で攻撃し、眷属も連携して攻撃する。"
+                "value": "を伸ばして追加攻撃をする。眷属も連携して攻撃する。"
               }
             ],
             "en": [
               {
                 "type": "text",
-                "value": "After acting, "
+                "value": "After attacking, it extends "
               },
               {
                 "type": "reference",
@@ -4292,7 +4493,7 @@
               },
               {
                 "type": "text",
-                "value": " attacks again, while the user's minions join in with coordinated attacks."
+                "value": " for a follow-up attack, while minions join in with coordinated attacks."
               }
             ]
           }
@@ -4301,16 +4502,112 @@
           "1": {
             "description": {
               "lang-store": {
-                "ja": "龍の首をひとつ伸ばして、即座に追加攻撃する",
-                "en": "Extends one Dragon Head for an immediate additional attack"
+                "ja": "龍の首をひとつ伸ばす。",
+                "en": "Extends one Dragon Head."
               }
             }
           },
           "2": {
             "description": {
               "lang-store": {
-                "ja": "龍の首をふたつ伸ばして、即座に追加攻撃する",
-                "en": "Extends two Dragon Heads for immediate additional attacks"
+                "ja": "龍の首をふたつ伸ばす。",
+                "en": "Extends two Dragon Heads."
+              }
+            }
+          }
+        }
+      },
+      "battle-frenzy": {
+        "name": {
+          "lang-store": {
+            "ja": "戦鬼の高揚",
+            "en": "Battle Fiend's Frenzy"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "血気が戦場を満たし、誰もが危うい一撃に身を委ねる。",
+            "en": "Bloodlust fills the battlefield, and all surrender themselves to perilous blows."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "攻撃時、戦場にいる全員を諸刃の剣状態にする。諸刃の剣状態では、会心ダメージが増える。諸刃の剣状態は、攻撃を受けるか自身の攻撃を終えると解除される。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "When attacking, gives everyone on the battlefield the Two-Edged Sword state. Critical damage is increased in this state. It ends when the affected combatant takes damage or finishes an attack."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "与える・受ける会心ダメージが2倍になる。",
+                "en": "Critical damage dealt and received is doubled."
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "与える・受ける会心ダメージが4倍になる。",
+                "en": "Critical damage dealt and received is quadrupled."
+              }
+            }
+          }
+        }
+      },
+      "shadow-fingertips": {
+        "name": {
+          "lang-store": {
+            "ja": "影の指先",
+            "en": "Shadow Fingertips"
+          }
+        },
+        "flavor": {
+          "lang-store": {
+            "ja": "気づかぬ間に、手元のものだけが消えている。",
+            "en": "In a moment of inattention, a tag quietly vanishes from the equipment."
+          }
+        },
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "text",
+                "value": "攻撃時、相手の装備からタグを1つ抜き取ることがある。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "May remove one tag from the target's equipment when attacking."
+              }
+            ]
+          }
+        },
+        "levels": {
+          "1": {
+            "description": {
+              "lang-store": {
+                "ja": "抜き取ったタグを消す。",
+                "en": "The removed tag disappears."
+              }
+            }
+          },
+          "2": {
+            "description": {
+              "lang-store": {
+                "ja": "抜き取ったタグを自分の装備へ移す。",
+                "en": "Moves the removed tag to the user's equipment."
               }
             }
           }

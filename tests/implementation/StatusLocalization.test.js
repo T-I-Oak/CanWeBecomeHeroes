@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 import GameTextRepository from '../../src/game/GameTextRepository.js';
 import InformationWindowLayer from '../../src/app/InformationWindowLayer.js';
 import InformationWindowManager from '../../src/app/InformationWindowManager.js';
+import EntityRegistry from '../../src/game/EntityRegistry.js';
+import { createDefinitionInformationTarget } from '../../src/app/InformationTarget.js';
 import { STATUS_VISUALS } from '../../src/game/StatusVisualCatalog.js';
 import { TAGS } from '../../src/game/TagCatalog.js';
 import { ENEMY_CATALOG } from '../../src/game/EnemyCatalog.js';
@@ -19,7 +21,10 @@ class Element {
     this.tag = tag;
     this.children = [];
     this.dataset = {};
-    this.style = { setProperty() {} };
+    this.style = {
+      values: {},
+      setProperty(key, value) { this.values[key] = value; },
+    };
     this.classList = { add() {} };
     this.listeners = {};
     this.attributes = {};
@@ -62,8 +67,9 @@ test('status resources render, switch language from cache, and preserve links an
   const repository = await new GameTextRepository().load();
   const root = new Element('div');
   const layer = new InformationWindowLayer(root, null, repository);
-  const manager = new InformationWindowManager({ onChange: entries => layer.render(entries) });
-  layer.manager = manager;
+  const entityRegistry = new EntityRegistry();
+  const manager = new InformationWindowManager({ entityRegistry, onChange: entries => layer.render(entries) });
+  layer.setManager(manager);
   const ids = Object.keys(STATUS_VISUALS);
   assert.equal(ids.length, 9);
   for (const id of ids) {
@@ -78,6 +84,14 @@ test('status resources render, switch language from cache, and preserve links an
     }
     assert.ok(entry.id);
   }
+  const compactButton = root.querySelector('.InformationWindow__Compact');
+  const pinButton = root.querySelector('.InformationWindow__Pin');
+  assert.equal(compactButton.attributes['aria-pressed'], 'false');
+  assert.equal(pinButton.attributes['aria-pressed'], 'false');
+  manager.toggleCompact(manager.entries[0].id);
+  manager.togglePin(manager.entries[0].id);
+  assert.equal(root.querySelector('.InformationWindow__Compact').attributes['aria-pressed'], 'true');
+  assert.equal(root.querySelector('.InformationWindow__Pin').attributes['aria-pressed'], 'true');
   manager.clear({ includePinned: true });
   const parent = manager.open({ type: 'status', data: { status: 'stamina' }, anchor: { x: 20, y: 40 } });
   root.findAll('.InformationWindow__InlineReference')[0].listeners.click({ clientX: 70, clientY: 80 });
@@ -135,19 +149,27 @@ test('status resources render, switch language from cache, and preserve links an
     'shopping-bag', 'hero-license', 'renewal-form',
     ...['head', 'torso', 'feet'].flatMap(part => Array.from({ length: 5 }, (_, i) => `${part}-${i + 1}`)),
   ];
-  const item = { type: 'sword', category: 'weapon', tags: ['valor'], chip: { centerPath: '/assets/items/sword.png', weight: 3 } };
+  const item = { type: 'sword', category: 'weapon', tags: ['valor'], chip: { centerPath: '/assets/items/sword.png', weight: 3 }, value: 2 };
+  item.chip.type = 'item';
+  entityRegistry.register(item);
   for (const lang of ['ja', 'en']) {
     setLanguage(lang);
     await repository.refreshLanguage();
     for (const type of itemTypes) {
       manager.clear({ includePinned: true });
       item.type = type;
-      const parent = manager.open({ type: 'item', data: { item }, anchor: { x: 20, y: 40 } });
+      const parent = manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(item) }, anchor: { x: 20, y: 40 } });
       const detail = repository.getInformationDetail('item', type);
       assert.ok(detail.name);
       assert.ok(detail.flavor);
       assert.equal(root.querySelector('.InformationWindow__Name').textContent, detail.name);
       assert.equal(root.querySelector('.InformationWindow__Description').textContent, detail.flavor);
+      assert.equal(root.querySelector('.InformationWindow__ItemValue').textContent, '2');
+      assert.equal(root.findAll('.InformationWindow__ItemValueIcon').length, 1);
+      assert.equal(root.findAll('.InformationWindow__ItemWeight').length, 1);
+      assert.equal(root.findAll('.InformationWindow__ItemValue').length, 1);
+      assert.equal(root.findAll('.InformationWindow__ItemBadgeList').length, 1);
+      assert.equal(root.findAll('.InformationWindow__ItemBadge').length, 3);
       if (type === 'sword') assert.equal(root.querySelector('.InformationWindow__ItemTargetingNote').textContent, repository.getLabel('weaponTargetingNote'));
       if (lang === 'en') assert.doesNotMatch(root.textContent, /[ぁ-んァ-ヶ一-龠]/);
       const refs = (detail.description ?? []).filter(p => p.type === 'reference');
@@ -159,11 +181,15 @@ test('status resources render, switch language from cache, and preserve links an
         assert.equal(manager.entries[1].data[ref.kind], ref.id);
         assert.equal(manager.entries[1].parentId, parent.id);
       });
+      root.querySelector('.InformationWindow__ItemValue').listeners.click({ clientX: 70, clientY: 80 });
+      assert.equal(manager.entries[1].type, 'term');
+      assert.equal(manager.entries[1].data.term, 'item-value');
+      assert.equal(manager.entries[1].parentId, parent.id);
     }
   }
   manager.clear({ includePinned: true });
   item.type = 'sword';
-  const itemEntry = manager.open({ type: 'item', data: { item }, anchor: { x: 20, y: 40 } });
+  const itemEntry = manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(item) }, anchor: { x: 20, y: 40 } });
   manager.togglePin(itemEntry.id);
   manager.toggleCompact(itemEntry.id);
   manager.setPosition(itemEntry.id, { x: 90, y: 110 });
@@ -178,12 +204,26 @@ test('status resources render, switch language from cache, and preserve links an
   manager.refreshEntries();
   assert.equal(root.querySelector('.InformationWindow__Name').textContent, 'Sword');
   assert.deepEqual(manager.entries, itemState);
+  const staticDefinitions = [
+    createDefinitionInformationTarget('hero', 'Avery'),
+    createDefinitionInformationTarget('item', 'sword'),
+    createDefinitionInformationTarget('enemy', 'phantom-area-head'),
+    createDefinitionInformationTarget('enemy', 'large-area'),
+  ];
+  for (const target of staticDefinitions) {
+    manager.clear({ includePinned: true });
+    manager.open({ type: 'definition', data: { target }, anchor: { x: 20, y: 40 } });
+    assert.equal(root.querySelector('.InformationWindow__Name').textContent, repository.getName(target.kind, target.definitionId));
+    assert.equal(root.querySelector('.InformationWindow__EntityTitle'), null);
+    assert.ok(root.querySelector('.InformationWindow__ChipPreview'));
+  }
   const enemy = {
     definition: ENEMY_CATALOG['large-area'], uniqueSkill: null,
     chip: { type: 'enemy', radius: 64, centerPath: '/assets/enemies/large-area.png' },
     equipment: [], tags: [], hp: 3, maximumHp: 3, maximums: {},
     getStatus: () => 0, getTagCount: () => 0, getCarriedWeight: () => 0,
   };
+  entityRegistry.register(enemy);
   for (const lang of ['ja', 'en']) {
     setLanguage(lang);
     await repository.refreshLanguage();
@@ -192,26 +232,29 @@ test('status resources render, switch language from cache, and preserve links an
       manager.clear({ includePinned: true });
       enemy.definition = definition;
       enemy.uniqueSkill = definition.uniqueSkill;
-      const parent = manager.open({ type: 'entity', data: { entity: enemy }, anchor: { x: 20, y: 40 } });
+      const parent = manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(enemy) }, anchor: { x: 20, y: 40 } });
       assert.equal(root.querySelector('.InformationWindow__Name').textContent, repository.getName('enemy', definition.id));
+      assert.ok(root.querySelector('.InformationWindow__ChipPreview'));
+      assert.equal(root.findAll('.InformationWindow__EntityTagList').length, 1);
+      assert.equal(root.findAll('.InformationWindow__ItemTagList').length, 0);
+      assert.equal(root.findAll('.InformationWindow__ItemBadge').length, 0);
       if (lang === 'en') assert.doesNotMatch(root.textContent, /[ぁ-んァ-ヶ一-龠]/);
       if (definition.id.endsWith('-area') && definition.size !== 'small') {
-        root.findAll('.InformationWindow__InlineReference')[0].listeners.click({ clientX: 70, clientY: 80 });
-        assert.equal(manager.entries[1].data.enemyId, 'phantom-area-head');
-        assert.equal(manager.entries[1].data.source, enemy);
-        assert.equal(manager.entries[1].parentId, parent.id);
+        assert.match(root.textContent, /龍の首|Dragon Head/);
       }
     }
     for (const skill of Object.values(UNIQUE_SKILL_CATALOG)) {
       for (const level of [1, 2]) {
         manager.clear({ includePinned: true });
-        manager.open({ type: 'unique-skill', data: { uniqueSkill: { id: skill.id, level }, source: enemy }, anchor: { x: 20, y: 40 } });
+        manager.open({ type: 'definition', data: { target: createDefinitionInformationTarget('unique-skill', skill.id) }, anchor: { x: 20, y: 40 } });
         assert.equal(root.querySelector('.InformationWindow__Name').textContent, repository.getName('unique-skill', skill.id));
         assert.equal(root.findAll('.InformationWindow__UniqueSkillLevelEffect').length, 2);
         if (lang === 'en') assert.doesNotMatch(root.textContent, /[ぁ-んァ-ヶ一-龠]/);
         if (skill.id === 'area-head-rush') {
+          assert.match(root.textContent, /龍の首|Dragon Head/);
           root.findAll('.InformationWindow__InlineReference')[0].listeners.click({ clientX: 70, clientY: 80 });
-          assert.equal(manager.entries[1].data.enemyId, 'phantom-area-head');
+          assert.equal(manager.entries[1].type, 'definition');
+          assert.deepEqual(manager.entries[1].data.target, createDefinitionInformationTarget('enemy', 'phantom-area-head'));
         }
       }
     }
@@ -229,13 +272,14 @@ test('status resources render, switch language from cache, and preserve links an
   assert.equal(slot.querySelector('.StageSelection__EnemyName').textContent, 'ゴブリン');
   assert.equal(battle.getEntityLabel(enemy), '【ゴブリン】');
   const heroes = HERO_PROFESSION_IDS.map(profession => new HeroFactory().create({ profession, x: 0, y: 0, stamina: 3 }));
+  heroes.forEach((hero) => entityRegistry.register(hero));
   assert.equal(heroes.length, 8);
   for (const lang of ['ja', 'en']) {
     setLanguage(lang);
     await repository.refreshLanguage();
     for (const hero of heroes) {
       manager.clear({ includePinned: true });
-      const entry = manager.open({ type: 'entity', data: { entity: hero }, anchor: { x: 20, y: 40 } });
+      const entry = manager.open({ type: 'instance', data: { target: manager.createInstanceTarget(hero) }, anchor: { x: 20, y: 40 } });
       const label = repository.getHeroLabel(hero);
       assert.equal(root.querySelector('.InformationWindow__Name').textContent, `【${label}】`);
       assert.equal(battle.getEntityLabel(hero), `【${label}】`);
@@ -266,12 +310,14 @@ test('status resources render, switch language from cache, and preserve links an
         assert.equal(root.querySelector('.InformationWindow__Name').textContent, detail.name);
         assert.equal(root.querySelector('.InformationWindow__Description').textContent, detail.flavor);
         if (lang === 'en') assert.doesNotMatch(root.textContent, /[ぁ-んァ-ヶ一-龠]/);
-        const refs = detail.description.filter(p => p.type === 'reference');
+        const refs = detail.description.filter(p => p.type === 'reference' || p.type === 'term');
         const buttons = root.findAll('.InformationWindow__InlineReference');
         assert.equal(buttons.length, refs.length);
         refs.forEach((ref, index) => {
           buttons[index].listeners.click({ clientX: 70, clientY: 80 });
-          const target = manager.entries.find(e => e.type === ref.kind && e.data[ref.kind] === ref.id);
+          const target = ref.type === 'term'
+            ? manager.entries.find(e => e.type === 'term' && e.data.term === ref.id)
+            : manager.entries.find(e => e.type === ref.kind && e.data[ref.kind] === ref.id);
           assert.ok(target);
           assert.equal(target.parentId, parent.id);
         });

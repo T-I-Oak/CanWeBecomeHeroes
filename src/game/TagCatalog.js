@@ -1,21 +1,21 @@
 export const TAG_GLYPH_SCALE = 0.72;
 
 export const TAGS = Object.freeze({
-  valor: { group: 'status', stat: 'power', weight: 3, price: 2 },
-  arcane: { group: 'status', stat: 'magic', weight: 2, price: 3 },
-  dexterity: { group: 'status', stat: 'speed', weight: 1, price: 2 },
-  reputation: { group: 'status', stat: 'negotiation', weight: 2, price: 3 },
-  blessing: { group: 'status', stat: 'luck', weight: 1, price: 3 },
-  iron: { group: 'status', stat: 'power', weight: 5, price: 2 },
-  cloth: { group: 'status', stat: 'magic', weight: 1, price: 1 },
-  feather: { group: 'status', stat: 'speed', weight: 1, price: 2 },
-  gem: { group: 'status', stat: 'negotiation', weight: 5, price: 5 },
-  fortune: { group: 'status', stat: 'luck', weight: 1, price: 3 },
-  fire: { group: 'attribute', weight: 2, price: 2 },
-  water: { group: 'attribute', weight: 2, price: 2 },
-  lightning: { group: 'attribute', weight: 2, price: 3 },
-  area: { group: 'attribute', weight: 3, price: 3 },
-  vitality: { group: 'attribute', weight: 1, price: 3 },
+  valor: { group: 'status', stat: 'power', weight: 3, value: 2 },
+  arcane: { group: 'status', stat: 'magic', weight: 2, value: 3 },
+  dexterity: { group: 'status', stat: 'speed', weight: 1, value: 2 },
+  reputation: { group: 'status', stat: 'negotiation', weight: 2, value: 3 },
+  blessing: { group: 'status', stat: 'luck', weight: 1, value: 3 },
+  iron: { group: 'status', stat: 'power', weight: 5, value: 2 },
+  cloth: { group: 'status', stat: 'magic', weight: 1, value: 1 },
+  feather: { group: 'status', stat: 'speed', weight: 1, value: 2 },
+  gem: { group: 'status', stat: 'negotiation', weight: 5, value: 5 },
+  fortune: { group: 'status', stat: 'luck', weight: 1, value: 3 },
+  fire: { group: 'attribute', weight: 2, value: 2 },
+  water: { group: 'attribute', weight: 2, value: 2 },
+  lightning: { group: 'attribute', weight: 2, value: 3 },
+  area: { group: 'attribute', weight: 3, value: 3 },
+  vitality: { group: 'attribute', weight: 1, value: 3 },
 });
 
 export const STATUS_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck']);
@@ -56,9 +56,9 @@ export function getTagWeight(tags) {
   return tags.reduce((total, tag) => total + TAGS[tag].weight, 0);
 }
 
-export function getTagPrice(tags) {
+export function getTagValue(tags) {
   if (tags.length === 0) return 1;
-  return tags.reduce((total, tag) => total + TAGS[tag].price, 0) * tags.length;
+  return tags.reduce((total, tag) => total + TAGS[tag].value, 0) * tags.length;
 }
 
 export function getTagPaths(tags) {

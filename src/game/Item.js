@@ -1,10 +1,13 @@
+import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagValue, getTagWeight } from './TagCatalog.js';
+
 export default class Item {
-  constructor({ type, category, tags, chip, equipmentAssets }) {
+  constructor({ type, category, tags, chip, equipmentAssets, value }) {
     this.type = type;
     this.category = category;
     this.tags = tags;
     this.chip = chip;
     this.equipmentAssets = equipmentAssets;
+    this.value = value;
     this.isStored = false;
     this.storedItems = [];
     this.storageCapacity = type === 'shopping-bag' ? 3 : 0;
@@ -33,6 +36,22 @@ export default class Item {
   addTag(tag) {
     if (this.tags.length >= 3) return false;
     this.tags.push(tag);
+    this.refreshTagDerivedValues();
     return true;
+  }
+
+  removeTagAt(index) {
+    if (!Number.isInteger(index) || index < 0 || index >= this.tags.length) return null;
+    const [tag] = this.tags.splice(index, 1);
+    this.refreshTagDerivedValues();
+    return tag;
+  }
+
+  refreshTagDerivedValues() {
+    this.chip.weight = getTagWeight(this.tags);
+    this.chip.tagPaths = getTagPaths(this.tags);
+    this.chip.tagBaseColors = getTagBaseColors(this.tags);
+    this.chip.tagGlyphScales = getTagGlyphScales(this.tags);
+    this.value = getTagValue(this.tags);
   }
 }

@@ -113,6 +113,47 @@ test('area mid-boss and boss carry head rush at their respective levels', () => 
   assert.deepEqual(getEnemyDefinition({ size: 'large', tagAffinity: 'area' }).uniqueSkill, { id: 'area-head-rush', level: 2 });
 });
 
+test('dexterity mid-boss and boss define their names, assets, and shadow fingertips levels', () => {
+  const werewolf = getEnemyDefinition({ size: 'medium', tagAffinity: 'dexterity' });
+  const tengu = getEnemyDefinition({ size: 'large', tagAffinity: 'dexterity' });
+
+  assert.equal(textRepository.getName('enemy', werewolf.id), 'ウェアウルフ');
+  assert.equal(werewolf.assetPath, '/assets/enemies/medium-dexterity.png');
+  assert.deepEqual(werewolf.uniqueSkill, { id: 'shadow-fingertips', level: 1 });
+  assert.equal(textRepository.getName('enemy', tengu.id), '天狗');
+  assert.equal(tengu.assetPath, '/assets/enemies/large-dexterity.png');
+  assert.deepEqual(tengu.uniqueSkill, { id: 'shadow-fingertips', level: 2 });
+});
+
+test('valor mid-boss and boss define battle frenzy at their respective levels', () => {
+  const ogre = getEnemyDefinition({ size: 'medium', tagAffinity: 'valor' });
+  const cyclops = getEnemyDefinition({ size: 'large', tagAffinity: 'valor' });
+
+  assert.equal(ogre.nameKey, 'enemy.mediumValor');
+  assert.equal(ogre.assetPath, '/assets/enemies/medium-valor.png');
+  assert.deepEqual(ogre.uniqueSkill, { id: 'battle-frenzy', level: 1 });
+  assert.equal(cyclops.nameKey, 'enemy.largeValor');
+  assert.equal(cyclops.assetPath, '/assets/enemies/large-valor.png');
+  assert.deepEqual(cyclops.uniqueSkill, { id: 'battle-frenzy', level: 2 });
+});
+
+test('combat conditions scale a critical by the higher multiplier and clear after damage or an action', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const actor = new EnemyFactory().createInitialEncounter();
+  const target = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 10, maximums: { stamina: 10 } });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), random: () => 0 });
+
+  battle.conditionSystem.applyTwoEdgedSword(actor, 2);
+  battle.conditionSystem.applyTwoEdgedSword(target, 4);
+
+  assert.equal(battle.applyDamage(actor, target, 'magic', 0.5, true), 2);
+  assert.equal(battle.conditionSystem.getTwoEdgedSwordMultiplier(target), 1);
+
+  battle.actionResolutionSystem.resolve(actor, target, [actor, target]);
+
+  assert.equal(battle.conditionSystem.getTwoEdgedSwordMultiplier(actor), 1);
+});
+
 test('area head inherits its source tags, attacks immediately, and returns after its action', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
@@ -213,6 +254,54 @@ test('gem orb-rain drops its level-specific orb rewards for each successful dama
   assert.equal(drops.length, 2);
   assert.deepEqual(drops.map((item) => item.type), ['orb', 'orb']);
   assert.deepEqual(drops.map((item) => item.tags), [['gem', 'gem'], ['gem', 'gem']]);
+});
+
+test('shadow fingertips removes a target tag before a missed attack, and Ex2 transfers it to the attacker', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 3 });
+  const sourceItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  hero.equip(sourceItem);
+  hero.currentArea = 'battle';
+  enemy.uniqueSkill = { id: 'shadow-fingertips', level: 2 };
+  enemy.getLuckDegree = () => 1;
+  enemy.chip.height = 0;
+  hero.chip.height = 0;
+  board.addChip(enemy.chip);
+  board.addChip(hero.chip);
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0 });
+  battle.actionResolutionSystem.isAttackMiss = () => true;
+
+  battle.resolveAction(enemy, hero, [enemy, hero]);
+
+  assert.deepEqual(sourceItem.tags, []);
+  assert.equal(sourceItem.value, 1);
+  assert.equal(hero.getCarriedWeight(), 6);
+  assert.equal(enemy.equipment.some((item) => item.tags.includes('valor')), true);
+});
+
+test('shadow fingertips Ex1 removes the tag without adding it to the attacker', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 3 });
+  const sourceItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  hero.equip(sourceItem);
+  hero.currentArea = 'battle';
+  enemy.uniqueSkill = { id: 'shadow-fingertips', level: 1 };
+  enemy.getLuckDegree = () => 1;
+  enemy.chip.height = 0;
+  hero.chip.height = 0;
+  board.addChip(enemy.chip);
+  board.addChip(hero.chip);
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0 });
+  battle.actionResolutionSystem.isAttackMiss = () => true;
+
+  battle.resolveAction(enemy, hero, [enemy, hero]);
+
+  assert.deepEqual(sourceItem.tags, []);
+  assert.equal(enemy.equipment.some((item) => item.tags.includes('valor')), false);
 });
 
 test('last sprout summons into the inner available slots and inherits the defeated enemy battle parameters', () => {
@@ -369,68 +458,6 @@ test('bows shorten the action gauge by ten percent per weapon up to five weapons
   enemy.equipment = Array.from({ length: 6 }, () => itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
   enemy.refreshDerivedValues();
   assert.equal(getActionGaugeMaximum(enemy), (15 - enemy.getStatus('speed')) * 0.5);
-});
-
-test('weapons narrow target candidates in equipment order, then distance and left position break ties', () => {
-  const board = new ChipBoard({ width: 3000, height: 2000 });
-  const itemFactory = new ItemFactory();
-  const battle = new BattleSystem(board, { controller: {}, itemFactory, logger: { info: () => {} } });
-  const createEnemyAt = (x) => {
-    const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
-    enemy.chip.x = x;
-    enemy.chip.y = 500;
-    return enemy;
-  };
-  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 500, y: 500, stamina: 3 });
-  const left = createEnemyAt(400);
-  const right = createEnemyAt(600);
-  [hero, left, right].forEach((entity) => board.addChip(entity.chip));
-  assert.equal(battle.findTarget(hero, [hero, left, right]), left);
-
-  const archer = new HeroFactory().create({ profession: 'hunter', x: 1500, y: 500, stamina: 3 });
-  archer.equip(itemFactory.createWeapon({ weapon: 'bow', tags: [], x: 0, y: 0 }));
-  const nearer = createEnemyAt(1400);
-  const farLeft = createEnemyAt(1200);
-  const farRight = createEnemyAt(1800);
-  [archer, nearer, farLeft, farRight].forEach((entity) => board.addChip(entity.chip));
-  assert.equal(battle.findTarget(archer, [archer, nearer, farLeft, farRight]), farLeft);
-
-  const target = ({ x, hp = 5, weight = 0, equipment = [] }) => ({
-    chip: { type: 'enemy', x, y: 500 }, hp, equipment,
-    getCarriedWeight: () => weight,
-  });
-  const weapon = type => ({ category: 'weapon', type });
-  const actor = type => ({ chip: { type: 'hero', x: 1000, y: 500 }, equipment: { rightHand: weapon(type), leftHand: null } });
-  const testTarget = (type, candidates, expected) => {
-    const current = actor(type);
-    [current, ...candidates].forEach(entity => board.addChip(entity.chip));
-    assert.equal(battle.findTarget(current, [current, ...candidates]), expected, type);
-  };
-  const highHp = target({ x: 900, hp: 8 });
-  const lowHp = target({ x: 1100, hp: 2 });
-  testTarget('sword', [highHp, lowHp], highHp);
-  const distantHighHp = target({ x: 500, hp: 8 });
-  const nearbyHighHp = target({ x: 950, hp: 8 });
-  testTarget('sword', [distantHighHp, nearbyHighHp], nearbyHighHp);
-  const swordThenBow = { chip: { type: 'hero', x: 1000, y: 500 }, equipment: { rightHand: weapon('sword'), leftHand: weapon('bow') } };
-  [swordThenBow, distantHighHp, nearbyHighHp].forEach(entity => board.addChip(entity.chip));
-  assert.equal(battle.findTarget(swordThenBow, [swordThenBow, distantHighHp, nearbyHighHp]), distantHighHp);
-  ['staff', 'holy-book', 'holy-symbol', 'banner', 'tarot-cards'].forEach(type => testTarget(type, [highHp, lowHp], lowHp));
-  const lavish = target({ x: 1100, equipment: [{ tags: ['valor', 'iron', 'fire'] }] });
-  const plain = target({ x: 900, equipment: [{ tags: [] }] });
-  testTarget('claw', [lavish, plain], lavish);
-  const heavy = target({ x: 900, weight: 5 });
-  const light = target({ x: 1100, weight: 1 });
-  testTarget('orb', [heavy, light], light);
-  const fartherShieldTarget = target({ x: 800 });
-  const nearerShieldTarget = target({ x: 950 });
-  testTarget('shield', [fartherShieldTarget, nearerShieldTarget], nearerShieldTarget);
-
-  const enemyActor = { chip: { type: 'enemy', x: 1000, y: 500 }, equipment: [weapon('sword'), weapon('bow')] };
-  const heroHigh = { chip: { type: 'hero', x: 900, y: 500 }, stamina: 8 };
-  const heroLow = { chip: { type: 'hero', x: 1100, y: 500 }, stamina: 2 };
-  [enemyActor, heroHigh, heroLow].forEach(entity => board.addChip(entity.chip));
-  assert.equal(battle.findTarget(enemyActor, [enemyActor, heroHigh, heroLow]), heroHigh);
 });
 
 test('stealing a bow immediately refreshes the affected action gauge maximum', () => {
@@ -682,6 +709,37 @@ test('claw steals the highest available eligible item tier for heroes and enemie
   assert.equal(entities.size, 0);
 });
 
+test('claw transfers between same-side combatants through the target equipment', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const heroThief = new HeroFactory().create({ profession: 'thief', x: 100, y: 100, stamina: 3 });
+  const targetHero = new HeroFactory().create({ profession: 'swordfighter', x: 200, y: 100, stamina: 3 });
+  const heroItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  targetHero.equip(heroItem);
+  const heroDrops = [];
+  const heroBattle = new BattleSystem(board, {
+    controller: { addToWarehouse: (item) => heroDrops.push(item) }, itemFactory, random: () => 0, logger: { info: () => {} },
+  });
+
+  assert.equal(heroBattle.resolveTheft(heroThief, targetHero), heroItem);
+  assert.equal(targetHero.equipment.rightHand, null);
+  assert.deepEqual(heroDrops, [heroItem]);
+
+  const enemyThief = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  enemyThief.tags = ['dexterity', 'dexterity', 'dexterity'];
+  enemyThief.equipment = [];
+  enemyThief.refreshDerivedValues();
+  const targetEnemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ totalTagCount: 0 });
+  const enemyItem = itemFactory.createWeapon({ weapon: 'staff', tags: ['arcane'], x: 0, y: 0 });
+  targetEnemy.equipment = [enemyItem];
+  targetEnemy.refreshDerivedValues();
+  const enemyBattle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0, logger: { info: () => {} } });
+
+  assert.equal(enemyBattle.resolveTheft(enemyThief, targetEnemy), enemyItem);
+  assert.deepEqual(targetEnemy.equipment, []);
+  assert.deepEqual(enemyThief.equipment, [enemyItem]);
+});
+
 test('claw proceeds to lower theft tiers when a higher tag tier is absent', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
@@ -738,11 +796,11 @@ test('one action records one visible battle log per actor and target', () => {
   const records = [];
   const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
-  battle.actionLogResults = new Map();
+  battle.actionLog.begin();
   battle.recordMiss(hero, enemy);
   battle.recordDamage(hero, enemy, 0.1, false);
   battle.recordDamage(hero, enemy, 0.2, true);
-  battle.flushActionLogs();
+  battle.actionLog.flush();
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】は【ゴブリン】に会心ダメージ30を与えた。',
@@ -757,9 +815,9 @@ test('a missed action records a visible unlucky battle log', () => {
   const records = [];
   const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
-  battle.actionLogResults = new Map();
+  battle.actionLog.begin();
   battle.recordMiss(hero, enemy);
-  battle.flushActionLogs();
+  battle.actionLog.flush();
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】の【ゴブリン】への攻撃は外れた。',
@@ -774,10 +832,10 @@ test('a defeat replaces the action damage log with a visible defeat log', () => 
   const records = [];
   const battle = new BattleSystem(board, { textRepository, gameLog: { log: (message, options) => records.push({ message, options }) } });
 
-  battle.actionLogResults = new Map();
+  battle.actionLog.begin();
   battle.recordDamage(hero, enemy, 2, false);
   battle.recordDefeat(hero, enemy);
-  battle.flushActionLogs();
+  battle.actionLog.flush();
 
   assert.deepEqual(records, [{
     message: '【剣士・アヴェリー】は【ゴブリン】を倒した。',

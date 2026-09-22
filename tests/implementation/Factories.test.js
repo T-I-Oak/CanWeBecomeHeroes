@@ -35,6 +35,16 @@ test('hero aggregates equipped item tags into status and chip weight', () => {
   assert.equal(hero.chip.weight, 9);
 });
 
+test('character weight includes intrinsic tags and every equipped item weight', () => {
+  const hero = new HeroFactory().create({ profession: 'mage', x: 100, y: 200 });
+  const itemFactory = new ItemFactory();
+  hero.equip(itemFactory.createWeapon({ weapon: 'sword', tags: ['valor', 'fire'], x: 100, y: 200 }));
+  hero.equip(itemFactory.createWeapon({ weapon: 'staff', tags: [], x: 100, y: 200 }));
+
+  assert.equal(hero.getCarriedWeight(), 10);
+  assert.equal(hero.chip.weight, 10);
+});
+
 test('hero derives luck degree from its current stamina and blessing or fortune skill level', () => {
   const chip = { weight: 0 };
   const noLuckHero = new Hero({ profession: 'test', name: {}, tags: [], chip, maximums: { luck: 7 } });
@@ -117,10 +127,8 @@ test('enemy equipment independently rolls each item three-tag candidate set', ()
   assert.ok(new Set(bodyCandidates).size > 1);
 });
 
-test('item factory calculates tag weight, price, and equipment assets', () => {
+test('item factory calculates tag weight, value, and equipment assets', () => {
   const item = new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor', 'fire'], x: 100, y: 200 });
-  assert.equal(item.chip.weight, 5);
-  assert.equal(item.price, 8);
   assert.equal(item.fixedStatusTag, 'valor');
   assert.equal(item.equipmentAssets.head, '/assets/items/head-1.png');
   assert.deepEqual(item.chip.tagBaseColors, ['#8d5b3d', '#e1e8f0']);
@@ -134,10 +142,10 @@ test('body equipment variation follows the first sorted tag in the shared tag or
   assert.equal(factory.createBodyItem({ part: 'head', tags: ['water', 'cloth'], x: 0, y: 0 }).type, 'head-2');
 });
 
-test('tagless items have weight one, price one, and a selectable base asset', () => {
+test('tagless items have weight one, value one, and a selectable base asset', () => {
   const item = new ItemFactory().createWeapon({ weapon: 'staff', tags: [], x: 100, y: 200 });
   assert.equal(item.chip.weight, 1);
-  assert.equal(item.price, 1);
+  assert.equal(item.value, 1);
   assert.equal(item.equipmentAssets.feet, '/assets/items/feet-1.png');
 });
 
@@ -165,7 +173,7 @@ test('destination items have no tags, weight one, and their destination asset', 
   assert.equal(item.category, 'destination');
   assert.deepEqual(item.tags, []);
   assert.equal(item.chip.weight, 1);
-  assert.equal(item.price, 1);
+  assert.equal(item.value, 1);
   assert.equal(item.chip.centerPath, '/assets/items/hand-shopping-bag.png');
   assert.equal(item.destination, 'shop');
   assert.equal(item.chip.fillColor, AREA_THEME.shop.chipFill);
