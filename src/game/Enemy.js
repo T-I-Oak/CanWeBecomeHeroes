@@ -1,6 +1,7 @@
 import { getEffectiveTagCount, getStatusValue, getTagBaseColors, getTagGlyphScales, getTagPaths } from './TagCatalog.js';
 import { getCarriedWeight } from './CarriedWeight.js';
 import { getLuckDegree } from './Luck.js';
+import { fromDurabilityUnits, toDurabilityUnits } from './Durability.js';
 
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
 
@@ -11,7 +12,8 @@ export default class Enemy {
     this.tags = [...tags];
     this.chip = chip;
     this.maximumHp = maximumHp;
-    this.hp = maximumHp;
+    this.maximumHpUnits = toDurabilityUnits(maximumHp);
+    this.hpUnits = this.maximumHpUnits;
     this.contributionPoints = contributionPoints;
     this.rank = rank;
     this.slotPosition = slotPosition;
@@ -29,6 +31,12 @@ export default class Enemy {
     this.physicalDamageReduction = 0;
     this.luckBonus = 0;
     this.refreshDerivedValues();
+  }
+
+  get hp() { return fromDurabilityUnits(this.hpUnits); }
+
+  set hp(value) {
+    this.hpUnits = toDurabilityUnits(value);
   }
 
   getTags() {

@@ -2,6 +2,7 @@ import { getEffectiveTagCount, getStatusValue } from './TagCatalog.js';
 import { getCarriedWeight } from './CarriedWeight.js';
 import { getHeroStepDistance } from './MovementSettings.js';
 import { getLuckDegree } from './Luck.js';
+import { fromDurabilityUnits, toDurabilityUnits } from './Durability.js';
 
 export default class Hero {
   constructor({ profession, heroId = profession, tags, chip, stamina = 0, maximums = {} }) {
@@ -9,8 +10,9 @@ export default class Hero {
     this.heroId = heroId;
     this.tags = tags;
     this.chip = chip;
-    this.stamina = stamina;
     this.maximums = { power: 3, magic: 3, speed: 3, negotiation: 3, luck: 3, stamina: 3, ...maximums };
+    this.staminaUnits = toDurabilityUnits(stamina);
+    this.staminaRecoveryUnitRemainder = 0;
     this.equipment = { head: null, torso: null, rightHand: null, leftHand: null, feet: null };
     this.preparationReturn = chip.bounds && Object.freeze({ x: chip.x, y: chip.y, bounds: { ...chip.bounds } });
     this.targetSlotId = null;
@@ -23,6 +25,22 @@ export default class Hero {
     this.luckBonus = 0;
     this.chip.attributeValues = this.attributes;
     this.chip.physicalDamageReduction = this.physicalDamageReduction;
+  }
+
+  get stamina() { return fromDurabilityUnits(this.staminaUnits); }
+
+  get maximumStaminaUnits() { return toDurabilityUnits(this.maximums.stamina); }
+
+  set stamina(value) {
+    this.staminaUnits = toDurabilityUnits(value);
+  }
+
+  recoverStamina(value) {
+    const pendingUnits = value * 100 + this.staminaRecoveryUnitRemainder;
+    const recoveredUnits = Math.floor(pendingUnits);
+    this.staminaRecoveryUnitRemainder = pendingUnits - recoveredUnits;
+    this.staminaUnits = Math.min(this.maximumStaminaUnits, this.staminaUnits + recoveredUnits);
+    if (this.staminaUnits === this.maximumStaminaUnits) this.staminaRecoveryUnitRemainder = 0;
   }
 
   equip(item) {
