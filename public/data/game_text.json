@@ -4050,6 +4050,28 @@
           "en": [{ "type": "text", "value": "Greatly slows every opponent carrying lightning." }]
         } }
       },
+      "medium-reputation": {
+        "name": { "lang-store": { "ja": "ホブゴブリン", "en": "Hobgoblin" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "巧みな言葉とずる賢い駆け引きで、相手の心を揺さぶるゴブリンの首領。" }],
+          "en": [{ "type": "text", "value": "A goblin chieftain who unsettles opponents with clever words and sly bargains." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "相手を惑乱させ、仲間へ刃を向けさせることがある。" }],
+          "en": [{ "type": "text", "value": "May bewilder opponents and turn their weapons toward allies." }]
+        } }
+      },
+      "large-reputation": {
+        "name": { "lang-store": { "ja": "スフィンクス", "en": "Sphinx" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "答えのない問いをささやき、戦う者の判断を惑わせる砂漠の賢者。" }],
+          "en": [{ "type": "text", "value": "A desert sage whose unanswerable riddles cloud a warrior's judgment." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "相手を惑乱させ、仲間へ大きく刃を向けさせることがある。" }],
+          "en": [{ "type": "text", "value": "May strongly bewilder opponents and turn their weapons toward allies." }]
+        } }
+      },
       "small-vitality": {
         "name": {
           "lang-store": {
@@ -5058,6 +5080,21 @@
         "levels": {
           "1": { "description": { "lang-store": { "ja": "相手全員から少し力を奪う。", "en": "Steals a little power from every opponent." } } },
           "2": { "description": { "lang-store": { "ja": "相手全員からかなり力を奪う。", "en": "Steals much power from every opponent." } } }
+        }
+      },
+      "reputation-bewildering-words": {
+        "name": { "lang-store": { "ja": "惑いの言葉", "en": "Bewildering Words" } },
+        "flavor": { "lang-store": {
+          "ja": "耳に残るささやきが、刃を向けるべき相手をすり替える。",
+          "en": "A lingering whisper switches the foe who should face the blade."
+        } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "攻撃時、相手を惑乱状態にすることがある。" }],
+          "en": [{ "type": "text", "value": "When attacking, may bewilder the opponent." }]
+        } },
+        "levels": {
+          "1": { "description": { "lang-store": { "ja": "まれに相手を惑乱状態にすることがある。", "en": "Rarely bewilders the opponent." } } },
+          "2": { "description": { "lang-store": { "ja": "ときどき相手を惑乱状態にすることがある。", "en": "Sometimes bewilders the opponent." } } }
         }
       },
       "shadow-fingertips": {

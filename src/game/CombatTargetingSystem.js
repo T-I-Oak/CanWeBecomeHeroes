@@ -15,9 +15,10 @@ const RANGE_COEFFICIENTS = Object.freeze([
 const LOWEST_DURABILITY_WEAPONS = Object.freeze(['staff', 'holy-symbol', 'holy-book', 'banner', 'tarot-cards']);
 
 export default class CombatTargetingSystem {
-  constructor(board, { isTargetable = () => true } = {}) {
+  constructor(board, { isTargetable = () => true, isBewildered = () => false } = {}) {
     this.board = board;
     this.isTargetable = isTargetable;
+    this.isBewildered = isBewildered;
   }
 
   findTarget(actor, participants) {
@@ -46,7 +47,9 @@ export default class CombatTargetingSystem {
   }
 
   getOpponents(actor, participants) {
-    return participants.filter((candidate) => isHeroCombatant(candidate) !== isHeroCombatant(actor)
+    const targetsAllies = this.isBewildered(actor);
+    return participants.filter((candidate) => candidate !== actor
+      && isHeroCombatant(candidate) === (targetsAllies ? isHeroCombatant(actor) : !isHeroCombatant(actor))
       && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate) && this.isTargetable(candidate));
   }
 

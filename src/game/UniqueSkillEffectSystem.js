@@ -28,6 +28,7 @@ export default class UniqueSkillEffectSystem {
       case 'water-deep-sea-surge': return this.resolveWaterDeepSeaSurge(entity, skill);
       case 'fire-retaliation-ember': return this.resolveFireRetaliationEmber(entity, skill, context);
       case 'lightning-thunder-drain': return this.resolveLightningThunderDrain(skill, context);
+      case 'reputation-bewildering-words': return this.resolveReputationBewilderingWords(entity, skill, context);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -120,6 +121,11 @@ export default class UniqueSkillEffectSystem {
     const lightningValue = damageEvent?.actor?.attributes?.lightning ?? 0;
     if (!isDirectAttack || lightningValue <= 0 || damageEvent.damage <= 0) return Object.freeze({ skill, actionGaugeAbsorption: null });
     return Object.freeze({ skill, actionGaugeAbsorption: Object.freeze({ currentGaugeStealRate: skill.levelDetail.currentGaugeStealRate }) });
+  }
+
+  resolveReputationBewilderingWords(actor, skill, { target = null } = {}) {
+    if (!target || this.random() >= actor.getLuckDegree() * skill.levelDetail.luckRateMultiplier) return Object.freeze({ skill, bewildermentTarget: null });
+    return Object.freeze({ skill, bewildermentTarget: target });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {
