@@ -1,5 +1,7 @@
+import { CHIP_CENTER_ART_SCALE, getCenterImagePlacement } from './ChipArtLayout.js';
+
 const DEFAULT_TAG_SLOT_COUNT = 8;
-export const CENTER_IMAGE_SCALE = 0.85;
+export const CENTER_IMAGE_SCALE = CHIP_CENTER_ART_SCALE;
 const CHIP_RIM_WIDTH_RATIO = 0.065;
 
 export function getContainedImageSize(imageWidth, imageHeight, boxSize) {
@@ -38,10 +40,7 @@ export function createTagAngles(count, tagSlotCount) {
   ));
 }
 
-export function getCenterImagePlacement(radius) {
-  const size = radius * 2 * CENTER_IMAGE_SCALE;
-  return { x: 0, y: radius - size / 2, size };
-}
+export { getCenterImagePlacement } from './ChipArtLayout.js';
 
 export function getPhysicalShieldPresentation(reduction) {
   const strength = Math.max(0, Math.min(1, reduction / 0.7));
