@@ -17,7 +17,7 @@ import ShopSystem, { getGemAttempts, getSaleTagCount, SHOP_PURCHASE_DELIVERY_TIC
 import EntityRegistry from '../../src/game/EntityRegistry.js';
 import GameClock from '../../src/game/GameClock.js';
 import TrainingSystem, { TRAINING_INTERVAL_TICKS } from '../../src/game/TrainingSystem.js';
-import { getHeroStepDistance } from '../../src/game/MovementSettings.js';
+import { getCharacterStepDistance } from '../../src/game/MovementSettings.js';
 import { getWarehouseItemCapacity } from '../../src/game/WarehouseCapacity.js';
 
 function createHeroSlotCandidate(id) {
@@ -297,8 +297,8 @@ test('Heroはスロット到着時に予約を占有へ移し、移動範囲を�
 });
 
 test('Heroの1回の移動量は所持重量の二乗に応じて小さくなる', () => {
-  assert.equal(getHeroStepDistance(0), 96);
-  assert.equal(getHeroStepDistance(25), 48);
-  assert.equal(getHeroStepDistance(75), 9.6);
-  assert.ok(Math.abs(getHeroStepDistance(100) - 5.647058823529412) < 0.000000001);
+  assert.equal(getCharacterStepDistance(0), 96);
+  assert.equal(getCharacterStepDistance(25), 48);
+  assert.equal(getCharacterStepDistance(75), 9.6);
+  assert.ok(Math.abs(getCharacterStepDistance(100) - 5.647058823529412) < 0.000000001);
 });

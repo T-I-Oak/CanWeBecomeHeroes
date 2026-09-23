@@ -2,6 +2,7 @@ import { getEffectiveTagCount, getStatusValue, getTagBaseColors, getTagGlyphScal
 import { getCarriedWeight } from './CarriedWeight.js';
 import { getLuckDegree } from './Luck.js';
 import { fromDurabilityUnits, toDurabilityUnits } from './Durability.js';
+import { getCharacterStepDistance } from './MovementSettings.js';
 
 const DEFAULT_MAXIMUMS = Object.freeze({ power: 7, magic: 7, speed: 7, negotiation: 7, luck: 7 });
 
@@ -68,6 +69,10 @@ export default class Enemy {
 
   getCarriedWeight() {
     return getCarriedWeight(this.tags, this.equipment);
+  }
+
+  getStepDistance() {
+    return getCharacterStepDistance(this.getCarriedWeight());
   }
 
   clearBattleState() {

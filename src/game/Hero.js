@@ -1,6 +1,6 @@
 import { getEffectiveTagCount, getStatusValue } from './TagCatalog.js';
 import { getCarriedWeight } from './CarriedWeight.js';
-import { getHeroStepDistance } from './MovementSettings.js';
+import { getCharacterStepDistance } from './MovementSettings.js';
 import { getLuckDegree } from './Luck.js';
 import { fromDurabilityUnits, toDurabilityUnits } from './Durability.js';
 
@@ -95,7 +95,7 @@ export default class Hero {
   }
 
   getStepDistance() {
-    return getHeroStepDistance(this.getCarriedWeight());
+    return getCharacterStepDistance(this.getCarriedWeight());
   }
 
   clearBattleState() {
