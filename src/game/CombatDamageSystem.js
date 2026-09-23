@@ -16,7 +16,7 @@ export default class CombatDamageSystem {
     const afterProtection = Math.max(0, criticalDamage - absorbed * 0.5);
     const reflected = afterProtection * target.getTagSkillLevel('iron') * 0.2;
     const dealt = Math.max(0, afterProtection - reflected);
-    this.applyDamage(actor, target, type, dealt, critical, { criticalDamageResolved: true });
+    this.applyDamage(actor, target, type, dealt, critical, { criticalDamageResolved: true, category: 'physical' });
     if (reflected >= MINIMUM_DAMAGE) {
       this.applyDamage(target, actor, 'reflection', reflected);
       propagate?.(target, actor, 'reflection', reflected, participants);
@@ -29,7 +29,7 @@ export default class CombatDamageSystem {
     target.chip.physicalDamageReduction = value;
   }
 
-  applyDamage(actor, target, type, damage, critical = false, { criticalDamageResolved = false } = {}) {
+  applyDamage(actor, target, type, damage, critical = false, { criticalDamageResolved = false, category = null } = {}) {
     if (target.isPhantomHead) return 0;
     const unroundedDamage = criticalDamageResolved ? damage : this.resolveCriticalDamage(actor, target, damage, critical);
     const resolvedDamage = roundDamage(unroundedDamage);
@@ -37,28 +37,28 @@ export default class CombatDamageSystem {
     this.applyKnockbackTilt(target, resolvedDamage);
     this.effects?.damage(target, resolvedDamage, critical);
     if (actor) this.recordDamage?.(actor, target, resolvedDamage, critical);
-    if (isHeroCombatant(target)) return this.applyHeroDamage(actor, target, type, resolvedDamage, critical);
-    return this.applyEnemyDamage(actor, target, type, resolvedDamage, critical);
+    if (isHeroCombatant(target)) return this.applyHeroDamage(actor, target, type, resolvedDamage, critical, category);
+    return this.applyEnemyDamage(actor, target, type, resolvedDamage, critical, category);
   }
 
   resolveCriticalDamage(actor, target, damage, critical) {
     return critical ? damage * (this.conditionSystem?.getCriticalDamageMultiplier(actor, target) ?? 1) : damage;
   }
 
-  applyHeroDamage(actor, target, type, damage, critical) {
+  applyHeroDamage(actor, target, type, damage, critical, category) {
     target.stamina = Math.max(0, target.stamina - damage);
-    this.onDamageApplied?.({ actor, target, type, damage, critical });
-    this.onDamage?.({ actor, target, type, damage, critical });
+    this.onDamageApplied?.({ actor, target, type, damage, critical, category });
+    this.onDamage?.({ actor, target, type, damage, critical, category });
     this.conditionSystem?.clearTwoEdgedSword(target);
     if (target.stamina > 0) this.onDamageResolved?.(target);
     if (target.stamina === 0) this.onHeroDepleted?.(target);
     return damage;
   }
 
-  applyEnemyDamage(actor, target, type, damage, critical) {
+  applyEnemyDamage(actor, target, type, damage, critical, category) {
     target.hp = Math.max(0, target.hp - damage);
-    this.onDamageApplied?.({ actor, target, type, damage, critical });
-    this.onDamage?.({ actor, target, type, damage, critical });
+    this.onDamageApplied?.({ actor, target, type, damage, critical, category });
+    this.onDamage?.({ actor, target, type, damage, critical, category });
     this.conditionSystem?.clearTwoEdgedSword(target);
     if (target.hp > 0) this.onDamageResolved?.(target);
     if (target.hp === 0) {

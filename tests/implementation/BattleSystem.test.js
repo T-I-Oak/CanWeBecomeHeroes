@@ -256,6 +256,19 @@ test('gem orb-rain drops its level-specific orb rewards for each successful dama
   assert.deepEqual(drops.map((item) => item.tags), [['gem', 'gem'], ['gem', 'gem']]);
 });
 
+test('retaliation ember applies the mid-boss fire value to an attacker after physical damage', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createFromDefinition({ enemyDefinitionId: 'medium-fire', slotPosition: 3, maximumHp: 10, totalTagCount: 0, random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 10, maximums: { stamina: 10 } });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0 });
+
+  battle.applyPhysicalDamage(hero, enemy, 'sword', 1, false, [hero, enemy]);
+
+  assert.equal(hero.attributes.fire, 0.5);
+  assert.equal(hero.attributeSources.fire, enemy);
+});
+
 test('shadow fingertips removes a target tag before a missed attack, and Ex2 transfers it to the attacker', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
