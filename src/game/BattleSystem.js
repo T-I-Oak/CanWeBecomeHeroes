@@ -38,7 +38,10 @@ export default class BattleSystem {
     this.knockbackSystem = knockbackSystem;
     this.uniqueSkillEffectSystem = uniqueSkillEffectSystem ?? new UniqueSkillEffectSystem({ board, controller, enemyFactory, uniqueSkillSystem: this.uniqueSkillSystem, random });
     this.attributeReactionSystem = attributeReactionSystem ?? new CombatAttributeReactionSystem({ uniqueSkillEffectSystem: this.uniqueSkillEffectSystem });
-    this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board, { isTargetable: (combatant) => !this.knockbackSystem.isKnockedBack(combatant) });
+    this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board, {
+      isTargetable: (combatant) => !this.knockbackSystem.isKnockedBack(combatant),
+      isBewildered: (combatant) => this.conditionSystem.hasBewilderment(combatant),
+    });
     this.actionGaugeSystem = actionGaugeSystem;
     this.actionLog = actionLog ?? new CombatActionLog({ gameLog, textRepository });
     this.projectionSystem = projectionSystem ?? new CombatProjectionSystem({ board, controller, actionGaugeSystem });
@@ -174,7 +177,10 @@ export default class BattleSystem {
     const target = this.findTarget(actor, participants);
     if (target) this.actionResolutionSystem.resolve(actor, target, participants);
     else if (actor.isPhantomHead) this.projectionSystem.returnAreaHead(actor);
-    else this.uniqueSkillSystem.refreshBlessingSkills(actor);
+    else {
+      this.conditionSystem.clearBewilderment(actor);
+      this.uniqueSkillSystem.refreshBlessingSkills(actor);
+    }
   }
   updateActionGaugeMaximum(actor) { return this.actionGaugeSystem.updateMaximum(actor); }
   findTarget(actor, participants) { return this.targetingSystem.findTarget(actor, participants); }

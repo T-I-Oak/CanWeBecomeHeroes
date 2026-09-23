@@ -30,14 +30,16 @@ export default class CombatActionResolutionSystem {
       this.uniqueSkillSystem.refreshBlessingSkills(actor);
     }
     this.conditionSystem.clearTwoEdgedSword(actor);
+    this.conditionSystem.clearBewilderment(actor);
     this.knockbackSystem?.resolveAction();
   }
 
   resolveActionStartedUniqueSkill(actor, target, participants) {
     let waterDamageBonusRate = 0;
-    this.uniqueSkillEffectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target }).forEach(({ tagRemoval, twoEdgedSwordMultiplier, selfAttribute = null, waterDamageBonusRate: effectWaterDamageBonusRate = 0 }) => {
+    this.uniqueSkillEffectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target }).forEach(({ tagRemoval, twoEdgedSwordMultiplier, selfAttribute = null, waterDamageBonusRate: effectWaterDamageBonusRate = 0, bewildermentTarget = null }) => {
       if (twoEdgedSwordMultiplier) participants.forEach((combatant) => this.conditionSystem.applyTwoEdgedSword(combatant, twoEdgedSwordMultiplier));
       if (selfAttribute) this.attributeSystem.applySelfAttribute(actor, selfAttribute.attribute, selfAttribute.value);
+      if (bewildermentTarget) this.conditionSystem.applyBewilderment(bewildermentTarget);
       waterDamageBonusRate = Math.max(waterDamageBonusRate, effectWaterDamageBonusRate);
       if (!tagRemoval) return;
       const tag = tagRemoval.sourceItem.removeTagAt(tagRemoval.tagIndex);

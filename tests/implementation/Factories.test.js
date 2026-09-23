@@ -164,6 +164,17 @@ test('lightning medium and large enemies use their thunder drain definitions and
   assert.equal(thunderDragon.chip.centerPath, '/assets/enemies/large-lightning.png');
 });
 
+test('reputation medium and large enemies use their bewildering words definitions and assets', () => {
+  const factory = new EnemyFactory();
+  const hobgoblin = factory.createFromDefinition({ enemyDefinitionId: 'medium-reputation', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const sphinx = factory.createFromDefinition({ enemyDefinitionId: 'large-reputation', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(hobgoblin.uniqueSkill, { id: 'reputation-bewildering-words', level: 1 });
+  assert.equal(hobgoblin.chip.centerPath, '/assets/enemies/medium-reputation.png');
+  assert.deepEqual(sphinx.uniqueSkill, { id: 'reputation-bewildering-words', level: 2 });
+  assert.equal(sphinx.chip.centerPath, '/assets/enemies/large-reputation.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },

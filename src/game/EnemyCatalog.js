@@ -143,6 +143,14 @@ export const ENEMY_CATALOG = Object.freeze({
     id: 'large-lightning', size: 'large', tagAffinity: 'lightning', nameKey: 'enemy.largeLightning', assetPath: '/assets/enemies/large-lightning.png', intrinsicTags: Object.freeze(['lightning']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'lightning-thunder-drain', level: 2 }),
   }),
+  'medium-reputation': Object.freeze({
+    id: 'medium-reputation', size: 'medium', tagAffinity: 'reputation', nameKey: 'enemy.mediumReputation', assetPath: '/assets/enemies/medium-reputation.png', intrinsicTags: Object.freeze(['reputation']), baseHp: 2, baseContributionPoints: 50,
+    uniqueSkill: Object.freeze({ id: 'reputation-bewildering-words', level: 1 }),
+  }),
+  'large-reputation': Object.freeze({
+    id: 'large-reputation', size: 'large', tagAffinity: 'reputation', nameKey: 'enemy.largeReputation', assetPath: '/assets/enemies/large-reputation.png', intrinsicTags: Object.freeze(['reputation']), baseHp: 2, baseContributionPoints: 250,
+    uniqueSkill: Object.freeze({ id: 'reputation-bewildering-words', level: 2 }),
+  }),
   'large-cloth': Object.freeze({
     id: 'large-cloth', size: 'large', tagAffinity: 'cloth', nameKey: 'enemy.largeCloth', assetPath: '/assets/enemies/large-cloth.png', intrinsicTags: Object.freeze(['cloth']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'cloth-night-familiars', level: 2 }),

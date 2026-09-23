@@ -41,3 +41,13 @@ test('a critical uses the higher two-edged sword multiplier of its attacker and 
   conditions.clearTwoEdgedSword(attacker);
   assert.equal(conditions.getCriticalDamageMultiplier(attacker, target), 1);
 });
+
+test('bewilderment lasts until the affected combatant completes or cannot perform its action', () => {
+  const conditions = new CombatConditionSystem();
+  const combatant = {};
+
+  conditions.applyBewilderment(combatant);
+  assert.equal(conditions.hasBewilderment(combatant), true);
+  conditions.clearBewilderment(combatant);
+  assert.equal(conditions.hasBewilderment(combatant), false);
+});

@@ -114,3 +114,13 @@ test('thunder drain reacts only when a lightning-infused direct attacker deals d
   assert.equal(reflectionDamage.actionGaugeAbsorption, null);
   assert.equal(roundedZero.actionGaugeAbsorption, null);
 });
+
+test('bewildering words uses the owner luck degree with its Ex-specific rate', () => {
+  const target = {};
+  const actor = { getLuckDegree: () => 0.6 };
+  const ex1 = new UniqueSkillEffectSystem({ random: () => 0.35 });
+  const ex2 = new UniqueSkillEffectSystem({ random: () => 0.35 });
+
+  assert.equal(ex1.resolveReputationBewilderingWords(actor, { levelDetail: { luckRateMultiplier: 0.5 } }, { target }).bewildermentTarget, null);
+  assert.equal(ex2.resolveReputationBewilderingWords(actor, { levelDetail: { luckRateMultiplier: 1 } }, { target }).bewildermentTarget, target);
+});
