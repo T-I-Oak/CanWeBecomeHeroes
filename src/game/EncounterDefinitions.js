@@ -28,6 +28,7 @@ export const COMBINATION_PATTERNS = Object.freeze({
     Object.freeze({ main: 'medium-cloth', support1: 'small-arcane', support2: 'small-feather' }),
     Object.freeze({ main: 'medium-water', support1: 'small-fortune', support2: 'small-cloth' }),
     Object.freeze({ main: 'medium-fire', support1: 'small-reputation', support2: 'small-valor' }),
+    Object.freeze({ main: 'medium-lightning', support1: 'small-valor', support2: 'small-area' }),
   ]),
   boss: Object.freeze([
     Object.freeze({ main: 'large-vitality', support1: 'small-iron', support2: 'small-fortune' }),
@@ -38,6 +39,7 @@ export const COMBINATION_PATTERNS = Object.freeze({
     Object.freeze({ main: 'large-cloth', support1: 'small-arcane', support2: 'small-feather' }),
     Object.freeze({ main: 'large-water', support1: 'small-fortune', support2: 'small-cloth' }),
     Object.freeze({ main: 'large-fire', support1: 'small-reputation', support2: 'small-valor' }),
+    Object.freeze({ main: 'large-lightning', support1: 'small-valor', support2: 'small-area' }),
   ]),
 });
 

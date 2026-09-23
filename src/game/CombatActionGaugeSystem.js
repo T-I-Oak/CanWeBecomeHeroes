@@ -32,6 +32,17 @@ export default class CombatActionGaugeSystem {
     return true;
   }
 
+  stealCurrentGauge(recipient, opponents, rate) {
+    const stolen = opponents.reduce((total, opponent) => {
+      const current = Math.max(0, opponent.chip.actionGauge ?? 0);
+      const amount = current * rate;
+      opponent.chip.actionGauge = current - amount;
+      return total + amount;
+    }, 0);
+    recipient.chip.actionGauge = Math.max(0, recipient.chip.actionGauge ?? 0) + stolen;
+    return stolen;
+  }
+
   restoreTilt(actor) {
     const { chip } = actor;
     if (Math.abs(chip.tilt) <= ACTION_TILT_RECOVERY_RADIANS) {

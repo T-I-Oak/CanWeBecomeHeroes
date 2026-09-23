@@ -86,3 +86,31 @@ test('retaliation ember exposes a fire application only for an applied physical 
   assert.deepEqual(physical.retaliationAttribute, { actor: attacker, attribute: 'fire', value: 2 });
   assert.equal(attribute.retaliationAttribute, null);
 });
+
+test('thunder drain reacts only when a lightning-infused direct attacker deals damage', () => {
+  const effectSystem = new UniqueSkillEffectSystem({
+    uniqueSkillSystem: { getTriggeredSkills: () => [{ id: 'lightning-thunder-drain', level: 2, levelDetail: { currentGaugeStealRate: 0.2 } }] },
+  });
+
+  const [triggered] = effectSystem.resolve({}, UNIQUE_SKILL_TRIGGER.damageReceived, {
+    damageEvent: { actor: { attributes: { lightning: 1 } }, category: 'magic', damage: 1 },
+  });
+  const [withoutLightning] = effectSystem.resolve({}, UNIQUE_SKILL_TRIGGER.damageReceived, {
+    damageEvent: { actor: { attributes: { lightning: 0 } }, category: 'magic', damage: 1 },
+  });
+  const [attributeDamage] = effectSystem.resolve({}, UNIQUE_SKILL_TRIGGER.damageReceived, {
+    damageEvent: { actor: { attributes: { lightning: 1 } }, category: null, damage: 1 },
+  });
+  const [reflectionDamage] = effectSystem.resolve({}, UNIQUE_SKILL_TRIGGER.damageReceived, {
+    damageEvent: { actor: { attributes: { lightning: 1 } }, category: 'reflection', damage: 1 },
+  });
+  const [roundedZero] = effectSystem.resolve({}, UNIQUE_SKILL_TRIGGER.damageReceived, {
+    damageEvent: { actor: { attributes: { lightning: 1 } }, category: 'physical', damage: 0 },
+  });
+
+  assert.deepEqual(triggered.actionGaugeAbsorption, { currentGaugeStealRate: 0.2 });
+  assert.equal(withoutLightning.actionGaugeAbsorption, null);
+  assert.equal(attributeDamage.actionGaugeAbsorption, null);
+  assert.equal(reflectionDamage.actionGaugeAbsorption, null);
+  assert.equal(roundedZero.actionGaugeAbsorption, null);
+});

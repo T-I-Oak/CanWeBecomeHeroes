@@ -959,6 +959,27 @@ test('physical reduction is consumed and iron reflects part of the remaining phy
   assert.ok(Math.abs(actor.stamina - 2.82) < 1e-9);
 });
 
+test('thunder drain uses the active opposing participants current gauges after a lightning-infused physical attack', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createFromDefinition({
+    enemyDefinitionId: 'medium-lightning', slotPosition: 3, maximumHp: 3, totalTagCount: 0, weaponCount: 0,
+  });
+  const attacker = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
+  const ally = new HeroFactory().create({ profession: 'guard', x: 200, y: 100, stamina: 3 });
+  attacker.attributes.lightning = 1;
+  enemy.chip.actionGauge = 1;
+  attacker.chip.actionGauge = 5;
+  ally.chip.actionGauge = 3;
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0 });
+
+  battle.applyPhysicalDamage(attacker, enemy, 'sword', 1, false, [enemy, attacker, ally]);
+
+  assert.equal(enemy.chip.actionGauge, 1.8);
+  assert.equal(attacker.chip.actionGauge, 4.5);
+  assert.equal(ally.chip.actionGauge, 2.7);
+});
+
 test('iron reflection uses tag-skill level instead of the raw iron tag count', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const actor = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 3 });
