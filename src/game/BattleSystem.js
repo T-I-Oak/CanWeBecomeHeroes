@@ -26,16 +26,28 @@ import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 import CombatConditionSystem from './CombatConditionSystem.js';
 import CombatKnockbackSystem from './CombatKnockbackSystem.js';
 import CombatAttributeReactionSystem from './CombatAttributeReactionSystem.js';
+import CombatGustSystem from './CombatGustSystem.js';
 
 export { BATTLE_VICTORY_DELAY_TICKS };
 export { WEAPON_ATTACKS, getAttackDamage, getRandomModifier };
 export { getActionGaugeBaseMaximum, getActionGaugeMaximum };
 export default class BattleSystem {
-  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, uniqueSkillEffectSystem = null, targetingSystem = null, attributeSystem = null, attributeReactionSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, conditionSystem = new CombatConditionSystem(), knockbackSystem = new CombatKnockbackSystem(board), returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
+  constructor(board, { controller, itemFactory, enemyFactory = new EnemyFactory({ itemFactory }), uniqueSkillSystem = null, uniqueSkillEffectSystem = null, targetingSystem = null, attributeSystem = null, attributeReactionSystem = null, damageSystem = null, actionGaugeSystem = new CombatActionGaugeSystem(), weaponEffectSystem = null, actionLog = null, projectionSystem = null, defeatSystem = null, actionResolutionSystem = null, stageLifecycle = new CombatStageLifecycle(), damageReactionSystem = null, conditionSystem = new CombatConditionSystem(), knockbackSystem = new CombatKnockbackSystem(board), gustSystem = null, returnSystem, effects = null, gameLog = null, textRepository = null, random = Math.random, onDamage = null } = {}) {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ random });
     this.conditionSystem = conditionSystem;
     this.knockbackSystem = knockbackSystem;
+    this.gustSystem = gustSystem ?? new CombatGustSystem({
+      board,
+      controller,
+      pickupController: controller?.pickupController,
+      returnSystem,
+      getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
+      clearCombatant: (combatant) => {
+        this.conditionSystem.clearCombatant(combatant);
+        this.effects?.clearNightFamiliars?.(combatant);
+      },
+    });
     this.uniqueSkillEffectSystem = uniqueSkillEffectSystem ?? new UniqueSkillEffectSystem({ board, controller, enemyFactory, uniqueSkillSystem: this.uniqueSkillSystem, random });
     this.attributeReactionSystem = attributeReactionSystem ?? new CombatAttributeReactionSystem({ uniqueSkillEffectSystem: this.uniqueSkillEffectSystem });
     this.targetingSystem = targetingSystem ?? new CombatTargetingSystem(board, {
@@ -116,6 +128,7 @@ export default class BattleSystem {
       uniqueSkillEffectSystem: this.uniqueSkillEffectSystem,
       conditionSystem: this.conditionSystem,
       knockbackSystem: this.knockbackSystem,
+      gustSystem: this.gustSystem,
       effects,
       gameLog,
       textRepository,
@@ -144,6 +157,7 @@ export default class BattleSystem {
   hasStageVictory() { return this.stageLifecycle.hasVictory(); }
   isStageComplete() { return this.stageLifecycle.isComplete(); }
   update({ heroes, enemies, tick, tickDelta }) {
+    this.gustSystem.update();
     this.knockbackSystem.update();
     [...heroes, ...enemies].filter((a) => a.currentArea !== 'battle' || a.targetArea).forEach((a) => {
       a.clearBattleState?.();
@@ -173,6 +187,7 @@ export default class BattleSystem {
   }
   updateAttributes(participants, delta) { this.attributeSystem.update(participants, delta); }
   updateActor(actor, participants, delta) {
+    if (this.gustSystem.isGusting(actor)) return;
     if (!this.actionGaugeSystem.advance(actor, delta)) return;
     const target = this.findTarget(actor, participants);
     if (target) this.actionResolutionSystem.resolve(actor, target, participants);

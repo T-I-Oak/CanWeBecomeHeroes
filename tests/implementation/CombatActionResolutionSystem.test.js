@@ -93,6 +93,29 @@ test('curse of misfortune applies its rate to the selected target at action star
   assert.deepEqual(appliedMisfortune, [[target, 0.5]]);
 });
 
+test('storm wings gusts only after every weapon of the action has resolved', () => {
+  const order = [];
+  const actor = { chip: {}, getTagCount: () => 0, luckBonus: 0, isPhantomHead: false };
+  const target = {};
+  const resolution = new CombatActionResolutionSystem({
+    targetingSystem: { rangeTargets: () => [] },
+    actionLog: { begin: () => {}, flush: () => {} },
+    projectionSystem: {},
+    uniqueSkillSystem: { refreshBlessingSkills: () => {} },
+    conditionSystem: { consumeNightFamiliars: () => 0, clearTwoEdgedSword: () => {}, clearBewilderment: () => {}, clearMisfortune: () => {} },
+    gustSystem: { begin: () => order.push('gust') },
+  });
+  resolution.attackTypes = () => ['sword', 'bow'];
+  resolution.resolveWeapon = (_actor, _target, type) => order.push(type);
+  resolution.resolveVitality = () => order.push('vitality');
+  resolution.resolveActionUniqueSkill = () => {};
+  resolution.resolveActionStartedUniqueSkill = () => ({ waterDamageBonusRate: 0, gustTargets: [target] });
+
+  resolution.resolve(actor, target, [actor, target]);
+
+  assert.deepEqual(order, ['sword', 'bow', 'vitality', 'gust']);
+});
+
 test('deep sea surge turns every successful weapon hit critical and adds the current water value to damage', () => {
   const actor = {
     chip: { type: 'hero' },

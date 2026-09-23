@@ -141,6 +141,18 @@ test('curse of misfortune applies its Ex-specific critical self-damage rate afte
   );
 });
 
+test('storm wings uses its Ex-specific luck rate and only selects heroes as gust targets', () => {
+  const actor = { getLuckDegree: () => 0.8 };
+  const hero = { chip: { type: 'hero' } };
+  const enemy = { chip: { type: 'enemy' } };
+  const ex1 = new UniqueSkillEffectSystem({ random: () => 0.19 });
+  const ex2 = new UniqueSkillEffectSystem({ random: () => 0.3 });
+
+  assert.equal(ex1.resolveFeatherStormWings(actor, { levelDetail: { luckRateMultiplier: 0.25 } }, { target: hero }).gustTarget, hero);
+  assert.equal(ex2.resolveFeatherStormWings(actor, { levelDetail: { luckRateMultiplier: 0.25 } }, { target: enemy }).gustTarget, null);
+  assert.equal(ex2.resolveFeatherStormWings(actor, { levelDetail: { luckRateMultiplier: 0.5 } }, { target: hero }).gustTarget, hero);
+});
+
 test('iron counterblow does not react to non-physical damage', () => {
   const effectSystem = new UniqueSkillEffectSystem({});
   const skill = { id: 'iron-counterblow', levelDetail: { knockbackDistanceMultiplier: 1 } };

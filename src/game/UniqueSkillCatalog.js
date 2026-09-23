@@ -130,6 +130,16 @@ const FORTUNE_MISFORTUNE_CURSE = Object.freeze({
   }),
 });
 
+const FEATHER_STORM_WINGS = Object.freeze({
+  id: 'feather-storm-wings',
+  affinityTag: 'feather',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionStarted]),
+  levels: Object.freeze({
+    1: Object.freeze({ luckRateMultiplier: 0.25 }),
+    2: Object.freeze({ luckRateMultiplier: 0.5 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
@@ -144,6 +154,7 @@ export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [LIGHTNING_THUNDER_DRAIN.id]: LIGHTNING_THUNDER_DRAIN,
   [REPUTATION_BEWILDERING_WORDS.id]: REPUTATION_BEWILDERING_WORDS,
   [FORTUNE_MISFORTUNE_CURSE.id]: FORTUNE_MISFORTUNE_CURSE,
+  [FEATHER_STORM_WINGS.id]: FEATHER_STORM_WINGS,
 });
 
 export function getUniqueSkillDetail(id) {

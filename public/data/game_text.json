@@ -3784,6 +3784,28 @@
           }
         }
       },
+      "medium-feather": {
+        "name": { "lang-store": { "ja": "グリフォン", "en": "Griffin" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "獅子の力と鷲の翼をあわせ持つ、空の守り手。ひとたび翼を広げれば、風が獲物を遠くへさらう。" }],
+          "en": [{ "type": "text", "value": "A guardian of the skies with a lion's strength and an eagle's wings. One spread of its wings carries prey far away on the wind." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "突風で相手を戦闘から引き離し、装備を散らすことがある。" }],
+          "en": [{ "type": "text", "value": "May use a gust to drive an opponent from battle and scatter its equipment." }]
+        } }
+      },
+      "large-feather": {
+        "name": { "lang-store": { "ja": "ワイバーン", "en": "Wyvern" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "嵐をまとって空を支配する、翼竜の王。大きく羽ばたくたび、戦場の足場さえ風にさらわれる。" }],
+          "en": [{ "type": "text", "value": "A winged drake king that rules the sky in a storm. Each mighty beat of its wings can sweep even the battlefield's footing away." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "強い突風で相手を戦闘から引き離し、装備を散らすことがある。" }],
+          "en": [{ "type": "text", "value": "May use a powerful gust to drive an opponent from battle and scatter its equipment." }]
+        } }
+      },
       "small-gem": {
         "name": {
           "lang-store": {
@@ -5132,6 +5154,21 @@
         "levels": {
           "1": { "description": { "lang-store": { "ja": "不運状態の攻撃者の会心ダメージが半分跳ね返る。", "en": "Half of a misfortunate attacker's critical damage rebounds." } } },
           "2": { "description": { "lang-store": { "ja": "不運状態の攻撃者の会心ダメージがすべて跳ね返る。", "en": "All of a misfortunate attacker's critical damage rebounds." } } }
+        }
+      },
+      "feather-storm-wings": {
+        "name": { "lang-store": { "ja": "暴風の翼", "en": "Storm Wings" } },
+        "flavor": { "lang-store": {
+          "ja": "大きく羽ばたいた風が、相手を戦場の外へ吹き飛ばす。",
+          "en": "A great beat of its wings sends the opponent flying beyond the battlefield."
+        } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "攻撃時、相手を突風で倉庫へ吹き飛ばすことがある。" }],
+          "en": [{ "type": "text", "value": "When attacking, may blow the opponent into the warehouse with a gust." }]
+        } },
+        "levels": {
+          "1": { "description": { "lang-store": { "ja": "まれに突風を起こすことがある。", "en": "Rarely raises a gust." } } },
+          "2": { "description": { "lang-store": { "ja": "ときどき突風を起こすことがある。", "en": "Sometimes raises a gust." } } }
         }
       },
       "shadow-fingertips": {
