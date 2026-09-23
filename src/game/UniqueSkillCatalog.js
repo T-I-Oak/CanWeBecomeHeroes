@@ -120,6 +120,16 @@ const REPUTATION_BEWILDERING_WORDS = Object.freeze({
   }),
 });
 
+const FORTUNE_MISFORTUNE_CURSE = Object.freeze({
+  id: 'fortune-misfortune-curse',
+  affinityTag: 'fortune',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionStarted]),
+  levels: Object.freeze({
+    1: Object.freeze({ luckRateMultiplier: 1, selfDamageRate: 0.5 }),
+    2: Object.freeze({ luckRateMultiplier: 1, selfDamageRate: 1 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
@@ -133,6 +143,7 @@ export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [FIRE_RETALIATION_EMBER.id]: FIRE_RETALIATION_EMBER,
   [LIGHTNING_THUNDER_DRAIN.id]: LIGHTNING_THUNDER_DRAIN,
   [REPUTATION_BEWILDERING_WORDS.id]: REPUTATION_BEWILDERING_WORDS,
+  [FORTUNE_MISFORTUNE_CURSE.id]: FORTUNE_MISFORTUNE_CURSE,
 });
 
 export function getUniqueSkillDetail(id) {

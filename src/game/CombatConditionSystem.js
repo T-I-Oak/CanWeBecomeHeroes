@@ -5,18 +5,21 @@ export default class CombatConditionSystem {
     this.twoEdgedSwordMultipliers = new WeakMap();
     this.nightFamiliarCounts = new WeakMap();
     this.bewilderedCombatants = new WeakSet();
+    this.misfortuneDamageRates = new WeakMap();
   }
 
   reset() {
     this.twoEdgedSwordMultipliers = new WeakMap();
     this.nightFamiliarCounts = new WeakMap();
     this.bewilderedCombatants = new WeakSet();
+    this.misfortuneDamageRates = new WeakMap();
   }
 
   clearCombatant(combatant) {
     this.clearTwoEdgedSword(combatant);
     this.nightFamiliarCounts.delete(combatant);
     this.bewilderedCombatants.delete(combatant);
+    this.misfortuneDamageRates.delete(combatant);
   }
 
   applyTwoEdgedSword(combatant, multiplier) {
@@ -66,4 +69,10 @@ export default class CombatConditionSystem {
   clearBewilderment(combatant) { this.bewilderedCombatants.delete(combatant); }
 
   hasBewilderment(combatant) { return this.bewilderedCombatants.has(combatant); }
+
+  applyMisfortune(combatant, damageRate) { this.misfortuneDamageRates.set(combatant, damageRate); }
+
+  clearMisfortune(combatant) { this.misfortuneDamageRates.delete(combatant); }
+
+  getMisfortuneDamageRate(combatant) { return this.misfortuneDamageRates.get(combatant) ?? 0; }
 }

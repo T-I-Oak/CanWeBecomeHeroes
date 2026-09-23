@@ -51,3 +51,13 @@ test('bewilderment lasts until the affected combatant completes or cannot perfor
   conditions.clearBewilderment(combatant);
   assert.equal(conditions.hasBewilderment(combatant), false);
 });
+
+test('misfortune keeps its self-damage rate until the affected combatant action ends', () => {
+  const conditions = new CombatConditionSystem();
+  const combatant = {};
+
+  conditions.applyMisfortune(combatant, 0.5);
+  assert.equal(conditions.getMisfortuneDamageRate(combatant), 0.5);
+  conditions.clearMisfortune(combatant);
+  assert.equal(conditions.getMisfortuneDamageRate(combatant), 0);
+});

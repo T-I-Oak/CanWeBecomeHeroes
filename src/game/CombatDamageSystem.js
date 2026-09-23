@@ -11,12 +11,13 @@ export default class CombatDamageSystem {
 
   applyPhysicalDamage(actor, target, type, damage, critical, participants, { propagate } = {}) {
     const criticalDamage = this.resolveCriticalDamage(actor, target, damage, critical);
-    const absorbed = Math.min(target.physicalDamageReduction, criticalDamage);
+    const targetDamage = this.resolveMisfortuneDamage(actor, criticalDamage, critical, participants);
+    const absorbed = Math.min(target.physicalDamageReduction, targetDamage);
     this.setPhysicalDamageReduction(target, Math.max(0, target.physicalDamageReduction - absorbed));
-    const afterProtection = Math.max(0, criticalDamage - absorbed * 0.5);
+    const afterProtection = Math.max(0, targetDamage - absorbed * 0.5);
     const reflected = afterProtection * target.getTagSkillLevel('iron') * 0.2;
     const dealt = Math.max(0, afterProtection - reflected);
-    this.applyDamage(actor, target, type, dealt, critical, { criticalDamageResolved: true, category: 'physical', participants });
+    this.applyDamage(actor, target, type, dealt, critical, { criticalDamageResolved: true, category: 'physical', participants, resolveMisfortune: false });
     if (reflected >= MINIMUM_DAMAGE) {
       this.applyDamage(target, actor, 'reflection', reflected);
       propagate?.(target, actor, 'reflection', reflected, participants);
@@ -29,10 +30,11 @@ export default class CombatDamageSystem {
     target.chip.physicalDamageReduction = value;
   }
 
-  applyDamage(actor, target, type, damage, critical = false, { criticalDamageResolved = false, category = null, participants = [] } = {}) {
+  applyDamage(actor, target, type, damage, critical = false, { criticalDamageResolved = false, category = null, participants = [], resolveMisfortune = true } = {}) {
     if (target.isPhantomHead) return 0;
     const unroundedDamage = criticalDamageResolved ? damage : this.resolveCriticalDamage(actor, target, damage, critical);
-    const resolvedDamage = roundDamage(unroundedDamage);
+    const targetDamage = resolveMisfortune ? this.resolveMisfortuneDamage(actor, unroundedDamage, critical, participants) : unroundedDamage;
+    const resolvedDamage = roundDamage(targetDamage);
     if (resolvedDamage < MINIMUM_DAMAGE) return 0;
     this.applyKnockbackTilt(target, resolvedDamage);
     this.effects?.damage(target, resolvedDamage, critical);
@@ -43,6 +45,18 @@ export default class CombatDamageSystem {
 
   resolveCriticalDamage(actor, target, damage, critical) {
     return critical ? damage * (this.conditionSystem?.getCriticalDamageMultiplier(actor, target) ?? 1) : damage;
+  }
+
+  resolveMisfortuneDamage(actor, damage, critical, participants) {
+    const selfDamageRate = critical ? this.conditionSystem?.getMisfortuneDamageRate(actor) ?? 0 : 0;
+    if (selfDamageRate <= 0) return damage;
+    this.applyDamage(actor, actor, 'misfortune', damage * selfDamageRate, true, {
+      criticalDamageResolved: true,
+      category: 'misfortune',
+      participants,
+      resolveMisfortune: false,
+    });
+    return damage * (1 - selfDamageRate);
   }
 
   applyHeroDamage(actor, target, type, damage, critical, category, participants) {

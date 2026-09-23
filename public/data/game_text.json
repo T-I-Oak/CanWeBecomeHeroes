@@ -4072,6 +4072,28 @@
           "en": [{ "type": "text", "value": "May strongly bewilder opponents and turn their weapons toward allies." }]
         } }
       },
+      "medium-fortune": {
+        "name": { "lang-store": { "ja": "レプラコーン", "en": "Leprechaun" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "幸運を気まぐれに配る、小さな妖精。笑いながら不運を忍ばせる。" }],
+          "en": [{ "type": "text", "value": "A small fairy that hands out luck on a whim, then slips in misfortune with a laugh." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "相手の会心を自分へ跳ね返らせることがある。" }],
+          "en": [{ "type": "text", "value": "May turn an opponent's critical strike back upon them." }]
+        } }
+      },
+      "large-fortune": {
+        "name": { "lang-store": { "ja": "麒麟", "en": "Qilin" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "吉兆と災いの境目を歩く、気高い霊獣。その祝福はときに刃へ試練を返す。" }],
+          "en": [{ "type": "text", "value": "A noble spirit beast that walks the boundary between blessing and calamity. Its favor can return a trial to the blade." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "相手の会心をすべて自分へ跳ね返らせることがある。" }],
+          "en": [{ "type": "text", "value": "May turn an opponent's entire critical strike back upon them." }]
+        } }
+      },
       "small-vitality": {
         "name": {
           "lang-store": {
@@ -5095,6 +5117,21 @@
         "levels": {
           "1": { "description": { "lang-store": { "ja": "まれに相手を惑乱状態にすることがある。", "en": "Rarely bewilders the opponent." } } },
           "2": { "description": { "lang-store": { "ja": "ときどき相手を惑乱状態にすることがある。", "en": "Sometimes bewilders the opponent." } } }
+        }
+      },
+      "fortune-misfortune-curse": {
+        "name": { "lang-store": { "ja": "逆運の呪い", "en": "Curse of Misfortune" } },
+        "flavor": { "lang-store": {
+          "ja": "つかんだ幸運は、次の瞬間には自らを刺す刃へ変わる。",
+          "en": "The luck you grasp becomes a blade that strikes you the next moment."
+        } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "攻撃時、相手を不運状態にすることがある。" }],
+          "en": [{ "type": "text", "value": "When attacking, may inflict misfortune on the opponent." }]
+        } },
+        "levels": {
+          "1": { "description": { "lang-store": { "ja": "不運状態の攻撃者の会心ダメージが半分跳ね返る。", "en": "Half of a misfortunate attacker's critical damage rebounds." } } },
+          "2": { "description": { "lang-store": { "ja": "不運状態の攻撃者の会心ダメージがすべて跳ね返る。", "en": "All of a misfortunate attacker's critical damage rebounds." } } }
         }
       },
       "shadow-fingertips": {

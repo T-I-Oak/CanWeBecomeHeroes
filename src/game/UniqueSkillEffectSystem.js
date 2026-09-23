@@ -29,6 +29,7 @@ export default class UniqueSkillEffectSystem {
       case 'fire-retaliation-ember': return this.resolveFireRetaliationEmber(entity, skill, context);
       case 'lightning-thunder-drain': return this.resolveLightningThunderDrain(skill, context);
       case 'reputation-bewildering-words': return this.resolveReputationBewilderingWords(entity, skill, context);
+      case 'fortune-misfortune-curse': return this.resolveFortuneMisfortuneCurse(entity, skill, context);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -80,7 +81,7 @@ export default class UniqueSkillEffectSystem {
   }
 
   resolveIronCounterblow(skill, { damageEvent } = {}) {
-    if (!damageEvent?.actor || damageEvent.damage <= 0) return Object.freeze({ skill, knockback: null });
+    if (!damageEvent?.actor || damageEvent.category !== 'physical' || damageEvent.damage <= 0) return Object.freeze({ skill, knockback: null });
     return Object.freeze({ skill, knockback: Object.freeze({
       actor: damageEvent.actor,
       target: damageEvent.target,
@@ -126,6 +127,11 @@ export default class UniqueSkillEffectSystem {
   resolveReputationBewilderingWords(actor, skill, { target = null } = {}) {
     if (!target || this.random() >= actor.getLuckDegree() * skill.levelDetail.luckRateMultiplier) return Object.freeze({ skill, bewildermentTarget: null });
     return Object.freeze({ skill, bewildermentTarget: target });
+  }
+
+  resolveFortuneMisfortuneCurse(actor, skill, { target = null } = {}) {
+    if (!target || this.random() >= actor.getLuckDegree() * skill.levelDetail.luckRateMultiplier) return Object.freeze({ skill, misfortuneTarget: null });
+    return Object.freeze({ skill, misfortuneTarget: Object.freeze({ target, damageRate: skill.levelDetail.selfDamageRate }) });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {
