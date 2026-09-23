@@ -1,7 +1,7 @@
-export const HERO_STEP_DISTANCE_LIGHT = 96;
-export const HERO_WEIGHT_SCALE = 25;
+export const CHARACTER_STEP_DISTANCE_LIGHT = 96;
+export const CHARACTER_WEIGHT_SCALE = 25;
 
-export function getHeroStepDistance(carriedWeight) {
+export function getCharacterStepDistance(carriedWeight) {
   const weight = Math.max(0, carriedWeight);
-  return HERO_STEP_DISTANCE_LIGHT / (1 + (weight / HERO_WEIGHT_SCALE) ** 2);
+  return CHARACTER_STEP_DISTANCE_LIGHT / (1 + (weight / CHARACTER_WEIGHT_SCALE) ** 2);
 }

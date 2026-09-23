@@ -78,6 +78,16 @@ test('a single movement step can be limited to a requested distance', () => {
   assert.equal(hero.step.stepCount, 1);
 });
 
+test('a direct movement can use one animation step without limiting its destination distance', () => {
+  const board = new ChipBoard({ width: 800, height: 600 });
+  const hero = addChip(board, 'hero', 150, 150);
+
+  board.moveTo(hero, 650, 150, { animationStepCount: 1 });
+
+  assert.equal(hero.step.targetX, 650);
+  assert.equal(hero.step.stepCount, 1);
+});
+
 test('a landing heavy chip affects a nearby chip', () => {
   const board = new ChipBoard({ width: 800, height: 600 });
   const source = addChip(board, 'hero', 300, 300, 15);

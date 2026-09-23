@@ -52,14 +52,14 @@ export default class ChipBoard {
     this.chips = this.chips.filter((current) => current !== chip);
   }
 
-  moveTo(chip, x, y, { stepDistance = null } = {}) {
+  moveTo(chip, x, y, { stepDistance = null, animationStepCount = null } = {}) {
     const target = this.constrainPosition(chip, x, y);
     const distance = Math.hypot(target.x - chip.x, target.y - chip.y);
     const ratio = stepDistance && distance > stepDistance ? stepDistance / distance : 1;
     const targetX = chip.x + (target.x - chip.x) * ratio;
     const targetY = chip.y + (target.y - chip.y) * ratio;
     if (chip.type === 'hero' && targetX !== chip.x) chip.flipped = targetX < chip.x;
-    const stepCount = stepDistance ? 1 : Math.max(2, Math.ceil(distance / (chip.radius * 0.75)));
+    const stepCount = animationStepCount ?? (stepDistance ? 1 : Math.max(2, Math.ceil(distance / (chip.radius * 0.75))));
     chip.step = { startX: chip.x, startY: chip.y, targetX, targetY, elapsed: 0, stepCount };
     return true;
   }
