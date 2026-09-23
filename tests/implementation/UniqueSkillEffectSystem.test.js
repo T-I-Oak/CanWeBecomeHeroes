@@ -124,3 +124,28 @@ test('bewildering words uses the owner luck degree with its Ex-specific rate', (
   assert.equal(ex1.resolveReputationBewilderingWords(actor, { levelDetail: { luckRateMultiplier: 0.5 } }, { target }).bewildermentTarget, null);
   assert.equal(ex2.resolveReputationBewilderingWords(actor, { levelDetail: { luckRateMultiplier: 1 } }, { target }).bewildermentTarget, target);
 });
+
+test('curse of misfortune applies its Ex-specific critical self-damage rate after the luck check', () => {
+  const actor = { getLuckDegree: () => 0.6 };
+  const target = {};
+  const ex1 = new UniqueSkillEffectSystem({ random: () => 0.5 });
+  const ex2 = new UniqueSkillEffectSystem({ random: () => 0.5 });
+
+  assert.deepEqual(
+    ex1.resolveFortuneMisfortuneCurse(actor, { levelDetail: { luckRateMultiplier: 1, selfDamageRate: 0.5 } }, { target }).misfortuneTarget,
+    { target, damageRate: 0.5 },
+  );
+  assert.deepEqual(
+    ex2.resolveFortuneMisfortuneCurse(actor, { levelDetail: { luckRateMultiplier: 1, selfDamageRate: 1 } }, { target }).misfortuneTarget,
+    { target, damageRate: 1 },
+  );
+});
+
+test('iron counterblow does not react to non-physical damage', () => {
+  const effectSystem = new UniqueSkillEffectSystem({});
+  const skill = { id: 'iron-counterblow', levelDetail: { knockbackDistanceMultiplier: 1 } };
+
+  const effect = effectSystem.resolveIronCounterblow(skill, { damageEvent: { actor: {}, damage: 1, category: 'misfortune' } });
+
+  assert.equal(effect.knockback, null);
+});

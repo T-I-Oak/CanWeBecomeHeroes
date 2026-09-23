@@ -79,6 +79,20 @@ test('deep sea surge applies its water value to the owner before resolving all w
   assert.equal(modifiers.waterDamageBonusRate, 0.5);
 });
 
+test('curse of misfortune applies its rate to the selected target at action start', () => {
+  const actor = {};
+  const target = {};
+  const appliedMisfortune = [];
+  const resolution = new CombatActionResolutionSystem({
+    conditionSystem: { applyMisfortune: (...arguments_) => appliedMisfortune.push(arguments_) },
+    uniqueSkillEffectSystem: { resolve: () => [{ misfortuneTarget: { target, damageRate: 0.5 } }] },
+  });
+
+  resolution.resolveActionStartedUniqueSkill(actor, target, [actor, target]);
+
+  assert.deepEqual(appliedMisfortune, [[target, 0.5]]);
+});
+
 test('deep sea surge turns every successful weapon hit critical and adds the current water value to damage', () => {
   const actor = {
     chip: { type: 'hero' },

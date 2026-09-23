@@ -175,6 +175,17 @@ test('reputation medium and large enemies use their bewildering words definition
   assert.equal(sphinx.chip.centerPath, '/assets/enemies/large-reputation.png');
 });
 
+test('fortune medium and large enemies use their misfortune curse definitions and assets', () => {
+  const factory = new EnemyFactory();
+  const leprechaun = factory.createFromDefinition({ enemyDefinitionId: 'medium-fortune', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const qilin = factory.createFromDefinition({ enemyDefinitionId: 'large-fortune', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(leprechaun.uniqueSkill, { id: 'fortune-misfortune-curse', level: 1 });
+  assert.equal(leprechaun.chip.centerPath, '/assets/enemies/medium-fortune.png');
+  assert.deepEqual(qilin.uniqueSkill, { id: 'fortune-misfortune-curse', level: 2 });
+  assert.equal(qilin.chip.centerPath, '/assets/enemies/large-fortune.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },
