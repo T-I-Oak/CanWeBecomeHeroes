@@ -142,6 +142,17 @@ test('water medium and large enemies use their deep sea surge definitions and as
   assert.equal(leviathan.chip.centerPath, '/assets/enemies/large-water.png');
 });
 
+test('fire medium and large enemies use their retaliation ember definitions and assets', () => {
+  const factory = new EnemyFactory();
+  const hellhound = factory.createFromDefinition({ enemyDefinitionId: 'medium-fire', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const phoenix = factory.createFromDefinition({ enemyDefinitionId: 'large-fire', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(hellhound.uniqueSkill, { id: 'fire-retaliation-ember', level: 1 });
+  assert.equal(hellhound.chip.centerPath, '/assets/enemies/medium-fire.png');
+  assert.deepEqual(phoenix.uniqueSkill, { id: 'fire-retaliation-ember', level: 2 });
+  assert.equal(phoenix.chip.centerPath, '/assets/enemies/large-fire.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },

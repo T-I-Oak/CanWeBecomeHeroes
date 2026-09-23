@@ -4006,6 +4006,28 @@
           "en": [{ "type": "text", "value": "Cloaks itself in a great volume of water and carries its force into every attack." }]
         } }
       },
+      "medium-fire": {
+        "name": { "lang-store": { "ja": "ヘルハウンド", "en": "Hellhound" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "火の粉をたてがみに宿す、地獄育ちの猟犬。噛みつかれた相手へ、燃える熱を移していく。" }],
+          "en": [{ "type": "text", "value": "A hell-bred hound with sparks caught in its mane. Every bite passes on searing heat." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "攻撃を受けると、相手へ炎属性を燃え移らせる。" }],
+          "en": [{ "type": "text", "value": "When hit, spreads fire to the attacker." }]
+        } }
+      },
+      "large-fire": {
+        "name": { "lang-store": { "ja": "フェニックス", "en": "Phoenix" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "燃える翼を大きく広げる、不死鳥の王。近づく者を包む炎は、触れた者へいつまでも残る。" }],
+          "en": [{ "type": "text", "value": "The sovereign of immortal birds spreads blazing wings wide. Its enveloping fire clings to all who touch it." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "攻撃を受けると、相手へ強い炎属性を燃え移らせる。" }],
+          "en": [{ "type": "text", "value": "When hit, spreads a stronger fire to the attacker." }]
+        } }
+      },
       "small-vitality": {
         "name": {
           "lang-store": {
@@ -4984,6 +5006,21 @@
         "levels": {
           "1": { "description": { "lang-store": { "ja": "自身に少し水属性を付与する。", "en": "Applies a little water to itself." } } },
           "2": { "description": { "lang-store": { "ja": "自身にかなり水属性を付与する。", "en": "Applies much water to itself." } } }
+        }
+      },
+      "fire-retaliation-ember": {
+        "name": { "lang-store": { "ja": "報復の火種", "en": "Retaliatory Ember" } },
+        "flavor": { "lang-store": {
+          "ja": "まとった炎は、触れる者へ容赦なく燃え移る。",
+          "en": "The flames it wears spread mercilessly to anyone who touches it."
+        } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "物理・魔法ダメージを受けたとき、相手に炎属性を付与する。" }],
+          "en": [{ "type": "text", "value": "When receiving physical or magic damage, applies fire to the attacker." }]
+        } },
+        "levels": {
+          "1": { "description": { "lang-store": { "ja": "炎属性を少し付与する。", "en": "Applies a little fire." } } },
+          "2": { "description": { "lang-store": { "ja": "炎属性をかなり付与する。", "en": "Applies much fire." } } }
         }
       },
       "shadow-fingertips": {

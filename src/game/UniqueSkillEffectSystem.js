@@ -26,6 +26,7 @@ export default class UniqueSkillEffectSystem {
       case 'arcane-reflection': return this.resolveArcaneReflection(skill, context);
       case 'cloth-night-familiars': return this.resolveClothNightFamiliars(skill);
       case 'water-deep-sea-surge': return this.resolveWaterDeepSeaSurge(entity, skill);
+      case 'fire-retaliation-ember': return this.resolveFireRetaliationEmber(entity, skill, context);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -97,6 +98,20 @@ export default class UniqueSkillEffectSystem {
 
   resolveWaterDeepSeaSurge(actor, skill) {
     return Object.freeze({ skill, selfAttribute: Object.freeze({ attribute: 'water', value: actor.getTagCount('water') }), waterDamageBonusRate: skill.levelDetail.waterDamageBonusRate });
+  }
+
+  resolveFireRetaliationEmber(owner, skill, { damageEvent } = {}) {
+    const isDirectAttack = damageEvent?.category === 'physical' || damageEvent?.category === 'magic';
+    const value = owner.getTagCount('fire') * skill.levelDetail.fireAttributeRate;
+    if (!isDirectAttack || !damageEvent.actor || damageEvent.damage <= 0 || value <= 0) return Object.freeze({ skill, retaliationAttribute: null });
+    return Object.freeze({
+      skill,
+      retaliationAttribute: Object.freeze({
+        actor: damageEvent.actor,
+        attribute: 'fire',
+        value,
+      }),
+    });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {

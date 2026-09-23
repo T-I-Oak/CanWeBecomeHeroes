@@ -90,6 +90,16 @@ const WATER_DEEP_SEA_SURGE = Object.freeze({
   }),
 });
 
+const FIRE_RETALIATION_EMBER = Object.freeze({
+  id: 'fire-retaliation-ember',
+  affinityTag: 'fire',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.damageReceived]),
+  levels: Object.freeze({
+    1: Object.freeze({ fireAttributeRate: 0.5 }),
+    2: Object.freeze({ fireAttributeRate: 1 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
@@ -100,6 +110,7 @@ export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [ARCANE_REFLECTION.id]: ARCANE_REFLECTION,
   [CLOTH_NIGHT_FAMILIARS.id]: CLOTH_NIGHT_FAMILIARS,
   [WATER_DEEP_SEA_SURGE.id]: WATER_DEEP_SEA_SURGE,
+  [FIRE_RETALIATION_EMBER.id]: FIRE_RETALIATION_EMBER,
 });
 
 export function getUniqueSkillDetail(id) {

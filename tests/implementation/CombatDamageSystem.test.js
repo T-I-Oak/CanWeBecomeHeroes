@@ -11,7 +11,7 @@ test('damage application exposes its complete event to damage reactions', () => 
   damageSystem.applyDamage(actor, target, 'staff', 2, true);
 
   assert.equal(target.hp, 3);
-  assert.deepEqual(events, [{ actor, target, type: 'staff', damage: 2, critical: true }]);
+  assert.deepEqual(events, [{ actor, target, type: 'staff', damage: 2, critical: true, category: null }]);
 });
 
 test('damage is rounded to hundredths before effects, logs, and reactions', () => {

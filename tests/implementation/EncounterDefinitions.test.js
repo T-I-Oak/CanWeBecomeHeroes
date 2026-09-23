@@ -14,10 +14,10 @@ test('regular encounter definitions provide complete concrete patterns for the a
 });
 
 test('elite and boss patterns include each implemented mid-boss and boss with its regular supports', () => {
-  assert.deepEqual(COMBINATION_PATTERNS.elite.map(({ main }) => main), ['medium-vitality', 'medium-gem', 'medium-area', 'medium-iron', 'medium-arcane', 'medium-cloth', 'medium-water']);
-  assert.deepEqual(COMBINATION_PATTERNS.boss.map(({ main }) => main), ['large-vitality', 'large-gem', 'large-area', 'large-iron', 'large-arcane', 'large-cloth', 'large-water']);
-  assert.deepEqual(COMBINATION_PATTERNS.elite.at(-1), { main: 'medium-water', support1: 'small-fortune', support2: 'small-cloth' });
-  assert.deepEqual(COMBINATION_PATTERNS.boss.at(-1), { main: 'large-water', support1: 'small-fortune', support2: 'small-cloth' });
+  assert.deepEqual(COMBINATION_PATTERNS.elite.map(({ main }) => main), ['medium-vitality', 'medium-gem', 'medium-area', 'medium-iron', 'medium-arcane', 'medium-cloth', 'medium-water', 'medium-fire']);
+  assert.deepEqual(COMBINATION_PATTERNS.boss.map(({ main }) => main), ['large-vitality', 'large-gem', 'large-area', 'large-iron', 'large-arcane', 'large-cloth', 'large-water', 'large-fire']);
+  assert.deepEqual(COMBINATION_PATTERNS.elite.at(-1), { main: 'medium-fire', support1: 'small-reputation', support2: 'small-valor' });
+  assert.deepEqual(COMBINATION_PATTERNS.boss.at(-1), { main: 'large-fire', support1: 'small-reputation', support2: 'small-valor' });
 });
 
 test('regular difficulty derives enemy count and each enemy tag budget from its level', () => {

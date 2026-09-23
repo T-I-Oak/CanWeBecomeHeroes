@@ -72,3 +72,17 @@ test('deep sea surge exposes the owner water value and the Ex-specific damage bo
   assert.deepEqual(effect.selfAttribute, { attribute: 'water', value: 3 });
   assert.equal(effect.waterDamageBonusRate, 0.5);
 });
+
+test('retaliation ember exposes a fire application only for an applied physical or magic damage event', () => {
+  const attacker = {};
+  const owner = { getTagCount: () => 4 };
+  const effectSystem = new UniqueSkillEffectSystem({
+    uniqueSkillSystem: { getTriggeredSkills: () => [{ id: 'fire-retaliation-ember', level: 1, levelDetail: { fireAttributeRate: 0.5 } }] },
+  });
+
+  const [physical] = effectSystem.resolve(owner, UNIQUE_SKILL_TRIGGER.damageReceived, { damageEvent: { actor: attacker, category: 'physical', damage: 1 } });
+  const [attribute] = effectSystem.resolve(owner, UNIQUE_SKILL_TRIGGER.damageReceived, { damageEvent: { actor: attacker, category: null, damage: 1 } });
+
+  assert.deepEqual(physical.retaliationAttribute, { actor: attacker, attribute: 'fire', value: 2 });
+  assert.equal(attribute.retaliationAttribute, null);
+});
