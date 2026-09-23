@@ -159,6 +159,14 @@ export const ENEMY_CATALOG = Object.freeze({
     id: 'large-fortune', size: 'large', tagAffinity: 'fortune', nameKey: 'enemy.largeFortune', assetPath: '/assets/enemies/large-fortune.png', intrinsicTags: Object.freeze(['fortune']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'fortune-misfortune-curse', level: 2 }),
   }),
+  'medium-feather': Object.freeze({
+    id: 'medium-feather', size: 'medium', tagAffinity: 'feather', nameKey: 'enemy.mediumFeather', assetPath: '/assets/enemies/medium-feather.png', intrinsicTags: Object.freeze(['feather']), baseHp: 2, baseContributionPoints: 50,
+    uniqueSkill: Object.freeze({ id: 'feather-storm-wings', level: 1 }),
+  }),
+  'large-feather': Object.freeze({
+    id: 'large-feather', size: 'large', tagAffinity: 'feather', nameKey: 'enemy.largeFeather', assetPath: '/assets/enemies/large-feather.png', intrinsicTags: Object.freeze(['feather']), baseHp: 2, baseContributionPoints: 250,
+    uniqueSkill: Object.freeze({ id: 'feather-storm-wings', level: 2 }),
+  }),
   'large-cloth': Object.freeze({
     id: 'large-cloth', size: 'large', tagAffinity: 'cloth', nameKey: 'enemy.largeCloth', assetPath: '/assets/enemies/large-cloth.png', intrinsicTags: Object.freeze(['cloth']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'cloth-night-familiars', level: 2 }),

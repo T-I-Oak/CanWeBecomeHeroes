@@ -6,8 +6,8 @@ import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 const NIGHT_FAMILIAR_ATTACK = Object.freeze(['power', 1 / 8]);
 
 export default class CombatActionResolutionSystem {
-  constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, knockbackSystem = null, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
-    Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, knockbackSystem, effects, gameLog, textRepository, random });
+  constructor({ board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, knockbackSystem = null, gustSystem = null, effects = null, gameLog = null, textRepository = null, random = Math.random }) {
+    Object.assign(this, { board, targetingSystem, attributeSystem, weaponEffectSystem, damageSystem, actionGaugeSystem, actionLog, projectionSystem, uniqueSkillSystem, uniqueSkillEffectSystem, conditionSystem, knockbackSystem, gustSystem, effects, gameLog, textRepository, random });
   }
 
   resolve(actor, target, participants, { preserveGaugePresentation = false } = {}) {
@@ -33,15 +33,18 @@ export default class CombatActionResolutionSystem {
     this.conditionSystem.clearBewilderment(actor);
     this.conditionSystem.clearMisfortune(actor);
     this.knockbackSystem?.resolveAction();
+    actionModifiers.gustTargets.forEach((gustTarget) => this.gustSystem?.begin(gustTarget));
   }
 
   resolveActionStartedUniqueSkill(actor, target, participants) {
     let waterDamageBonusRate = 0;
-    this.uniqueSkillEffectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target }).forEach(({ tagRemoval, twoEdgedSwordMultiplier, selfAttribute = null, waterDamageBonusRate: effectWaterDamageBonusRate = 0, bewildermentTarget = null, misfortuneTarget = null }) => {
+    const gustTargets = [];
+    this.uniqueSkillEffectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target }).forEach(({ tagRemoval, twoEdgedSwordMultiplier, selfAttribute = null, waterDamageBonusRate: effectWaterDamageBonusRate = 0, bewildermentTarget = null, misfortuneTarget = null, gustTarget = null }) => {
       if (twoEdgedSwordMultiplier) participants.forEach((combatant) => this.conditionSystem.applyTwoEdgedSword(combatant, twoEdgedSwordMultiplier));
       if (selfAttribute) this.attributeSystem.applySelfAttribute(actor, selfAttribute.attribute, selfAttribute.value);
       if (bewildermentTarget) this.conditionSystem.applyBewilderment(bewildermentTarget);
       if (misfortuneTarget) this.conditionSystem.applyMisfortune(misfortuneTarget.target, misfortuneTarget.damageRate);
+      if (gustTarget) gustTargets.push(gustTarget);
       waterDamageBonusRate = Math.max(waterDamageBonusRate, effectWaterDamageBonusRate);
       if (!tagRemoval) return;
       const tag = tagRemoval.sourceItem.removeTagAt(tagRemoval.tagIndex);
@@ -52,7 +55,7 @@ export default class CombatActionResolutionSystem {
       this.actionGaugeSystem?.updateMaximum(target);
       this.actionGaugeSystem?.updateMaximum(actor);
     });
-    return Object.freeze({ waterDamageBonusRate });
+    return Object.freeze({ waterDamageBonusRate, gustTargets: Object.freeze(gustTargets) });
   }
 
   attackTypes(actor) {

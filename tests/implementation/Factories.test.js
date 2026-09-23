@@ -186,6 +186,17 @@ test('fortune medium and large enemies use their misfortune curse definitions an
   assert.equal(qilin.chip.centerPath, '/assets/enemies/large-fortune.png');
 });
 
+test('feather medium and large enemies use their storm wings definitions and existing assets', () => {
+  const factory = new EnemyFactory();
+  const griffin = factory.createFromDefinition({ enemyDefinitionId: 'medium-feather', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const wyvern = factory.createFromDefinition({ enemyDefinitionId: 'large-feather', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(griffin.uniqueSkill, { id: 'feather-storm-wings', level: 1 });
+  assert.equal(griffin.chip.centerPath, '/assets/enemies/medium-feather.png');
+  assert.deepEqual(wyvern.uniqueSkill, { id: 'feather-storm-wings', level: 2 });
+  assert.equal(wyvern.chip.centerPath, '/assets/enemies/large-feather.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },

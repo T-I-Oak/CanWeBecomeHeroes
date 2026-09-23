@@ -1,6 +1,6 @@
 import { LARGE_ENEMY_SLOT_SPAN } from './HeroSlotLayout.js';
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
-import { getEquipmentItems, isEntityOnBoard } from './CombatParticipant.js';
+import { getEquipmentItems, isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
 const INNER_TO_OUTER_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);
 
@@ -30,6 +30,7 @@ export default class UniqueSkillEffectSystem {
       case 'lightning-thunder-drain': return this.resolveLightningThunderDrain(skill, context);
       case 'reputation-bewildering-words': return this.resolveReputationBewilderingWords(entity, skill, context);
       case 'fortune-misfortune-curse': return this.resolveFortuneMisfortuneCurse(entity, skill, context);
+      case 'feather-storm-wings': return this.resolveFeatherStormWings(entity, skill, context);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -132,6 +133,11 @@ export default class UniqueSkillEffectSystem {
   resolveFortuneMisfortuneCurse(actor, skill, { target = null } = {}) {
     if (!target || this.random() >= actor.getLuckDegree() * skill.levelDetail.luckRateMultiplier) return Object.freeze({ skill, misfortuneTarget: null });
     return Object.freeze({ skill, misfortuneTarget: Object.freeze({ target, damageRate: skill.levelDetail.selfDamageRate }) });
+  }
+
+  resolveFeatherStormWings(actor, skill, { target = null } = {}) {
+    if (!isHeroCombatant(target) || this.random() >= actor.getLuckDegree() * skill.levelDetail.luckRateMultiplier) return Object.freeze({ skill, gustTarget: null });
+    return Object.freeze({ skill, gustTarget: target });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {

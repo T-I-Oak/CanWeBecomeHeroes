@@ -12,12 +12,16 @@ export default class ItemPickupController {
   start(hero, item, secondItem = null) {
     const previous = this.states.get(hero);
     if (previous?.item) previous.item.chip.isPickupTarget = false;
+    this.leaveForWarehouse(hero);
+    if (item) item.chip.isPickupTarget = true;
+    this.states.set(hero, { hero, item, selectedItems: secondItem ? [secondItem] : [], absorption: null, destinationSlot: null });
+  }
+
+  leaveForWarehouse(hero) {
     this.slotManager.release(hero);
     hero.chip.bounds = null;
     hero.targetArea = 'warehouse';
     hero.currentArea = null;
-    item.chip.isPickupTarget = true;
-    this.states.set(hero, { hero, item, selectedItems: secondItem ? [secondItem] : [], absorption: null, destinationSlot: null });
   }
 
   update(items, deltaSeconds) {
