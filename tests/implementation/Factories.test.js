@@ -153,6 +153,17 @@ test('fire medium and large enemies use their retaliation ember definitions and 
   assert.equal(phoenix.chip.centerPath, '/assets/enemies/large-fire.png');
 });
 
+test('lightning medium and large enemies use their thunder drain definitions and assets', () => {
+  const factory = new EnemyFactory();
+  const thunderbird = factory.createFromDefinition({ enemyDefinitionId: 'medium-lightning', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const thunderDragon = factory.createFromDefinition({ enemyDefinitionId: 'large-lightning', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(thunderbird.uniqueSkill, { id: 'lightning-thunder-drain', level: 1 });
+  assert.equal(thunderbird.chip.centerPath, '/assets/enemies/medium-lightning.png');
+  assert.deepEqual(thunderDragon.uniqueSkill, { id: 'lightning-thunder-drain', level: 2 });
+  assert.equal(thunderDragon.chip.centerPath, '/assets/enemies/large-lightning.png');
+});
+
 test('entity tag counts use the corresponding status maximum while keeping raw equipment tags', () => {
   const hero = new Hero({
     profession: 'test', name: {}, chip: { weight: 0 },

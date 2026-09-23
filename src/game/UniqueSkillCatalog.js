@@ -100,6 +100,16 @@ const FIRE_RETALIATION_EMBER = Object.freeze({
   }),
 });
 
+const LIGHTNING_THUNDER_DRAIN = Object.freeze({
+  id: 'lightning-thunder-drain',
+  affinityTag: 'lightning',
+  triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.damageReceived]),
+  levels: Object.freeze({
+    1: Object.freeze({ currentGaugeStealRate: 0.1 }),
+    2: Object.freeze({ currentGaugeStealRate: 0.2 }),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
@@ -111,6 +121,7 @@ export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [CLOTH_NIGHT_FAMILIARS.id]: CLOTH_NIGHT_FAMILIARS,
   [WATER_DEEP_SEA_SURGE.id]: WATER_DEEP_SEA_SURGE,
   [FIRE_RETALIATION_EMBER.id]: FIRE_RETALIATION_EMBER,
+  [LIGHTNING_THUNDER_DRAIN.id]: LIGHTNING_THUNDER_DRAIN,
 });
 
 export function getUniqueSkillDetail(id) {

@@ -115,7 +115,7 @@ export default class CombatActionResolutionSystem {
       if (type === 'claw') this.weaponEffectSystem.resolveTheft(actor, rangeTarget);
       const dealt = attack[0] === 'power'
         ? this.damageSystem.applyPhysicalDamage(actor, rangeTarget, type, damage, critical, participants, { propagate: (...args) => this.propagate(...args) })
-        : this.damageSystem.applyDamage(actor, rangeTarget, type, damage, critical, { category: 'magic' });
+        : this.damageSystem.applyDamage(actor, rangeTarget, type, damage, critical, { category: 'magic', participants });
       this.propagate(actor, rangeTarget, type, dealt, participants);
     });
   }

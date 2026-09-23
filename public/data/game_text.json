@@ -4028,6 +4028,28 @@
           "en": [{ "type": "text", "value": "When hit, spreads a stronger fire to the attacker." }]
         } }
       },
+      "medium-lightning": {
+        "name": { "lang-store": { "ja": "サンダーバード", "en": "Thunderbird" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "雷雲を翼にまとい、嵐の中を舞う巨鳥。帯電した相手の力を、ひと息に奪い取る。" }],
+          "en": [{ "type": "text", "value": "A great bird that rides storms with thunderclouds in its wings. It draws away the strength of charged foes." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "雷属性をまとった相手の行動を遅らせる。" }],
+          "en": [{ "type": "text", "value": "Slows actions of opponents carrying lightning." }]
+        } }
+      },
+      "large-lightning": {
+        "name": { "lang-store": { "ja": "雷龍", "en": "Thunder Dragon" } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "嵐を呼ぶ雷雲の主。稲妻が触れた敵の力を吸い上げ、次の一撃へ変えていく。" }],
+          "en": [{ "type": "text", "value": "Master of storm clouds. It draws up the strength of foes touched by lightning and turns it into its next blow." }]
+        } },
+        "combatStyle": { "lang-store": {
+          "ja": [{ "type": "text", "value": "雷属性をまとった相手全員の行動を大きく遅らせる。" }],
+          "en": [{ "type": "text", "value": "Greatly slows every opponent carrying lightning." }]
+        } }
+      },
       "small-vitality": {
         "name": {
           "lang-store": {
@@ -5021,6 +5043,21 @@
         "levels": {
           "1": { "description": { "lang-store": { "ja": "炎属性を少し付与する。", "en": "Applies a little fire." } } },
           "2": { "description": { "lang-store": { "ja": "炎属性をかなり付与する。", "en": "Applies much fire." } } }
+        }
+      },
+      "lightning-thunder-drain": {
+        "name": { "lang-store": { "ja": "雷鳴の収奪", "en": "Thunder Drain" } },
+        "flavor": { "lang-store": {
+          "ja": "放たれた稲妻が、次の一手に宿る力まで奪い去る。",
+          "en": "A cast bolt steals even the strength gathered for the next move."
+        } },
+        "description": { "lang-store": {
+          "ja": [{ "type": "text", "value": "雷属性が付与された相手から攻撃を受けたとき、相手全員のたまった力を奪う。" }],
+          "en": [{ "type": "text", "value": "When hit by an opponent carrying lightning, steals the power gathered by all opponents." }]
+        } },
+        "levels": {
+          "1": { "description": { "lang-store": { "ja": "相手全員から少し力を奪う。", "en": "Steals a little power from every opponent." } } },
+          "2": { "description": { "lang-store": { "ja": "相手全員からかなり力を奪う。", "en": "Steals much power from every opponent." } } }
         }
       },
       "shadow-fingertips": {

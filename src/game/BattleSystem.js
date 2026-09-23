@@ -92,6 +92,7 @@ export default class BattleSystem {
       itemFactory,
       uniqueSkillEffectSystem: this.uniqueSkillEffectSystem,
       attributeSystem: this.attributeSystem,
+      actionGaugeSystem,
       getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
       knockbackSystem: this.knockbackSystem,
       conditionSystem: this.conditionSystem,

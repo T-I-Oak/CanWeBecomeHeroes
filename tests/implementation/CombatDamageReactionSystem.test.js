@@ -45,3 +45,23 @@ test('retaliation ember ignores rounded-zero, attribute, and reflection damage',
 
   assert.deepEqual(applications, []);
 });
+
+test('thunder drain transfers a rate of every opposing participant current gauge to its owner', () => {
+  const owner = { chip: { type: 'enemy', actionGauge: 1 } };
+  const attacker = { chip: { type: 'hero', actionGauge: 5 } };
+  const ally = { chip: { type: 'hero', actionGauge: 3 } };
+  const calls = [];
+  const reactions = new CombatDamageReactionSystem({
+    controller: null,
+    itemFactory: null,
+    getWarehouseDropPosition: () => ({ x: 0, y: 0 }),
+    actionGaugeSystem: { stealCurrentGauge: (...args) => calls.push(args) },
+    uniqueSkillEffectSystem: {
+      resolve: () => [{ actionGaugeAbsorption: { currentGaugeStealRate: 0.2 } }],
+    },
+  });
+
+  reactions.resolve({ actor: attacker, target: owner, participants: [owner, attacker, ally] });
+
+  assert.deepEqual(calls, [[owner, [attacker, ally], 0.2]]);
+});

@@ -27,6 +27,7 @@ export default class UniqueSkillEffectSystem {
       case 'cloth-night-familiars': return this.resolveClothNightFamiliars(skill);
       case 'water-deep-sea-surge': return this.resolveWaterDeepSeaSurge(entity, skill);
       case 'fire-retaliation-ember': return this.resolveFireRetaliationEmber(entity, skill, context);
+      case 'lightning-thunder-drain': return this.resolveLightningThunderDrain(skill, context);
       default: throw new RangeError(`Unsupported unique skill effect: ${skill.id}`);
     }
   }
@@ -112,6 +113,13 @@ export default class UniqueSkillEffectSystem {
         value,
       }),
     });
+  }
+
+  resolveLightningThunderDrain(skill, { damageEvent } = {}) {
+    const isDirectAttack = damageEvent?.category === 'physical' || damageEvent?.category === 'magic';
+    const lightningValue = damageEvent?.actor?.attributes?.lightning ?? 0;
+    if (!isDirectAttack || lightningValue <= 0 || damageEvent.damage <= 0) return Object.freeze({ skill, actionGaugeAbsorption: null });
+    return Object.freeze({ skill, actionGaugeAbsorption: Object.freeze({ currentGaugeStealRate: skill.levelDetail.currentGaugeStealRate }) });
   }
 
   getAvailableSummonSlots(excludedEnemy = null, reservedSlots = []) {

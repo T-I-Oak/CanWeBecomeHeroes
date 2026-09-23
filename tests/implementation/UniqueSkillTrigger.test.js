@@ -15,6 +15,7 @@ test('unique skills declare their semantic trigger in one shared catalog', () =>
   assert.equal(hasUniqueSkillTrigger(UNIQUE_SKILL_CATALOG['cloth-night-familiars'], UNIQUE_SKILL_TRIGGER.actionCompleted), true);
   assert.equal(hasUniqueSkillTrigger(UNIQUE_SKILL_CATALOG['water-deep-sea-surge'], UNIQUE_SKILL_TRIGGER.actionStarted), true);
   assert.equal(hasUniqueSkillTrigger(UNIQUE_SKILL_CATALOG['fire-retaliation-ember'], UNIQUE_SKILL_TRIGGER.damageReceived), true);
+  assert.equal(hasUniqueSkillTrigger(UNIQUE_SKILL_CATALOG['lightning-thunder-drain'], UNIQUE_SKILL_TRIGGER.damageReceived), true);
 });
 
 test('a matching unique skill enters its hook, while effect-specific chance remains in its own definition', () => {
