@@ -186,6 +186,17 @@ test('fortune medium and large enemies use their misfortune curse definitions an
   assert.equal(qilin.chip.centerPath, '/assets/enemies/large-fortune.png');
 });
 
+test('blessing medium and large enemies use their fallen blessing definitions and existing assets', () => {
+  const factory = new EnemyFactory();
+  const demon = factory.createFromDefinition({ enemyDefinitionId: 'medium-blessing', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+  const fallenAngel = factory.createFromDefinition({ enemyDefinitionId: 'large-blessing', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });
+
+  assert.deepEqual(demon.uniqueSkill, { id: 'blessing-random', level: 1 });
+  assert.equal(demon.chip.centerPath, '/assets/enemies/medium-blessing.png');
+  assert.deepEqual(fallenAngel.uniqueSkill, { id: 'blessing-random', level: 2 });
+  assert.equal(fallenAngel.chip.centerPath, '/assets/enemies/large-blessing.png');
+});
+
 test('feather medium and large enemies use their storm wings definitions and existing assets', () => {
   const factory = new EnemyFactory();
   const griffin = factory.createFromDefinition({ enemyDefinitionId: 'medium-feather', slotPosition: 3, totalTagCount: 0, weaponCount: 0 });

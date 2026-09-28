@@ -1,8 +1,8 @@
 import test from 'node:test';
-import gameText from '../../public/data/game_text.json' with { type: 'json' };
-import GameTextRepository from '../../src/game/GameTextRepository.js';
+import gameText from '../../src/game/readGameText.js';
+import GameTextRepository, { textPart } from '../../src/game/GameTextRepository.js';
 import { expandLanguageResource } from '../../../GameWorksOAK/src/lib/core/i18n.js';
-const textRepository = await new GameTextRepository({ loadResource: async () => expandLanguageResource(gameText) }).load();
+const textRepository = await new GameTextRepository({ loadResource: async (path) => textPart(expandLanguageResource(gameText), path) }).load();
 import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import BattleSystem, { BATTLE_VICTORY_DELAY_TICKS, WEAPON_ATTACKS, getActionGaugeMaximum, getAttackDamage, getRandomModifier } from '../../src/game/BattleSystem.js';

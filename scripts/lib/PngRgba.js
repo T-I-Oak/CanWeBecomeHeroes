@@ -1,5 +1,5 @@
-import { inflateSync } from 'node:zlib';
-import { readFileSync } from 'node:fs';
+import { deflateSync, inflateSync } from 'node:zlib';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 const PNG_SIGNATURE = '89504e470d0a1a0a';
 const PNG_FILTER_BYTES = Object.freeze({ NONE: 0, SUB: 1, UP: 2, AVERAGE: 3, PAETH: 4 });
@@ -73,4 +73,47 @@ export function forEachVisiblePixel(image, visit, alphaThreshold = 16) {
       if (alpha > alphaThreshold) visit(x, y, alpha);
     }
   }
+}
+
+function crc32(buffer) {
+  let value = 0xffffffff;
+  for (const byte of buffer) {
+    value ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) value = (value >>> 1) ^ (value & 1 ? 0xedb88320 : 0);
+  }
+  return (value ^ 0xffffffff) >>> 0;
+}
+
+function createChunk(type, data) {
+  const typeBuffer = Buffer.from(type, 'ascii');
+  const chunk = Buffer.alloc(data.length + 12);
+  chunk.writeUInt32BE(data.length, 0);
+  typeBuffer.copy(chunk, 4);
+  data.copy(chunk, 8);
+  chunk.writeUInt32BE(crc32(Buffer.concat([typeBuffer, data])), data.length + 8);
+  return chunk;
+}
+
+/** Writes a non-interlaced, 8-bit RGBA PNG. */
+export function writeRgbaPng(path, { width, height, pixels }) {
+  if (pixels.length !== width * height * 4) throw new RangeError('RGBA buffer dimensions do not match.');
+  const stride = width * 4;
+  const scanlines = Buffer.alloc((stride + 1) * height);
+  for (let row = 0; row < height; row += 1) {
+    const targetOffset = row * (stride + 1);
+    scanlines[targetOffset] = PNG_FILTER_BYTES.NONE;
+    Buffer.from(pixels.buffer, pixels.byteOffset + row * stride, stride).copy(scanlines, targetOffset + 1);
+  }
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8;
+  header[9] = 6;
+  const output = Buffer.concat([
+    Buffer.from(PNG_SIGNATURE, 'hex'),
+    createChunk('IHDR', header),
+    createChunk('IDAT', deflateSync(scanlines)),
+    createChunk('IEND', Buffer.alloc(0)),
+  ]);
+  writeFileSync(path, output);
 }

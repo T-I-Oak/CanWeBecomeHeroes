@@ -1016,6 +1016,48 @@ body {
   background: rgb(18 27 41 / 72%);
 }
 
+.VignetteModal {
+  background: rgb(8 13 20 / 78%);
+}
+
+.VignetteModal__Frame {
+  position: absolute;
+  box-sizing: content-box;
+  border: 4px solid var(--color-modal-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 18px 54px rgb(0 0 0 / 45%);
+  line-height: 0;
+}
+
+.VignetteModal__Stage {
+  position: absolute;
+  display: block;
+  background: #6f8f62;
+}
+
+.VignetteModal__Skip {
+  position: absolute;
+  right: clamp(10px, 3vmin, 28px);
+  bottom: clamp(10px, 3vmin, 28px);
+  z-index: 1;
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 2px solid #d3ad62;
+  border-radius: 8px;
+  background: #2c4736;
+  color: #fff4d5;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.VignetteModal__Skip:focus-visible {
+  outline: 2px solid #f0cb79;
+  outline-offset: 2px;
+}
+
 .TrialRunResult {
   background: rgb(8 13 20 / 78%);
 }
@@ -1335,7 +1377,93 @@ body {
 .StartPartySelection__Slot.state-locked { background: #46536a; border-color: #758397; box-shadow: none; }
 .StartPartySelection__Slot.state-clickable { cursor: pointer; transition: transform 180ms ease, filter 180ms ease; }
 .StartPartySelection__Slot.state-clickable:hover, .StartPartySelection__Slot.state-clickable:focus-visible { filter: brightness(1.14); transform: translateY(-3px); }
-.StartPartySelection__StartButton { min-width: min(240px, 100%); min-height: 44px; padding: 8px 16px; color: #fff3d0; font-weight: 700; background: linear-gradient(#bd8b3b, #825019); border: 2px solid #f0cb79; border-radius: 7px; }
+.StartPartySelection__StartButton,
+.ModalDialog__PrimaryButton { min-width: min(240px, 100%); min-height: 44px; padding: 8px 16px; color: #fff3d0; font-weight: 700; background: linear-gradient(#bd8b3b, #825019); border: 2px solid #f0cb79; border-radius: 7px; }
+
+.AppShell.state-title .HudPanel,
+.AppShell.state-title .FlowLog { visibility: hidden; }
+
+.TitleMenu {
+  background-color: #2a241c;
+  background-repeat: repeat;
+  background-size: auto;
+  padding: 0;
+  place-items: stretch;
+}
+.TitleMenu__Stage { position: relative; width: 100%; height: 100%; }
+.TitleMenu__Chips { position: absolute; inset: 0; width: 100%; height: 100%; }
+.TitleMenu__Shade { position: absolute; inset: 0; background: rgb(12 16 24 / 46%); }
+.TitleMenu__Content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  height: 100%;
+  pointer-events: none;
+}
+.TitleMenu__Logo {
+  display: block;
+  width: min(640px, 88vw);
+  max-height: 28vh;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgb(0 0 0 / 45%));
+}
+.TitleMenu__Credit {
+  position: absolute;
+  z-index: 1;
+  left: 24px;
+  bottom: 20px;
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  color: rgb(255 255 255 / 74%);
+  font: 700 13px system-ui, sans-serif;
+  text-shadow: 0 0 3px rgb(28 20 13 / 82%);
+  pointer-events: none;
+}
+.TitleMenu__Portal {
+  color: #d5ebff;
+  pointer-events: auto;
+}
+.TitleMenu__Menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: auto;
+}
+.TitleMenu__Menu.state-hidden { display: none; }
+.TitleMenu__Panel {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: auto;
+}
+.TitleMenu__Panel.state-open { display: flex; }
+.TitleMenu__PanelBody { display: none; }
+.TitleMenu__PanelBody.state-open { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.TitleMenu__Command {
+  min-width: min(280px, 78vw);
+  padding: 12px 18px;
+  border: 2px solid #bc8d3c;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #3d3224, #241c14);
+  color: #f4e7cf;
+  font: inherit;
+  font-size: 18px;
+}
+.TitleMenu__Command.state-primary {
+  padding: 16px 22px;
+  border-color: #f0cb79;
+  background: linear-gradient(#bd8b3b, #825019);
+  color: #fff3d0;
+  font-size: 28px;
+  font-weight: 700;
+}
+.TitleMenu__Message { margin: 0; color: #f4e7cf; text-align: center; }
+.TitleMenu__LanguageLabel { display: flex; flex-direction: column; gap: 8px; color: #f4e7cf; }
 
 .StageSelection__Dialog {
   width: min(920px, 100%);
@@ -1489,6 +1617,22 @@ body {
   visibility: visible;
   animation: flow-log-right-to-left var(--flow-duration-adjusted, var(--flow-duration, 6s)) linear backwards;
 }
+
+.FlowLog__Reference {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.16em;
+}
+.FlowLog__ReferenceLabel { line-height: 1; }
+.FlowLog__ReferenceIcon,
+.FlowLog__Reference .FlowLog__TermIcon {
+  width: 1.5em;
+  height: 1.5em;
+  flex: 0 0 1.5em;
+  align-self: center;
+  transform: translateY(-0.2em);
+}
+.FlowLog__ReferenceIcon { object-fit: contain; }
 
 .FlowLog__Message {
   margin: 0;

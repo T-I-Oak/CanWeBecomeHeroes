@@ -1,21 +1,42 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import gameText from '../../public/data/game_text.json' with { type: 'json' };
+import gameText from '../../src/game/readGameText.js';
 import { expandLanguageResource, setLanguage } from '../../../GameWorksOAK/src/lib/core/i18n.js';
-import GameTextRepository from '../../src/game/GameTextRepository.js';
+import GameTextRepository, { textPart } from '../../src/game/GameTextRepository.js';
 import GameLog from '../../src/game/GameLog.js';
 import FlowLog from '../../src/app/FlowLog.js';
 import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import { refreshLocalizedUI } from '../../src/app/LocalizedUI.js';
+import { createLogMessageParts } from '../../src/game/LogPresentation.js';
 import { drawGuildPanel } from '../../src/app/GuildPanel.js';
 
 test('markup localization attributes reference defined UI labels', async () => {
   const markup = await readFile(new URL('../../index.html', import.meta.url), 'utf8');
-  const texts = await new GameTextRepository({ loadResource: async () => expandLanguageResource(gameText) }).load();
+  const texts = await new GameTextRepository({ loadResource: async (path) => textPart(expandLanguageResource(gameText), path) }).load();
   const labelIds = [...markup.matchAll(/data-ui(?:-aria)?="([^"]+)"/g)].map(([, id]) => id);
 
   labelIds.forEach((id) => assert.doesNotThrow(() => texts.getLabel(id)));
+});
+
+test('log references keep an icon path and identity for a later history link', async () => {
+  setLanguage('ja');
+  const texts = await new GameTextRepository({ loadResource: async (path) => textPart(expandLanguageResource(gameText), path) }).load();
+  const parts = createLogMessageParts(texts, {
+    key: 'logDamage',
+    values: {
+      actor: { kind: 'hero', heroId: 'Avery', profession: 'swordfighter', framed: true },
+      target: { kind: 'enemy', id: 'small-valor', framed: true },
+      damage: 125,
+    },
+  });
+  const actor = parts.find((part) => part.kind === 'hero');
+  const target = parts.find((part) => part.kind === 'enemy');
+  assert.equal(actor.id, 'Avery');
+  assert.match(actor.iconPath, /swoardfighter\.png$/);
+  assert.equal(target.id, 'small-valor');
+  assert.match(target.iconPath, /small-valor\.png$/);
+  assert.equal(parts.some((part) => part.type === 'text' && part.value.includes('125')), true);
 });
 
 test('UI and historical log text follow language changes without replacing state', async () => {
@@ -27,7 +48,7 @@ test('UI and historical log text follow language changes without replacing state
   } });
   try {
     setLanguage('ja');
-    const texts = await new GameTextRepository({ loadResource: async () => expandLanguageResource(gameText) }).load();
+    const texts = await new GameTextRepository({ loadResource: async (path) => textPart(expandLanguageResource(gameText), path) }).load();
     const log = new GameLog({ textRepository: texts, now: () => 123 });
     const event = { key: 'logDamage', values: {
       actor: { kind: 'hero', heroId: 'Avery', profession: 'swordfighter', framed: true },

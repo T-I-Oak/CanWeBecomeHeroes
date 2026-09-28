@@ -35,6 +35,10 @@ export default class Chip {
     this.actionVisualCount = 0;
     this.attributeValues = null;
     this.physicalDamageReduction = 0;
+    this.twoEdgedSwordMultiplier = 0;
+    this.bewildered = false;
+    this.misfortuneDamageRate = 0;
+    this.nightFamiliarCount = 0;
     this.effectOffsetX = 0;
     this.effectOffsetY = 0;
     this.effectRotation = 0;

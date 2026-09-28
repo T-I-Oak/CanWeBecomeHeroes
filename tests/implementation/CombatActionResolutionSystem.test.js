@@ -147,7 +147,9 @@ test('night familiar visuals use one asset at distinct positions around the owne
   const source = { chip: { x: 100, y: 120, height: 20, radius: 64 } };
 
   effects.summonNightFamiliars(source, 3);
-  const positions = [0, 1, 2].map((index) => effects.getNightFamiliarOrbitPosition(source.chip, index, 3));
+  effects.elapsedSeconds = 0.45;
+  const familiars = effects.nightFamiliars.get(source.chip);
+  const positions = [0, 1, 2].map((index) => effects.getNightFamiliarOrbitPosition(familiars, index));
 
   assert.equal(effects.nightFamiliars.get(source.chip).count, 3);
   assert.equal(new Set(positions.map(({ x, y }) => `${x},${y}`)).size, 3);

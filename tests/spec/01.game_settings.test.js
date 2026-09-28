@@ -48,14 +48,14 @@ test('試験ゲームランは第7試験のボス勝利で合格となり、そ�
     wasRunActive: true,
     runController: run,
     members,
-    heroProgress: { unlockMany: (professions) => unlocked.push(...professions) },
+    heroProgress: { unlockMany: (professions) => unlocked.push(...professions), recordTrialClear() {} },
   }), true);
   assert.deepEqual(unlocked, ['swordfighter', 'mage', 'guard']);
 });
 
 test('ゲームラン中に加入したHeroは、試験クリアーまで解放済みにならない', () => {
   const unlockCalls = [];
-  const heroProgress = { unlockMany: (professionIds) => unlockCalls.push(professionIds) };
+  const heroProgress = { unlockMany: (professionIds) => unlockCalls.push(professionIds), recordTrialClear() {} };
   const members = [{ profession: 'swordfighter' }, { profession: 'mage' }];
 
   assert.equal(unlockClearedTrialMembers({ wasRunActive: true, runController: { state: 'active' }, members, heroProgress }), false);
@@ -64,7 +64,7 @@ test('ゲームラン中に加入したHeroは、試験クリアーまで解放�
 
 test('クリアー済みのゲームランは、その時点のメンバーを一度だけ解放する', () => {
   const unlockCalls = [];
-  const heroProgress = { unlockMany: (professionIds) => unlockCalls.push(professionIds) };
+  const heroProgress = { unlockMany: (professionIds) => unlockCalls.push(professionIds), recordTrialClear() {} };
   const members = [{ profession: 'swordfighter' }, { profession: 'mage' }];
   const clearedRun = { state: 'cleared' };
 
@@ -87,6 +87,7 @@ test('試験合格で解放したHeroは次回のパーティー選択に引き�
 
   assert.deepEqual(new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() }).professionIds, ['swordfighter', 'guard']);
   assert.deepEqual(heroProgress.getUnlockedProfessionIds(), ['swordfighter', 'guard', 'mage']);
+  assert.equal(heroProgress.hasClearedTrial(), true);
 });
 
 test('試験ゲームランは最終ボス勝利前に期限切れなら不合格となる', () => {

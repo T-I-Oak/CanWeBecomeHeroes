@@ -1,0 +1,54 @@
+{
+  "area": {
+    "preparation": {
+      "name": {
+        "lang-store": {
+          "ja": "Home",
+          "en": "Home"
+        }
+      }
+    },
+    "warehouse": {
+      "name": {
+        "lang-store": {
+          "ja": "Warehouse",
+          "en": "Warehouse"
+        }
+      }
+    },
+    "battle": {
+      "name": {
+        "lang-store": {
+          "ja": "Battle",
+          "en": "Battle"
+        }
+      }
+    }
+  },
+  "facility": {
+    "shop": {
+      "name": {
+        "lang-store": {
+          "ja": "Shop",
+          "en": "Shop"
+        }
+      }
+    },
+    "guild": {
+      "name": {
+        "lang-store": {
+          "ja": "Guild",
+          "en": "Guild"
+        }
+      }
+    },
+    "training": {
+      "name": {
+        "lang-store": {
+          "ja": "Training",
+          "en": "Training"
+        }
+      }
+    }
+  }
+}

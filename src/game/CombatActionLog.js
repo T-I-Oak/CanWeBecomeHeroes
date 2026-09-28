@@ -1,4 +1,5 @@
 import { entityText, logText } from './LocalizedLog.js';
+import { logUniqueSkill, termText } from './UniqueSkillLog.js';
 import { isHeroCombatant } from './CombatParticipant.js';
 
 const MINIMUM_LOGGED_DAMAGE = 0.01;
@@ -9,7 +10,15 @@ export default class CombatActionLog {
     this.results = null;
   }
 
-  begin() { this.results = new Map(); }
+  begin() {
+    this.results = new Map();
+    this.misfortuneDamage = new Map();
+  }
+
+  recordMisfortune(actor, damage) {
+    if (!this.misfortuneDamage || !actor || damage <= 0) return;
+    this.misfortuneDamage.set(actor, (this.misfortuneDamage.get(actor) ?? 0) + damage);
+  }
 
   recordMiss(actor, target) {
     if (!this.results || !actor || !target) return;
@@ -31,7 +40,11 @@ export default class CombatActionLog {
   flush() {
     if (!this.results) return;
     this.results.forEach((targets) => targets.forEach((result) => this.logResult(result)));
+    this.misfortuneDamage?.forEach((damage, actor) => {
+      logUniqueSkill(this.gameLog, this.textRepository, 'logMisfortuneSelf', { condition: termText('misfortune'), actor: entityText(actor), damage: Math.round(damage * 100) }, actor);
+    });
     this.results = null;
+    this.misfortuneDamage = null;
   }
 
   getResult(actor, target) {

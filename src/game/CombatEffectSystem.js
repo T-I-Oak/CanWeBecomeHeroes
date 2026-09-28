@@ -6,6 +6,8 @@ const HIT_RECOVERY = 0.34;
 const TAG_TRANSFER_DURATION = 0.32;
 const NIGHT_FAMILIAR_FLIGHT_DURATION = 0.28;
 const NIGHT_FAMILIAR_ASSET_PATH = '/assets/effects/night-familiar.png';
+const BEWILDERMENT_ASSET_PATH = '/assets/effects/bewilderment-swirl.png';
+const BEWILDERMENT_SWIRL_COUNT = 3;
 
 function visualPosition(chip) {
   return {
@@ -23,6 +25,7 @@ export default class CombatEffectSystem {
     this.lightning = [];
     this.tagTransfers = [];
     this.nightFamiliars = new Map();
+    this.bewildered = new Set();
     this.nightFamiliarFlights = [];
     this.elapsedSeconds = 0;
     this.actionResults = null;
@@ -96,8 +99,12 @@ export default class CombatEffectSystem {
     this.tagTransfers.push({ from: from.chip, to: to.chip, tag, elapsed: 0, duration: TAG_TRANSFER_DURATION });
   }
 
+  bewilder(combatant) { this.bewildered.add(combatant.chip); }
+
+  clearBewilderment(combatant) { this.bewildered.delete(combatant.chip); }
+
   summonNightFamiliars(source, count) {
-    this.nightFamiliars.set(source.chip, { source: source.chip, count });
+    this.nightFamiliars.set(source.chip, { source: source.chip, count, appearedAt: this.elapsedSeconds });
   }
 
   removeNightFamiliar(source) {
@@ -217,11 +224,16 @@ export default class CombatEffectSystem {
     });
     if (assets) {
       this.nightFamiliars.forEach((familiars) => {
-        for (let index = 0; index < familiars.count; index += 1) this.drawNightFamiliar(context, assets, this.getNightFamiliarOrbitPosition(familiars.source, index, familiars.count));
+        for (let index = 0; index < familiars.count; index += 1) this.drawNightFamiliar(context, assets, this.getNightFamiliarOrbitPosition(familiars, index));
+      });
+      this.bewildered.forEach((chip) => {
+        for (let index = 0; index < BEWILDERMENT_SWIRL_COUNT; index += 1) {
+          this.drawEffectSprite(context, assets, BEWILDERMENT_ASSET_PATH, this.getBewildermentSwirlPose(chip, index));
+        }
       });
       this.nightFamiliarFlights.forEach((effect) => {
         const progress = Math.min(1, effect.elapsed / NIGHT_FAMILIAR_FLIGHT_DURATION);
-        const from = this.getNightFamiliarOrbitPosition(effect.source, effect.index, effect.count);
+        const from = this.getNightFamiliarOrbitPosition({ source: effect.source, count: effect.count, appearedAt: 0 }, effect.index);
         const to = visualPosition(effect.target);
         this.drawNightFamiliar(context, assets, {
           x: from.x + (to.x - from.x) * progress,
@@ -249,10 +261,33 @@ export default class CombatEffectSystem {
     context.restore();
   }
 
-  getNightFamiliarOrbitPosition(source, index, count) {
+  getBewildermentSwirlPose(chip, index) {
+    const sourcePosition = visualPosition(chip);
+    const pulse = 0.88 + Math.sin(this.elapsedSeconds * 3.2 + index * 2.1) * 0.17;
+    const phase = this.elapsedSeconds * 2.4 + index * Math.PI * 2 / BEWILDERMENT_SWIRL_COUNT;
+    const orbitRadius = chip.radius * pulse;
+    const size = Math.max(28, chip.radius * 0.58);
+    const pivot = size * 0.22;
+    const pivotAngle = index * 2.3;
+    return {
+      x: sourcePosition.x + Math.cos(phase) * orbitRadius,
+      y: sourcePosition.y + Math.sin(phase) * orbitRadius * 0.54 - chip.radius * 0.15,
+      size,
+      angle: this.elapsedSeconds * (index % 2 === 0 ? 5 : -4.2) + index * Math.PI * 2 / BEWILDERMENT_SWIRL_COUNT,
+      pivotX: Math.cos(pivotAngle) * pivot,
+      pivotY: Math.sin(pivotAngle) * pivot,
+    };
+  }
+
+  getNightFamiliarOrbitPosition(familiars, index) {
+    return this.getOrbitPosition(familiars.source, index, familiars.count, familiars.appearedAt);
+  }
+
+  getOrbitPosition(source, index, count, appearedAt) {
     const sourcePosition = visualPosition(source);
+    const expand = Math.min(1, (this.elapsedSeconds - appearedAt) / 0.45);
     const phase = this.elapsedSeconds * 4 + index * Math.PI * 2 / count;
-    const orbitRadius = source.radius * 1.05;
+    const orbitRadius = source.radius * 1.05 * expand;
     return {
       x: sourcePosition.x + Math.cos(phase) * orbitRadius,
       y: sourcePosition.y + Math.sin(phase) * orbitRadius * 0.54 - source.radius * 0.15,
@@ -261,13 +296,17 @@ export default class CombatEffectSystem {
     };
   }
 
-  drawNightFamiliar(context, assets, { x, y, size, angle }) {
-    const asset = assets.load(NIGHT_FAMILIAR_ASSET_PATH);
+  drawNightFamiliar(context, assets, pose) {
+    this.drawEffectSprite(context, assets, NIGHT_FAMILIAR_ASSET_PATH, pose);
+  }
+
+  drawEffectSprite(context, assets, path, { x, y, size, angle, pivotX = 0, pivotY = 0 }) {
+    const asset = assets.load(path);
     if (!asset.complete || asset.naturalWidth === 0) return;
     context.save();
     context.translate(x, y);
     context.rotate(angle);
-    context.drawImage(asset, -size / 2, -size / 2, size, size);
+    context.drawImage(asset, -size / 2 + pivotX, -size / 2 + pivotY, size, size);
     context.restore();
   }
 }

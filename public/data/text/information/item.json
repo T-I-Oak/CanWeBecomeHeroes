@@ -1,0 +1,861 @@
+{
+  "sword": {
+    "name": {
+      "lang-store": {
+        "ja": "剣",
+        "en": "Sword"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "冒険者なら一本は持っておきたい、素直で頼れる片手剣。",
+        "en": "A straightforward, dependable one-handed sword. Every adventurer should carry one."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": ""
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "の高い相手を狙う武器。物理攻撃力が高い。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets opponents with high "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". Has high physical attack power."
+          }
+        ]
+      }
+    }
+  },
+  "shield": {
+    "name": {
+      "lang-store": {
+        "ja": "盾",
+        "en": "Shield"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青地に金色の星をあしらった、立派な盾。",
+        "en": "A fine shield bearing a golden star on a blue field."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "近い相手を狙う武器。仲間へ"
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "physical-defense"
+          },
+          {
+            "type": "text",
+            "value": "を付与する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets nearby opponents. Grants allies "
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "physical-defense",
+            "label": "physical defense"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "staff": {
+    "name": {
+      "lang-store": {
+        "ja": "杖",
+        "en": "Staff"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "夜空を映す宝珠を宿した、月明かりの杖。",
+        "en": "A moonlit staff crowned with an orb that reflects the night sky."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": ""
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "の低い相手を狙う武器。魔法攻撃力が高い。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets opponents with low "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". Has high magical attack power."
+          }
+        ]
+      }
+    }
+  },
+  "holy-book": {
+    "name": {
+      "lang-store": {
+        "ja": "聖書",
+        "en": "Holy Book"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "開くたび、金の聖印が静かに輝く古い祈祷書。",
+        "en": "An old prayer book whose golden holy emblem glows softly whenever it is opened."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": ""
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "の低い相手を狙う武器。仲間が受けた炎・水・雷属性の影響を軽減する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets opponents with low "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". Reduces the effects of fire, water, and lightning on allies."
+          }
+        ]
+      }
+    }
+  },
+  "claw": {
+    "name": {
+      "lang-store": {
+        "ja": "爪",
+        "en": "Claw"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "音もなく伸びる刃で、目当ての品だけをかすめ取る手甲。",
+        "en": "A gauntlet with blades that extend without a sound, snatching only the prize you seek."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "豪華な装備をしている相手を狙う武器。相手の装備を盗むことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets opponents with lavish equipment. May steal their equipment."
+          }
+        ]
+      }
+    }
+  },
+  "bow": {
+    "name": {
+      "lang-store": {
+        "ja": "弓",
+        "en": "Bow"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青い飾り紐を結んだ、細身の長弓。遠くの獲物を静かに狙い定める。",
+        "en": "A slender longbow tied with a blue cord. Quietly take aim at distant prey."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "遠い相手を狙う武器。自身の"
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "action-gauge"
+          },
+          {
+            "type": "text",
+            "value": "を短縮する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets distant opponents. Shortens its user's "
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "action-gauge"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "banner": {
+    "name": {
+      "lang-store": {
+        "ja": "旗",
+        "en": "Banner"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "金の羽根紋を染め抜いた、深い青の軍旗。掲げた合図が、仲間の足を早める。",
+        "en": "A deep blue battle standard bearing a golden feather crest. Its signal quickens your companions' steps."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": ""
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "の低い相手を狙う武器。仲間の"
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "action-gauge"
+          },
+          {
+            "type": "text",
+            "value": "を進める。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets opponents with low "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". Advances allies' "
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "action-gauge"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "orb": {
+    "name": {
+      "lang-store": {
+        "ja": "宝珠",
+        "en": "Orb"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "星明かりを閉じ込めた、青く澄んだ宝珠。放った宝石の欠片が相手の装備に食い込み、動きを鈍らせる。",
+        "en": "A clear blue orb holding a glimmer of starlight. The gem shards it releases lodge in enemy equipment, slowing their movements."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": ""
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "weight"
+          },
+          {
+            "type": "text",
+            "value": "の低い相手を狙う武器。相手の装備に宝石タグを追加して、行動を遅くすることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets opponents with low "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "weight"
+          },
+          {
+            "type": "text",
+            "value": ". May add a Gem tag to their equipment, slowing their actions."
+          }
+        ]
+      }
+    }
+  },
+  "holy-symbol": {
+    "name": {
+      "lang-store": {
+        "ja": "聖印",
+        "en": "Holy Symbol"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青い宝石を抱く、星形の金の聖印。掲げた光が仲間の消耗を静かに癒やす。",
+        "en": "A golden, star-shaped holy symbol cradling a blue gem. Its raised light gently restores weary companions."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": ""
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "の低い相手を狙う武器。仲間の"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "を回復する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets opponents with low "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". Restores allies' "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "tarot-cards": {
+    "name": {
+      "lang-store": {
+        "ja": "タロット",
+        "en": "Tarot Cards"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "星と月を描いた、縁取りの美しい占い札。めくるたび、仲間に都合のいい偶然を呼び込む。",
+        "en": "Finely bordered divination cards adorned with stars and moons. Each turn of a card invites a fortunate coincidence for your companions."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": ""
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "の低い相手を狙う武器。仲間の次の行動まで、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "luck"
+          },
+          {
+            "type": "text",
+            "value": "を高める。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets opponents with low "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". Raises allies' "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "luck"
+          },
+          {
+            "type": "text",
+            "value": " until their next action."
+          }
+        ]
+      }
+    }
+  },
+  "shopping-bag": {
+    "name": {
+      "lang-store": {
+        "ja": "買い物袋",
+        "en": "Shopping Bag"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "口を紐で結んだ、肩掛けの買い物袋。売りたい装備を詰め込み、次の掘り出し物を探しに出かけよう。",
+        "en": "A shoulder bag tied shut with a cord. Pack the equipment you want to sell and set out in search of your next lucky find."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "shop"
+          },
+          {
+            "type": "text",
+            "value": "へ向かうときに身につけるアイテム。売りたい装備をアイテム袋へドラッグして、最大3個まで選べる。ショップへ向かう際、空きがあれば装備を可能な限り詰め込む。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equip this item to head to the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "shop"
+          },
+          {
+            "type": "text",
+            "value": ". Drag equipment you want to sell onto the bag to select up to 3 items. When leaving for the shop, the hero packs as much equipment as possible into any remaining space."
+          }
+        ]
+      }
+    }
+  },
+  "hero-license": {
+    "name": {
+      "lang-store": {
+        "ja": "勇者仮免許",
+        "en": "Provisional Hero License"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青いリボンを通した、金縁の仮免許。訓練を受ける資格を示す、小さな証明書。",
+        "en": "A gold-edged provisional license threaded with a blue ribbon. This small document certifies your eligibility to train."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "へ向かうときに身につけるアイテム。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equip this item to head to the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "renewal-form": {
+    "name": {
+      "lang-store": {
+        "ja": "延長申請書",
+        "en": "Extension Request"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "金の縁取りが施された、試験期限の延長を願い出る申請書。",
+        "en": "A gold-bordered form requesting an extension to the exam deadline."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "guild"
+          },
+          {
+            "type": "text",
+            "value": "へ向かうときに身につけるアイテム。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equip this item to head to the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "guild"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "head-1": {
+    "name": {
+      "lang-store": {
+        "ja": "兜",
+        "en": "Helm"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "かぶる者を頼もしく見せる、金の星飾りをあしらった顔を覆う重厚な兜。",
+        "en": "A heavy, full-face helm adorned with golden stars. It lends its wearer an air of dependability."
+      }
+    }
+  },
+  "head-2": {
+    "name": {
+      "lang-store": {
+        "ja": "とんがり帽",
+        "en": "Pointed Hat"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青い宝石を留めた、深い藍色に思索の気配を宿すとんがり帽。",
+        "en": "A deep indigo pointed hat set with a blue gem, carrying an air of quiet contemplation."
+      }
+    }
+  },
+  "head-3": {
+    "name": {
+      "lang-store": {
+        "ja": "フード",
+        "en": "Hood"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "人目を避けて各地を駆ける旅人が深くかぶる、金の刺繍と青い留め飾りを施した白いフード。",
+        "en": "A white hood with gold embroidery and a blue clasp, worn low by travelers who prefer to pass unnoticed."
+      }
+    }
+  },
+  "head-4": {
+    "name": {
+      "lang-store": {
+        "ja": "冠",
+        "en": "Crown"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青い宝石と白い羽根を飾った、かぶる者に気品を与えるきらびやかな金の冠。",
+        "en": "A gleaming golden crown adorned with blue gems and white feathers. It lends its wearer a regal air."
+      }
+    }
+  },
+  "head-5": {
+    "name": {
+      "lang-store": {
+        "ja": "羽根帽",
+        "en": "Feathered Hat"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "白い羽根と赤い飾り紐を添えた、遠い道のりを行く者に似合うつば広の黒い帽子。",
+        "en": "A wide-brimmed black hat with a white feather and a red cord, well suited to a traveler with a long road ahead."
+      }
+    }
+  },
+  "torso-1": {
+    "name": {
+      "lang-store": {
+        "ja": "鎧",
+        "en": "Armor"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青と金の意匠を重ねた、着る者を堂々と見せる重厚な鎧。",
+        "en": "Heavy armor worked in blue and gold, giving its wearer an imposing presence."
+      }
+    }
+  },
+  "torso-2": {
+    "name": {
+      "lang-store": {
+        "ja": "ローブ",
+        "en": "Robe"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "金の刺繍と青い宝石をあしらった、深い藍色を添える白いローブ。",
+        "en": "A white robe with deep indigo accents, gold embroidery, and blue gems."
+      }
+    }
+  },
+  "torso-3": {
+    "name": {
+      "lang-store": {
+        "ja": "ベスト",
+        "en": "Vest"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "走りやすいよう腰紐を締めた、使い込んだ革の留め具を備えた緑のベスト。",
+        "en": "A green vest with well-worn leather fastenings, tied at the waist for freedom of movement."
+      }
+    }
+  },
+  "torso-4": {
+    "name": {
+      "lang-store": {
+        "ja": "ジャケット",
+        "en": "Jacket"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "金の縁取りと紫のベストをのぞかせる、華やかな装いを好む者に似合う赤いジャケット。",
+        "en": "A red jacket with gold trim and a glimpse of a purple waistcoat, made for those who favor a flourish."
+      }
+    }
+  },
+  "torso-5": {
+    "name": {
+      "lang-store": {
+        "ja": "コート",
+        "en": "Coat"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "白い毛皮の襟をあしらった、寒い旅路に頼もしい茶色のコート。",
+        "en": "A brown coat with a white fur collar, a dependable companion on cold journeys."
+      }
+    }
+  },
+  "feet-1": {
+    "name": {
+      "lang-store": {
+        "ja": "グリーヴ",
+        "en": "Greaves"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "金の装飾を施した、足元を凛々しく見せる銀色のグリーヴ。",
+        "en": "Silver greaves with golden ornamentation, lending a dignified finish to every stride."
+      }
+    }
+  },
+  "feet-2": {
+    "name": {
+      "lang-store": {
+        "ja": "ブーツ",
+        "en": "Boots"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青い布をのぞかせる、長い学びの旅によくなじむ革のブーツ。",
+        "en": "Leather boots with glimpses of blue cloth, well suited to a long journey of learning."
+      }
+    }
+  },
+  "feet-3": {
+    "name": {
+      "lang-store": {
+        "ja": "シューズ",
+        "en": "Shoes"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "石畳にも土道にも軽やかに足を運ぶ、二本の留め具を備えた革のシューズ。",
+        "en": "Leather shoes with two fastenings, carrying their wearer lightly over cobblestones and dirt paths alike."
+      }
+    }
+  },
+  "feet-4": {
+    "name": {
+      "lang-store": {
+        "ja": "ローファー",
+        "en": "Loafers"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "金の刺繍が光る、格式ある場にも似合う深い青のローファー。",
+        "en": "Deep blue loafers with gleaming gold embroidery, fit for even the most formal occasion."
+      }
+    }
+  },
+  "feet-5": {
+    "name": {
+      "lang-store": {
+        "ja": "ファーブーツ",
+        "en": "Fur Boots"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "青い宝石を留めた、冬の旅人に似合う毛皮のブーツ。",
+        "en": "Fur boots set with blue gems, made for the winter traveler."
+      }
+    }
+  }
+}

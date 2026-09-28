@@ -13,8 +13,8 @@ export default class InformationWindowReferenceRenderer {
 
   setTextRepository(textRepository) { this.textRepository = textRepository; }
 
-  createLinkedDescription(content, parentId, className = 'InformationWindow__Description') {
-    const text = createInformationElement('p', className);
+  createLinkedDescription(content, parentId, className = 'InformationWindow__Description', tagName = 'p') {
+    const text = createInformationElement(tagName, className);
     (Array.isArray(content) ? content : [content]).forEach((part) => {
       if (typeof part === 'string') text.append(part);
       else if (part.type === 'text') text.append(part.value);
@@ -29,14 +29,15 @@ export default class InformationWindowReferenceRenderer {
     return text;
   }
 
-  createReference({ kind, id }, parentId) {
+  createReference({ kind, id, label = null }, parentId) {
     if (kind === 'enemy-definition') return this.createEnemyDefinitionReference({ id }, parentId);
     if (kind === 'item') return this.createItemDefinitionReference({ id }, parentId);
-    const label = this.textRepository.getName(kind, id);
-    if (!label) throw new RangeError(`Unknown localized reference: ${kind}/${id}`);
-    if (kind === 'status') return this.createStatusReference({ id, label }, parentId);
-    if (kind === 'tag') return this.createTagReference({ id, label }, parentId);
-    if (kind === 'area') return this.createAreaReference({ id, label }, parentId);
+    const name = this.textRepository.getName(kind, id);
+    if (!name) throw new RangeError(`Unknown localized reference: ${kind}/${id}`);
+    if (kind === 'status') return this.createStatusReference({ id, label: name }, parentId);
+    if (kind === 'tag') return this.createTagReference({ id, label: name }, parentId);
+    if (kind === 'area') return this.createAreaReference({ id, label: name }, parentId);
+    if (kind === 'term') return this.createTermReference({ id, parentId, label });
     return this.createFacilityReference({ id, label }, parentId);
   }
 

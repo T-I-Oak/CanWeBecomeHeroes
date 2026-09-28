@@ -1,0 +1,827 @@
+{
+  "vitality-summon": {
+    "name": {
+      "lang-store": {
+        "ja": "最後の芽吹き",
+        "en": "Last Sprout"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "倒れた大樹の根元から、なお新たな命が芽吹く。",
+        "en": "New shoots still rise from the roots of the fallen giant."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "倒されても、眷属を呼び出して戦いを続ける。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When defeated, summons minions into empty enemy positions."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "マンドラゴラを最大2体呼び出す。",
+            "en": "Calls up to 2 Mandragoras."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "トレントを最大2体呼び出す。",
+            "en": "Calls up to 2 Treants."
+          }
+        }
+      }
+    }
+  },
+  "gem-orb-rain": {
+    "name": {
+      "lang-store": {
+        "ja": "宝珠の雨",
+        "en": "Orb Rain"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "砕けるたび、宝石を宿した宝珠があたりに降り注ぐ。",
+        "en": "With every shattering blow, gem-bearing orbs rain down around it."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "ダメージを受けると、倉庫に"
+          },
+          {
+            "type": "reference",
+            "kind": "item",
+            "id": "orb"
+          },
+          {
+            "type": "text",
+            "value": "を落とすことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May drop orbs into the warehouse when damaged."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "宝珠を1個落とすことがある。",
+            "en": "May drop 1 orb."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "宝珠を2個落とすことがある。",
+            "en": "May drop 2 orbs."
+          }
+        }
+      }
+    }
+  },
+  "area-head-rush": {
+    "name": {
+      "lang-store": {
+        "ja": "多頭の猛攻",
+        "en": "Many-Headed Onslaught"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "幾つもの首がうごめき、獲物へ一斉に襲いかかる。",
+        "en": "Heads stretch from the immense body to sink their fangs into distant foes."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃後、"
+          },
+          {
+            "type": "reference",
+            "kind": "enemy-definition",
+            "id": "phantom-area-head"
+          },
+          {
+            "type": "text",
+            "value": "を伸ばして追加攻撃をする。眷属も連携して攻撃する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "After attacking, it extends "
+          },
+          {
+            "type": "reference",
+            "kind": "enemy-definition",
+            "id": "phantom-area-head"
+          },
+          {
+            "type": "text",
+            "value": " for a follow-up attack, while minions join in with coordinated attacks."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "龍の首をひとつ伸ばす。",
+            "en": "Extends one Dragon Head."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "龍の首をふたつ伸ばす。",
+            "en": "Extends two Dragon Heads."
+          }
+        }
+      }
+    }
+  },
+  "battle-frenzy": {
+    "name": {
+      "lang-store": {
+        "ja": "戦鬼の高揚",
+        "en": "Battle Fiend's Frenzy"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "血気が戦場を満たし、誰もが危うい一撃に身を委ねる。",
+        "en": "Bloodlust fills the battlefield, and all surrender themselves to perilous blows."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃時、戦場にいる全員を諸刃の剣状態にする。諸刃の剣状態では、会心ダメージが増える。諸刃の剣状態は、攻撃を受けるか自身の攻撃を終えると解除される。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When attacking, gives everyone on the battlefield the Two-Edged Sword state. Critical damage is increased in this state. It ends when the affected combatant takes damage or finishes an attack."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "与える・受ける会心ダメージが2倍になる。",
+            "en": "Critical damage dealt and received is doubled."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "与える・受ける会心ダメージが4倍になる。",
+            "en": "Critical damage dealt and received is quadrupled."
+          }
+        }
+      }
+    }
+  },
+  "iron-counterblow": {
+    "name": {
+      "lang-store": {
+        "ja": "巨像の反撃",
+        "en": "Colossus Counterblow"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "巨像に打ち込んだ一撃は、大地を揺るがす反動となって返ってくる。",
+        "en": "A blow struck against the colossus returns as a shock that shakes the ground."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "物理攻撃を受けたとき、相手を吹き飛ばす。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When struck by a physical attack, knocks the attacker away."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "相手を少し吹き飛ばす。",
+            "en": "Knocks the attacker back a short distance."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "相手をかなり吹き飛ばす。",
+            "en": "Knocks the attacker back a great distance."
+          }
+        }
+      }
+    }
+  },
+  "arcane-reflection": {
+    "name": {
+      "lang-store": {
+        "ja": "反照の呪術",
+        "en": "Reflective Hex"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "放たれた元素は魔鏡に映り、主へと折り返される。",
+        "en": "Elements cast into the magic mirror turn back toward their source."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "炎・水・雷属性を受けたとき、その一部を相手に跳ね返す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When receiving fire, water, or lightning, reflects part of it onto the attacker."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "受けた属性を少し跳ね返す。",
+            "en": "Reflects a little of the received attribute."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "受けた属性をかなり跳ね返す。",
+            "en": "Reflects much of the received attribute."
+          }
+        }
+      }
+    }
+  },
+  "cloth-night-familiars": {
+    "name": {
+      "lang-store": {
+        "ja": "夜の使い魔",
+        "en": "Night Familiars"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "闇を裂く羽音が、夜の主の命に応える。",
+        "en": "Wingbeats that tear through the dark answer the call of their nocturnal master."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃後、"
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "familiar"
+          },
+          {
+            "type": "text",
+            "value": "を呼び出す。"
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "familiar"
+          },
+          {
+            "type": "text",
+            "value": "は次の攻撃時に相手へ飛びかかり、ダメージを受けるたびに1体消える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "After attacking, calls "
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "familiar",
+            "label": "familiars"
+          },
+          {
+            "type": "text",
+            "value": ". They leap at opponents on the next attack, and one vanishes each time their master takes damage."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "reference",
+                "kind": "term",
+                "id": "familiar"
+              },
+              {
+                "type": "text",
+                "value": "を3体呼び出す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Calls 3 "
+              },
+              {
+                "type": "reference",
+                "kind": "term",
+                "id": "familiar",
+                "label": "familiars"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": [
+              {
+                "type": "reference",
+                "kind": "term",
+                "id": "familiar"
+              },
+              {
+                "type": "text",
+                "value": "を6体呼び出す。"
+              }
+            ],
+            "en": [
+              {
+                "type": "text",
+                "value": "Calls 6 "
+              },
+              {
+                "type": "reference",
+                "kind": "term",
+                "id": "familiar",
+                "label": "familiars"
+              },
+              {
+                "type": "text",
+                "value": "."
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "water-deep-sea-surge": {
+    "name": {
+      "lang-store": {
+        "ja": "深海のうねり",
+        "en": "Deep Sea Surge"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "深海の水圧が、一撃ごとに牙をむく。",
+        "en": "The pressure of the deep bares its fangs with every strike."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃時、自身に水属性を付与する。水属性が付与されている量に応じて、与えるダメージが増加する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When attacking, applies water to itself. Damage dealt increases with the amount of water applied."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "自身に少し水属性を付与する。",
+            "en": "Applies a little water to itself."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "自身にかなり水属性を付与する。",
+            "en": "Applies much water to itself."
+          }
+        }
+      }
+    }
+  },
+  "fire-retaliation-ember": {
+    "name": {
+      "lang-store": {
+        "ja": "報復の火種",
+        "en": "Retaliatory Ember"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "まとった炎は、触れる者へ容赦なく燃え移る。",
+        "en": "The flames it wears spread mercilessly to anyone who touches it."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "物理・魔法ダメージを受けたとき、相手に炎属性を付与する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When receiving physical or magic damage, applies fire to the attacker."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "炎属性を少し付与する。",
+            "en": "Applies a little fire."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "炎属性をかなり付与する。",
+            "en": "Applies much fire."
+          }
+        }
+      }
+    }
+  },
+  "lightning-thunder-drain": {
+    "name": {
+      "lang-store": {
+        "ja": "雷鳴の収奪",
+        "en": "Thunder Drain"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "放たれた稲妻が、次の一手に宿る力まで奪い去る。",
+        "en": "A cast bolt steals even the strength gathered for the next move."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "雷属性が付与された相手から攻撃を受けたとき、相手全員のたまった力を奪う。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When hit by an opponent carrying lightning, steals the power gathered by all opponents."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "相手全員から少し力を奪う。",
+            "en": "Steals a little power from every opponent."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "相手全員からかなり力を奪う。",
+            "en": "Steals much power from every opponent."
+          }
+        }
+      }
+    }
+  },
+  "reputation-bewildering-words": {
+    "name": {
+      "lang-store": {
+        "ja": "惑いの言葉",
+        "en": "Bewildering Words"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "耳に残るささやきが、刃を向けるべき相手をすり替える。",
+        "en": "A lingering whisper switches the foe who should face the blade."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃時、相手を惑乱状態にすることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When attacking, may bewilder the opponent."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "ときどき相手を惑乱状態にすることがある。",
+            "en": "Sometimes bewilders the opponent."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "しばしば相手を惑乱状態にすることがある。",
+            "en": "Often bewilders the opponent."
+          }
+        }
+      }
+    }
+  },
+  "fortune-misfortune-curse": {
+    "name": {
+      "lang-store": {
+        "ja": "逆運の呪い",
+        "en": "Curse of Misfortune"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "つかんだ幸運は、次の瞬間には自らを刺す刃へ変わる。",
+        "en": "The luck you grasp becomes a blade that strikes you the next moment."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃時、相手を不運状態にすることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When attacking, may inflict misfortune on the opponent."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "不運状態の攻撃者の会心ダメージが半分跳ね返る。",
+            "en": "Half of a misfortunate attacker's critical damage rebounds."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "不運状態の攻撃者の会心ダメージがすべて跳ね返る。",
+            "en": "All of a misfortunate attacker's critical damage rebounds."
+          }
+        }
+      }
+    }
+  },
+  "blessing-random": {
+    "name": {
+      "lang-store": {
+        "ja": "堕ちた加護",
+        "en": "Fallen Blessing"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "祝福を騙る影が、見知らぬ力を一瞬だけ授ける。",
+        "en": "A shadow that mimics blessing grants an unfamiliar power for a moment."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "さまざまなボスや中ボスのExスキルを一時的に授かることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May temporarily receive Ex skills from various bosses and mid-bosses."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "他の中ボスからEx1の力を授かって使うことがある。",
+            "en": "May receive and use an Ex1 power from another mid-boss."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "他のボスからEx2の力を授かって使うことがある。",
+            "en": "May receive and use an Ex2 power from another boss."
+          }
+        }
+      }
+    }
+  },
+  "feather-storm-wings": {
+    "name": {
+      "lang-store": {
+        "ja": "暴風の翼",
+        "en": "Storm Wings"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "大きく羽ばたいた風が、相手を戦場の外へ吹き飛ばす。",
+        "en": "A great beat of its wings sends the opponent flying beyond the battlefield."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃時、相手を突風で倉庫へ吹き飛ばすことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When attacking, may blow the opponent into the warehouse with a gust."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "まれに突風を起こすことがある。",
+            "en": "Rarely raises a gust."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "ときどき突風を起こすことがある。",
+            "en": "Sometimes raises a gust."
+          }
+        }
+      }
+    }
+  },
+  "shadow-fingertips": {
+    "name": {
+      "lang-store": {
+        "ja": "影の指先",
+        "en": "Shadow Fingertips"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "気づかぬ間に、手元のものだけが消えている。",
+        "en": "In a moment of inattention, a tag quietly vanishes from the equipment."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃時、相手の装備からタグを1つ抜き取ることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May remove one tag from the target's equipment when attacking."
+          }
+        ]
+      }
+    },
+    "levels": {
+      "1": {
+        "description": {
+          "lang-store": {
+            "ja": "抜き取ったタグを消す。",
+            "en": "The removed tag disappears."
+          }
+        }
+      },
+      "2": {
+        "description": {
+          "lang-store": {
+            "ja": "抜き取ったタグを自分の装備へ移す。",
+            "en": "Moves the removed tag to the user's equipment."
+          }
+        }
+      }
+    }
+  }
+}

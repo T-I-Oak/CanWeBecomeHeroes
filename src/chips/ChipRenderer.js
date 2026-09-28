@@ -1,4 +1,13 @@
 import { CHIP_CENTER_ART_SCALE, getCenterImagePlacement } from './ChipArtLayout.js';
+import {
+  CONDITION_GLYPH_SCALE,
+  CONDITION_ICON_CORNER_RATIO,
+  CONDITION_ICON_SIZE,
+  CONDITION_MINIMUM_COLOR,
+  getConditionIconColor,
+  getConditionIconEntries,
+  layoutConditionIcons,
+} from './ConditionIconLayout.js';
 
 const DEFAULT_TAG_SLOT_COUNT = 8;
 export const CENTER_IMAGE_SCALE = CHIP_CENTER_ART_SCALE;
@@ -42,12 +51,16 @@ export function createTagAngles(count, tagSlotCount) {
 
 export { getCenterImagePlacement } from './ChipArtLayout.js';
 
+const SHIELD_OPAQUE_WIDTH_RATIO = 941 / 1024;
+const SHIELD_TARGET_DIAMETER_RATIO = 1.25;
+const SHIELD_SIZE_RATIO = (SHIELD_TARGET_DIAMETER_RATIO * 2) / SHIELD_OPAQUE_WIDTH_RATIO;
+
 export function getPhysicalShieldPresentation(reduction) {
   const strength = Math.max(0, Math.min(1, reduction / 0.7));
   return {
-    alpha: strength === 0 ? 0 : 0.22 + strength * 0.68,
-    pulse: 0.012 + strength * 0.052,
-    sizeRatio: 2.2,
+    alpha: strength === 0 ? 0 : 0.78 + strength * 0.2,
+    pulse: 0.04 + strength * 0.08,
+    sizeRatio: SHIELD_SIZE_RATIO * (1 + strength * 0.14),
   };
 }
 
@@ -72,15 +85,18 @@ export default class ChipRenderer {
     this.tagSlotCount = tagSlotCount;
   }
 
-  draw(chip, timeSeconds = 0, { staminaPauseTarget = false } = {}) {
+  draw(chip, timeSeconds = 0, options = {}) {
+    this.drawBody(chip, timeSeconds);
+    this.drawEffects(chip, timeSeconds, options);
+  }
+
+  drawBody(chip, timeSeconds = 0) {
     const { context } = this;
     const scale = chip.scale;
     const visualX = chip.x + (chip.effectOffsetX ?? 0);
     const drawY = chip.y - chip.height + (chip.effectOffsetY ?? 0);
     const airRatio = Math.min(chip.height / (chip.radius * 5), 0.65);
     const shadowAlpha = 0.24 / (1 + airRatio);
-
-    if (staminaPauseTarget) this.drawStaminaPauseWaves(chip, visualX, drawY, timeSeconds);
 
     context.save();
     context.fillStyle = `rgba(19, 28, 46, ${shadowAlpha})`;
@@ -134,8 +150,40 @@ export default class ChipRenderer {
     context.arc(0, 0, chip.radius - context.lineWidth / 2, 0, Math.PI * 2);
     context.stroke();
     context.restore();
+  }
+
+  drawEffects(chip, timeSeconds = 0, { staminaPauseTarget = false } = {}) {
+    const visualX = chip.x + (chip.effectOffsetX ?? 0);
+    const drawY = chip.y - chip.height + (chip.effectOffsetY ?? 0);
+    if (staminaPauseTarget) this.drawStaminaPauseWaves(chip, visualX, drawY, timeSeconds);
     this.drawPhysicalShieldOverlay(chip, visualX, drawY, timeSeconds);
     this.drawAttributeOverlays(chip, visualX, drawY, timeSeconds);
+    this.drawConditionIcons(chip);
+  }
+
+  drawConditionIcons(chip) {
+    if (!chip.bounds) return;
+    const icons = layoutConditionIcons(getConditionIconEntries(chip), chip.bounds.width);
+    const y = chip.bounds.y + chip.bounds.height;
+    icons.forEach((icon) => this.drawConditionIcon(chip.bounds.x + icon.x, y, icon));
+  }
+
+  drawConditionIcon(x, y, icon) {
+    const { context } = this;
+    const radius = CONDITION_ICON_SIZE * CONDITION_ICON_CORNER_RATIO;
+    const color = icon.ellipsis
+      ? CONDITION_MINIMUM_COLOR
+      : getConditionIconColor(icon.value, icon.minimum, icon.maximum);
+    context.save();
+    context.beginPath();
+    context.roundRect(x, y, CONDITION_ICON_SIZE, CONDITION_ICON_SIZE, radius);
+    context.fillStyle = `rgb(${color.join(',')})`;
+    context.fill();
+    const glyph = CONDITION_ICON_SIZE * CONDITION_GLYPH_SCALE;
+    const inset = (CONDITION_ICON_SIZE - glyph) / 2;
+    const image = this.assets.load(`/assets/conditions/${icon.ellipsis ? 'ellipsis' : icon.id}.png`);
+    if (image.complete && image.naturalWidth > 0) context.drawImage(image, x + inset, y + inset, glyph, glyph);
+    context.restore();
   }
 
   drawStaminaPauseWaves(chip, x, y, timeSeconds) {

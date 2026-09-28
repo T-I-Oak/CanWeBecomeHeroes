@@ -13,3 +13,6 @@ Reviewed at 1280×720, 800×600, and 390×844: no horizontal window overflow or 
 Run `node scripts/review-localization.mjs` to print bilingual prose for review.
 Run `node --test` for resource integrity, translated references, and state-preservation regressions.
 Public deployment verification is handled by the user.
+# タグ図案レビュー
+
+`dev_tag_icon_review.html` は、タグの共通Canvas Rendererを使い、最小の雑魚Chipと同じ約27pxの円盤・約19pxの図案を全15種で比較する、ブランチ運用中だけの手動レビュー画面です。上段は実表示サイズ、下段は同じ描画内容を4倍にした確認用表示です。候補確定と本アセット反映後、マージ前に削除します。

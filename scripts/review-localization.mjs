@@ -1,4 +1,4 @@
-import resource from '../public/data/game_text.json' with { type: 'json' };
+import resource from '../src/game/readGameText.js';
 
 function resolve(value, language) {
   if (!value || typeof value !== 'object') return value;

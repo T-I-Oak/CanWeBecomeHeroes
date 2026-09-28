@@ -1,7 +1,8 @@
 import { loadJsonWithL10nCached } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
+import { TEXT_RESOURCE_PARTS, assignTextPart, createTextResource, textPart } from './textResourceParts.js';
 
-const TEXT_RESOURCE_PATH = resolvePublicAssetPath('/data/game_text.json');
+const TEXT_RESOURCE_PATHS = TEXT_RESOURCE_PARTS.map((part) => resolvePublicAssetPath(part.path));
 
 export default class GameTextRepository {
   constructor({ loadResource = loadJsonWithL10nCached } = {}) {
@@ -10,7 +11,10 @@ export default class GameTextRepository {
   }
 
   async load() {
-    this.resource = await this.loadResource(TEXT_RESOURCE_PATH);
+    const resource = createTextResource();
+    const values = await Promise.all(TEXT_RESOURCE_PARTS.map((_, index) => this.loadResource(TEXT_RESOURCE_PATHS[index])));
+    TEXT_RESOURCE_PARTS.forEach((part, index) => assignTextPart(resource, part, values[index]));
+    this.resource = resource;
     return this;
   }
 
@@ -41,12 +45,34 @@ export default class GameTextRepository {
     return this.getLabel(key, resolved);
   }
 
-  getLabel(id, values = {}) {
+  getLabelTemplate(id) {
     const template = this.resource?.ui?.[id];
     if (typeof template !== 'string') throw new RangeError(`Unknown localized label: ${id}`);
+    return template;
+  }
+
+  getLabel(id, values = {}) {
+    const template = this.getLabelTemplate(id);
     return template.replace(/\{(\w+)\}/g, (_, key) => {
       if (!(key in values)) throw new RangeError(`Missing label parameter: ${key}`);
       return String(values[key]);
+    });
+  }
+
+  getVignetteLine(playId, lineId, heroId) {
+    const text = this.resource?.vignette?.[playId]?.[lineId]?.[heroId];
+    if (typeof text !== 'string' || text.length === 0) throw new RangeError(`Unknown vignette line: vignette.${playId}.${lineId}.${heroId}`);
+    return text;
+  }
+
+  getVignetteScript(playId, scriptId) {
+    const script = this.resource?.vignette?.[playId]?.scripts?.[scriptId];
+    if (!Array.isArray(script) || script.length === 0) throw new RangeError(`Unknown vignette script: vignette.${playId}.scripts.${scriptId}`);
+    return script.map((line, index) => {
+      if (typeof line?.heroId !== 'string' || typeof line.text !== 'string' || line.text.length === 0) {
+        throw new RangeError(`Unknown vignette script line: vignette.${playId}.scripts.${scriptId}.${index}`);
+      }
+      return { heroId: line.heroId, text: line.text };
     });
   }
 
@@ -58,4 +84,4 @@ export default class GameTextRepository {
   }
 }
 
-export { TEXT_RESOURCE_PATH };
+export { TEXT_RESOURCE_PATHS, textPart };

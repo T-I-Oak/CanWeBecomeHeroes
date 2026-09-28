@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import GameTextRepository from '../../src/game/GameTextRepository.js';
+import GameTextRepository, { TEXT_RESOURCE_PATHS, textPart } from '../../src/game/GameTextRepository.js';
+import { readGameText } from '../../src/game/readGameText.js';
 import InformationWindowLayer from '../../src/app/InformationWindowLayer.js';
 import InformationWindowManager from '../../src/app/InformationWindowManager.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
@@ -44,12 +44,12 @@ class Element {
 }
 
 test('status resources render, switch language from cache, and preserve links and window state', async (t) => {
-  const raw = JSON.parse(await readFile(new URL('../../public/data/game_text.json', import.meta.url)));
+  const raw = readGameText();
   let language = 'ja';
   let fetches = 0;
-  t.mock.method(globalThis, 'fetch', async () => {
+  t.mock.method(globalThis, 'fetch', async (url) => {
     fetches += 1;
-    return { ok: true, json: async () => raw };
+    return { ok: true, json: async () => textPart(raw, String(url)) };
   });
   const globals = { localStorage: { getItem: () => language, setItem: (_, value) => { language = value; } },
     document: { createElement: tag => new Element(tag), createElementNS: (_, tag) => new Element(tag),
@@ -343,5 +343,5 @@ test('status resources render, switch language from cache, and preserve links an
   assert.ok(parseFloat(constrained.style.left) < globalThis.innerWidth);
   assert.ok(parseFloat(constrained.style.top) < globalThis.innerHeight);
   assert.deepEqual(manager.entries[0].position, { x: 9999, y: 9999 });
-  assert.equal(fetches, 1);
+  assert.equal(fetches, TEXT_RESOURCE_PATHS.length);
 });

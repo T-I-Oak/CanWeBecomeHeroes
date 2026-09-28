@@ -33,6 +33,12 @@ export default class GameClock {
     this.pauseReasons.delete(reason);
   }
 
+  reset() {
+    this.tick = 0;
+    this.paused = false;
+    this.pauseReasons.clear();
+  }
+
   advance(wallDeltaSeconds, update) {
     if (this.isPaused) return 0;
     let remaining = Math.min(MAX_WALL_DELTA_SECONDS, Math.max(0, wallDeltaSeconds)) * this.speed;

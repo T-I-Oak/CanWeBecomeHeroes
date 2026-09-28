@@ -29,6 +29,7 @@ export default class GameCanvasInput {
   }
 
   handlePointerDown(event) {
+    if (!this.controller) return;
     event.preventDefault();
     const point = this.getWorldPoint(event);
     const entity = this.controller.getEntityAt(point.x, point.y);
@@ -46,6 +47,7 @@ export default class GameCanvasInput {
   }
 
   handlePointerMove(event) {
+    if (!this.controller) return;
     const point = this.getWorldPoint(event);
     if (!this.drag || this.drag.pointerId !== event.pointerId) {
       this.canvas.style.cursor = this.getCursor(point);
@@ -84,6 +86,7 @@ export default class GameCanvasInput {
   }
 
   handleWheel(event) {
+    if (!this.controller) return;
     event.preventDefault();
     const bounds = this.canvas.getBoundingClientRect();
     const factor = event.deltaY < 0 ? ZOOM_IN_FACTOR : 1 / ZOOM_IN_FACTOR;

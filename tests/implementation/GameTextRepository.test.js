@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import GameTextRepository, { TEXT_RESOURCE_PATH } from '../../src/game/GameTextRepository.js';
+import GameTextRepository, { TEXT_RESOURCE_PATHS, textPart } from '../../src/game/GameTextRepository.js';
 
 test('game text repository exposes resolved information details and reloads them on language refresh', async () => {
   const resources = [
@@ -8,14 +8,20 @@ test('game text repository exposes resolved information details and reloads them
     { information: { facility: { training: { name: 'Training Ground', description: [] } } }, nameplate: { facility: { training: { name: 'Training' } } } },
   ];
   const paths = [];
-  const repository = new GameTextRepository({ loadResource: async (path) => { paths.push(path); return resources.shift(); } });
+  let call = 0;
+  const repository = new GameTextRepository({ loadResource: async (path) => {
+    paths.push(path);
+    const resource = resources[Math.floor(call / TEXT_RESOURCE_PATHS.length)];
+    call += 1;
+    return textPart(resource, path);
+  } });
 
   await repository.load();
   assert.equal(repository.getInformationDetail('facility', 'training').name, '訓練場');
   assert.equal(repository.getName('facility', 'training', 'nameplate'), 'Training');
   await repository.refreshLanguage();
   assert.equal(repository.getName('facility', 'training'), 'Training Ground');
-  assert.deepEqual(paths, [TEXT_RESOURCE_PATH, TEXT_RESOURCE_PATH]);
+  assert.deepEqual(paths, [...TEXT_RESOURCE_PATHS, ...TEXT_RESOURCE_PATHS]);
 });
 
 test('game text repository exposes every migrated area and facility detail and nameplate', async () => {
@@ -29,7 +35,7 @@ test('game text repository exposes every migrated area and facility detail and n
       facility: Object.fromEntries(['shop', 'guild', 'training'].map((id) => [id, { name: `${id} plate` }])),
     },
   };
-  const repository = new GameTextRepository({ loadResource: async () => resource });
+  const repository = new GameTextRepository({ loadResource: async (path) => textPart(resource, path) });
   await repository.load();
 
   [['area', ['preparation', 'warehouse', 'battle']], ['facility', ['shop', 'guild', 'training']]].forEach(([kind, ids]) => {

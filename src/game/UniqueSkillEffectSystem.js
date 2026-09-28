@@ -126,7 +126,7 @@ export default class UniqueSkillEffectSystem {
   }
 
   resolveReputationBewilderingWords(actor, skill, { target = null } = {}) {
-    if (!target || this.random() >= actor.getLuckDegree() * skill.levelDetail.luckRateMultiplier) return Object.freeze({ skill, bewildermentTarget: null });
+    if (!target || this.random() >= skill.levelDetail.chance) return Object.freeze({ skill, bewildermentTarget: null });
     return Object.freeze({ skill, bewildermentTarget: target });
   }
 

@@ -7,8 +7,8 @@ const ATTRIBUTE_TICK_INTERVAL = GAME_TICKS_PER_SECOND;
 const ATTRIBUTE_KEYS = Object.freeze(['fire', 'water', 'lightning']);
 
 export default class CombatAttributeSystem {
-  constructor({ board, effects = null, random = Math.random, applyDamage, isTargetable = () => true, resolveAttributeReactions = () => [] }) {
-    Object.assign(this, { board, effects, random, applyDamage, isTargetable, resolveAttributeReactions });
+  constructor({ board, effects = null, random = Math.random, applyDamage, isTargetable = () => true, resolveAttributeReactions = () => [], onAttributeReflected = () => {} }) {
+    Object.assign(this, { board, effects, random, applyDamage, isTargetable, resolveAttributeReactions, onAttributeReflected });
     this.elapsedTicks = 0;
   }
 
@@ -57,11 +57,13 @@ export default class CombatAttributeSystem {
   }
 
   assignAttribute(target, attribute, value, source) {
-    if (value > target.attributes[attribute]) {
+    const rose = value > target.attributes[attribute];
+    if (rose) {
       target.attributes[attribute] = value;
       target.attributeSources[attribute] = source;
     }
     target.chip.attributeValues = target.attributes;
+    return rose;
   }
 
   getLightningTargets(target, participants, value) {

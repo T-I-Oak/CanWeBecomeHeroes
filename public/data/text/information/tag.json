@@ -1,0 +1,934 @@
+{
+  "valor": {
+    "name": {
+      "lang-store": {
+        "ja": "武勇",
+        "en": "Valor"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "power"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "power"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて物理会心率が上がる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades increase your physical critical-hit chance."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "勘所",
+          "急所見切り",
+          "一撃必殺",
+          "英雄の一閃"
+        ],
+        "en": [
+          "Keen Instinct",
+          "Spot the Weakness",
+          "Lethal Strike",
+          "Hero's Flash"
+        ]
+      }
+    }
+  },
+  "iron": {
+    "name": {
+      "lang-store": {
+        "ja": "鉄",
+        "en": "Iron"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "power"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "power"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "受けた物理攻撃の一部を相手に跳ね返す。グレードに応じて、跳ね返す量が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Reflects a portion of physical attacks taken back at the attacker. Higher grades increase the amount reflected."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "身構え",
+          "受け流し",
+          "不動の構え",
+          "聖騎士の誓約"
+        ],
+        "en": [
+          "Brace",
+          "Deflection",
+          "Unshakable Stance",
+          "Paladin's Oath"
+        ]
+      }
+    }
+  },
+  "arcane": {
+    "name": {
+      "lang-store": {
+        "ja": "魔導",
+        "en": "Arcane"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "magic"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "magic"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて魔法会心率が上がる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades increase your magical critical-hit chance."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "おまじない",
+          "魔力励起",
+          "術式強化",
+          "大賢者の秘術"
+        ],
+        "en": [
+          "Simple Charm",
+          "Arcane Awakening",
+          "Empowered Spell",
+          "Sage's Secret"
+        ]
+      }
+    }
+  },
+  "cloth": {
+    "name": {
+      "lang-store": {
+        "ja": "布",
+        "en": "Cloth"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "magic"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "magic"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて、炎・水・雷属性の影響を軽減する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades reduce the effects of fire, water, and lightning."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "護りの布",
+          "祈りの衣",
+          "守護結界",
+          "聖者の法衣"
+        ],
+        "en": [
+          "Protective Cloth",
+          "Prayer Robe",
+          "Guardian Ward",
+          "Saint's Vestments"
+        ]
+      }
+    }
+  },
+  "dexterity": {
+    "name": {
+      "lang-store": {
+        "ja": "軽業",
+        "en": "Dexterity"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "speed"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "speed"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて盗み成功率が上がる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades increase your chance of stealing successfully."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "指先の悪戯",
+          "すり抜け",
+          "盗人の手練れ",
+          "盗賊の極意"
+        ],
+        "en": [
+          "Nimble Fingers",
+          "Sleight of Hand",
+          "Master Thief",
+          "Art of Thievery"
+        ]
+      }
+    }
+  },
+  "feather": {
+    "name": {
+      "lang-store": {
+        "ja": "羽",
+        "en": "Feather"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "speed"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "speed"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて、相手の攻撃をかわしやすくなる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades make it easier to dodge attacks."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "身かわし",
+          "風読み",
+          "風走り",
+          "疾風の残像"
+        ],
+        "en": [
+          "Sidestep",
+          "Wind Reader",
+          "Wind Runner",
+          "Gale Afterimage"
+        ]
+      }
+    }
+  },
+  "reputation": {
+    "name": {
+      "lang-store": {
+        "ja": "信用",
+        "en": "Reputation"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "negotiation"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "negotiation"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて、ギルドでの試験期限延長に必要な貢献ポイントが軽減される。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades reduce the contribution points needed to extend the exam deadline at the guild."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "挨拶上手",
+          "口利き",
+          "信頼の証",
+          "信用の極致"
+        ],
+        "en": [
+          "Warm Greeting",
+          "A Good Word",
+          "Proof of Trust",
+          "Perfect Reputation"
+        ]
+      }
+    }
+  },
+  "gem": {
+    "name": {
+      "lang-store": {
+        "ja": "宝石",
+        "en": "Gem"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "negotiation"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "negotiation"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて、ショップの取引で得られる装備のタグ数が増える可能性が上がる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades increase the chance of receiving equipment with additional tags in shop trades."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "掘り出し物",
+          "目利き",
+          "秘蔵の鑑定眼",
+          "黄金の審美眼"
+        ],
+        "en": [
+          "Lucky Find",
+          "Discerning Eye",
+          "Master Appraiser",
+          "Golden Eye"
+        ]
+      }
+    }
+  },
+  "blessing": {
+    "name": {
+      "lang-store": {
+        "ja": "加護",
+        "en": "Blessing"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "luck"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "luck"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "が少ないときほど運に恵まれやすくなる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades improve your luck more when your "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": " is low."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "神頼み",
+          "守りの加護",
+          "奇跡の灯火",
+          "神恩の極み"
+        ],
+        "en": [
+          "A Prayer for Help",
+          "Protective Blessing",
+          "Light of Miracles",
+          "Divine Grace"
+        ]
+      }
+    }
+  },
+  "fortune": {
+    "name": {
+      "lang-store": {
+        "ja": "幸運",
+        "en": "Fortune"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "このタグが付いた装備を身につけると、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "luck"
+          },
+          {
+            "type": "text",
+            "value": "が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Equipping an item with this tag increases "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "luck"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    },
+    "effectDescription": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "グレードに応じて、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "が多いときほど運に恵まれやすくなる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher grades improve your luck more when your "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": " is high."
+          }
+        ]
+      }
+    },
+    "skillNames": {
+      "lang-store": {
+        "ja": [
+          "小さな兆し",
+          "時流の巡り",
+          "星々の導き",
+          "天運の寵児"
+        ],
+        "en": [
+          "Small Omen",
+          "Turning Tide",
+          "Guidance of the Stars",
+          "Fortune's Favorite"
+        ]
+      }
+    }
+  },
+  "fire": {
+    "name": {
+      "lang-store": {
+        "ja": "炎",
+        "en": "Fire"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "炎属性を受けた相手は、しばらくの間ダメージを受け続ける。タグ数が多いほどダメージと継続時間が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets affected by fire take damage over time. More tags increase the damage and duration."
+          }
+        ]
+      }
+    }
+  },
+  "water": {
+    "name": {
+      "lang-store": {
+        "ja": "水",
+        "en": "Water"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "水属性を受けた相手は、しばらくの間攻撃を失敗しやすくなる。タグ数が多いほど効果と継続時間が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Targets affected by water become more likely to miss their attacks for a while. More tags increase the effect and duration."
+          }
+        ]
+      }
+    }
+  },
+  "lightning": {
+    "name": {
+      "lang-store": {
+        "ja": "雷",
+        "en": "Lightning"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "雷属性を受けた相手は、しばらくの間受けたダメージが隣接した仲間に伝搬するようになる。タグ数が多いほど伝搬する範囲とダメージ、継続時間が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "For a while, damage taken by targets affected by lightning spreads to their adjacent allies. More tags increase the spread, damage, and duration."
+          }
+        ]
+      }
+    }
+  },
+  "area": {
+    "name": {
+      "lang-store": {
+        "ja": "範囲",
+        "en": "Area"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃と属性の効果が、相手の周囲にも届くようになる。タグ数が多いほど届く範囲が広がり、範囲へ与えるダメージや属性の効果が大きくなる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Attacks and elemental effects also reach the area around the target. More tags increase the range and the damage or elemental effects applied in that area."
+          }
+        ]
+      }
+    }
+  },
+  "vitality": {
+    "name": {
+      "lang-store": {
+        "ja": "活力",
+        "en": "Vitality"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "行動終了後、"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "luck"
+          },
+          {
+            "type": "text",
+            "value": "により自分の"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "を回復する。タグ数が多いほど回復量が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "After the user acts, its "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "luck"
+          },
+          {
+            "type": "text",
+            "value": " gives you a chance to recover your own "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". More tags increase the amount recovered."
+          }
+        ]
+      }
+    }
+  }
+}

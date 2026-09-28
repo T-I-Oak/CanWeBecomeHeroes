@@ -19,6 +19,8 @@ test('unique skills declare their semantic trigger in one shared catalog', () =>
   assert.equal(hasUniqueSkillTrigger(UNIQUE_SKILL_CATALOG['reputation-bewildering-words'], UNIQUE_SKILL_TRIGGER.actionStarted), true);
   assert.equal(hasUniqueSkillTrigger(UNIQUE_SKILL_CATALOG['fortune-misfortune-curse'], UNIQUE_SKILL_TRIGGER.actionStarted), true);
   assert.equal(hasUniqueSkillTrigger(UNIQUE_SKILL_CATALOG['feather-storm-wings'], UNIQUE_SKILL_TRIGGER.actionStarted), true);
+  assert.deepEqual(UNIQUE_SKILL_CATALOG['blessing-random'].triggers, []);
+  assert.equal(UNIQUE_SKILL_CATALOG['blessing-random'].affinityTag, 'blessing');
 });
 
 test('a matching unique skill enters its hook, while effect-specific chance remains in its own definition', () => {

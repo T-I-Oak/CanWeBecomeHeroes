@@ -32,6 +32,9 @@ export const COMBINATION_PATTERNS = Object.freeze({
     Object.freeze({ main: 'medium-reputation', support1: 'small-dexterity', support2: 'small-gem' }),
     Object.freeze({ main: 'medium-fortune', support1: 'small-gem', support2: 'small-dexterity' }),
     Object.freeze({ main: 'medium-feather', support1: 'small-cloth', support2: 'small-fire' }),
+    Object.freeze({ main: 'medium-valor', support1: 'small-lightning', support2: 'small-arcane' }),
+    Object.freeze({ main: 'medium-dexterity', support1: 'small-water', support2: 'small-blessing' }),
+    Object.freeze({ main: 'medium-blessing', support1: 'small-feather', support2: 'small-water' }),
   ]),
   boss: Object.freeze([
     Object.freeze({ main: 'large-vitality', support1: 'small-iron', support2: 'small-fortune' }),
@@ -46,6 +49,9 @@ export const COMBINATION_PATTERNS = Object.freeze({
     Object.freeze({ main: 'large-reputation', support1: 'small-dexterity', support2: 'small-gem' }),
     Object.freeze({ main: 'large-fortune', support1: 'small-gem', support2: 'small-dexterity' }),
     Object.freeze({ main: 'large-feather', support1: 'small-cloth', support2: 'small-fire' }),
+    Object.freeze({ main: 'large-valor', support1: 'small-lightning', support2: 'small-arcane' }),
+    Object.freeze({ main: 'large-dexterity', support1: 'small-water', support2: 'small-blessing' }),
+    Object.freeze({ main: 'large-blessing', support1: 'small-feather', support2: 'small-water' }),
   ]),
 });
 

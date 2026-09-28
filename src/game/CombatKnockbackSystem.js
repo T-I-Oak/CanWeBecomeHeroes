@@ -30,16 +30,22 @@ export default class CombatKnockbackSystem {
     this.pendingCounterblows.clear();
   }
 
-  queueIronCounterblow({ actor, target, damage, level }) {
+  queueIronCounterblow({ actor, target, damage, level, skill = null }) {
     if (!actor || !target || damage <= 0) return;
-    const pending = this.pendingCounterblows.get(actor) ?? { distance: 0 };
+    const pending = this.pendingCounterblows.get(actor) ?? { distance: 0, defender: target, skill };
     pending.distance = Math.max(pending.distance, getIronCounterblowDistance(damage, level));
+    pending.defender = target;
+    pending.skill = skill ?? pending.skill;
     this.pendingCounterblows.set(actor, pending);
   }
 
   resolveAction() {
-    this.pendingCounterblows.forEach(({ distance }, actor) => this.begin(actor, distance));
+    const confirmed = [];
+    this.pendingCounterblows.forEach(({ distance, defender, skill }, actor) => {
+      if (this.begin(actor, distance)) confirmed.push({ actor, defender, skill });
+    });
     this.pendingCounterblows.clear();
+    return confirmed;
   }
 
   begin(combatant, distance) {

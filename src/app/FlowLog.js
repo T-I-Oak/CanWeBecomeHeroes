@@ -1,3 +1,6 @@
+import { createLogMessageParts } from '../game/LogPresentation.js';
+import { renderLogMessage } from './LogMessageView.js';
+
 const FALLBACK_DURATION_MS = 6000;
 const FLOW_Y_RANGES = Object.freeze({
   battle: Object.freeze({ min: 12, max: 44 }),
@@ -37,7 +40,7 @@ export default class FlowLog {
     message.className = 'FlowLog__Message';
     const text = document.createElement('span');
     text.className = 'FlowLog__Text';
-    text.textContent = this.gameLog.getMessage(record);
+    this.renderMessage(text, record);
     this.visibleEntries.set(entry, { text, record });
     message.append(text);
     entry.append(message);
@@ -56,7 +59,21 @@ export default class FlowLog {
     requestAnimationFrame(() => entry.classList.add('state-running'));
   }
 
+  renderMessage(text, record) {
+    if (record.localized && this.gameLog.textRepository && typeof text.replaceChildren === 'function') {
+      renderLogMessage(text, createLogMessageParts(this.gameLog.textRepository, record.localized));
+      return;
+    }
+    text.textContent = this.gameLog.getMessage(record);
+  }
+
   refreshLanguage() {
-    this.visibleEntries.forEach(({ text, record }) => { text.textContent = this.gameLog.getMessage(record); });
+    this.visibleEntries.forEach(({ text, record }) => this.renderMessage(text, record));
+  }
+
+  dispose() {
+    this.unsubscribe();
+    this.visibleEntries.clear();
+    this.container.replaceChildren();
   }
 }

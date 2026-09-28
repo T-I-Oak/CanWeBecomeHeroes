@@ -1,0 +1,272 @@
+{
+  "logCategory_hero": {
+    "lang-store": {
+      "ja": "キャラクター",
+      "en": "Character"
+    }
+  },
+  "logCategory_enemy": {
+    "lang-store": {
+      "ja": "敵",
+      "en": "Enemy"
+    }
+  },
+  "logCategory_system": {
+    "lang-store": {
+      "ja": "システム",
+      "en": "System"
+    }
+  },
+  "logCategory_info": {
+    "lang-store": {
+      "ja": "情報",
+      "en": "Info"
+    }
+  },
+  "logCategory_luck": {
+    "lang-store": {
+      "ja": "幸運",
+      "en": "Lucky"
+    }
+  },
+  "logCategory_unluck": {
+    "lang-store": {
+      "ja": "不運",
+      "en": "Unlucky"
+    }
+  },
+  "logCategory_warning": {
+    "lang-store": {
+      "ja": "注意",
+      "en": "Warning"
+    }
+  },
+  "logCategory_battle": {
+    "lang-store": {
+      "ja": "戦闘",
+      "en": "Battle"
+    }
+  },
+  "logCategory_shop": {
+    "lang-store": {
+      "ja": "ショップ",
+      "en": "Shop"
+    }
+  },
+  "logCategory_guild": {
+    "lang-store": {
+      "ja": "ギルド",
+      "en": "Guild"
+    }
+  },
+  "logCategory_training": {
+    "lang-store": {
+      "ja": "訓練",
+      "en": "Training"
+    }
+  },
+  "logCategory_preparing": {
+    "lang-store": {
+      "ja": "準備",
+      "en": "Preparation"
+    }
+  },
+  "logCategory_event": {
+    "lang-store": {
+      "ja": "ゲーム進行",
+      "en": "Game events"
+    }
+  },
+  "logVictory": {
+    "lang-store": {
+      "ja": "敵を全滅させた。",
+      "en": "All enemies defeated."
+    }
+  },
+  "logDefeat": {
+    "lang-store": {
+      "ja": "{actor}は{target}を倒した。",
+      "en": "{actor} defeated {target}."
+    }
+  },
+  "logDamage": {
+    "lang-store": {
+      "ja": "{actor}は{target}にダメージ{damage}を与えた。",
+      "en": "{actor} dealt {damage} damage to {target}."
+    }
+  },
+  "logCritical": {
+    "lang-store": {
+      "ja": "{actor}は{target}に会心ダメージ{damage}を与えた。",
+      "en": "{actor} dealt {damage} critical damage to {target}."
+    }
+  },
+  "logMiss": {
+    "lang-store": {
+      "ja": "{actor}の{target}への攻撃は外れた。",
+      "en": "{actor}'s attack missed {target}."
+    }
+  },
+  "logOrb": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{item}を{count}個落とした。",
+      "en": "{actor} dropped {count} {item} with {skill}."
+    }
+  },
+  "logTwoEdgedSword": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で、戦場の全員を{condition}状態にした。",
+      "en": "{actor} used {skill} and gave everyone on the battlefield {condition}."
+    }
+  },
+  "logArcaneReflection": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{attribute}を{target}へ跳ね返した。",
+      "en": "{actor} reflected {attribute} to {target} with {skill}."
+    }
+  },
+  "logShadowErase": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{target}の装備から{tag}を消した。",
+      "en": "{actor} erased {tag} from {target}'s equipment with {skill}."
+    }
+  },
+  "logShadowSteal": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{target}の装備から{tag}を奪った。",
+      "en": "{actor} stole {tag} from {target}'s equipment with {skill}."
+    }
+  },
+  "logBewilderment": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{target}を{condition}状態にした。",
+      "en": "{actor} inflicted {condition} on {target} with {skill}."
+    }
+  },
+  "logIronCounterblow": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{target}を吹き飛ばした。",
+      "en": "{actor} knocked {target} away with {skill}."
+    }
+  },
+  "logNightFamiliars": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{familiar}を{count}体呼び出した。",
+      "en": "{actor} called {count} {familiar} with {skill}."
+    }
+  },
+  "logFamiliarDamage": {
+    "lang-store": {
+      "ja": "{actor}の{familiar}は{target}にダメージ{damage}を与えた。",
+      "en": "{actor}'s {familiar} dealt {damage} damage to {target}."
+    }
+  },
+  "logGust": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{target}を倉庫へ吹き飛ばした。",
+      "en": "{actor} blew {target} into the warehouse with {skill}."
+    }
+  },
+  "logMisfortune": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{target}を{condition}状態にした。",
+      "en": "{actor} inflicted {condition} on {target} with {skill}."
+    }
+  },
+  "logMisfortuneSelf": {
+    "lang-store": {
+      "ja": "{condition}状態の{actor}は自身に会心ダメージ{damage}を与えた。",
+      "en": "{actor}, under {condition}, dealt {damage} critical damage to itself."
+    }
+  },
+  "logFireRetaliation": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{target}へ{attribute}属性を付与した。",
+      "en": "{actor} applied {attribute} to {target} with {skill}."
+    }
+  },
+  "logWaterSurge": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で自身に{attribute}属性を付与した。",
+      "en": "{actor} applied {attribute} to itself with {skill}."
+    }
+  },
+  "logThunderDrain": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で相手全員の{gauge}を奪った。",
+      "en": "{actor} stole every opponent's {gauge} with {skill}."
+    }
+  },
+  "logSummon": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{target}を{count}体召喚した。",
+      "en": "{actor} summoned {count} × {target} with {skill}."
+    }
+  },
+  "logHeads": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{count}つの{head}を伸ばした。",
+      "en": "{actor} extended {count} {head} with {skill}."
+    }
+  },
+  "logMinions": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で眷属{minions}体と連携攻撃した。",
+      "en": "{actor} attacked together with {minions} minions using {skill}."
+    }
+  },
+  "logHeadsMinions": {
+    "lang-store": {
+      "ja": "{actor}は{skill}で{count}つの{head}を伸ばし、眷属{minions}体と連携攻撃した。",
+      "en": "{actor} extended {count} {head} with {skill} and attacked together with {minions} minions."
+    }
+  },
+  "logTraining": {
+    "lang-store": {
+      "ja": "{hero}は{stat}を強化した。",
+      "en": "{hero} improved {stat}."
+    }
+  },
+  "logShop": {
+    "lang-store": {
+      "ja": "{hero}はショップで買い物をした。",
+      "en": "{hero} traded at the shop."
+    }
+  },
+  "logReveal": {
+    "lang-store": {
+      "ja": "{hero}は買った{part}の隠れた能力を見つけた。",
+      "en": "{hero} discovered a hidden ability in the purchased {part}."
+    }
+  },
+  "logDeparture": {
+    "lang-store": {
+      "ja": "{hero}は{destination}に向かって出発した。",
+      "en": "{hero} set out for {destination}."
+    }
+  },
+  "logGuild00": {
+    "lang-store": {
+      "ja": "{hero}はギルドと交渉して、試験期限を{hours}延長した。",
+      "en": "{hero} negotiated with the guild and extended the exam deadline by {hours}."
+    }
+  },
+  "logGuild01": {
+    "lang-store": {
+      "ja": "{hero}はギルドから好条件を引き出し、試験期限を{hours}延長した。",
+      "en": "{hero} secured favorable terms from the guild and extended the exam deadline by {hours}."
+    }
+  },
+  "logGuild10": {
+    "lang-store": {
+      "ja": "{hero}はギルドとの巧みな交渉で、試験期限を{hours}延長した。",
+      "en": "{hero} skillfully negotiated with the guild and extended the exam deadline by {hours}."
+    }
+  },
+  "logGuild11": {
+    "lang-store": {
+      "ja": "{hero}はギルドとの巧みな交渉で好条件を引き出し、試験期限を{hours}延長した。",
+      "en": "{hero} skillfully secured favorable terms from the guild and extended the exam deadline by {hours}."
+    }
+  }
+}

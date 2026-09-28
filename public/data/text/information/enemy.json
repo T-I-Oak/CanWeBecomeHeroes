@@ -1,0 +1,1842 @@
+{
+  "small-valor": {
+    "name": {
+      "lang-store": {
+        "ja": "ゴブリン",
+        "en": "Goblin"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "小柄でも、剣を振るう勢いだけは一人前の小鬼。仲間がそろうと、ますます強気になる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A little goblin whose sword swings are as bold as any warrior's. It grows even bolder with friends at its side."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "剣による物理攻撃を得意とする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Excels at physical attacks with a sword."
+          }
+        ]
+      }
+    }
+  },
+  "small-iron": {
+    "name": {
+      "lang-store": {
+        "ja": "リビングアーマー",
+        "en": "Living Armor"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "主を失った鎧に、古い守りの意志だけが宿っている。鈍重だが、簡単には崩れない。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Only an ancient will to protect remains within this masterless armor. Slow and heavy, but difficult to break."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "盾で物理攻撃を受け止め、受けた力を相手へ返す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Blocks physical attacks with a shield and turns part of their force back on the attacker."
+          }
+        ]
+      }
+    }
+  },
+  "small-arcane": {
+    "name": {
+      "lang-store": {
+        "ja": "ゴースト",
+        "en": "Ghost"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "淡い光をまとって漂う、いたずら好きのゴースト。守りをすり抜ける魔法で、相手をからかうのが好きだ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A mischievous ghost drifting in a pale glow. It delights in teasing foes with magic that slips past their defenses."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "防御されない魔法攻撃を放つ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Uses magical attacks that bypass defenses."
+          }
+        ]
+      }
+    }
+  },
+  "medium-arcane": {
+    "name": {
+      "lang-store": {
+        "ja": "リッチ",
+        "en": "Lich"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "古い魔術とともに蘇った、不死の術者。相手の放った力さえ、自らの呪文へ編み直す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "An undying spellcaster revived with ancient magic. It weaves even an opponent's power back into its own spells."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "受けた属性を和らげ、相手へ跳ね返す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Softens received attributes and reflects them onto the attacker."
+          }
+        ]
+      }
+    }
+  },
+  "large-arcane": {
+    "name": {
+      "lang-store": {
+        "ja": "メデューサ",
+        "en": "Medusa"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "蛇の髪に古い魔力を宿す怪物。放たれた属性を絡め取り、より強く相手へ返す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A monster whose serpent hair bears ancient magic. It catches incoming attributes and returns them with greater force."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "受けた属性の多くを和らげ、相手へ跳ね返す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Greatly softens received attributes and reflects them onto the attacker."
+          }
+        ]
+      }
+    }
+  },
+  "small-reputation": {
+    "name": {
+      "lang-store": {
+        "ja": "ドワーフ",
+        "en": "Dwarf"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "山の工房から出てきた、商売熱心なドワーフ。手に入れた品の値打ちは、誰より気にしている。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "An enterprising dwarf fresh from a mountain workshop. No one watches the value of its acquisitions more closely."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "宝珠で相手の動きを鈍らせる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Uses an orb to slow opponents."
+          }
+        ]
+      }
+    }
+  },
+  "small-lightning": {
+    "name": {
+      "lang-store": {
+        "ja": "雷狼",
+        "en": "Thunder Wolf"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "雷鳴と一緒に駆け抜ける、青白い毛並みの狼。獲物を追い詰めると、仲間へ電撃をつなぐ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A pale-furred wolf that races alongside the thunder. Once its prey is cornered, it sends lightning leaping among its companions."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "雷属性を付与し、受けた攻撃を周囲へ伝わりやすくする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Applies lightning, causing damage taken to spread to nearby allies."
+          }
+        ]
+      }
+    }
+  },
+  "small-cloth": {
+    "name": {
+      "lang-store": {
+        "ja": "ミイラ",
+        "en": "Mummy"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "乾いた包帯を引きずる、墓所からの迷子。炎も水も雷も、何重もの布でやわらげる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A lost wanderer from the tombs, trailing dry bandages. Layer upon layer of cloth softens fire, water, and lightning alike."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "炎・水・雷属性の影響を軽減する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Reduces the effects of fire, water, and lightning."
+          }
+        ]
+      }
+    }
+  },
+  "medium-cloth": {
+    "name": {
+      "lang-store": {
+        "ja": "レイス",
+        "en": "Wraith"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "夜の墓所をさまよう、ぼろ布をまとった亡霊。静かな羽音を呼び寄せ、獲物を闇へ追い込む。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A rag-wrapped spirit that haunts the tombs at night. It calls quiet wingbeats to drive prey into the dark."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃後に使い魔を呼び、次の攻撃でけしかける。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Calls familiars after attacking, then sets them upon foes on its next attack."
+          }
+        ]
+      }
+    }
+  },
+  "large-cloth": {
+    "name": {
+      "lang-store": {
+        "ja": "ドラキュラ",
+        "en": "Dracula"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "古い城に君臨する夜の貴族。羽音の群れを従え、逃げ場のない闇へ相手を追い詰める。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A nocturnal noble who reigns over an ancient castle. With a flock of wingbeats at his command, he corners foes in inescapable darkness."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "多くの使い魔を呼び、次の攻撃でけしかける。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Calls many familiars, then sets them upon foes on its next attack."
+          }
+        ]
+      }
+    }
+  },
+  "small-dexterity": {
+    "name": {
+      "lang-store": {
+        "ja": "コボルト",
+        "en": "Kobold"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "すばしこく走り回る、手癖の悪いコボルト。目についた物は、隙を見て持ち去ろうとする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A quick-footed kobold with sticky fingers. Anything that catches its eye is likely to vanish at the first opening."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "倉庫の装備を盗み、自分の装備にする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Steals equipment from the warehouse and equips it."
+          }
+        ]
+      }
+    }
+  },
+  "small-feather": {
+    "name": {
+      "lang-store": {
+        "ja": "ハーピー",
+        "en": "Harpy"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "高い場所から獲物を見つける、翼を持つ狩人。風向きが変われば、もう姿を捉えにくい。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A winged hunter that spots prey from high above. When the wind shifts, it is already slipping out of sight."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "すばやく行動し、相手の攻撃をかわしやすい。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Acts quickly and readily dodges attacks."
+          }
+        ]
+      }
+    }
+  },
+  "medium-feather": {
+    "name": {
+      "lang-store": {
+        "ja": "グリフォン",
+        "en": "Griffin"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "獅子の力と鷲の翼をあわせ持つ、空の守り手。ひとたび翼を広げれば、風が獲物を遠くへさらう。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A guardian of the skies with a lion's strength and an eagle's wings. One spread of its wings carries prey far away on the wind."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "突風で相手を戦闘から引き離し、装備を散らすことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May use a gust to drive an opponent from battle and scatter its equipment."
+          }
+        ]
+      }
+    }
+  },
+  "large-feather": {
+    "name": {
+      "lang-store": {
+        "ja": "ワイバーン",
+        "en": "Wyvern"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "嵐をまとって空を支配する、翼竜の王。大きく羽ばたくたび、戦場の足場さえ風にさらわれる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A winged drake king that rules the sky in a storm. Each mighty beat of its wings can sweep even the battlefield's footing away."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "強い突風で相手を戦闘から引き離し、装備を散らすことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May use a powerful gust to drive an opponent from battle and scatter its equipment."
+          }
+        ]
+      }
+    }
+  },
+  "small-gem": {
+    "name": {
+      "lang-store": {
+        "ja": "ミミック",
+        "en": "Mimic"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "宝箱のふりをして獲物を待つ、小さな魔物。きらきらした物なら、罠にするのも大好きだ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A small monster waiting for prey in the guise of a treasure chest. It loves shiny things, especially as bait."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "宝珠を使って、相手の行動を遅らせる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Uses an orb to delay opponents' actions."
+          }
+        ]
+      }
+    }
+  },
+  "medium-blessing": {
+    "name": {
+      "lang-store": {
+        "ja": "デーモン",
+        "en": "Demon"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "祝福を装って近づく、角を持つ悪魔。追い詰められるほど、見知らぬ力を呼び込む。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A horned demon that approaches under the guise of a blessing. The more it is cornered, the more it calls in unfamiliar power."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "他の中ボスの力を一時的に授かって使うことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May temporarily receive and use the power of another mid-boss."
+          }
+        ]
+      }
+    }
+  },
+  "large-blessing": {
+    "name": {
+      "lang-store": {
+        "ja": "堕天使",
+        "en": "Fallen Angel"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "かつての祝福を影に変えた、堕ちた天使。翼を広げるたび、戦場へ見知らぬ力が降り注ぐ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A fallen angel that has turned an old blessing into shadow. Each time it spreads its wings, unfamiliar power descends on the battlefield."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "他のボスの力を一時的に授かって使うことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May temporarily receive and use the power of another boss."
+          }
+        ]
+      }
+    }
+  },
+  "small-blessing": {
+    "name": {
+      "lang-store": {
+        "ja": "インプ",
+        "en": "Imp"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "悪知恵だけは一丁前の、小さな悪魔。追い詰められた仲間へ、都合よく手を貸す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A little devil with no shortage of cunning. It always finds a convenient way to help a cornered companion."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "仲間のHPを回復する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Restores allies' HP."
+          }
+        ]
+      }
+    }
+  },
+  "small-fortune": {
+    "name": {
+      "lang-store": {
+        "ja": "ピクシー",
+        "en": "Pixie"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "幸運を振りまく、小さな妖精。危ない目に遭うほど、なぜか機嫌がよくなる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A tiny fairy scattering good fortune. For some reason, danger only seems to improve its mood."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "元気なピクシーほど運が高く、会心やさまざまな判定を有利にする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A healthier pixie has greater luck, improving critical hits and other chance-based outcomes."
+          }
+        ]
+      }
+    }
+  },
+  "small-fire": {
+    "name": {
+      "lang-store": {
+        "ja": "サラマンダー",
+        "en": "Salamander"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "火の粉をまとって岩場を歩く、陽気なトカゲの魔物。通った後には、なかなか消えない熱が残る。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A cheerful lizard monster that wanders rocky ground in a shower of sparks. Its passing leaves a stubborn heat behind."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "炎属性を付与し、時間とともにダメージを与える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Applies fire to deal damage over time."
+          }
+        ]
+      }
+    }
+  },
+  "small-water": {
+    "name": {
+      "lang-store": {
+        "ja": "半魚人",
+        "en": "Fishman"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "水辺から這い出す、ぬるりとした半魚人。濡れた足場へ誘い込み、狙いを狂わせる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A slippery fish-like humanoid crawling out of the water. It lures foes onto wet footing and throws off their aim."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "水属性を付与し、相手の攻撃を失敗しやすくする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Applies water, making opponents more likely to miss."
+          }
+        ]
+      }
+    }
+  },
+  "medium-water": {
+    "name": {
+      "lang-store": {
+        "ja": "クラーケン",
+        "en": "Kraken"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "深い海から伸びる巨大な触手の主。渦巻く水をまとい、獲物を押し流す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Master of immense tentacles reaching from the deep. It wraps itself in swirling water and sweeps prey away."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "水をまとい、その勢いを攻撃へ乗せる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Cloaks itself in water and carries its force into every attack."
+          }
+        ]
+      }
+    }
+  },
+  "large-water": {
+    "name": {
+      "lang-store": {
+        "ja": "リヴァイアサン",
+        "en": "Leviathan"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "深海を支配する、うねる巨獣。まとった海の力を一撃へ注ぎ込み、戦場を飲み込む。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A surging beast that rules the abyss. It pours the sea's force into each blow and swallows the battlefield whole."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "大量の水をまとい、その勢いを攻撃へ乗せる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Cloaks itself in a great volume of water and carries its force into every attack."
+          }
+        ]
+      }
+    }
+  },
+  "medium-fire": {
+    "name": {
+      "lang-store": {
+        "ja": "ヘルハウンド",
+        "en": "Hellhound"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "火の粉をたてがみに宿す、地獄育ちの猟犬。噛みつかれた相手へ、燃える熱を移していく。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A hell-bred hound with sparks caught in its mane. Every bite passes on searing heat."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃を受けると、相手へ炎属性を燃え移らせる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When hit, spreads fire to the attacker."
+          }
+        ]
+      }
+    }
+  },
+  "large-fire": {
+    "name": {
+      "lang-store": {
+        "ja": "フェニックス",
+        "en": "Phoenix"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "燃える翼を大きく広げる、不死鳥の王。近づく者を包む炎は、触れた者へいつまでも残る。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "The sovereign of immortal birds spreads blazing wings wide. Its enveloping fire clings to all who touch it."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃を受けると、相手へ強い炎属性を燃え移らせる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "When hit, spreads a stronger fire to the attacker."
+          }
+        ]
+      }
+    }
+  },
+  "medium-lightning": {
+    "name": {
+      "lang-store": {
+        "ja": "サンダーバード",
+        "en": "Thunderbird"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "雷雲を翼にまとい、嵐の中を舞う巨鳥。帯電した相手の力を、ひと息に奪い取る。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A great bird that rides storms with thunderclouds in its wings. It draws away the strength of charged foes."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "雷属性をまとった相手の行動を遅らせる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Slows actions of opponents carrying lightning."
+          }
+        ]
+      }
+    }
+  },
+  "large-lightning": {
+    "name": {
+      "lang-store": {
+        "ja": "雷龍",
+        "en": "Thunder Dragon"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "嵐を呼ぶ雷雲の主。稲妻が触れた敵の力を吸い上げ、次の一撃へ変えていく。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Master of storm clouds. It draws up the strength of foes touched by lightning and turns it into its next blow."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "雷属性をまとった相手全員の行動を大きく遅らせる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Greatly slows every opponent carrying lightning."
+          }
+        ]
+      }
+    }
+  },
+  "medium-reputation": {
+    "name": {
+      "lang-store": {
+        "ja": "ホブゴブリン",
+        "en": "Hobgoblin"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "巧みな言葉とずる賢い駆け引きで、相手の心を揺さぶるゴブリンの首領。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A goblin chieftain who unsettles opponents with clever words and sly bargains."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "相手を惑乱させ、仲間へ刃を向けさせることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May bewilder opponents and turn their weapons toward allies."
+          }
+        ]
+      }
+    }
+  },
+  "large-reputation": {
+    "name": {
+      "lang-store": {
+        "ja": "スフィンクス",
+        "en": "Sphinx"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "答えのない問いをささやき、戦う者の判断を惑わせる砂漠の賢者。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A desert sage whose unanswerable riddles cloud a warrior's judgment."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "相手を惑乱させ、仲間へ大きく刃を向けさせることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May strongly bewilder opponents and turn their weapons toward allies."
+          }
+        ]
+      }
+    }
+  },
+  "medium-fortune": {
+    "name": {
+      "lang-store": {
+        "ja": "レプラコーン",
+        "en": "Leprechaun"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "幸運を気まぐれに配る、小さな妖精。笑いながら不運を忍ばせる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A small fairy that hands out luck on a whim, then slips in misfortune with a laugh."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "相手の会心を自分へ跳ね返らせることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May turn an opponent's critical strike back upon them."
+          }
+        ]
+      }
+    }
+  },
+  "large-fortune": {
+    "name": {
+      "lang-store": {
+        "ja": "麒麟",
+        "en": "Qilin"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "吉兆と災いの境目を歩く、気高い霊獣。その祝福はときに刃へ試練を返す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A noble spirit beast that walks the boundary between blessing and calamity. Its favor can return a trial to the blade."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "相手の会心をすべて自分へ跳ね返らせることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May turn an opponent's entire critical strike back upon them."
+          }
+        ]
+      }
+    }
+  },
+  "small-vitality": {
+    "name": {
+      "lang-store": {
+        "ja": "マンドラゴラ",
+        "en": "Mandragora"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "引き抜かれても、しぶとく根を張ろうとする不思議な植物。土があれば、まだまだ元気だ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A strange plant that stubbornly tries to take root even after being pulled up. Give it soil and it still has plenty of life left."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "行動後に、運がよければHPを回復する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May recover HP after acting, depending on luck."
+          }
+        ]
+      }
+    }
+  },
+  "small-area": {
+    "name": {
+      "lang-store": {
+        "ja": "ケルベロス",
+        "en": "Cerberus"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "三つの頭で、獲物の逃げ道をふさぐ番犬。ひとつを避けても、別の頭が待っている。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A three-headed guard dog that cuts off every escape. Evade one head and another is waiting."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "広い範囲へ攻撃を行う。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Attacks a wide area."
+          }
+        ]
+      }
+    }
+  },
+  "medium-vitality": {
+    "name": {
+      "lang-store": {
+        "ja": "トレント",
+        "en": "Treant"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "長い年月で根を深く張った、歩く樹の魔物。倒れかけても、最後に新しい芽を残そうとする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A walking tree monster with roots grown deep over many years. Even as it falls, it tries to leave one last shoot behind."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "HPが0になると、マンドラゴラを最大2体召喚する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Summons up to 2 Mandragoras when its HP reaches 0."
+          }
+        ]
+      }
+    }
+  },
+  "large-vitality": {
+    "name": {
+      "lang-store": {
+        "ja": "歩く世界樹",
+        "en": "Walking World Tree"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "森そのものが歩き出したような、巨大な世界樹。倒れても根から次の命を呼び、戦場を埋め尽くそうとする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "An immense world tree, as though the forest itself had begun to walk. Even in defeat, its roots call forth new life to fill the battlefield."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "HPが0になると、トレントを最大2体召喚する。回復されるとかなり厄介。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Summons up to 2 Treants when its HP reaches 0. Especially troublesome when healed."
+          }
+        ]
+      }
+    }
+  },
+  "medium-gem": {
+    "name": {
+      "lang-store": {
+        "ja": "クリスタルゴーレム",
+        "en": "Crystal Golem"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "全身を結晶で覆った、鈍く光るゴーレム。砕けた欠片さえ、いつの間にか宝珠へ変わっている。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A dimly gleaming golem covered in crystals. Even its shattered fragments somehow turn into orbs."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "ダメージを受けると、倉庫に宝珠を落とすことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May drop an orb into the warehouse when damaged."
+          }
+        ]
+      }
+    }
+  },
+  "large-gem": {
+    "name": {
+      "lang-store": {
+        "ja": "ファフニール",
+        "en": "Fafnir"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "財宝の山を寝床にする、宝石鱗の竜。傷つくほど宝珠をばらまき、倉庫をきらびやかに散らかしていく。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A gem-scaled dragon that sleeps upon a mountain of treasure. Each wound scatters more orbs, leaving the warehouse glittering with clutter."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "ダメージを受けると、倉庫に宝珠をいくつか落とすことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May drop several orbs into the warehouse when damaged."
+          }
+        ]
+      }
+    }
+  },
+  "medium-area": {
+    "name": {
+      "lang-store": {
+        "ja": "ヒュドラ",
+        "en": "Hydra"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "幾つもの首を伸ばして獲物を囲む、底なし沼の大蛇。ひとつの首を振りほどいても、すぐ別の首が迫る。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A great serpent of the bottomless mire, encircling its prey with many necks. Shake off one head and another is already closing in."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃後、龍の首をひとつ伸ばして追加攻撃する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "After attacking, extends one Dragon Head for a follow-up attack."
+          }
+        ]
+      }
+    }
+  },
+  "large-area": {
+    "name": {
+      "lang-store": {
+        "ja": "八岐大蛇",
+        "en": "Yamata no Orochi"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "八つの首を自在に操る、巨大な大蛇。首がひとつ動けば、戦場のあちこちから同時に襲いかかる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "An immense serpent that commands eight heads with ease. One head moves, and attacks strike from across the battlefield at once."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "攻撃後、龍の首をふたつ伸ばして追加攻撃する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "After attacking, extends two Dragon Heads for follow-up attacks."
+          }
+        ]
+      }
+    }
+  },
+  "medium-dexterity": {
+    "name": {
+      "lang-store": {
+        "ja": "ウェアウルフ",
+        "en": "Werewolf"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "夜の森を駆ける、鋭い爪を持つ獣人。素早く懐へ潜り込み、相手の装備から力を奪う。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A clawed beastkin that races through the night forest. It darts in close and steals power from its foe's equipment."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "相手の装備からタグを1つ抜き取ることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May remove one tag from the target's equipment."
+          }
+        ]
+      }
+    }
+  },
+  "large-dexterity": {
+    "name": {
+      "lang-store": {
+        "ja": "天狗",
+        "en": "Tengu"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "山風とともに舞い降りる、翼持つ剣士。ひと太刀の間に、相手の装備から力をさらっていく。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A winged swordsman descending with the mountain wind. In the space of one cut, it snatches power from its foe's equipment."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "相手の装備から抜き取ったタグを、自身の装備へ移すことがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "May move a removed tag from the target's equipment onto its own equipment."
+          }
+        ]
+      }
+    }
+  },
+  "medium-valor": {
+    "name": {
+      "lang-store": {
+        "ja": "オーガ",
+        "en": "Ogre"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "荒々しい棍棒を振るう、巨躯の鬼。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A hulking brute that swings a savage club."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "戦場にいる全員を諸刃の剣状態にする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Puts everyone on the battlefield into the Two-Edged Sword state."
+          }
+        ]
+      }
+    }
+  },
+  "large-valor": {
+    "name": {
+      "lang-store": {
+        "ja": "サイクロプス",
+        "en": "Cyclops"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "ひとつ目で戦場を睨む、山のような巨人。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A mountain-like giant that glares across the battlefield with its single eye."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "戦場にいる全員を、より強い諸刃の剣状態にする。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Puts everyone on the battlefield into a stronger Two-Edged Sword state."
+          }
+        ]
+      }
+    }
+  },
+  "medium-iron": {
+    "name": {
+      "lang-store": {
+        "ja": "ゴーレム",
+        "en": "Golem"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "岩と鉄で組まれた、古代の守り手。重い一撃を受けるほど、相手を遠ざける。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "An ancient guardian of stone and iron. The heavier the blow it takes, the farther it drives its attacker away."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "物理攻撃を受けると、相手を吹き飛ばす。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Knocks attackers away when struck by physical attacks."
+          }
+        ]
+      }
+    }
+  },
+  "large-iron": {
+    "name": {
+      "lang-store": {
+        "ja": "タロス",
+        "en": "Talos"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "青銅の巨躯に、果てのない守護の使命を宿した自動人形。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A bronze colossus animated by an endless duty to guard."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "物理攻撃を受けると、相手を大きく吹き飛ばす。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Greatly knocks attackers away when struck by physical attacks."
+          }
+        ]
+      }
+    }
+  },
+  "phantom-area-head": {
+    "name": {
+      "lang-store": {
+        "ja": "龍の首",
+        "en": "Dragon Head"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "本体から伸びて、相手に食らいつく巨大な蛇の首。攻撃を終えると、すぐ本体へ戻っていく。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A giant serpent's head that stretches out from its body to bite its foe. Once the attack is over, it swiftly withdraws."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "本体のアクションに続けて、すぐ追加攻撃する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Makes an immediate follow-up attack after its body's action."
+          }
+        ]
+      }
+    }
+  }
+}

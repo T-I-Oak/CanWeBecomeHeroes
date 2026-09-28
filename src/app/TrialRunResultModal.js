@@ -44,18 +44,30 @@ export default class TrialRunResultModal {
   }
 
   show(result) {
-    this.container.replaceChildren(this.createResult(result));
-    this.modalLayer.open();
+    return new Promise((resolve) => {
+      this.container.replaceChildren(this.createResult(result, resolve));
+      this.modalLayer.open();
+    });
   }
 
-  createResult(result) {
-    if (result.type === TRIAL_RUN_RESULT_TYPE.certificate) return this.createCertificate(result);
-    if (result.type === TRIAL_RUN_RESULT_TYPE.failureNotice) return this.createFailureNotice();
+  createResult(result, resolve) {
+    if (result.type === TRIAL_RUN_RESULT_TYPE.certificate) return this.createCertificate(result, resolve);
+    if (result.type === TRIAL_RUN_RESULT_TYPE.failureNotice) return this.createFailureNotice(resolve);
     throw new RangeError(`Unknown trial result type: ${result.type}`);
   }
 
-  createCertificate(result) {
-    const { dialog, header, body } = createModalDialog({
+  createReturnButton(resolve) {
+    const button = createElement('button', 'ModalDialog__PrimaryButton', this.textRepository.getLabel('returnToTitle'));
+    button.type = 'button';
+    button.addEventListener('click', () => {
+      this.modalLayer.close();
+      resolve();
+    });
+    return button;
+  }
+
+  createCertificate(result, resolve) {
+    const { dialog, header, body, footer } = createModalDialog({
       dialogClass: 'TrialRunResult__Dialog state-certificate',
       title: this.textRepository.getLabel('trialCertificateTitle'),
       titleId: 'trial-run-result-title',
@@ -72,20 +84,22 @@ export default class TrialRunResultModal {
     );
     certificate.append(statement, recipients, issue);
     body.append(certificate);
-    dialog.append(header, body);
+    footer.append(this.createReturnButton(resolve));
+    dialog.append(header, body, footer);
     const resultScreen = createElement('section', 'TrialRunResult__Screen state-certificate');
     resultScreen.append(createCelebrationConfetti(), dialog);
     return resultScreen;
   }
 
-  createFailureNotice() {
-    const { dialog, header, body } = createModalDialog({
+  createFailureNotice(resolve) {
+    const { dialog, header, body, footer } = createModalDialog({
       dialogClass: 'TrialRunResult__Dialog state-failure-notice',
       title: this.textRepository.getLabel('trialFailureTitle'),
       titleId: 'trial-run-result-title',
     });
     body.append(createElement('p', 'TrialRunResult__FailureMessage', this.textRepository.getLabel('trialFailureMessage')));
-    dialog.append(header, body);
+    footer.append(this.createReturnButton(resolve));
+    dialog.append(header, body, footer);
     const resultScreen = createElement('section', 'TrialRunResult__Screen state-failure-notice');
     resultScreen.append(dialog);
     return resultScreen;

@@ -1,0 +1,357 @@
+{
+  "opening": {
+    "lead": {
+      "Avery": {
+        "lang-store": {
+          "ja": "ついに試験が始まるね。私、気合で駆け抜けるから、一緒に頑張ろうね！",
+          "en": "The trial is finally starting. I'll charge through on spirit, so let's do our best together!"
+        }
+      },
+      "Briar": {
+        "lang-store": {
+          "ja": "今日から、試験だね。この試験で、僕たちの力を試そう。",
+          "en": "The trial starts today. Let's test our strength in this trial."
+        }
+      },
+      "Casey": {
+        "lang-store": {
+          "ja": "ついに試験だね。ここで、あたしの魔法の実力を確かめてみるよ。一緒に進もう！",
+          "en": "The trial is finally here. I'll test the strength of my magic here. Let's go on together!"
+        }
+      },
+      "Darcy": {
+        "lang-store": {
+          "ja": "試験の日を迎えましたね。人の助けになれるよう、進みましょう。",
+          "en": "The day of the trial has come. Let's go on, and become able to help people."
+        }
+      },
+      "Ellis": {
+        "lang-store": {
+          "ja": "いよいよ本番だな。胸を張れる仕事を、目指して頑張ろう。",
+          "en": "This is the real thing. Let's work toward a job we can be proud of."
+        }
+      },
+      "Finley": {
+        "lang-store": {
+          "ja": "ここが試験場につながる入り口ですね。この先の未来を、一緒に見に行きましょう。",
+          "en": "This is the entrance that leads to the trial grounds. Let's go see the future ahead together."
+        }
+      },
+      "Garnet": {
+        "lang-store": {
+          "ja": "いよいよ試験が始まりますね。品物が安全に流通する世の中を、目指して頑張りましょう。",
+          "en": "The trial is finally beginning. Let's work toward a world where goods circulate safely."
+        }
+      },
+      "Harper": {
+        "lang-store": {
+          "ja": "ふぅ、試験場まで参りました。争いのない世の中を目指して、どんどん進みましょう。",
+          "en": "Phew, we've made it to the trial grounds. Let's press on toward a world without conflict."
+        }
+      }
+    },
+    "partner": {
+      "Avery": {
+        "lang-store": {
+          "ja": "そうだね！一緒に、最後まで駆けよう！",
+          "en": "Right! Let's run all the way to the end together!"
+        }
+      },
+      "Briar": {
+        "lang-store": {
+          "ja": "そうだね。僕たちで、確実に進もう。",
+          "en": "Right. Let's advance steadily, together."
+        }
+      },
+      "Casey": {
+        "lang-store": {
+          "ja": "うん！危なくなったら、あたしが魔法で助けるよ！",
+          "en": "Yeah! If it gets dangerous, I'll help with magic!"
+        }
+      },
+      "Darcy": {
+        "lang-store": {
+          "ja": "ええ。困っている受験者がいたら、声をかけ合って一緒に進みましょう。",
+          "en": "Yes. If an examinee is in trouble, let's call out to each other and go on together."
+        }
+      },
+      "Ellis": {
+        "lang-store": {
+          "ja": "そうだな。この試験で、お互いさらに腕を磨こう。",
+          "en": "Yeah. Let's hone our skills even further in this trial."
+        }
+      },
+      "Finley": {
+        "lang-store": {
+          "ja": "試験中は私が周囲に目を光らせておくので、突き進んでいいですよ。",
+          "en": "I'll keep watch around us during the trial, so go ahead and push forward."
+        }
+      },
+      "Garnet": {
+        "lang-store": {
+          "ja": "そうですね。足りないものがあれば、試験中に私が調達しましょう。",
+          "en": "Yes. If anything is lacking, I'll procure it during the trial."
+        }
+      },
+      "Harper": {
+        "lang-store": {
+          "ja": "そうですね。交渉ごとがあれば、わたくしにお任せください。",
+          "en": "Yes. If any negotiation arises, please leave it to me."
+        }
+      }
+    },
+    "scripts": {
+      "AveryBriar": [
+        {
+          "heroId": "Avery",
+          "text": {
+            "lang-store": {
+              "ja": "ブライアー！小さい頃の勝負、先に勇者になるのは私になりそうね！",
+              "en": "Briar! Our childhood contest still stands. It looks like I'll be the one to become a hero first!"
+            }
+          }
+        },
+        {
+          "heroId": "Briar",
+          "text": {
+            "lang-store": {
+              "ja": "仲間と協力して戦っていいんだから、一緒に勇者になろうよ。",
+              "en": "We can fight alongside companions, so let's become heroes together."
+            }
+          }
+        },
+        {
+          "heroId": "Avery",
+          "text": {
+            "lang-store": {
+              "ja": "案内によると……",
+              "en": "The notice says..."
+            }
+          }
+        },
+        {
+          "heroId": "Avery",
+          "text": {
+            "lang-store": {
+              "ja": "7日間で7回も戦わないといけないの！？",
+              "en": "I have to fight seven times in seven days!?"
+            }
+          }
+        },
+        {
+          "heroId": "Avery",
+          "text": {
+            "lang-store": {
+              "ja": "時間がない、急がないと！！",
+              "en": "There's no time. We have to hurry!!"
+            }
+          }
+        },
+        {
+          "heroId": "Briar",
+          "text": {
+            "lang-store": {
+              "ja": "申請すれば期間は延長できるみたいだよ。残り日数に気を付けながら一緒に頑張ろう。",
+              "en": "If we apply, the period can be extended. Let's watch the days we have left and do our best together."
+            }
+          }
+        },
+        {
+          "heroId": "Briar",
+          "text": {
+            "lang-store": {
+              "ja": "ちょっと待って、人の話聞いてる？",
+              "en": "Wait a second. Are you even listening?"
+            }
+          }
+        }
+      ],
+      "CaseyDarcy": [
+        {
+          "heroId": "Casey",
+          "text": {
+            "lang-store": {
+              "ja": "こんにちは、ダーシー。あなたも試験を受けに来たの？",
+              "en": "Hello, Darcy. Did you come to take the trial too?"
+            }
+          }
+        },
+        {
+          "heroId": "Darcy",
+          "text": {
+            "lang-store": {
+              "ja": "あら、診療所で一緒に回復の研究をしたとき以来ね。私も試験を受けに来たのよ。",
+              "en": "Oh, it's been since we studied recovery together at the clinic. I came to take the trial too."
+            }
+          }
+        },
+        {
+          "heroId": "Darcy",
+          "text": {
+            "lang-store": {
+              "ja": "せっかくなので、一緒に試験を受けませんか？",
+              "en": "Since the chance is here, shall we take the trial together?"
+            }
+          }
+        },
+        {
+          "heroId": "Casey",
+          "text": {
+            "lang-store": {
+              "ja": "もちろん！属性軽減が得意なダーシーには、サポート役はお願いするね！",
+              "en": "Of course! You're good at easing attributes, Darcy, so I'll ask you to handle support!"
+            }
+          }
+        },
+        {
+          "heroId": "Darcy",
+          "text": {
+            "lang-store": {
+              "ja": "あなたは盾を無視する魔法攻撃が得意だから、一緒なら心強いです。",
+              "en": "You're skilled at magic attacks that ignore shields, so I'll feel reassured with you."
+            }
+          }
+        },
+        {
+          "heroId": "Darcy",
+          "text": {
+            "lang-store": {
+              "ja": "力を合わせて、試験を乗り切りましょう。",
+              "en": "Let's join forces and get through the trial."
+            }
+          }
+        }
+      ],
+      "EllisFinley": [
+        {
+          "heroId": "Ellis",
+          "text": {
+            "lang-store": {
+              "ja": "よう、フィンリー。久しぶりだな。",
+              "en": "Hey, Finley. It's been a while."
+            }
+          }
+        },
+        {
+          "heroId": "Finley",
+          "text": {
+            "lang-store": {
+              "ja": "エリスですか。今でも旅団から荷物を盗んでいるのですか？",
+              "en": "Ellis. Are you still stealing luggage from the brigade?"
+            }
+          }
+        },
+        {
+          "heroId": "Ellis",
+          "text": {
+            "lang-store": {
+              "ja": "俺は荷物を盗んでいるわけじゃない。敵の装備を剝いで、戦力を落とすのが俺の戦術だ。",
+              "en": "I'm not stealing luggage. Stripping enemy gear to cut their strength is my tactic."
+            }
+          }
+        },
+        {
+          "heroId": "Finley",
+          "text": {
+            "lang-store": {
+              "ja": "確かに。あの盗賊団を追っていたときも、そんな戦い方でしたね。",
+              "en": "True. You fought that way when we were chasing that bandit group, too."
+            }
+          }
+        },
+        {
+          "heroId": "Ellis",
+          "text": {
+            "lang-store": {
+              "ja": "この技術を世の中に活かすため、勇者試験を受けに行くところだ。",
+              "en": "I'm on my way to take the hero trial, so I can put this skill to use in the world."
+            }
+          }
+        },
+        {
+          "heroId": "Finley",
+          "text": {
+            "lang-store": {
+              "ja": "私も試験を受けに行くところです。これも何かの縁ですね。一緒に行きましょうか。",
+              "en": "I'm on my way to take the trial too. This must be some kind of connection. Shall we go together?"
+            }
+          }
+        }
+      ],
+      "GarnetHarper": [
+        {
+          "heroId": "Garnet",
+          "text": {
+            "lang-store": {
+              "ja": "ハーパー、私はこの試験、戦いに勝つには仕入れが重要だと踏んでいます。",
+              "en": "Harper, for this trial, I figure stocking is what it takes to win fights."
+            }
+          }
+        },
+        {
+          "heroId": "Garnet",
+          "text": {
+            "lang-store": {
+              "ja": "仕入れは私に任せてください。",
+              "en": "Leave the stocking to me."
+            }
+          }
+        },
+        {
+          "heroId": "Harper",
+          "text": {
+            "lang-store": {
+              "ja": "ギルドに行けば試験期間の延長の交渉ができるそうです。そちらは、わたくしが引き受けます。",
+              "en": "I hear that going to the guild lets you negotiate an extension of the trial period. I'll take that."
+            }
+          }
+        },
+        {
+          "heroId": "Garnet",
+          "text": {
+            "lang-store": {
+              "ja": "私は戦闘が得意ではないので、戦闘は任せます。",
+              "en": "I'm not good at combat, so I'll leave the fighting to you."
+            }
+          }
+        },
+        {
+          "heroId": "Harper",
+          "text": {
+            "lang-store": {
+              "ja": "交渉ができる相手ではなさそうなので、わたくしは遠慮しておきます。",
+              "en": "They don't seem like someone I can negotiate with, so I'll hold back."
+            }
+          }
+        },
+        {
+          "heroId": "Garnet",
+          "text": {
+            "lang-store": {
+              "ja": "………。やはり私たちだとそうなりますね。",
+              "en": "...... So that's how it turns out for the two of us."
+            }
+          }
+        },
+        {
+          "heroId": "Garnet",
+          "text": {
+            "lang-store": {
+              "ja": "まずは一緒に戦う仲間を探しましょうか。",
+              "en": "First, shall we look for companions to fight with?"
+            }
+          }
+        },
+        {
+          "heroId": "Harper",
+          "text": {
+            "lang-store": {
+              "ja": "ええ、そうですね。仲間に引き入れる交渉はわたくしにお任せください。",
+              "en": "Yes. Please leave the negotiation to bring companions in to me."
+            }
+          }
+        }
+      ]
+    }
+  }
+}

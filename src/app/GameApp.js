@@ -2,6 +2,7 @@ import '../styles.css';
 import AssetLoader from '../chips/AssetLoader.js';
 import ChipBoard from '../chips/ChipBoard.js';
 import ChipRenderer, { createTagAngles } from '../chips/ChipRenderer.js';
+import { getConditionIconAtPoint, getConditionIconInformationTarget } from '../chips/ConditionIconLayout.js';
 import ItemPickupController from '../game/ItemPickupController.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, WORLD_SIZE } from '../game/GameAreas.js';
@@ -60,8 +61,11 @@ import GameTextRepository from '../game/GameTextRepository.js';
 import { onLanguageChange, setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import HeroProgressRepository from '../game/HeroProgressRepository.js';
 import StartPartySelection from '../game/StartPartySelection.js';
+import { createStartVignette } from '../game/StartVignette.js';
 import StartPartySelectionModal from './StartPartySelectionModal.js';
+import VignetteModal from './VignetteModal.js';
 import { createRunScenario } from '../game/RunScenario.js';
+import TitleMenu from './TitleMenu.js';
 
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
@@ -92,18 +96,137 @@ export async function startGame() {
   const textRepository = await new GameTextRepository().load();
   const canvas = document.querySelector('#chip-canvas');
   const context = canvas.getContext('2d');
-  const nameplateBounds = createLocationNameplateBoundsRegistry();
-  const board = new ChipBoard(WORLD_SIZE);
   const camera = new Camera(WORLD_SIZE);
   const clock = new GameClock();
-  const slotManager = new HeroSlotManager();
   refreshLocalizedUI(document, textRepository);
-  const gameLog = new GameLog({ textRepository });
   const dataManager = new DataManager('can-we-become-heroes');
   const heroProgress = new HeroProgressRepository(dataManager);
   const assets = new AssetLoader();
-  const partySelection = new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() });
-  const selectedProfessionIds = await new StartPartySelectionModal(document.querySelector('#start-party-selection'), { assets, textRepository }).show(partySelection);
+  const shell = document.querySelector('.AppShell');
+  const titleMenu = new TitleMenu(document.querySelector('#title-menu'), { textRepository, assets, heroProgress });
+  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository, assets);
+  const trial = {
+    controller: null,
+    informationWindows: null,
+    stageSelection: null,
+    flowLog: null,
+    update: null,
+    getCursor: null,
+    getInformationTarget: null,
+  };
+  const pauseButton = document.querySelector('#pause-game');
+  const timeStatus = document.querySelector('#time-status');
+  const timeSettings = document.querySelector('#time-settings');
+  const timeSettingsToggle = document.querySelector('#time-settings-toggle');
+  const timeSettingsClose = document.querySelector('#time-settings-close');
+  const speedSlider = document.querySelector('#game-speed');
+  const pauseOnInformation = document.querySelector('#pause-on-information');
+  const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
+  const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
+  const overheadStatusInputs = [...document.querySelectorAll('input[name="overhead-status"]')];
+  const overheadStatusVisibility = document.querySelector('#overhead-status-visibility');
+  const overheadStatusLabels = [...document.querySelectorAll('[data-overhead-status]')];
+  const timeSettingsController = new TimeSettingsController({
+    clock,
+    dataManager,
+    textRepository,
+    getHeroes: () => trial.controller?.getHeroes() ?? [],
+    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, timeSettingsClose, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
+    onPauseOnInformationChange: (pauseOnOpen) => trial.informationWindows?.setPauseOnOpen(pauseOnOpen),
+  });
+  const overheadStatusSettingsController = new OverheadStatusSettingsController({
+    dataManager,
+    textRepository,
+    elements: { statuses: overheadStatusInputs, visibility: overheadStatusVisibility, statusLabels: overheadStatusLabels },
+  });
+  const overheadStatusModalSelect = new ModalSelect(overheadStatusVisibility);
+  const canvasInput = new GameCanvasInput(canvas, {
+    camera,
+    controller: null,
+    getCursor: (point) => trial.getCursor?.(point) ?? '',
+    getInformationTarget: (point) => trial.getInformationTarget?.(point) ?? null,
+    onInformationTarget: (target, event) => trial.informationWindows?.open({ ...target, anchor: { x: event.clientX, y: event.clientY } }),
+    onPortalOpen: () => window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer'),
+    onReleaseStaminaPause: () => timeSettingsController.releaseStaminaPause(),
+  });
+  document.addEventListener('pointerdown', (event) => {
+    const windowElement = event.target.closest?.('.InformationWindow');
+    trial.informationWindows?.focus(windowElement?.dataset.informationWindowId ?? null);
+  });
+
+  function resizeCanvas() {
+    const bounds = canvas.getBoundingClientRect();
+    const scale = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(bounds.width * scale);
+    canvas.height = Math.floor(bounds.height * scale);
+    context.setTransform(scale, 0, 0, scale, 0, 0);
+    camera.setViewport(bounds.width, bounds.height);
+  }
+
+  let previousTime = performance.now();
+  function render(time) {
+    const deltaSeconds = (time - previousTime) / 1000;
+    previousTime = time;
+    if (trial.update) trial.update(deltaSeconds, time);
+    else context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    requestAnimationFrame(render);
+  }
+
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    trial.informationWindows?.refreshEntries();
+  });
+  resizeCanvas();
+  requestAnimationFrame(render);
+  onLanguageChange(async () => {
+    await textRepository.refreshLanguage();
+    titleMenu.refreshLanguage();
+    trial.informationWindows?.refreshEntries();
+    trial.stageSelection?.refreshLanguage();
+    refreshLocalizedUI(document, textRepository);
+    trial.flowLog?.refreshLanguage();
+    timeSettingsController.updateStatus();
+    overheadStatusSettingsController.refreshLabels();
+    languageModalSelect.refresh();
+    overheadStatusModalSelect.refresh();
+  });
+
+  while (true) {
+    shell.classList.add('state-title');
+    canvasInput.controller = null;
+    timeSettingsController.setDialogOpen(false);
+    const action = await titleMenu.show();
+    if (action !== 'trial') continue;
+    const partySelection = new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() });
+    const selectedProfessionIds = await new StartPartySelectionModal(document.querySelector('#start-party-selection'), { assets, textRepository }).show(partySelection);
+    shell.classList.remove('state-title');
+    await new VignetteModal(document.querySelector('#vignette'), { assets, clock }).play(createStartVignette({ professionIds: selectedProfessionIds, textRepository }));
+    camera.zoom = camera.minZoom;
+    resizeCanvas();
+    await startTrial({
+      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,
+    });
+    clock.reset();
+    trial.update = null;
+    trial.controller = null;
+    trial.getCursor = null;
+    trial.getInformationTarget = null;
+    canvasInput.controller = null;
+    trial.informationWindows?.clear({ includePinned: true });
+    trial.stageSelection?.hide();
+    trial.flowLog?.dispose();
+    trial.flowLog = null;
+    context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+  }
+}
+
+async function startTrial({
+  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,
+}) {
+  const nameplateBounds = createLocationNameplateBoundsRegistry();
+  const board = new ChipBoard(WORLD_SIZE);
+  const slotManager = new HeroSlotManager();
+  const gameLog = new GameLog({ textRepository });
   const scenario = createRunScenario({ professionIds: selectedProfessionIds });
   const flowLog = new FlowLog(document.querySelector('#flow-log'), gameLog);
   const entityRegistry = new EntityRegistry();
@@ -150,14 +273,13 @@ export async function startGame() {
   const facilitySwing = new FacilitySwingSystem();
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const renderer = new ChipRenderer(context, assets);
-  const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository, assets);
   const informationWindows = new InformationWindowManager({
     clock,
     entityRegistry,
     onChange: (entries) => informationLayer.render(entries),
   });
   informationLayer.setManager(informationWindows);
-  onLanguageChange(async () => { await textRepository.refreshLanguage(); informationWindows.refreshEntries(); stageSelection.refreshLanguage(); refreshLocalizedUI(document, textRepository); flowLog.refreshLanguage(); timeSettingsController.updateStatus(); overheadStatusSettingsController.refreshLabels(); languageModalSelect.refresh(); overheadStatusModalSelect.refresh(); });
+  informationWindows.setPauseOnOpen(timeSettingsController.pauseOnInformation);
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
     textRepository,
@@ -186,6 +308,8 @@ export async function startGame() {
   }
 
   openStageSelection(1);
+  let finishTrial = () => {};
+  const completed = new Promise((resolve) => { finishTrial = resolve; });
   const trialRunFlow = new TrialRunFlow({
     clock,
     stageController,
@@ -195,53 +319,18 @@ export async function startGame() {
     getMembers: () => preparationHeroes,
     getRemainingHours: getRemainingTrialHours,
     openStageSelection,
-    onRunCompleted: ({ outcome, members }) => trialRunResultModal.show(createTrialRunResult({ outcome, members })),
+    onRunCompleted: ({ outcome, members }) => {
+      trialRunResultModal.show(createTrialRunResult({ outcome, members })).then(finishTrial);
+    },
   });
 
-  function resizeCanvas() {
-    const bounds = canvas.getBoundingClientRect();
-    const scale = window.devicePixelRatio || 1;
-    canvas.width = Math.floor(bounds.width * scale);
-    canvas.height = Math.floor(bounds.height * scale);
-    context.setTransform(scale, 0, 0, scale, 0, 0);
-    camera.setViewport(bounds.width, bounds.height);
-  }
-
-  const pauseButton = document.querySelector('#pause-game');
-  const timeStatus = document.querySelector('#time-status');
-  const timeSettings = document.querySelector('#time-settings');
-  const timeSettingsToggle = document.querySelector('#time-settings-toggle');
-  const timeSettingsClose = document.querySelector('#time-settings-close');
-  const speedSlider = document.querySelector('#game-speed');
-  const pauseOnInformation = document.querySelector('#pause-on-information');
-  const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
-  const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
-  const overheadStatusInputs = [...document.querySelectorAll('input[name="overhead-status"]')];
-  const overheadStatusVisibility = document.querySelector('#overhead-status-visibility');
-  const overheadStatusLabels = [...document.querySelectorAll('[data-overhead-status]')];
-  const timeSettingsController = new TimeSettingsController({
-    clock,
-    dataManager,
-    textRepository,
-    getHeroes: () => controller.getHeroes(),
-    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, timeSettingsClose, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
-    onPauseOnInformationChange: (pauseOnOpen) => informationWindows.setPauseOnOpen(pauseOnOpen),
-  });
-  const overheadStatusSettingsController = new OverheadStatusSettingsController({
-    dataManager,
-    textRepository,
-    elements: { statuses: overheadStatusInputs, visibility: overheadStatusVisibility, statusLabels: overheadStatusLabels },
-  });
-  const overheadStatusModalSelect = new ModalSelect(overheadStatusVisibility);
-  document.addEventListener('pointerdown', (event) => {
-    const windowElement = event.target.closest?.('.InformationWindow');
-    informationWindows.focus(windowElement?.dataset.informationWindowId ?? null);
-  });
-  new GameCanvasInput(canvas, {
-    camera,
-    controller,
-    getCursor: (point) => (isWarehousePortalAtPoint(context, point) ? 'pointer' : ''),
-    getInformationTarget: (point) => {
+  canvasInput.controller = controller;
+  trial.controller = controller;
+  trial.informationWindows = informationWindows;
+  trial.stageSelection = stageSelection;
+  trial.flowLog = flowLog;
+  trial.getCursor = (point) => (isWarehousePortalAtPoint(context, point) ? 'pointer' : '');
+  trial.getInformationTarget = (point) => {
       if (isWarehousePortalAtPoint(context, point)) return { type: 'portal' };
       const facility = nameplateBounds.getFacilityAtPoint(point);
       const area = nameplateBounds.getAreaAtPoint(point);
@@ -258,19 +347,16 @@ export async function startGame() {
       if (area) return { type: 'area', data: { area } };
       if (status) return { type: 'status', data: status };
       if (tag) return { type: 'tag', data: { tag } };
+      const conditionIcon = [...controller.getHeroes(), ...controller.getEnemies()]
+        .map((combatant) => getConditionIconAtPoint(combatant.chip, point))
+        .find(Boolean);
+      if (conditionIcon) return getConditionIconInformationTarget(conditionIcon);
       if (slotItem) return { type: 'instance', data: { target: informationWindows.createInstanceTarget(slotItem) } };
       if (entity) return { type: 'instance', data: { target: informationWindows.createInstanceTarget(entity) } };
       return null;
-    },
-    onInformationTarget: (target, event) => informationWindows.open({ ...target, anchor: { x: event.clientX, y: event.clientY } }),
-    onPortalOpen: () => window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer'),
-    onReleaseStaminaPause: () => timeSettingsController.releaseStaminaPause(),
-  });
+    };
 
-  let previousTime = performance.now();
-  function render(time) {
-    const deltaSeconds = (time - previousTime) / 1000;
-    previousTime = time;
+  trial.update = (deltaSeconds, time) => {
     clock.advance(deltaSeconds, (simulationDeltaSeconds, tickDelta) => {
       enemySpawn.update(clock.tick);
       board.update(simulationDeltaSeconds);
@@ -325,7 +411,10 @@ export async function startGame() {
     const staminaPauseTargets = new Set(controller.getHeroes()
       .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
       .map((hero) => hero.chip));
-    board.getRenderChips().forEach((chip) => renderer.draw(chip, time / 1000, { staminaPauseTarget: staminaPauseTargets.has(chip) }));
+    const renderChips = board.getRenderChips();
+    const timeSeconds = time / 1000;
+    renderChips.forEach((chip) => renderer.drawBody(chip, timeSeconds));
+    renderChips.forEach((chip) => renderer.drawEffects(chip, timeSeconds, { staminaPauseTarget: staminaPauseTargets.has(chip) }));
     drawOverheadStatuses(
       context,
       [...controller.getHeroes(), ...controller.getEnemies()],
@@ -336,13 +425,6 @@ export async function startGame() {
     combatEffects.draw(context, assets);
     drawSelectionGuide(context, controller.getSelectionGuide());
     context.restore();
-    requestAnimationFrame(render);
-  }
-
-  window.addEventListener('resize', () => {
-    resizeCanvas();
-    informationWindows.refreshEntries();
-  });
-  resizeCanvas();
-  requestAnimationFrame(render);
+  };
+  return completed;
 }

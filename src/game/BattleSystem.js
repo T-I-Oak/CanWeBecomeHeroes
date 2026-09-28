@@ -1,4 +1,5 @@
 import { logText, entityText } from './LocalizedLog.js';
+import { logUniqueSkill, skillText, tagText } from './UniqueSkillLog.js';
 import { GAME_AREAS } from './GameAreas.js';
 import EnemyFactory from './EnemyFactory.js';
 import UniqueSkillSystem from './UniqueSkillSystem.js';
@@ -36,6 +37,7 @@ export default class BattleSystem {
     Object.assign(this, { board, controller, itemFactory, enemyFactory, returnSystem, effects, gameLog, textRepository, random, onDamage });
     this.uniqueSkillSystem = uniqueSkillSystem ?? new UniqueSkillSystem({ random });
     this.conditionSystem = conditionSystem;
+    this.conditionSystem.effects = effects;
     this.knockbackSystem = knockbackSystem;
     this.gustSystem = gustSystem ?? new CombatGustSystem({
       board,
@@ -64,12 +66,14 @@ export default class BattleSystem {
       applyDamage: (...args) => this.applyDamage(...args),
       isTargetable: (combatant) => !this.knockbackSystem.isKnockedBack(combatant),
       resolveAttributeReactions: (attributeEvent) => this.attributeReactionSystem.resolve(attributeEvent),
+      onAttributeReflected: (owner, recipient, attribute) => logUniqueSkill(this.gameLog, this.textRepository, 'logArcaneReflection', { actor: entityText(owner), skill: skillText({ id: 'arcane-reflection' }), attribute: tagText(attribute), target: entityText(recipient) }),
     });
     this.damageSystem = damageSystem ?? new CombatDamageSystem({
       random,
       effects,
       onDamage,
       recordDamage: (...args) => this.recordDamage(...args),
+      recordMisfortune: (actor, damage) => this.actionLog.recordMisfortune(actor, damage),
       recordDefeat: (...args) => this.recordDefeat(...args),
       onHeroDepleted: (hero) => {
         this.knockbackSystem.cancel(hero);

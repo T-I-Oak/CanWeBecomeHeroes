@@ -157,7 +157,10 @@ export default class CatalogInformationRenderer {
     const levels = createInformationElement('div', 'InformationWindow__UniqueSkillLevelList');
     Object.entries(detail.levels).forEach(([level, levelDetail]) => {
       const levelItem = createInformationElement('div', `InformationWindow__UniqueSkillLevel level-${level}`);
-      levelItem.append(createInformationElement('span', 'InformationWindow__UniqueSkillLevelName', `Ex${level}`), createInformationElement('span', 'InformationWindow__UniqueSkillLevelEffect', levelDetail.description));
+      const effect = Array.isArray(levelDetail.description)
+        ? this.references.createLinkedDescription(levelDetail.description, entry.id, 'InformationWindow__UniqueSkillLevelEffect', 'span')
+        : createInformationElement('span', 'InformationWindow__UniqueSkillLevelEffect', levelDetail.description);
+      levelItem.append(createInformationElement('span', 'InformationWindow__UniqueSkillLevelName', `Ex${level}`), effect);
       levels.append(levelItem);
     });
     body.append(profile, levels);

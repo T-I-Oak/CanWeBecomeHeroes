@@ -115,8 +115,8 @@ const REPUTATION_BEWILDERING_WORDS = Object.freeze({
   affinityTag: 'reputation',
   triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionStarted]),
   levels: Object.freeze({
-    1: Object.freeze({ luckRateMultiplier: 0.5 }),
-    2: Object.freeze({ luckRateMultiplier: 1 }),
+    1: Object.freeze({ chance: 0.5 }),
+    2: Object.freeze({ chance: 0.75 }),
   }),
 });
 
@@ -140,6 +140,16 @@ const FEATHER_STORM_WINGS = Object.freeze({
   }),
 });
 
+const BLESSING_RANDOM = Object.freeze({
+  id: 'blessing-random',
+  affinityTag: 'blessing',
+  triggers: Object.freeze([]),
+  levels: Object.freeze({
+    1: Object.freeze({}),
+    2: Object.freeze({}),
+  }),
+});
+
 export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [VITALITY_SUMMON.id]: VITALITY_SUMMON,
   [GEM_ORB_RAIN.id]: GEM_ORB_RAIN,
@@ -155,6 +165,7 @@ export const UNIQUE_SKILL_CATALOG = Object.freeze({
   [REPUTATION_BEWILDERING_WORDS.id]: REPUTATION_BEWILDERING_WORDS,
   [FORTUNE_MISFORTUNE_CURSE.id]: FORTUNE_MISFORTUNE_CURSE,
   [FEATHER_STORM_WINGS.id]: FEATHER_STORM_WINGS,
+  [BLESSING_RANDOM.id]: BLESSING_RANDOM,
 });
 
 export function getUniqueSkillDetail(id) {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import resource from '../../public/data/game_text.json' with { type: 'json' };
+import resource from '../../src/game/readGameText.js';
 
 test('every translation has Japanese and English with matching template parameters', () => {
   let translations = 0;

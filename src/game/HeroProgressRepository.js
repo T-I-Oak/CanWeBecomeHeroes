@@ -29,7 +29,17 @@ export default class HeroProgressRepository {
     professionIds.forEach((professionId) => {
       if (!unlockedProfessionIds.includes(professionId)) unlockedProfessionIds.push(professionId);
     });
-    this.dataManager.setValue(HERO_PROGRESS_KEY, { unlockedProfessionIds });
+    const progress = this.dataManager.getValue(HERO_PROGRESS_KEY) ?? {};
+    this.dataManager.setValue(HERO_PROGRESS_KEY, { ...progress, unlockedProfessionIds });
     return unlockedProfessionIds;
+  }
+
+  recordTrialClear() {
+    const progress = this.dataManager.getValue(HERO_PROGRESS_KEY) ?? { unlockedProfessionIds: this.getUnlockedProfessionIds() };
+    this.dataManager.setValue(HERO_PROGRESS_KEY, { ...progress, hasClearedTrial: true });
+  }
+
+  hasClearedTrial() {
+    return this.dataManager.getValue(HERO_PROGRESS_KEY)?.hasClearedTrial === true;
   }
 }
