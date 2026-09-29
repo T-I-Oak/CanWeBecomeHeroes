@@ -71,6 +71,13 @@ export default class InformationWindowManager {
     return next;
   }
 
+  setFrame(id, frame) {
+    const next = this.tree.setFrame(id, frame);
+    if (!next) return null;
+    this.#notify();
+    return next;
+  }
+
   setDragging(active) {
     this.isDragging = Boolean(active);
   }

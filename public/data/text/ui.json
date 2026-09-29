@@ -161,6 +161,12 @@
       "en": "Close"
     }
   },
+  "resize": {
+    "lang-store": {
+      "ja": "大きさを変える",
+      "en": "Resize"
+    }
+  },
   "speed": {
     "lang-store": {
       "ja": "通常速度",

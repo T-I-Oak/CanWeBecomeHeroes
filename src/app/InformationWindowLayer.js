@@ -5,6 +5,8 @@ import EntityInformationRenderer from './EntityInformationRenderer.js';
 import InformationWindowPositioner from './InformationWindowPositioner.js';
 import InformationWindowDragController from './InformationWindowDragController.js';
 import { fitInformationWindowTitle } from './InformationWindowTitleLayout.js';
+import InformationWindowResizeController from './InformationWindowResizeController.js';
+import { COMPACT_WINDOW_SCALE, isDefaultWindowScale } from './InformationWindowScale.js';
 
 const CATALOG_INFORMATION_TYPES = Object.freeze(['tag', 'status', 'term', 'facility', 'area', 'definition']);
 const ENTITY_INFORMATION_TYPES = Object.freeze(['instance']);
@@ -53,6 +55,7 @@ export default class InformationWindowLayer {
     });
     this.positioner = new InformationWindowPositioner();
     this.dragController = new InformationWindowDragController({ manager, positioner: this.positioner });
+    this.resizeController = new InformationWindowResizeController({ manager, positioner: this.positioner });
     this.element.addEventListener('pointerdown', (event) => {
       if (event.target.closest?.('.InformationWindow')) this.manager.setInteracting(true);
     }, true);
@@ -70,6 +73,7 @@ export default class InformationWindowLayer {
   setManager(manager) {
     this.manager = manager;
     this.dragController.setManager(manager);
+    this.resizeController.manager = manager;
   }
 
   render(entries) {
@@ -83,10 +87,14 @@ export default class InformationWindowLayer {
   }
 
   #renderWindow(entry) {
-    const window = createElement('section', `InformationWindow${entry.compact ? ' is-compact' : ''}`);
+    const window = createElement('section', `InformationWindow${entry.scale === COMPACT_WINDOW_SCALE ? ' is-compact' : ''}`);
     window.dataset.informationWindowId = entry.id;
-    window.append(this.#renderContent(entry));
+    window.style.scale = String(entry.scale);
+    const content = createElement('div', 'InformationWindow__Content');
+    content.append(this.#renderContent(entry));
+    window.append(content);
     this.#addWindowControls(window, entry);
+    this.#addResizeHandles(window, entry);
     return window;
   }
 
@@ -99,12 +107,13 @@ export default class InformationWindowLayer {
   #addWindowControls(windowElement, entry) {
     const title = windowElement.querySelector('.InformationWindow__Title');
     if (!title) return;
+    const restoresDefault = !isDefaultWindowScale(entry.scale);
     const actions = createElement('div', 'InformationWindow__TitleActions');
-    const compact = createElement('button', `InformationWindow__Compact${entry.compact ? ' is-compact' : ''}`);
+    const compact = createElement('button', `InformationWindow__Compact${restoresDefault ? ' is-compact' : ''}`);
     compact.type = 'button';
-    compact.setAttribute('aria-label', this.textRepository.getLabel(entry.compact ? 'normalSize' : 'compactSize'));
-    compact.setAttribute('aria-pressed', String(entry.compact));
-    compact.append(createCompactIcon(entry.compact));
+    compact.setAttribute('aria-label', this.textRepository.getLabel(restoresDefault ? 'normalSize' : 'compactSize'));
+    compact.setAttribute('aria-pressed', String(restoresDefault));
+    compact.append(createCompactIcon(restoresDefault));
     compact.addEventListener('pointerdown', (event) => event.stopPropagation());
     compact.addEventListener('click', (event) => { event.stopPropagation(); this.manager.toggleCompact(entry.id); });
     const pin = createElement('button', `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`);
@@ -123,6 +132,16 @@ export default class InformationWindowLayer {
     actions.append(compact, pin, close);
     title.append(actions);
     title.addEventListener('pointerdown', (event) => this.dragController.begin(event, windowElement, entry));
+  }
+
+  #addResizeHandles(windowElement, entry) {
+    ['nw', 'ne', 'sw', 'se'].forEach((corner) => {
+      const handle = createElement('button', `InformationWindow__Resize InformationWindow__Resize--${corner}`);
+      handle.type = 'button';
+      handle.setAttribute('aria-label', this.textRepository.getLabel('resize'));
+      handle.addEventListener('pointerdown', (event) => this.resizeController.begin(event, windowElement, entry, corner));
+      windowElement.append(handle);
+    });
   }
 
   #positionWindow(windowElement, entry) {

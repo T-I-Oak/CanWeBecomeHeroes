@@ -224,8 +224,6 @@ body {
 }
 
 .InformationWindow {
-  max-height: calc(100dvh - 24px);
-  overflow: auto;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -237,11 +235,13 @@ body {
   box-shadow: 0 16px 38px rgb(16 27 45 / 38%);
   pointer-events: auto;
   transform: translate(-50%, -50%);
+  transform-origin: top left;
 }
 
-.InformationWindow.is-compact {
-  scale: 0.5;
-  transform-origin: top left;
+.InformationWindow__Content {
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  border-radius: 11px;
 }
 
 .InformationWindow:has(.InformationWindow__EntityPanel) {
@@ -345,6 +345,35 @@ body {
   margin: 0;
   font-size: 22px;
 }
+
+.InformationWindow__Resize {
+  position: absolute;
+  z-index: 4;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  touch-action: none;
+}
+
+.InformationWindow__Resize--nw { top: 0; left: 0; cursor: nwse-resize; }
+.InformationWindow__Resize--ne { top: 0; right: 0; cursor: nesw-resize; }
+.InformationWindow__Resize--sw { bottom: 0; left: 0; cursor: nesw-resize; }
+.InformationWindow__Resize--se { bottom: 0; right: 0; cursor: nwse-resize; }
+
+.InformationWindow__Resize::before {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #9b7142;
+}
+
+.InformationWindow__Resize--nw::before { top: 5px; left: 5px; border-right: 0; border-bottom: 0; }
+.InformationWindow__Resize--ne::before { top: 5px; right: 5px; border-bottom: 0; border-left: 0; }
+.InformationWindow__Resize--sw::before { bottom: 5px; left: 5px; border-top: 0; border-right: 0; }
+.InformationWindow__Resize--se::before { right: 5px; bottom: 5px; border-top: 0; border-left: 0; }
 
 .InformationWindow__Body {
   display: grid;

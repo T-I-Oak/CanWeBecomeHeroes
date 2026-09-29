@@ -153,14 +153,27 @@ test('a pinned information window retains its dragged position', () => {
   assert.deepEqual(manager.entries[0].position, { x: 120, y: 240 });
 });
 
-test('an information window retains its compact state independently of pinning', () => {
+test('an information window retains its scale independently of pinning', () => {
   const manager = new InformationWindowManager();
   const entry = manager.open({ type: 'tag', data: { tag: 'valor' } });
+  assert.equal(manager.entries[0].scale, 1);
   manager.toggleCompact(entry.id);
   manager.togglePin(entry.id);
 
-  assert.equal(manager.entries[0].compact, true);
+  assert.equal(manager.entries[0].scale, 0.5);
   assert.equal(manager.entries[0].pinned, true);
+  manager.toggleCompact(entry.id);
+  assert.equal(manager.entries[0].scale, 1);
+});
+
+test('the size button restores a dragged scale without moving the window', () => {
+  const manager = new InformationWindowManager();
+  const entry = manager.open({ type: 'tag', data: { tag: 'valor' } });
+  manager.setFrame(entry.id, { scale: 1.4, position: { x: 30, y: 40 } });
+  manager.toggleCompact(entry.id);
+
+  assert.equal(manager.entries[0].scale, 1);
+  assert.deepEqual(manager.entries[0].position, { x: 30, y: 40 });
 });
 
 test('language refresh redraws the same window entries without changing their presentation state', () => {

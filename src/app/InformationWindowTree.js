@@ -1,3 +1,5 @@
+import { DEFAULT_WINDOW_SCALE, nextToggleScale } from './InformationWindowScale.js';
+
 function isSameTarget(entry, type, data) {
   if (entry.type !== type) return false;
   if (type === 'tag') return entry.data.tag === data.tag;
@@ -22,7 +24,7 @@ export default class InformationWindowTree {
     this.windows = resolvedParentId === null
       ? this.windows.filter((entry) => entry.pinned)
       : this.windows.filter((entry) => entry.pinned || !this.isDescendantOf(entry.id, resolvedParentId));
-    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId: resolvedParentId, anchor, position: null, pinned: false, compact: false });
+    const entry = Object.freeze({ id: `information-${this.nextId++}`, type, data, parentId: resolvedParentId, anchor, position: null, pinned: false, scale: DEFAULT_WINDOW_SCALE });
     this.windows.push(entry);
     return Object.freeze({ entry, changed: true });
   }
@@ -42,9 +44,17 @@ export default class InformationWindowTree {
 
   togglePin(id) { return this.replaceEntry(id, (entry) => ({ ...entry, pinned: !entry.pinned })); }
 
-  toggleCompact(id) { return this.replaceEntry(id, (entry) => ({ ...entry, compact: !entry.compact })); }
+  toggleCompact(id) { return this.replaceEntry(id, (entry) => ({ ...entry, scale: nextToggleScale(entry.scale) })); }
 
   setPosition(id, position) { return this.replaceEntry(id, (entry) => ({ ...entry, position: { x: position.x, y: position.y } })); }
+
+  setFrame(id, { scale, position }) {
+    return this.replaceEntry(id, (entry) => ({
+      ...entry,
+      scale,
+      position: position ? { x: position.x, y: position.y } : entry.position,
+    }));
+  }
 
   removeWhere(predicate) { return this.replace(this.windows.filter((entry) => !predicate(entry))); }
 
