@@ -42,6 +42,10 @@ export default class InformationWindowManager {
     if (this.tree.focus(id)) this.#notify();
   }
 
+  close(id) {
+    if (this.tree.close(id)) this.#notify();
+  }
+
   clear({ includePinned = false } = {}) {
     if (this.tree.clear({ includePinned })) this.#notify();
   }

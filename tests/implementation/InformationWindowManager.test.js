@@ -100,6 +100,37 @@ test('pinned windows survive outside focus and do not pause the game', () => {
   assert.equal(transient.pinned, false);
 });
 
+test('closing a window closes windows opened from it and keeps another pinned window', () => {
+  const manager = new InformationWindowManager();
+  const parent = manager.open({ type: 'tag', data: { tag: 'valor' } });
+  manager.togglePin(parent.id);
+  const child = manager.open({ type: 'status', parentId: parent.id, data: { status: 'power' } });
+  manager.togglePin(child.id);
+  const other = manager.open({ type: 'facility', data: { facility: 'shop' } });
+  manager.togglePin(other.id);
+
+  manager.close(parent.id);
+
+  assert.deepEqual(manager.entries.map((entry) => entry.id), [other.id]);
+});
+
+test('closing the last unpinned window releases the information-window pause', () => {
+  const clock = new GameClock();
+  const manager = new InformationWindowManager({ clock });
+  manager.setPauseOnOpen(true);
+  const pinned = manager.open({ type: 'tag', data: { tag: 'valor' } });
+  manager.togglePin(pinned.id);
+  const open = manager.open({ type: 'status', data: { status: 'power' } });
+  assert.equal(clock.pauseReasons.has(INFORMATION_WINDOW_PAUSE_REASON), true);
+
+  manager.close(pinned.id);
+  assert.equal(clock.pauseReasons.has(INFORMATION_WINDOW_PAUSE_REASON), true);
+
+  manager.close(open.id);
+  assert.deepEqual(manager.entries.map((entry) => entry.id), []);
+  assert.equal(clock.pauseReasons.has(INFORMATION_WINDOW_PAUSE_REASON), false);
+});
+
 test('different entity instances with the same name open independently', () => {
   const registry = new EntityRegistry();
   const manager = new InformationWindowManager({ entityRegistry: registry });

@@ -4,9 +4,21 @@ import CatalogInformationRenderer from './CatalogInformationRenderer.js';
 import EntityInformationRenderer from './EntityInformationRenderer.js';
 import InformationWindowPositioner from './InformationWindowPositioner.js';
 import InformationWindowDragController from './InformationWindowDragController.js';
+import { fitInformationWindowTitle } from './InformationWindowTitleLayout.js';
 
 const CATALOG_INFORMATION_TYPES = Object.freeze(['tag', 'status', 'term', 'facility', 'area', 'definition']);
 const ENTITY_INFORMATION_TYPES = Object.freeze(['instance']);
+function createCloseIcon() {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.classList.add('InformationWindow__CloseIcon');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M6 6 18 18M18 6 6 18');
+  svg.append(path);
+  return svg;
+}
+
 function createCompactIcon(isCompact) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.classList.add('InformationWindow__CompactIcon');
@@ -63,7 +75,11 @@ export default class InformationWindowLayer {
   render(entries) {
     const windows = entries.map((entry) => this.#renderWindow(entry));
     this.element.replaceChildren(...windows);
-    windows.forEach((window, index) => this.#positionWindow(window, entries[index]));
+    windows.forEach((window, index) => {
+      this.#positionWindow(window, entries[index]);
+      const title = window.querySelector('.InformationWindow__Title');
+      if (title) fitInformationWindowTitle(title, window);
+    });
   }
 
   #renderWindow(entry) {
@@ -83,6 +99,7 @@ export default class InformationWindowLayer {
   #addWindowControls(windowElement, entry) {
     const title = windowElement.querySelector('.InformationWindow__Title');
     if (!title) return;
+    const actions = createElement('div', 'InformationWindow__TitleActions');
     const compact = createElement('button', `InformationWindow__Compact${entry.compact ? ' is-compact' : ''}`);
     compact.type = 'button';
     compact.setAttribute('aria-label', this.textRepository.getLabel(entry.compact ? 'normalSize' : 'compactSize'));
@@ -97,7 +114,14 @@ export default class InformationWindowLayer {
     pin.textContent = '📌';
     pin.addEventListener('pointerdown', (event) => event.stopPropagation());
     pin.addEventListener('click', (event) => { event.stopPropagation(); this.manager.togglePin(entry.id); });
-    title.append(compact, pin);
+    const close = createElement('button', 'InformationWindow__Close');
+    close.type = 'button';
+    close.setAttribute('aria-label', this.textRepository.getLabel('close'));
+    close.append(createCloseIcon());
+    close.addEventListener('pointerdown', (event) => event.stopPropagation());
+    close.addEventListener('click', (event) => { event.stopPropagation(); this.manager.close(entry.id); });
+    actions.append(compact, pin, close);
+    title.append(actions);
     title.addEventListener('pointerdown', (event) => this.dragController.begin(event, windowElement, entry));
   }
 

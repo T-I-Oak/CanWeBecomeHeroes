@@ -7,7 +7,7 @@ export default class InformationWindowDragController {
 
   begin(event, windowElement, entry) {
     if (!this.manager) throw new Error('InformationWindowDragController requires an InformationWindowManager.');
-    if (event.button !== 0 || event.target.closest('.InformationWindow__Pin, .InformationWindow__Compact')) return false;
+    if (event.button !== 0 || event.target.closest('.InformationWindow__TitleActions')) return false;
     // A document-level focus handler may re-render the information-window tree.
     // Keep this pointer sequence on the existing window until the drag finishes.
     event.stopPropagation();

@@ -264,6 +264,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
   min-height: 72px;
   padding: 12px 16px;
   color: #f7edcf;
@@ -277,8 +278,17 @@ body {
 
 .InformationWindow__Title:active { cursor: grabbing; }
 
+.InformationWindow__TitleActions {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  display: flex;
+  gap: 4px;
+}
+
 .InformationWindow__Compact,
-.InformationWindow__Pin {
+.InformationWindow__Pin,
+.InformationWindow__Close {
   display: grid;
   align-self: flex-start;
   width: 32px;
@@ -292,12 +302,8 @@ body {
   place-items: center;
 }
 
-.InformationWindow__Compact {
-  margin-left: auto;
-  position: relative;
-}
-
-.InformationWindow__CompactIcon {
+.InformationWindow__CompactIcon,
+.InformationWindow__CloseIcon {
   width: 20px;
   height: 20px;
   fill: none;
@@ -310,7 +316,9 @@ body {
 .InformationWindow__Compact:hover,
 .InformationWindow__Compact:focus-visible,
 .InformationWindow__Pin:hover,
-.InformationWindow__Pin:focus-visible {
+.InformationWindow__Pin:focus-visible,
+.InformationWindow__Close:hover,
+.InformationWindow__Close:focus-visible {
   background: rgb(247 237 207 / 16%);
   border-color: #c99d58;
 }
@@ -332,6 +340,8 @@ body {
 }
 
 .InformationWindow__Name {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-size: 22px;
 }

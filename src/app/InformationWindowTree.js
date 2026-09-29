@@ -33,6 +33,11 @@ export default class InformationWindowTree {
     return this.replace(this.windows.filter((entry) => entry.pinned || retained.has(entry.id)));
   }
 
+  close(id) {
+    if (!this.windows.some((entry) => entry.id === id)) return false;
+    return this.replace(this.windows.filter((entry) => entry.id !== id && !this.isDescendantOf(entry.id, id)));
+  }
+
   clear({ includePinned = false } = {}) { return this.replace(includePinned ? [] : this.windows.filter((entry) => entry.pinned)); }
 
   togglePin(id) { return this.replaceEntry(id, (entry) => ({ ...entry, pinned: !entry.pinned })); }
