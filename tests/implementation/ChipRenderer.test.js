@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createTagAngles, getActionGaugePresentationRatio, getCenterImagePlacement, getContainedImageSize, getPhysicalShieldPresentation, getStaminaPauseWavePresentation } from '../../src/chips/ChipRenderer.js';
+import { createTagAngles, getActionGaugePresentationRatio, getCenterImagePlacement, getChipRimWidth, getContainedImageSize, getPhysicalShieldPresentation, getStaminaPauseWavePresentation } from '../../src/chips/ChipRenderer.js';
+
+test('chip rim width stays the same share of the radius at every size', () => {
+  assert.equal(getChipRimWidth(22) / 22, getChipRimWidth(192) / 192);
+});
 
 test('tag angles keep the same interval for two and three tags', () => {
   const slotCount = 8;

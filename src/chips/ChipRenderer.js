@@ -13,6 +13,10 @@ const DEFAULT_TAG_SLOT_COUNT = 8;
 export const CENTER_IMAGE_SCALE = CHIP_CENTER_ART_SCALE;
 const CHIP_RIM_WIDTH_RATIO = 0.065;
 
+export function getChipRimWidth(radius) {
+  return radius * CHIP_RIM_WIDTH_RATIO;
+}
+
 export function getContainedImageSize(imageWidth, imageHeight, boxSize) {
   const scale = Math.min(boxSize / imageWidth, boxSize / imageHeight);
   return { width: imageWidth * scale, height: imageHeight * scale };
@@ -140,7 +144,7 @@ export default class ChipRenderer {
     this.drawActionGauge(chip);
     context.restore();
     context.scale(scale, scale);
-    context.lineWidth = Math.max(3, chip.radius * CHIP_RIM_WIDTH_RATIO);
+    context.lineWidth = getChipRimWidth(chip.radius);
     const rimGradient = context.createLinearGradient(-chip.radius, -chip.radius, chip.radius, chip.radius);
     rimGradient.addColorStop(0, 'rgba(255, 255, 255, 0.86)');
     rimGradient.addColorStop(0.48, 'rgba(214, 223, 235, 0.72)');

@@ -22,11 +22,13 @@ export function createStaticChipPreview(chip, previewSize) {
 }
 
 /** Creates a drawer for a settled UI preview of a gameplay chip. */
-export function createStaticChipPreviewDrawer(canvas, chip, previewSize, assets) {
+export function createStaticChipPreviewDrawer(canvas, chip, previewSize, assets, pixelRatio = 1) {
   const context = canvas.getContext('2d');
+  const ratio = pixelRatio > 0 ? pixelRatio : 1;
   const preview = createStaticChipPreview(chip, previewSize);
   const draw = ({ poseTilt = 0 } = {}) => {
     preview.poseTilt = poseTilt;
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, previewSize, previewSize);
     new ChipRenderer(context, assets).draw(preview, 0);
   };
@@ -39,13 +41,16 @@ export function createStaticChipPreviewDrawer(canvas, chip, previewSize, assets)
 }
 
 /** Creates a decorative Canvas element that uses the gameplay ChipRenderer. */
-export function createStaticChipPreviewCanvas(chip, previewSize, assets, className = 'InformationWindow__ChipPreview') {
+export function createStaticChipPreviewCanvas(chip, previewSize, assets, className = 'InformationWindow__ChipPreview', pixelRatio = 1) {
+  const ratio = pixelRatio > 0 ? pixelRatio : 1;
   const canvas = document.createElement('canvas');
   canvas.className = className;
-  canvas.width = previewSize;
-  canvas.height = previewSize;
+  canvas.width = Math.round(previewSize * ratio);
+  canvas.height = Math.round(previewSize * ratio);
+  canvas.style.width = `${previewSize}px`;
+  canvas.style.height = `${previewSize}px`;
   canvas.setAttribute('aria-hidden', 'true');
-  if (assets && canvas.getContext?.('2d')) createStaticChipPreviewDrawer(canvas, chip, previewSize, assets);
+  if (assets && canvas.getContext?.('2d')) createStaticChipPreviewDrawer(canvas, chip, previewSize, assets, ratio);
   return canvas;
 }
 
