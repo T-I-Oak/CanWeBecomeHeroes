@@ -35,16 +35,32 @@
             </fieldset>
             <fieldset class="ModalFormSection">
               <legend class="ModalFormSection__Legend" data-ui="gameProgress"></legend>
-              <label class="SettingsModal__Field" for="game-speed"><span data-ui="speed"></span>
-                <input class="HudPanel__SpeedSlider" id="game-speed" type="range" min="-1" max="2" step="0.1" value="0" />
+              <div class="SpeedRange" id="game-speed-range">
+                <div class="SpeedRange__Legend">
+                  <span class="SpeedRange__Name SpeedRange__Name--normal"><span class="SpeedRange__Swatch" aria-hidden="true"></span><span data-ui="speed"></span></span>
+                  <span class="SpeedRange__Name SpeedRange__Name--accelerated"><span class="SpeedRange__Swatch" aria-hidden="true"></span><span data-ui="acceleratedSpeed"></span></span>
+                </div>
+                <div class="SpeedRange__Control">
+                  <div class="SpeedRange__Track" aria-hidden="true">
+                    <div class="SpeedRange__Fill SpeedRange__Fill--normal"></div>
+                    <div class="SpeedRange__Fill SpeedRange__Fill--accelerated"></div>
+                  </div>
+                  <div class="SpeedRange__Thumb SpeedRange__Thumb--normal" aria-hidden="true"></div>
+                  <div class="SpeedRange__Thumb SpeedRange__Thumb--accelerated" aria-hidden="true"></div>
+                  <input class="SpeedRange__Input" id="game-speed" type="range" min="-1" max="2" step="0.1" value="0" data-ui-aria="speed" />
+                  <input class="SpeedRange__Input" id="game-accelerated-speed" type="range" min="-1" max="2" step="0.1" value="1" data-ui-aria="acceleratedSpeed" />
+                </div>
                 <span class="HudPanel__SpeedScale" aria-hidden="true"><span><span data-ui="slow"></span></span><span><span data-ui="normal"></span></span><span><span data-ui="fast"></span></span></span>
-              </label>
+              </div>
               <div class="SettingsModal__ControlGroup">
                 <span class="SettingsModal__ControlLabel" data-ui="autoPause"></span>
                 <label class="SettingsModal__ControlOption" for="pause-on-information"><input id="pause-on-information" type="checkbox" checked /> <span data-ui="pauseInformation"></span></label>
                 <label class="SettingsModal__ControlOption" for="pause-on-stamina-full"><input id="pause-on-stamina-full" type="checkbox" /> <span data-ui="pauseStamina"></span></label>
               </div>
-              <label class="SettingsModal__ControlOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> <span data-ui="autoAccelerate"></span>: <span data-ui="accelerateEmpty"></span></label>
+              <div class="SettingsModal__ControlGroup">
+                <span class="SettingsModal__ControlLabel" data-ui="autoAccelerate"></span>
+                <label class="SettingsModal__ControlOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> <span data-ui="accelerateEmpty"></span></label>
+              </div>
             </fieldset>
             <fieldset class="ModalFormSection">
               <legend class="ModalFormSection__Legend" data-ui="overheadStatus"></legend>

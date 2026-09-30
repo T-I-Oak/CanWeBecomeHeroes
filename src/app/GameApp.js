@@ -119,7 +119,9 @@ export async function startGame() {
   const timeSettings = document.querySelector('#time-settings');
   const timeSettingsToggle = document.querySelector('#time-settings-toggle');
   const timeSettingsClose = document.querySelector('#time-settings-close');
+  const speedRange = document.querySelector('#game-speed-range');
   const speedSlider = document.querySelector('#game-speed');
+  const acceleratedSpeedSlider = document.querySelector('#game-accelerated-speed');
   const pauseOnInformation = document.querySelector('#pause-on-information');
   const pauseOnStaminaFull = document.querySelector('#pause-on-stamina-full');
   const accelerateWithoutPreparation = document.querySelector('#accelerate-without-preparation');
@@ -131,7 +133,7 @@ export async function startGame() {
     dataManager,
     textRepository,
     getHeroes: () => trial.controller?.getHeroes() ?? [],
-    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, timeSettingsClose, speedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
+    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, timeSettingsClose, speedRange, speedSlider, acceleratedSpeedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
     onPauseOnInformationChange: (pauseOnOpen) => trial.informationWindows?.setPauseOnOpen(pauseOnOpen),
   });
   const overheadStatusSettingsController = new OverheadStatusSettingsController({

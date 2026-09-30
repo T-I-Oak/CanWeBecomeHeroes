@@ -148,9 +148,98 @@ body {
   font-weight: 700;
 }
 
-.HudPanel__SpeedSlider {
-  width: 100%;
-  accent-color: #d5ad55;
+.SpeedRange {
+  --speed-normal-color: #d5ad55;
+  --speed-accelerated-color: #3ec6e0;
+  display: grid;
+  gap: 7px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.SpeedRange__Legend {
+  display: flex;
+  justify-content: space-between;
+  color: #fff4d5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.SpeedRange__Name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.SpeedRange__Swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--speed-normal-color);
+}
+
+.SpeedRange__Name--accelerated .SpeedRange__Swatch { background: var(--speed-accelerated-color); }
+
+.SpeedRange__Control {
+  position: relative;
+  height: 22px;
+  touch-action: none;
+}
+
+.SpeedRange__Track {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  left: 0;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #3d4d62;
+}
+
+.SpeedRange__Fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.SpeedRange__Fill--normal {
+  left: 0;
+  background: var(--speed-normal-color);
+}
+
+.SpeedRange__Fill--accelerated { background: var(--speed-accelerated-color); }
+
+.SpeedRange__Thumb {
+  position: absolute;
+  top: 3px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff4d5;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.SpeedRange__Thumb--normal {
+  z-index: 2;
+  background: var(--speed-normal-color);
+}
+
+.SpeedRange__Thumb--accelerated {
+  z-index: 1;
+  background: var(--speed-accelerated-color);
+}
+
+.SpeedRange__Thumb.is-raised { z-index: 3; }
+
+.SpeedRange__Input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  pointer-events: none;
 }
 
 .HudPanel__SpeedScale {

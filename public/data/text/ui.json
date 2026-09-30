@@ -173,6 +173,12 @@
       "en": "Normal speed"
     }
   },
+  "acceleratedSpeed": {
+    "lang-store": {
+      "ja": "加速時速度",
+      "en": "Accelerated speed"
+    }
+  },
   "slow": {
     "lang-store": {
       "ja": "遅い",
