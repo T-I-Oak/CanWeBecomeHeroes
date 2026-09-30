@@ -2,7 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const STYLE_SOURCE = readFileSync(new URL('../../src/styles.css', import.meta.url), 'utf8');
+function readStyleSource(relativePath) {
+  const source = readFileSync(new URL(relativePath, import.meta.url), 'utf8');
+  return source.replace(/^@import '([^']+)';/gm, (_, importedPath) => readStyleSource(`../../src/${importedPath}`));
+}
+
+const STYLE_SOURCE = readStyleSource('../../src/styles.css');
 
 function getStyleRules(selector) {
   const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

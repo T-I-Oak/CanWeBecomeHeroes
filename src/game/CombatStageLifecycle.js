@@ -37,8 +37,4 @@ export default class CombatStageLifecycle {
     this.victoryDelayTicks += delta;
     if (this.victoryDelayTicks >= BATTLE_VICTORY_DELAY_TICKS) this.stageCompleteTick = tick;
   }
-
-  getElapsedTicks(tick) {
-    return this.battleStartTick === null ? null : Math.max(0, Math.round((this.defeatTick ?? tick) - this.battleStartTick));
-  }
 }

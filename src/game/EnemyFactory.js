@@ -127,8 +127,4 @@ export default class EnemyFactory {
   createInitialLivingArmor(options = {}) {
     return this.create({ size: 'small', tagAffinity: 'iron', slotPosition: 4, maximumHp: 2, totalTagCount: 0, ...options });
   }
-
-  createInitialWisp(options = {}) {
-    return this.create({ size: 'small', tagAffinity: 'arcane', slotPosition: 2, maximumHp: 2, totalTagCount: 0, ...options });
-  }
 }

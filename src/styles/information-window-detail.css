@@ -1,0 +1,391 @@
+.InformationWindow__EntityPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 232px;
+  align-items: start;
+  gap: 8px;
+  padding: 12px;
+}
+
+.InformationWindow__EntityProfile {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #edf4ed;
+  border: 1px solid #a9bea6;
+  border-radius: 8px;
+}
+
+.InformationWindow__EntityCombatStyle {
+  margin: 0;
+  color: #294b38;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.InformationWindow__ItemTargetingNote {
+  margin: 0;
+  color: #526170;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.InformationWindow__EntityInformation {
+  display: grid;
+  gap: 8px;
+}
+
+.InformationWindow__EntityStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.InformationWindow__EntityStatus,
+.InformationWindow__EntityTag,
+.InformationWindow__ItemBadge,
+.InformationWindow__TagWeightReference,
+.InformationWindow__Equipment {
+  font: inherit;
+}
+
+.InformationWindow__EntityStatus {
+  display: grid;
+  grid-template-rows: 24px 1fr;
+  justify-items: center;
+  min-height: 124px;
+  padding: 3px 2px 4px;
+  color: #24334d;
+  background: var(--status-frame-color);
+  border: 0;
+  border-radius: 9px;
+}
+
+.InformationWindow__EntityStatus .InformationWindow__StatusIcon {
+  flex-basis: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.InformationWindow__EntityStatusSegments {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0 1px;
+  gap: 2px;
+}
+
+.InformationWindow__EntityStatusSegment {
+  position: relative;
+  height: 11px;
+  background: #46536a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.InformationWindow__EntityStatusSegment.is-available {
+  background: #9da9ba;
+}
+
+.InformationWindow__EntityStatusSegment.is-active {
+  background: #9da9ba;
+}
+
+.InformationWindow__EntityStatusSegment.is-active::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--status-segment-fill, 100%);
+  content: '';
+  background: var(--status-active-color, #54c96b);
+}
+
+.InformationWindow__EntityWeight {
+  grid-template-rows: 24px 1fr 16px;
+}
+
+.InformationWindow__WeightIndicator {
+  position: relative;
+  width: calc(100% - 4px);
+  height: 70px;
+  align-self: center;
+  overflow: hidden;
+  background: #46536a;
+  clip-path: polygon(8% 0, 92% 0, 70% 100%, 30% 100%);
+}
+
+.InformationWindow__WeightIndicator::before {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: var(--weight-fill);
+  content: '';
+  background-image: linear-gradient(to top, var(--weight-color-low) 0%, var(--weight-color-middle) 55%, var(--weight-color-high) 100%);
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: 100% 70px;
+}
+
+.InformationWindow__WeightIndicator::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  border: 1px solid #9da9ba;
+  clip-path: polygon(8% 0, 92% 0, 70% 100%, 30% 100%);
+}
+
+.InformationWindow__WeightValue {
+  color: #f3f6fa;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 16px;
+}
+
+.InformationWindow__EntityTagList,
+.InformationWindow__EquipmentList {
+  display: grid;
+}
+
+.InformationWindow__EntityTagList {
+  grid-template-columns: repeat(5, 44px);
+  gap: 8px;
+}
+
+.InformationWindow__ItemBadgeList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.InformationWindow__ItemTagList,
+.InformationWindow__ItemPropertyList {
+  display: contents;
+}
+
+
+.InformationWindow__EquipmentList {
+  grid-template-columns: repeat(3, 72px);
+  grid-template-rows: repeat(3, 72px);
+  align-content: start;
+  gap: 8px;
+}
+
+.InformationWindow__EntityTag,
+.InformationWindow__ItemBadge {
+  display: inline-flex;
+  align-items: center;
+  color: var(--tag-skill-text);
+  background: var(--tag-skill-fill);
+  border: 2px solid var(--tag-skill-border);
+  border-radius: 8px;
+}
+
+.InformationWindow__EntityTag,
+.InformationWindow__ItemBadge {
+  gap: 1px;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 28px;
+  padding: 2px;
+}
+
+.InformationWindow__Equipment {
+  display: inline-flex;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  background: var(--equipment-fill, #f2f5f9);
+  border: 2px solid #aab7cb;
+  border-radius: 9px;
+  position: relative;
+}
+
+.InformationWindow__EquipmentImage {
+  position: absolute;
+  /* Absolute offsets are resolved from the padding box (inside the 2px border).
+     These values therefore reproduce the Canvas slot coordinates x + 4, y + 8. */
+  bottom: -2px;
+  left: 2px;
+  width: 64px;
+  height: 64px;
+}
+
+.InformationWindow__EquipmentImage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.InformationWindow__EntityTag .InformationWindow__TagIcon,
+.InformationWindow__ItemTag .InformationWindow__TagIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+.InformationWindow__EntityTag .InformationWindow__SkillRequirement,
+.InformationWindow__ItemTag .InformationWindow__SkillRequirement {
+  min-width: 12px;
+  font-size: 13px;
+}
+
+.InformationWindow__TagWeightReference {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 56px;
+  min-height: 28px;
+  padding: 2px 7px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.InformationWindow__TagWeightReference .InformationWindow__StatusIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.InformationWindow__ItemWeight .InformationWindow__StatusIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.InformationWindow__ItemWeightAmount,
+.InformationWindow__TagWeightAmount {
+  white-space: nowrap;
+}
+
+.InformationWindow__ItemValue .InformationWindow__ItemValueIcon {
+  flex-basis: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.InformationWindow__ItemValueAmount {
+  min-width: 1ch;
+  text-align: end;
+}
+
+.InformationWindow__EquipmentTags {
+  position: absolute;
+  /* Reproduces the Canvas tag origin at slot y + 2. */
+  top: 0;
+  left: 50%;
+  display: inline-flex;
+  gap: 2px;
+  transform: translateX(-50%);
+}
+
+.InformationWindow__EquipmentTags .InformationWindow__TagIcon {
+  flex-basis: 16px;
+  width: 16px;
+  height: 16px;
+  border-width: 1px;
+}
+
+.InformationWindow__UniqueSkill {
+  display: grid;
+  grid-column: 6;
+  grid-row: 1 / span 3;
+  grid-template-rows: 1fr auto;
+  place-items: center;
+  min-width: 44px;
+  padding: 6px 2px 4px;
+  color: #fff;
+  background: #341c45;
+  border: 3px solid #7c3d8e;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgb(255 214 255 / 22%), 0 2px 4px rgb(20 4 25 / 45%);
+}
+
+.InformationWindow__UniqueSkill.level-2 {
+  background: #4a1429;
+  border-color: #b23258;
+  box-shadow: inset 0 0 0 1px rgb(255 206 218 / 28%), 0 2px 5px rgb(42 0 13 / 58%);
+}
+
+.InformationWindow__UniqueSkill .InformationWindow__TagIcon {
+  flex-basis: 36px;
+  width: 36px;
+  height: 36px;
+}
+
+.InformationWindow__UniqueSkillMark {
+  padding: 1px 5px 2px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .03em;
+  color: #fff3dc;
+  background: rgb(16 5 24 / 72%);
+  border: 1px solid currentColor;
+  border-radius: 5px;
+}
+
+.InformationWindow__UniqueSkillTitle.level-1 { background: #25132f; }
+.InformationWindow__UniqueSkillTitle.level-2 { background: #3d1021; }
+
+.InformationWindow__UniqueSkillLevelList {
+  display: grid;
+  gap: 6px;
+}
+
+.InformationWindow__UniqueSkillLevel {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  color: #fff;
+  background: #341c45;
+  border: 2px solid #7c3d8e;
+  border-radius: 7px;
+}
+
+.InformationWindow__UniqueSkillLevel.level-2 {
+  background: #4a1429;
+  border-color: #b23258;
+}
+
+.InformationWindow__UniqueSkillLevelName { font-weight: 800; }
+
+.InformationWindow__Equipment[data-slot='head'] { grid-column: 2; grid-row: 1; }
+.InformationWindow__Equipment[data-slot='rightHand'] { grid-column: 1; grid-row: 2; }
+.InformationWindow__Equipment[data-slot='torso'] { grid-column: 2; grid-row: 2; }
+.InformationWindow__Equipment[data-slot='leftHand'] { grid-column: 3; grid-row: 2; }
+.InformationWindow__Equipment[data-slot='feet'] { grid-column: 2; grid-row: 3; }
+
+.InformationWindow__EntityStatus.state-clickable,
+.InformationWindow__EntityTag.state-clickable,
+.InformationWindow__ItemBadge.state-clickable,
+.InformationWindow__TagWeightReference.state-clickable,
+.InformationWindow__Equipment.state-clickable {
+  cursor: pointer;
+}
+
+.InformationWindow__EntityStatus.state-clickable:hover,
+.InformationWindow__EntityTag.state-clickable:hover,
+.InformationWindow__ItemBadge.state-clickable:hover,
+.InformationWindow__TagWeightReference.state-clickable:hover,
+.InformationWindow__Equipment.state-clickable:hover,
+.InformationWindow__EntityStatus.state-clickable:focus-visible,
+.InformationWindow__EntityTag.state-clickable:focus-visible,
+.InformationWindow__ItemBadge.state-clickable:focus-visible,
+.InformationWindow__TagWeightReference.state-clickable:focus-visible,
+.InformationWindow__Equipment.state-clickable:focus-visible {
+  filter: brightness(1.08);
+  outline: 2px solid #24334d;
+  outline-offset: 2px;
+}

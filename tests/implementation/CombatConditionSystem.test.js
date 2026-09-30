@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import ChipBoard from '../../src/chips/ChipBoard.js';
+import BattleSystem from '../../src/game/BattleSystem.js';
 import CombatConditionSystem from '../../src/game/CombatConditionSystem.js';
+import EnemyFactory from '../../src/game/EnemyFactory.js';
+import HeroFactory from '../../src/game/HeroFactory.js';
+import ItemFactory from '../../src/game/ItemFactory.js';
 
 test('two-edged sword keeps the highest granted multiplier for one combatant', () => {
   const conditions = new CombatConditionSystem();
@@ -61,3 +66,21 @@ test('misfortune keeps its self-damage rate until the affected combatant action 
   conditions.clearMisfortune(combatant);
   assert.equal(conditions.getMisfortuneDamageRate(combatant), 0);
 });
+
+test('combat conditions scale a critical by the higher multiplier and clear after damage or an action', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const actor = new EnemyFactory().createInitialEncounter();
+  const target = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 10, maximums: { stamina: 10 } });
+  const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), random: () => 0 });
+
+  battle.conditionSystem.applyTwoEdgedSword(actor, 2);
+  battle.conditionSystem.applyTwoEdgedSword(target, 4);
+
+  assert.equal(battle.applyDamage(actor, target, 'magic', 0.5, true), 2);
+  assert.equal(battle.conditionSystem.getTwoEdgedSwordMultiplier(target), 1);
+
+  battle.actionResolutionSystem.resolve(actor, target, [actor, target]);
+
+  assert.equal(battle.conditionSystem.getTwoEdgedSwordMultiplier(actor), 1);
+});
+

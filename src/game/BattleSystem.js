@@ -251,6 +251,5 @@ export default class BattleSystem {
     this.effects?.clearNightFamiliars?.(enemy);
     this.contributionPoints += this.defeatSystem.resolve(enemy);
   }
-  getElapsedTicks(tick) { return this.stageLifecycle.getElapsedTicks(tick); }
 }
 export { ACTION_GAUGE_BASE_RATE, ACTION_GAUGE_WEIGHT_SCALE, BOW_GAUGE_SHORTENING_PER_WEAPON, MAX_BOW_GAUGE_SHORTENING_WEAPONS };

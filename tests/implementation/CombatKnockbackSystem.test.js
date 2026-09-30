@@ -2,7 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import Chip from '../../src/chips/Chip.js';
 import ChipBoard from '../../src/chips/ChipBoard.js';
+import BattleSystem from '../../src/game/BattleSystem.js';
 import CombatKnockbackSystem, { getIronCounterblowDistance } from '../../src/game/CombatKnockbackSystem.js';
+import EnemyFactory from '../../src/game/EnemyFactory.js';
+import HeroFactory from '../../src/game/HeroFactory.js';
+import ItemFactory from '../../src/game/ItemFactory.js';
 import { GAME_AREAS, WORLD_SIZE } from '../../src/game/GameAreas.js';
 import { HERO_SLOT_SIZE } from '../../src/game/HeroSlotLayout.js';
 
@@ -57,3 +61,25 @@ test('counterblow launches in one motion after an action resolves, then returns 
   assert.equal(system.isKnockedBack(combatant), false);
   assert.deepEqual(combatant.chip.bounds, originalBounds);
 });
+
+test('damage leaves a random knockback tilt that each action gradually restores', () => {
+  const battle = new BattleSystem(new ChipBoard({ width: 3000, height: 2000 }), {
+    controller: {}, itemFactory: new ItemFactory(), logger: { info: () => {} }, random: () => 0,
+  });
+  const target = { chip: { type: 'hero', tilt: 0 }, stamina: 3 };
+  const actor = {
+    chip: { type: 'hero', actionGauge: 0, tilt: -0.4 }, equipment: {},
+    getStatus: () => 0, getCarriedWeight: () => 0,
+  };
+
+  battle.applyDamage(null, target, 'sword', 1);
+  battle.updateActor(actor, [], 1000);
+
+  assert.equal(target.chip.tilt, -Math.PI / 12);
+  assert.equal(actor.chip.tilt, -0.4 + Math.PI / 24);
+
+  target.chip.tilt = 0;
+  battle.applyDamage(null, target, 'sword', 0.25);
+  assert.equal(target.chip.tilt, -Math.PI / 48);
+});
+

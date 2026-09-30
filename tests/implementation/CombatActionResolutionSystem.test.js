@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import ChipBoard from '../../src/chips/ChipBoard.js';
+import BattleSystem from '../../src/game/BattleSystem.js';
 import CombatActionResolutionSystem from '../../src/game/CombatActionResolutionSystem.js';
 import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
+import EnemyFactory from '../../src/game/EnemyFactory.js';
+import HeroFactory from '../../src/game/HeroFactory.js';
+import ItemFactory from '../../src/game/ItemFactory.js';
 
 test('night familiars consume their owner state and independently attack random remaining opponents', () => {
   const actor = { getStatus: () => 3 };
@@ -158,3 +163,156 @@ test('night familiar visuals use one asset at distinct positions around the owne
   effects.clearNightFamiliars(source);
   assert.equal(effects.nightFamiliars.has(source.chip), false);
 });
+
+test('area head inherits its source tags, attacks immediately, and returns after its action', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const hydra = enemyFactory.createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 3, maximumHp: 5, totalTagCount: 3, maximums: { power: 4, magic: 4, speed: 4, negotiation: 4, luck: 4 }, random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: hydra.chip.x, y: hydra.chip.y + 224, stamina: 10, maximums: { stamina: 10 } });
+  hero.currentArea = 'battle';
+  hydra.chip.height = 0;
+  hero.chip.height = 0;
+  board.addChip(hydra.chip);
+  board.addChip(hero.chip);
+  const controller = { getEnemies: () => [hydra] };
+  const battle = new BattleSystem(board, { controller, itemFactory, enemyFactory, random: () => 0 });
+
+  battle.resolveActionUniqueSkill(hydra);
+
+  assert.equal(battle.phantomHeads.length, 1);
+  const [head] = battle.phantomHeads;
+  assert.equal(head.definition.id, 'phantom-area-head');
+  assert.equal(head.uniqueSkill, null);
+  assert.deepEqual(head.getTags(), hydra.getTags());
+  assert.equal(head.chip.actionGauge, head.chip.actionGaugeMaximum);
+  assert.equal(board.chips.includes(head.chip), true);
+
+  battle.updateActor(head, [hero, hydra, head], 0);
+
+  assert.equal(board.chips.includes(head.chip), false);
+  assert.equal(battle.phantomHeads.length, 0);
+});
+
+test('area head returns instead of remaining when no hero can be targeted', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const hydra = enemyFactory.createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 3, maximumHp: 5, totalTagCount: 0, random: () => 0 });
+  hydra.chip.height = 0;
+  board.addChip(hydra.chip);
+  const battle = new BattleSystem(board, { controller: { getEnemies: () => [hydra] }, itemFactory, enemyFactory, random: () => 0 });
+
+  battle.resolveActionUniqueSkill(hydra);
+  const [head] = battle.phantomHeads;
+  battle.updateActor(head, [hydra, head], 0);
+
+  assert.equal(board.chips.includes(head.chip), false);
+  assert.equal(battle.phantomHeads.length, 0);
+});
+
+test('area head rush lets an Ex2 boss and its Ex1 mid-boss chain their minion attacks without consuming gauges', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const yamata = enemyFactory.createFromDefinition({ enemyDefinitionId: 'large-area', slotPosition: 3, maximumHp: 7, totalTagCount: 0, random: () => 0 });
+  const regularLeft = enemyFactory.createInitialEncounter({ slotPosition: 1, random: () => 0 });
+  const midBoss = enemyFactory.createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 5, maximumHp: 5, totalTagCount: 0, random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: yamata.chip.x, y: yamata.chip.y + 224, stamina: 20, maximums: { stamina: 20 } });
+  hero.currentArea = 'battle';
+  [yamata, regularLeft, midBoss, hero].forEach((entity) => { entity.chip.height = 0; board.addChip(entity.chip); });
+  regularLeft.chip.actionGauge = 1.25;
+  const effects = new CombatEffectSystem();
+  const enemies = [yamata, regularLeft, midBoss];
+  const battle = new BattleSystem(board, { controller: { getEnemies: () => enemies }, itemFactory, enemyFactory, effects, random: () => 0 });
+
+  battle.resolveAction(yamata, hero, [hero, ...enemies]);
+
+  assert.deepEqual(effects.attacks.map((effect) => effect.chip), [yamata.chip, regularLeft.chip, midBoss.chip, regularLeft.chip]);
+  assert.equal(battle.phantomHeads.length, 2);
+  assert.equal(regularLeft.chip.actionGauge, 1.25);
+  assert.equal(regularLeft.chip.actionVisualCount, 0);
+  assert.equal(midBoss.chip.actionVisualCount, 0);
+});
+
+test('area Ex2 and a cooperating Ex1 mid-boss launch three heads when three enemy positions are free', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemyFactory = new EnemyFactory({ itemFactory });
+  const yamata = enemyFactory.createFromDefinition({ enemyDefinitionId: 'large-area', slotPosition: 3, maximumHp: 7, totalTagCount: 0, random: () => 0 });
+  const midBoss = enemyFactory.createFromDefinition({ enemyDefinitionId: 'medium-area', slotPosition: 5, maximumHp: 5, totalTagCount: 0, random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: yamata.chip.x, y: yamata.chip.y + 224, stamina: 20, maximums: { stamina: 20 } });
+  hero.currentArea = 'battle';
+  [yamata, midBoss, hero].forEach((entity) => { entity.chip.height = 0; board.addChip(entity.chip); });
+  const enemies = [yamata, midBoss];
+  const battle = new BattleSystem(board, { controller: { getEnemies: () => enemies }, itemFactory, enemyFactory, random: () => 0 });
+
+  battle.resolveAction(yamata, hero, [hero, ...enemies]);
+
+  assert.equal(battle.phantomHeads.length, 3);
+});
+
+test('shadow fingertips removes a target tag before a missed attack, and Ex2 transfers it to the attacker', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 3 });
+  const sourceItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  hero.equip(sourceItem);
+  hero.currentArea = 'battle';
+  enemy.uniqueSkill = { id: 'shadow-fingertips', level: 2 };
+  enemy.getLuckDegree = () => 1;
+  enemy.chip.height = 0;
+  hero.chip.height = 0;
+  board.addChip(enemy.chip);
+  board.addChip(hero.chip);
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0 });
+  battle.actionResolutionSystem.isAttackMiss = () => true;
+
+  battle.resolveAction(enemy, hero, [enemy, hero]);
+
+  assert.deepEqual(sourceItem.tags, []);
+  assert.equal(sourceItem.value, 1);
+  assert.equal(hero.getCarriedWeight(), 6);
+  assert.equal(enemy.equipment.some((item) => item.tags.includes('valor')), true);
+});
+
+test('shadow fingertips Ex1 removes the tag without adding it to the attacker', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ random: () => 0 });
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: enemy.chip.x, y: enemy.chip.y + 224, stamina: 3 });
+  const sourceItem = itemFactory.createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  hero.equip(sourceItem);
+  hero.currentArea = 'battle';
+  enemy.uniqueSkill = { id: 'shadow-fingertips', level: 1 };
+  enemy.getLuckDegree = () => 1;
+  enemy.chip.height = 0;
+  hero.chip.height = 0;
+  board.addChip(enemy.chip);
+  board.addChip(hero.chip);
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0 });
+  battle.actionResolutionSystem.isAttackMiss = () => true;
+
+  battle.resolveAction(enemy, hero, [enemy, hero]);
+
+  assert.deepEqual(sourceItem.tags, []);
+  assert.equal(enemy.equipment.some((item) => item.tags.includes('valor')), false);
+});
+
+test('vitality recovers a fixed 0.2 per tag after a successful luck check', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const itemFactory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 1 });
+  hero.tags.push('vitality', 'vitality');
+  const enemy = new EnemyFactory({ itemFactory }).createInitialEncounter({ maximumHp: 3, totalTagCount: 0 });
+  enemy.tags.push('vitality', 'vitality', 'vitality');
+  enemy.hp = 2.5;
+  const battle = new BattleSystem(board, { controller: {}, itemFactory, random: () => 0, logger: { info: () => {} } });
+
+  assert.ok(Math.abs(battle.resolveVitality(hero) - 0.4) < 1e-9);
+  assert.equal(hero.stamina, 1.4);
+  assert.equal(battle.resolveVitality(enemy), 0.5);
+  assert.equal(enemy.hp, 3);
+});
+

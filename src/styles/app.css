@@ -1,0 +1,313 @@
+:root {
+  color: #1e2a3a;
+  font-family: system-ui, sans-serif;
+
+  --color-subject-hero: #2d6ac5;
+  --color-subject-enemy: #b84b4b;
+  --color-subject-system: #64748b;
+
+  --color-level-info: #64748b;
+  --color-level-luck: #bd7b00;
+  --color-level-unluck: #a64b61;
+  --color-level-warning: #c46a10;
+
+  --color-modal-text: #f4ead2;
+  --color-modal-title: #fff4d5;
+  --color-modal-surface-start: #263b2a;
+  --color-modal-surface-end: #172a20;
+  --color-modal-border: #9b7142;
+  --color-modal-section-border: rgb(243 219 164 / 38%);
+  --color-modal-control-surface: #f6e6be;
+  --color-modal-control-text: #2d301f;
+  --color-modal-control-border: #d3ad62;
+  --color-modal-selected-option: #d5ad55;
+  --color-modal-selected-option-text: #2d301f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100dvh;
+  background: #211b15 url('/assets/background/outer-ground.png') repeat;
+}
+
+.AppShell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: rgb(20 16 12 / 34%);
+}
+
+.HudPanel {
+  position: fixed;
+  z-index: 20;
+  top: 16px;
+  left: 16px;
+  width: min(296px, calc(100vw - 32px));
+  padding: 8px 10px;
+  border: 2px solid #bc8d3c;
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg, rgba(47, 73, 51, 0.98), rgba(20, 38, 29, 0.98)),
+    #1d3527;
+  box-shadow: 0 4px 0 #6f481d, 0 10px 22px rgba(15, 23, 18, 0.35);
+}
+
+.HudPanel__Logo {
+  display: block;
+  width: min(252px, 100%);
+  height: auto;
+  margin: 0 auto 6px;
+}
+
+.HudPanel__Controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+
+.HudPanel__PauseButton,
+.HudPanel__SettingsButton {
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 1px solid #d3ad62;
+  border-radius: 6px;
+  background: #f6e6be;
+  color: #2d301f;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.HudPanel__SettingsButton {
+  background: #2c4736;
+  color: #fff4d5;
+}
+
+.HudPanel__Status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: #2c4736;
+  gap: 4px;
+  color: #fff4d5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.HudPanel__Status::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #62d280;
+  content: '';
+}
+
+.HudPanel__Status.state-accelerated::before {
+  background: #f5c056;
+}
+
+.HudPanel__Status.state-paused::before,
+.HudPanel__Status.state-auto-paused::before {
+  background: #ec7b68;
+}
+
+.SettingsModal__Dialog {
+  width: min(440px, 100%);
+  --modal-dialog-padding: clamp(16px, 4vmin, 28px);
+  --modal-body-gap: 14px;
+}
+
+.SettingsModal__Body {
+  display: grid;
+  gap: var(--modal-body-gap);
+}
+
+.SettingsModal__Field {
+  display: grid;
+  gap: 7px;
+  color: #fff4d5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.SpeedRange {
+  --speed-normal-color: #d5ad55;
+  --speed-accelerated-color: #3ec6e0;
+  display: grid;
+  gap: 7px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.SpeedRange__Legend {
+  display: flex;
+  justify-content: space-between;
+  color: #fff4d5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.SpeedRange__Name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.SpeedRange__Swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--speed-normal-color);
+}
+
+.SpeedRange__Name--accelerated .SpeedRange__Swatch { background: var(--speed-accelerated-color); }
+
+.SpeedRange__Control {
+  position: relative;
+  height: 22px;
+  touch-action: none;
+}
+
+.SpeedRange__Track {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  left: 0;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #3d4d62;
+}
+
+.SpeedRange__Fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.SpeedRange__Fill--normal {
+  left: 0;
+  background: var(--speed-normal-color);
+}
+
+.SpeedRange__Fill--accelerated { background: var(--speed-accelerated-color); }
+
+.SpeedRange__Thumb {
+  position: absolute;
+  top: 3px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff4d5;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.SpeedRange__Thumb--normal {
+  z-index: 2;
+  background: var(--speed-normal-color);
+}
+
+.SpeedRange__Thumb--accelerated {
+  z-index: 1;
+  background: var(--speed-accelerated-color);
+}
+
+.SpeedRange__Thumb.is-raised { z-index: 3; }
+
+.SpeedRange__Input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  pointer-events: none;
+}
+
+.HudPanel__SpeedScale {
+  --speed-normal-position: 33.333%;
+  position: relative;
+  display: block;
+  height: 1.2em;
+  color: #e5d4ae;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.HudPanel__SpeedScale > span {
+  position: absolute;
+  white-space: nowrap;
+}
+
+.HudPanel__SpeedScale > span:first-child { left: 0; }
+.HudPanel__SpeedScale > span:nth-child(2) { left: var(--speed-normal-position); transform: translateX(-50%); }
+.HudPanel__SpeedScale > span:last-child { right: 0; }
+
+.SettingsModal__ControlGroup {
+  display: grid;
+  gap: 6px;
+}
+
+.SettingsModal__ControlLabel {
+  color: #fff4d5;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.SettingsModal__ControlOption {
+  color: #fff4d5;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.SettingsModal__ControlOption input {
+  accent-color: #d5ad55;
+}
+
+.SettingsModal__OverheadStatusChoices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px 10px;
+}
+
+.ChipCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.FlowLog {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  pointer-events: none;
+}
+
+.InformationWindowLayer {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  pointer-events: none;
+}

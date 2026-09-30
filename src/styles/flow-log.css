@@ -1,0 +1,169 @@
+.FlowLog__Entry {
+  --flow-subject-color: var(--color-subject-system);
+  --flow-level-color: var(--color-level-info);
+  --flow-duration: 6s;
+  position: fixed;
+  top: var(--flow-y, 62%);
+  left: 0;
+  width: max-content;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.FlowLog__Entry.state-running {
+  visibility: visible;
+  animation: flow-log-right-to-left var(--flow-duration-adjusted, var(--flow-duration, 6s)) linear backwards;
+}
+
+.FlowLog__Reference {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.16em;
+}
+.FlowLog__ReferenceLabel { line-height: 1; }
+.FlowLog__ReferenceIcon,
+.FlowLog__Reference .FlowLog__TermIcon {
+  width: 1.5em;
+  height: 1.5em;
+  flex: 0 0 1.5em;
+  align-self: center;
+  transform: translateY(-0.2em);
+}
+.FlowLog__ReferenceIcon { object-fit: contain; }
+
+.FlowLog__Message {
+  margin: 0;
+  color: var(--flow-subject-color);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, 0 0 6px var(--flow-level-color);
+  white-space: nowrap;
+}
+
+.FlowLog__Entry.hero.info,
+.FlowLog__Entry.hero.luck,
+.FlowLog__Entry.hero.unluck {
+  --flow-subject-color: var(--color-subject-hero);
+}
+
+.FlowLog__Entry.enemy.info,
+.FlowLog__Entry.enemy.luck,
+.FlowLog__Entry.enemy.unluck {
+  --flow-subject-color: var(--color-subject-enemy);
+}
+
+.FlowLog__Entry.system.info,
+.FlowLog__Entry.system.luck,
+.FlowLog__Entry.system.unluck,
+.FlowLog__Entry.system.warning {
+  --flow-subject-color: var(--color-subject-system);
+}
+
+.FlowLog__Entry.hero.info,
+.FlowLog__Entry.enemy.info,
+.FlowLog__Entry.system.info {
+  --flow-level-color: var(--color-level-info);
+  --flow-duration: 6s;
+}
+
+.FlowLog__Entry.hero.luck,
+.FlowLog__Entry.enemy.luck,
+.FlowLog__Entry.system.luck {
+  --flow-level-color: var(--color-level-luck);
+  --flow-duration: 9s;
+  font-size: 42px;
+}
+
+
+.FlowLog__Entry.hero.unluck,
+.FlowLog__Entry.enemy.unluck,
+.FlowLog__Entry.system.unluck {
+  --flow-level-color: var(--color-level-unluck);
+  --flow-duration: 7s;
+  font-size: 36px;
+}
+
+.FlowLog__Entry.system.warning {
+  --flow-level-color: var(--color-level-warning);
+  --flow-duration: 10s;
+  color: var(--color-level-warning);
+  font-size: 46px;
+}
+
+.FlowLog__Entry.system.warning .FlowLog__Text {
+  display: inline-block;
+  animation: flow-log-warning-pulse 900ms ease-in-out infinite alternate;
+}
+
+@keyframes flow-log-right-to-left {
+  from { transform: translateX(calc(100vw + 24px)); }
+  to { transform: translateX(calc(-100% - 24px)); }
+}
+
+@keyframes flow-log-warning-pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+
+@media (max-width: 640px) {
+  .HudPanel {
+    top: 8px;
+    left: 8px;
+    width: min(266px, calc(100vw - 16px));
+    padding: 6px 8px 8px;
+  }
+
+  .HudPanel__Logo {
+    width: min(220px, 100%);
+  }
+
+  .StageSelection {
+    padding: 10px;
+  }
+
+  .StageSelection__Dialog {
+    max-height: calc(100dvh - 20px);
+    --modal-dialog-padding: 14px;
+  }
+
+}
+
+@media (max-width: 960px) {
+  .StageSelection__Option {
+    --stage-selection-slot-size: min(100px, calc((100cqw - 84px) / 6));
+    --stage-selection-trend-icon-size: clamp(24px, calc(var(--stage-selection-slot-size) * .38), 38px);
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .StageSelection__EnemyLine {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .StageSelection__EnemyName {
+    display: none;
+  }
+
+  .StageSelection__Trends {
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .StageSelection__Trend {
+    min-width: min(72px, 16vw);
+    padding: 5px 3px;
+  }
+
+  .StageSelection__TrendIcon {
+    width: var(--stage-selection-trend-icon-size);
+    height: var(--stage-selection-trend-icon-size);
+  }
+
+  .StageSelection__SelectButton {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: min(220px, 100%);
+  }
+}
