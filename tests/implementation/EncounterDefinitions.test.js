@@ -24,6 +24,33 @@ test('elite and boss patterns include each implemented mid-boss and boss with it
   assert.deepEqual(COMBINATION_PATTERNS.boss.at(-1), { main: 'large-blessing', support1: 'small-feather', support2: 'small-water' });
 });
 
+test('every affinity keeps its two regular supports while its main enemy changes for regular, elite, and boss encounters', () => {
+  const affinities = ['valor', 'iron', 'arcane', 'cloth', 'dexterity', 'feather', 'reputation', 'gem', 'blessing', 'fortune', 'fire', 'water', 'lightning', 'vitality', 'area'];
+  assert.equal(COMBINATION_PATTERNS.regular.length, affinities.length);
+  assert.equal(COMBINATION_PATTERNS.elite.length, affinities.length);
+  assert.equal(COMBINATION_PATTERNS.boss.length, affinities.length);
+
+  for (const affinity of affinities) {
+    const regular = COMBINATION_PATTERNS.regular.find(({ main }) => main === `small-${affinity}`);
+    const elite = COMBINATION_PATTERNS.elite.find(({ main }) => main === `medium-${affinity}`);
+    const boss = COMBINATION_PATTERNS.boss.find(({ main }) => main === `large-${affinity}`);
+
+    assert.ok(regular, `Missing regular encounter for ${affinity}`);
+    assert.ok(elite, `Missing elite encounter for ${affinity}`);
+    assert.ok(boss, `Missing boss encounter for ${affinity}`);
+    assert.deepEqual(
+      { support1: elite.support1, support2: elite.support2 },
+      { support1: regular.support1, support2: regular.support2 },
+      `Elite supports must match regular supports for ${affinity}`,
+    );
+    assert.deepEqual(
+      { support1: boss.support1, support2: boss.support2 },
+      { support1: regular.support1, support2: regular.support2 },
+      `Boss supports must match regular supports for ${affinity}`,
+    );
+  }
+});
+
 test('regular difficulty derives enemy count and each enemy tag budget from its level', () => {
   const first = DIFFICULTIES.regular(1);
   const later = DIFFICULTIES.regular(99);
