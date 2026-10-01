@@ -2,12 +2,14 @@ const DRAG_START_DISTANCE = 6;
 const ZOOM_IN_FACTOR = 1.1;
 
 export default class GameCanvasInput {
-  constructor(canvas, { camera, controller, getCursor, getInformationTarget, onInformationTarget, onPortalOpen, onReleaseStaminaPause }) {
+  constructor(canvas, { camera, controller, getCursor, getInformationTarget, getScreenTarget, onScreenTarget, onInformationTarget, onPortalOpen, onReleaseStaminaPause }) {
     this.canvas = canvas;
     this.camera = camera;
     this.controller = controller;
     this.getCursor = getCursor;
     this.getInformationTarget = getInformationTarget;
+    this.getScreenTarget = getScreenTarget;
+    this.onScreenTarget = onScreenTarget;
     this.onInformationTarget = onInformationTarget;
     this.onPortalOpen = onPortalOpen;
     this.onReleaseStaminaPause = onReleaseStaminaPause;
@@ -24,15 +26,21 @@ export default class GameCanvasInput {
   }
 
   getWorldPoint(event) {
+    const point = this.getScreenPoint(event);
+    return this.camera.toWorld(point.x, point.y);
+  }
+
+  getScreenPoint(event) {
     const bounds = this.canvas.getBoundingClientRect();
-    return this.camera.toWorld(event.clientX - bounds.left, event.clientY - bounds.top);
+    return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
   }
 
   handlePointerDown(event) {
     if (!this.controller) return;
     event.preventDefault();
     const point = this.getWorldPoint(event);
-    const entity = this.controller.getEntityAt(point.x, point.y);
+    const screenTarget = this.getScreenTarget?.(this.getScreenPoint(event)) ?? null;
+    const entity = screenTarget ? null : this.controller.getEntityAt(point.x, point.y);
     this.drag = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -42,6 +50,7 @@ export default class GameCanvasInput {
       moved: false,
       entity,
       startedSelection: false,
+      screenTarget,
     };
     this.canvas.setPointerCapture(event.pointerId);
   }
@@ -49,8 +58,9 @@ export default class GameCanvasInput {
   handlePointerMove(event) {
     if (!this.controller) return;
     const point = this.getWorldPoint(event);
+    const screenPoint = this.getScreenPoint(event);
     if (!this.drag || this.drag.pointerId !== event.pointerId) {
-      this.canvas.style.cursor = this.getCursor(point);
+      this.canvas.style.cursor = this.getCursor(point, screenPoint);
       return;
     }
     const totalDistance = Math.hypot(event.clientX - this.drag.startX, event.clientY - this.drag.startY);
@@ -73,9 +83,12 @@ export default class GameCanvasInput {
       if (!this.controller.completeSelectionAt(point.x, point.y)) this.controller.clearSelection();
     }
     if (!this.drag.moved) {
-      const target = this.getInformationTarget(point, event);
-      if (target?.type === 'portal') this.onPortalOpen();
-      else if (target) this.onInformationTarget(target, event);
+      if (this.drag.screenTarget) this.onScreenTarget?.(this.drag.screenTarget, event);
+      else {
+        const target = this.getInformationTarget(point, event);
+        if (target?.type === 'portal') this.onPortalOpen();
+        else if (target) this.onInformationTarget(target, event);
+      }
     }
     this.drag = null;
   }

@@ -66,6 +66,8 @@ import StartPartySelectionModal from './StartPartySelectionModal.js';
 import VignetteModal from './VignetteModal.js';
 import { createRunScenario } from '../game/RunScenario.js';
 import TitleMenu from './TitleMenu.js';
+import HeroDirectionIndicatorRenderer from './HeroDirectionIndicatorRenderer.js';
+import { getHeroDirectionIndicatorAtPoint, getHeroDirectionIndicators } from '../game/HeroDirectionIndicator.js';
 
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
@@ -96,6 +98,8 @@ export async function startGame() {
   const textRepository = await new GameTextRepository().load();
   const canvas = document.querySelector('#chip-canvas');
   const context = canvas.getContext('2d');
+  const directionCanvas = document.querySelector('#hero-direction-indicators');
+  const directionContext = directionCanvas.getContext('2d');
   const camera = new Camera(WORLD_SIZE);
   const clock = new GameClock();
   refreshLocalizedUI(document, textRepository);
@@ -145,8 +149,10 @@ export async function startGame() {
   const canvasInput = new GameCanvasInput(canvas, {
     camera,
     controller: null,
-    getCursor: (point) => trial.getCursor?.(point) ?? '',
+    getCursor: (point, screenPoint) => trial.getCursor?.(point, screenPoint) ?? '',
     getInformationTarget: (point) => trial.getInformationTarget?.(point) ?? null,
+    getScreenTarget: (point) => trial.getScreenTarget?.(point) ?? null,
+    onScreenTarget: (target) => target?.hero && camera.centerOnWorldPoint(target.hero.chip),
     onInformationTarget: (target, event) => trial.informationWindows?.open({ ...target, anchor: { x: event.clientX, y: event.clientY } }),
     onPortalOpen: () => window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer'),
     onReleaseStaminaPause: () => timeSettingsController.releaseStaminaPause(),
@@ -162,6 +168,9 @@ export async function startGame() {
     canvas.width = Math.floor(bounds.width * scale);
     canvas.height = Math.floor(bounds.height * scale);
     context.setTransform(scale, 0, 0, scale, 0, 0);
+    directionCanvas.width = Math.floor(bounds.width * scale);
+    directionCanvas.height = Math.floor(bounds.height * scale);
+    directionContext.setTransform(scale, 0, 0, scale, 0, 0);
     camera.setViewport(bounds.width, bounds.height);
   }
 
@@ -170,7 +179,10 @@ export async function startGame() {
     const deltaSeconds = (time - previousTime) / 1000;
     previousTime = time;
     if (trial.update) trial.update(deltaSeconds, time);
-    else context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    else {
+      context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+      directionContext.clearRect(0, 0, directionCanvas.clientWidth, directionCanvas.clientHeight);
+    }
     requestAnimationFrame(render);
   }
 
@@ -206,7 +218,7 @@ export async function startGame() {
     camera.zoom = camera.minZoom;
     resizeCanvas();
     await startTrial({
-      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,
+      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,
     });
     clock.reset();
     trial.update = null;
@@ -219,11 +231,12 @@ export async function startGame() {
     trial.flowLog?.dispose();
     trial.flowLog = null;
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    directionContext.clearRect(0, 0, directionCanvas.clientWidth, directionCanvas.clientHeight);
   }
 }
 
 async function startTrial({
-  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,
+  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,
 }) {
   const nameplateBounds = createLocationNameplateBoundsRegistry();
   const board = new ChipBoard(WORLD_SIZE);
@@ -275,6 +288,7 @@ async function startTrial({
   const facilitySwing = new FacilitySwingSystem();
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const renderer = new ChipRenderer(context, assets);
+  const heroDirectionIndicatorRenderer = new HeroDirectionIndicatorRenderer(directionContext, assets);
   const informationWindows = new InformationWindowManager({
     clock,
     entityRegistry,
@@ -331,7 +345,11 @@ async function startTrial({
   trial.informationWindows = informationWindows;
   trial.stageSelection = stageSelection;
   trial.flowLog = flowLog;
-  trial.getCursor = (point) => (isWarehousePortalAtPoint(context, point) ? 'pointer' : '');
+  trial.getDirectionIndicators = () => getHeroDirectionIndicators(controller.getHeroes(), camera);
+  trial.getScreenTarget = (point) => getHeroDirectionIndicatorAtPoint(trial.getDirectionIndicators(), point);
+  trial.getCursor = (point, screenPoint) => (
+    trial.getScreenTarget(screenPoint) || isWarehousePortalAtPoint(context, point) ? 'pointer' : ''
+  );
   trial.getInformationTarget = (point) => {
       if (isWarehousePortalAtPoint(context, point)) return { type: 'portal' };
       const facility = nameplateBounds.getFacilityAtPoint(point);
@@ -427,6 +445,8 @@ async function startTrial({
     combatEffects.draw(context, assets);
     drawSelectionGuide(context, controller.getSelectionGuide());
     context.restore();
+    directionContext.clearRect(0, 0, directionCanvas.clientWidth, directionCanvas.clientHeight);
+    heroDirectionIndicatorRenderer.draw(trial.getDirectionIndicators(), time / 1000);
   };
   return completed;
 }

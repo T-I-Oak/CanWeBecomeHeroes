@@ -36,3 +36,13 @@ test('camera uses the applied maximum zoom when preserving a screen point', () =
   assert.equal(camera.zoom, camera.maxZoom);
   assert.deepEqual(camera.toWorld(screenPoint.x, screenPoint.y), worldPointBeforeZoom);
 });
+
+test('camera centers a requested world point when possible', () => {
+  const camera = new Camera({ width: 2400, height: 1800 });
+  camera.setViewport(800, 600);
+  camera.setZoom(1, 400, 300);
+
+  camera.centerOnWorldPoint({ x: 1200, y: 900 });
+
+  assert.deepEqual(camera.toWorld(400, 300), { x: 1200, y: 900 });
+});
