@@ -20,15 +20,18 @@ test('information-window chip previews preserve gameplay chip size ratios from a
 
 test('static definition chips use their representative area and intrinsic tags', () => {
   const hero = createInformationDefinitionChip('hero', 'Avery');
-  const enemy = createInformationDefinitionChip('enemy', 'large-area');
+  const midBoss = createInformationDefinitionChip('enemy', 'medium-area');
+  const boss = createInformationDefinitionChip('enemy', 'large-area');
   const item = createInformationDefinitionChip('item', 'sword');
 
   assert.equal(hero.fillColor, AREA_THEME.preparation.chipFill);
   assert.equal(hero.tagPaths.length, 2);
-  assert.equal(enemy.fillColor, AREA_THEME.battle.chipFill);
-  assert.equal(enemy.radius * 2, ENEMY_CHIP_DIAMETER.large);
-  assert.equal(enemy.tagPaths.length, 1);
+  assert.equal(midBoss.fillColor, AREA_THEME.battle.chipFill);
+  assert.equal(midBoss.radius * 2, ENEMY_CHIP_DIAMETER.medium);
+  assert.equal(midBoss.tagPaths.length, 1);
+  assert.equal(boss.fillColor, AREA_THEME.battle.chipFill);
+  assert.equal(boss.radius * 2, ENEMY_CHIP_DIAMETER.large);
+  assert.equal(boss.tagPaths.length, 2);
   assert.equal(item.fillColor, AREA_THEME.warehouse.chipFill);
   assert.equal(item.tagPaths.length, 0);
 });
-

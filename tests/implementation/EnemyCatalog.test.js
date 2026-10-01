@@ -95,4 +95,44 @@ test('valor mid-boss and boss define battle frenzy at their respective levels', 
   assert.equal(cyclops.assetPath, '/assets/enemies/large-valor.png');
   assert.deepEqual(cyclops.uniqueSkill, { id: 'battle-frenzy', level: 2 });
 });
-
+
+const ALL_AFFINITIES = [
+  'valor', 'iron', 'arcane', 'reputation', 'lightning',
+  'cloth', 'dexterity', 'feather', 'gem', 'blessing',
+  'fortune', 'fire', 'water', 'vitality', 'area',
+];
+
+test('every mid-boss has one main intrinsic tag and every boss has two identical intrinsic tags', () => {
+  for (const affinity of ALL_AFFINITIES) {
+    const midBoss = getEnemyDefinition({ size: 'medium', tagAffinity: affinity });
+    assert.ok(midBoss, `Missing mid-boss definition for ${affinity}`);
+    assert.deepEqual(midBoss.intrinsicTags, [affinity], `Mid-boss ${affinity} must have exactly one intrinsic tag`);
+
+    const boss = getEnemyDefinition({ size: 'large', tagAffinity: affinity });
+    assert.ok(boss, `Missing boss definition for ${affinity}`);
+    assert.deepEqual(boss.intrinsicTags, [affinity, affinity], `Boss ${affinity} must have two identical intrinsic tags`);
+  }
+});
+
+test('enemy factory assigns one intrinsic tag to mid-boss chips and two identical tags to boss chips', () => {
+  const factory = new EnemyFactory();
+  for (const affinity of ALL_AFFINITIES) {
+    const midBoss = factory.createFromDefinition({
+      enemyDefinitionId: `medium-${affinity}`,
+      slotPosition: 2,
+      weaponCount: 0,
+      totalTagCount: 0,
+    });
+    assert.deepEqual(midBoss.tags, [affinity]);
+    assert.equal(midBoss.chip.tagPaths.length, 1);
+
+    const boss = factory.createFromDefinition({
+      enemyDefinitionId: `large-${affinity}`,
+      slotPosition: 1,
+      weaponCount: 0,
+      totalTagCount: 0,
+    });
+    assert.deepEqual(boss.tags, [affinity, affinity]);
+    assert.equal(boss.chip.tagPaths.length, 2);
+  }
+});

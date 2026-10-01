@@ -64,7 +64,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'vitality-summon', level: 1 }),
   }),
   'large-vitality': Object.freeze({
-    id: 'large-vitality', size: 'large', tagAffinity: 'vitality', nameKey: 'enemy.largeVitality', assetPath: '/assets/enemies/large-vitality.png', intrinsicTags: Object.freeze(['vitality']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-vitality', size: 'large', tagAffinity: 'vitality', nameKey: 'enemy.largeVitality', assetPath: '/assets/enemies/large-vitality.png', intrinsicTags: Object.freeze(['vitality', 'vitality']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'vitality-summon', level: 2 }),
   }),
   'medium-gem': Object.freeze({
@@ -72,7 +72,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'gem-orb-rain', level: 1 }),
   }),
   'large-gem': Object.freeze({
-    id: 'large-gem', size: 'large', tagAffinity: 'gem', nameKey: 'enemy.largeGem', assetPath: '/assets/enemies/large-gem.png', intrinsicTags: Object.freeze(['gem']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-gem', size: 'large', tagAffinity: 'gem', nameKey: 'enemy.largeGem', assetPath: '/assets/enemies/large-gem.png', intrinsicTags: Object.freeze(['gem', 'gem']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'gem-orb-rain', level: 2 }),
   }),
   'medium-area': Object.freeze({
@@ -80,7 +80,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'area-head-rush', level: 1 }),
   }),
   'large-area': Object.freeze({
-    id: 'large-area', size: 'large', tagAffinity: 'area', nameKey: 'enemy.largeArea', assetPath: '/assets/enemies/large-area.png', intrinsicTags: Object.freeze(['area']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-area', size: 'large', tagAffinity: 'area', nameKey: 'enemy.largeArea', assetPath: '/assets/enemies/large-area.png', intrinsicTags: Object.freeze(['area', 'area']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'area-head-rush', level: 2 }),
   }),
   'medium-dexterity': Object.freeze({
@@ -88,7 +88,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'shadow-fingertips', level: 1 }),
   }),
   'large-dexterity': Object.freeze({
-    id: 'large-dexterity', size: 'large', tagAffinity: 'dexterity', nameKey: 'enemy.largeDexterity', assetPath: '/assets/enemies/large-dexterity.png', intrinsicTags: Object.freeze(['dexterity']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-dexterity', size: 'large', tagAffinity: 'dexterity', nameKey: 'enemy.largeDexterity', assetPath: '/assets/enemies/large-dexterity.png', intrinsicTags: Object.freeze(['dexterity', 'dexterity']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'shadow-fingertips', level: 2 }),
   }),
   'medium-valor': Object.freeze({
@@ -96,7 +96,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'battle-frenzy', level: 1 }),
   }),
   'large-valor': Object.freeze({
-    id: 'large-valor', size: 'large', tagAffinity: 'valor', nameKey: 'enemy.largeValor', assetPath: '/assets/enemies/large-valor.png', intrinsicTags: Object.freeze(['valor']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-valor', size: 'large', tagAffinity: 'valor', nameKey: 'enemy.largeValor', assetPath: '/assets/enemies/large-valor.png', intrinsicTags: Object.freeze(['valor', 'valor']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'battle-frenzy', level: 2 }),
   }),
   'medium-iron': Object.freeze({
@@ -104,7 +104,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'iron-counterblow', level: 1 }),
   }),
   'large-iron': Object.freeze({
-    id: 'large-iron', size: 'large', tagAffinity: 'iron', nameKey: 'enemy.largeIron', assetPath: '/assets/enemies/large-iron.png', intrinsicTags: Object.freeze(['iron']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-iron', size: 'large', tagAffinity: 'iron', nameKey: 'enemy.largeIron', assetPath: '/assets/enemies/large-iron.png', intrinsicTags: Object.freeze(['iron', 'iron']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'iron-counterblow', level: 2 }),
   }),
   'medium-arcane': Object.freeze({
@@ -112,7 +112,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'arcane-reflection', level: 1 }),
   }),
   'large-arcane': Object.freeze({
-    id: 'large-arcane', size: 'large', tagAffinity: 'arcane', nameKey: 'enemy.largeArcane', assetPath: '/assets/enemies/large-arcane.png', intrinsicTags: Object.freeze(['arcane']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-arcane', size: 'large', tagAffinity: 'arcane', nameKey: 'enemy.largeArcane', assetPath: '/assets/enemies/large-arcane.png', intrinsicTags: Object.freeze(['arcane', 'arcane']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'arcane-reflection', level: 2 }),
   }),
   'medium-cloth': Object.freeze({
@@ -124,7 +124,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'water-deep-sea-surge', level: 1 }),
   }),
   'large-water': Object.freeze({
-    id: 'large-water', size: 'large', tagAffinity: 'water', nameKey: 'enemy.largeWater', assetPath: '/assets/enemies/large-water.png', intrinsicTags: Object.freeze(['water']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-water', size: 'large', tagAffinity: 'water', nameKey: 'enemy.largeWater', assetPath: '/assets/enemies/large-water.png', intrinsicTags: Object.freeze(['water', 'water']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'water-deep-sea-surge', level: 2 }),
   }),
   'medium-fire': Object.freeze({
@@ -132,7 +132,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'fire-retaliation-ember', level: 1 }),
   }),
   'large-fire': Object.freeze({
-    id: 'large-fire', size: 'large', tagAffinity: 'fire', nameKey: 'enemy.largeFire', assetPath: '/assets/enemies/large-fire.png', intrinsicTags: Object.freeze(['fire']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-fire', size: 'large', tagAffinity: 'fire', nameKey: 'enemy.largeFire', assetPath: '/assets/enemies/large-fire.png', intrinsicTags: Object.freeze(['fire', 'fire']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'fire-retaliation-ember', level: 2 }),
   }),
   'medium-lightning': Object.freeze({
@@ -140,7 +140,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'lightning-thunder-drain', level: 1 }),
   }),
   'large-lightning': Object.freeze({
-    id: 'large-lightning', size: 'large', tagAffinity: 'lightning', nameKey: 'enemy.largeLightning', assetPath: '/assets/enemies/large-lightning.png', intrinsicTags: Object.freeze(['lightning']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-lightning', size: 'large', tagAffinity: 'lightning', nameKey: 'enemy.largeLightning', assetPath: '/assets/enemies/large-lightning.png', intrinsicTags: Object.freeze(['lightning', 'lightning']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'lightning-thunder-drain', level: 2 }),
   }),
   'medium-reputation': Object.freeze({
@@ -148,7 +148,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'reputation-bewildering-words', level: 1 }),
   }),
   'large-reputation': Object.freeze({
-    id: 'large-reputation', size: 'large', tagAffinity: 'reputation', nameKey: 'enemy.largeReputation', assetPath: '/assets/enemies/large-reputation.png', intrinsicTags: Object.freeze(['reputation']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-reputation', size: 'large', tagAffinity: 'reputation', nameKey: 'enemy.largeReputation', assetPath: '/assets/enemies/large-reputation.png', intrinsicTags: Object.freeze(['reputation', 'reputation']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'reputation-bewildering-words', level: 2 }),
   }),
   'medium-fortune': Object.freeze({
@@ -156,7 +156,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'fortune-misfortune-curse', level: 1 }),
   }),
   'large-fortune': Object.freeze({
-    id: 'large-fortune', size: 'large', tagAffinity: 'fortune', nameKey: 'enemy.largeFortune', assetPath: '/assets/enemies/large-fortune.png', intrinsicTags: Object.freeze(['fortune']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-fortune', size: 'large', tagAffinity: 'fortune', nameKey: 'enemy.largeFortune', assetPath: '/assets/enemies/large-fortune.png', intrinsicTags: Object.freeze(['fortune', 'fortune']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'fortune-misfortune-curse', level: 2 }),
   }),
   'medium-feather': Object.freeze({
@@ -164,11 +164,11 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'feather-storm-wings', level: 1 }),
   }),
   'large-feather': Object.freeze({
-    id: 'large-feather', size: 'large', tagAffinity: 'feather', nameKey: 'enemy.largeFeather', assetPath: '/assets/enemies/large-feather.png', intrinsicTags: Object.freeze(['feather']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-feather', size: 'large', tagAffinity: 'feather', nameKey: 'enemy.largeFeather', assetPath: '/assets/enemies/large-feather.png', intrinsicTags: Object.freeze(['feather', 'feather']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'feather-storm-wings', level: 2 }),
   }),
   'large-cloth': Object.freeze({
-    id: 'large-cloth', size: 'large', tagAffinity: 'cloth', nameKey: 'enemy.largeCloth', assetPath: '/assets/enemies/large-cloth.png', intrinsicTags: Object.freeze(['cloth']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-cloth', size: 'large', tagAffinity: 'cloth', nameKey: 'enemy.largeCloth', assetPath: '/assets/enemies/large-cloth.png', intrinsicTags: Object.freeze(['cloth', 'cloth']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'cloth-night-familiars', level: 2 }),
   }),
   'medium-blessing': Object.freeze({
@@ -176,7 +176,7 @@ export const ENEMY_CATALOG = Object.freeze({
     uniqueSkill: Object.freeze({ id: 'blessing-random', level: 1 }),
   }),
   'large-blessing': Object.freeze({
-    id: 'large-blessing', size: 'large', tagAffinity: 'blessing', nameKey: 'enemy.largeBlessing', assetPath: '/assets/enemies/large-blessing.png', intrinsicTags: Object.freeze(['blessing']), baseHp: 2, baseContributionPoints: 250,
+    id: 'large-blessing', size: 'large', tagAffinity: 'blessing', nameKey: 'enemy.largeBlessing', assetPath: '/assets/enemies/large-blessing.png', intrinsicTags: Object.freeze(['blessing', 'blessing']), baseHp: 2, baseContributionPoints: 250,
     uniqueSkill: Object.freeze({ id: 'blessing-random', level: 2 }),
   }),
   'phantom-area-head': Object.freeze({
