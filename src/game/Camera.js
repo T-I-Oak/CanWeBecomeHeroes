@@ -50,6 +50,10 @@ export default class Camera {
     this.y = verticalRange > 0 ? Math.max(0, Math.min(verticalRange, requestedY)) : verticalRange / 2;
   }
 
+  centerOnWorldPoint(worldPoint) {
+    this.setWorldPointAtScreenPoint(worldPoint, this.viewport.width / 2, this.viewport.height / 2);
+  }
+
   panByScreen(deltaX, deltaY) {
     const visibleWidth = this.viewport.width / this.zoom;
     const visibleHeight = this.viewport.height / this.zoom;
