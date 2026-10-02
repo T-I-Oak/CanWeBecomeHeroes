@@ -107,6 +107,7 @@ export async function startGame() {
   const heroProgress = new HeroProgressRepository(dataManager);
   const assets = new AssetLoader();
   const shell = document.querySelector('.AppShell');
+  const hudPanel = document.querySelector('.HudPanel');
   const titleMenu = new TitleMenu(document.querySelector('#title-menu'), { textRepository, assets, heroProgress });
   const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository, assets);
   const trial = {
@@ -147,6 +148,7 @@ export async function startGame() {
   });
   const overheadStatusModalSelect = new ModalSelect(overheadStatusVisibility);
   const canvasInput = new GameCanvasInput(canvas, {
+    screenTargetInputRoot: hudPanel,
     camera,
     controller: null,
     getCursor: (point, screenPoint) => trial.getCursor?.(point, screenPoint) ?? '',

@@ -2,8 +2,9 @@ const DRAG_START_DISTANCE = 6;
 const ZOOM_IN_FACTOR = 1.1;
 
 export default class GameCanvasInput {
-  constructor(canvas, { camera, controller, getCursor, getInformationTarget, getScreenTarget, onScreenTarget, onInformationTarget, onPortalOpen, onReleaseStaminaPause }) {
+  constructor(canvas, { screenTargetInputRoot, camera, controller, getCursor, getInformationTarget, getScreenTarget, onScreenTarget, onInformationTarget, onPortalOpen, onReleaseStaminaPause }) {
     this.canvas = canvas;
+    this.screenTargetInputRoot = screenTargetInputRoot;
     this.camera = camera;
     this.controller = controller;
     this.getCursor = getCursor;
@@ -18,6 +19,7 @@ export default class GameCanvasInput {
   }
 
   bindEvents() {
+    this.screenTargetInputRoot.addEventListener('pointerdown', (event) => this.handleScreenTargetPointerDown(event), { capture: true, passive: false });
     this.canvas.addEventListener('pointerdown', (event) => this.handlePointerDown(event), { passive: false });
     this.canvas.addEventListener('pointermove', (event) => this.handlePointerMove(event), { passive: false });
     this.canvas.addEventListener('pointerup', (event) => this.handlePointerUp(event));
@@ -35,11 +37,19 @@ export default class GameCanvasInput {
     return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
   }
 
-  handlePointerDown(event) {
+  handleScreenTargetPointerDown(event) {
+    if (!this.controller) return;
+    const screenTarget = this.getScreenTarget(this.getScreenPoint(event));
+    if (!screenTarget) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.handlePointerDown(event, screenTarget);
+  }
+
+  handlePointerDown(event, screenTarget = this.getScreenTarget(this.getScreenPoint(event))) {
     if (!this.controller) return;
     event.preventDefault();
     const point = this.getWorldPoint(event);
-    const screenTarget = this.getScreenTarget(this.getScreenPoint(event));
     const entity = screenTarget ? null : this.controller.getEntityAt(point.x, point.y);
     this.drag = {
       pointerId: event.pointerId,

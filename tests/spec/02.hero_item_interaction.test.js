@@ -52,6 +52,7 @@ test('買い物袋には倉庫Itemを3個まで格納でき、行き先Itemは�
 test('自動一時停止中でも袋格納を完了すると、通常の操作終了と同様に停止を解除する', () => {
   let pauseReleases = 0;
   const input = new GameCanvasInput(createCanvas(), {
+    screenTargetInputRoot: createCanvas(),
     camera: { toWorld: (x, y) => ({ x, y }) },
     controller: {
       updateSelectionHover() {},
