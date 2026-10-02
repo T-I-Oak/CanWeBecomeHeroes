@@ -7,6 +7,12 @@ import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 import UniqueSkillEffectSystem from '../../src/game/UniqueSkillEffectSystem.js';
+import GameLog from '../../src/game/GameLog.js';
+import gameText from '../../src/game/readGameText.js';
+import GameTextRepository, { textPart } from '../../src/game/GameTextRepository.js';
+import { expandLanguageResource } from '../../../GameWorksOAK/src/lib/core/i18n.js';
+
+const textRepository = await new GameTextRepository({ loadResource: async (path) => textPart(expandLanguageResource(gameText), path) }).load();
 
 function createReactionSystem(attributeSystem) {
   return new CombatDamageReactionSystem({
@@ -76,13 +82,16 @@ test('gem orb-rain drops its level-specific orb rewards for each successful dama
   const itemFactory = new ItemFactory();
   const enemy = new EnemyFactory({ itemFactory }).createFromDefinition({ enemyDefinitionId: 'large-gem', slotPosition: 3, maximumHp: 10, totalTagCount: 0, random: () => 0 });
   const drops = [];
-  const battle = new BattleSystem(board, { controller: { addToWarehouse: (item) => drops.push(item) }, itemFactory, random: () => 0, logger: { info: () => {} } });
+  const gameLog = new GameLog({ textRepository });
+  const battle = new BattleSystem(board, { controller: { addToWarehouse: (item) => drops.push(item) }, itemFactory, random: () => 0, logger: { info: () => {} }, gameLog, textRepository });
 
   battle.applyDamage(null, enemy, 'fire', 1);
 
   assert.equal(drops.length, 2);
   assert.deepEqual(drops.map((item) => item.type), ['orb', 'orb']);
   assert.deepEqual(drops.map((item) => item.tags), [['gem', 'gem'], ['gem', 'gem']]);
+  assert.equal(gameLog.getRecords()[0].message, '【ファフニール】は宝珠の雨で宝珠を2個落とした。');
+  assert.deepEqual(gameLog.getRecords()[0].localized.values.item, { kind: 'item', id: 'orb' });
 });
 
 test('retaliation ember applies the mid-boss fire value to an attacker after physical damage', () => {
@@ -118,4 +127,4 @@ test('thunder drain uses the active opposing participants current gauges after a
   assert.equal(attacker.chip.actionGauge, 4.5);
   assert.equal(ally.chip.actionGauge, 2.7);
 });
-
+
