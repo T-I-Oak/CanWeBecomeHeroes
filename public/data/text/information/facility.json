@@ -24,6 +24,10 @@
             "id": "item-value"
           },
           {
+            "type": "text",
+            "value": "と"
+          },
+          {
             "type": "reference",
             "kind": "status",
             "id": "negotiation"
