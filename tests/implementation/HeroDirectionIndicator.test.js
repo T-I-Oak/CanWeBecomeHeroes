@@ -66,5 +66,4 @@ test('hit testing returns the touched indicator only', () => {
   const indicator = getHeroDirectionIndicators([createHero('one', 900, 150)], createCamera())[0];
   assert.equal(getHeroDirectionIndicatorAtPoint([indicator], { x: indicator.x, y: indicator.y }), indicator);
   assert.equal(getHeroDirectionIndicatorAtPoint([indicator], { x: indicator.x - indicator.radius - 1, y: indicator.y }), null);
-  assert.equal(getHeroDirectionIndicatorAtPoint([indicator]), null);
 });

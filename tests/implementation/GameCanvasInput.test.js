@@ -22,6 +22,8 @@ test('a bag storage selection releases the stamina-full pause like every other c
     controller,
     getCursor: () => '',
     getInformationTarget: () => null,
+    getScreenTarget: () => null,
+    onScreenTarget() {},
     onInformationTarget() {},
     onPortalOpen() {},
     onReleaseStaminaPause() { pauseReleases += 1; },
@@ -68,6 +70,8 @@ test('cursor resolution receives both world and screen coordinates', () => {
       return 'pointer';
     },
     getInformationTarget: () => null,
+    getScreenTarget: () => null,
+    onScreenTarget() {},
     onInformationTarget() {},
     onPortalOpen() {},
     onReleaseStaminaPause() {},

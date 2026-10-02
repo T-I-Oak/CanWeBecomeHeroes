@@ -39,7 +39,7 @@ export default class GameCanvasInput {
     if (!this.controller) return;
     event.preventDefault();
     const point = this.getWorldPoint(event);
-    const screenTarget = this.getScreenTarget?.(this.getScreenPoint(event)) ?? null;
+    const screenTarget = this.getScreenTarget(this.getScreenPoint(event));
     const entity = screenTarget ? null : this.controller.getEntityAt(point.x, point.y);
     this.drag = {
       pointerId: event.pointerId,
@@ -83,7 +83,7 @@ export default class GameCanvasInput {
       if (!this.controller.completeSelectionAt(point.x, point.y)) this.controller.clearSelection();
     }
     if (!this.drag.moved) {
-      if (this.drag.screenTarget) this.onScreenTarget?.(this.drag.screenTarget, event);
+      if (this.drag.screenTarget) this.onScreenTarget(this.drag.screenTarget, event);
       else {
         const target = this.getInformationTarget(point, event);
         if (target?.type === 'portal') this.onPortalOpen();

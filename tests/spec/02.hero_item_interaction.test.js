@@ -59,6 +59,8 @@ test('自動一時停止中でも袋格納を完了すると、通常の操作�
     },
     getCursor: () => '',
     getInformationTarget: () => null,
+    getScreenTarget: () => null,
+    onScreenTarget() {},
     onInformationTarget() {},
     onPortalOpen() {},
     onReleaseStaminaPause: () => { pauseReleases += 1; },

@@ -18,7 +18,7 @@ function getEdgePosition(target, viewport) {
   const center = { x: viewport.width / 2, y: viewport.height / 2 };
   const vector = { x: target.x - center.x, y: target.y - center.y };
   const length = Math.hypot(vector.x, vector.y);
-  const direction = length === 0 ? { x: 0, y: -1 } : { x: vector.x / length, y: vector.y / length };
+  const direction = { x: vector.x / length, y: vector.y / length };
   const inset = EDGE_MARGIN + HERO_DIRECTION_INDICATOR_RADIUS + POINTER_LENGTH;
   const scale = Math.min(
     direction.x > 0 ? (viewport.width - inset - center.x) / direction.x : direction.x < 0 ? (inset - center.x) / direction.x : Infinity,
@@ -53,7 +53,6 @@ function separateAlongEdge(indicator, placed, viewport) {
 
 /** Returns UI-coordinate indicators for Heroes whose centers are outside the current viewport. */
 export function getHeroDirectionIndicators(heroes, camera) {
-  if (!camera.viewport) return [];
   const indicators = heroes
     .map((hero) => ({ hero, position: getScreenPosition(camera, hero.chip) }))
     .filter(({ position }) => isOffscreen(position, camera.viewport))
@@ -69,6 +68,5 @@ export function getHeroDirectionIndicators(heroes, camera) {
 }
 
 export function getHeroDirectionIndicatorAtPoint(indicators, point) {
-  if (!point) return null;
   return indicators.find((indicator) => Math.hypot(point.x - indicator.x, point.y - indicator.y) <= indicator.radius) ?? null;
 }
