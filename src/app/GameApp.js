@@ -413,6 +413,8 @@ async function startTrial({
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction(), textRepository);
     guildTimelineHours = drawGuildPanel(context, {
       textRepository,
+      stageNumber: stageController.stageNumber,
+      animationTime: performance.now() / 1000,
       tick: clock.tick,
       contributionPoints: battleSystem.contributionPoints,
       extensionHours: guildSystem.getExtensionHours(),

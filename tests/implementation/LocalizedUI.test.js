@@ -83,9 +83,9 @@ test('UI and historical log text follow language changes without replacing state
     const context = new Proxy({ fillText: text => drawn.push(text), measureText: text => ({ width: text.length * 6 }) }, {
       get: (target, key) => target[key] ?? (() => {}),
     });
-    drawGuildPanel(context, { textRepository: texts, tick: 0, contributionPoints: 0 });
+    drawGuildPanel(context, { textRepository: texts, stageNumber: 1, tick: 0, contributionPoints: 0 });
     assert.ok(drawn.includes('Time left'));
-    assert.ok(drawn.includes('7d 0h'));
+    assert.ok(drawn.join('').includes('7d 0h'));
     const effects = new CombatEffectSystem({ textRepository: texts });
     effects.damage({ chip: { x: 0, y: 0, height: 0, radius: 10 } }, 0.3, true);
     effects.update(0.1);

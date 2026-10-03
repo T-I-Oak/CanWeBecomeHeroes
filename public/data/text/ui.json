@@ -385,7 +385,7 @@
   },
   "contributionExtension": {
     "lang-store": {
-      "ja": "貢献による延長見込",
+      "ja": "延長見込",
       "en": "Est. extension"
     }
   },
@@ -397,8 +397,8 @@
   },
   "contribution": {
     "lang-store": {
-      "ja": "貢献",
-      "en": "Contribution"
+      "ja": "貢献ポイント",
+      "en": "Contribution points"
     }
   },
   "extension": {
@@ -421,7 +421,7 @@
   },
   "maxHours": {
     "lang-store": {
-      "ja": "24H（MAX）",
+      "ja": "24時間（MAX）",
       "en": "24h (MAX)"
     }
   },
