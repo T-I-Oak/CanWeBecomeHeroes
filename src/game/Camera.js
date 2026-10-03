@@ -1,30 +1,65 @@
 export default class Camera {
-  constructor(world, { minZoom = 0.5, maxZoom = 1.5 } = {}) {
+  constructor(world, { minZoom = 0.5, maxZoom = 1.5, padding = 200 } = {}) {
     this.world = world;
     this.minZoom = minZoom;
     this.maxZoom = maxZoom;
+    this.padding = padding;
     this.zoom = minZoom;
-    this.x = 0;
-    this.y = 0;
+    this.viewport = null;
+    this.x = -padding;
+    this.y = -padding;
   }
 
   setViewport(width, height) {
+    const previousMinZoom = this.viewport ? this.getEffectiveMinZoom() : null;
+    const wasAtMin = previousMinZoom !== null && (this.zoom <= previousMinZoom + 1e-4);
     this.viewport = { width, height };
-    this.zoom = Math.max(this.zoom, this.getEffectiveMinZoom());
+    const newMinZoom = this.getEffectiveMinZoom();
+
+    if (previousMinZoom === null || wasAtMin) {
+      this.zoom = newMinZoom;
+    } else {
+      this.zoom = Math.max(newMinZoom, Math.min(this.maxZoom, this.zoom));
+    }
     this.setPointer(width / 2, height / 2);
   }
 
   getEffectiveMinZoom() {
-    return Math.max(this.minZoom, Math.min(this.viewport.width / this.world.width, this.viewport.height / this.world.height));
+    if (!this.viewport) return this.minZoom;
+    const totalWidth = this.world.width + this.padding * 2;
+    const totalHeight = this.world.height + this.padding * 2;
+    const fitZoom = Math.min(
+      this.viewport.width / totalWidth,
+      this.viewport.height / totalHeight
+    );
+    return Math.min(this.maxZoom, fitZoom);
+  }
+
+  fitToScreen() {
+    if (this.viewport) {
+      this.zoom = this.getEffectiveMinZoom();
+      this.setPointer(this.viewport.width / 2, this.viewport.height / 2);
+    }
+  }
+
+  getRange(dimension, viewportSize) {
+    const visibleSize = viewportSize / this.zoom;
+    const totalSize = this.world[dimension] + this.padding * 2;
+    if (visibleSize >= totalSize) {
+      const center = (this.world[dimension] - visibleSize) / 2;
+      return { min: center, max: center };
+    }
+    return {
+      min: -this.padding,
+      max: this.world[dimension] + this.padding - visibleSize,
+    };
   }
 
   setPointer(x, y) {
-    const visibleWidth = this.viewport.width / this.zoom;
-    const visibleHeight = this.viewport.height / this.zoom;
-    const horizontalRange = this.world.width - visibleWidth;
-    const verticalRange = this.world.height - visibleHeight;
-    this.x = horizontalRange > 0 ? (x / this.viewport.width) * horizontalRange : horizontalRange / 2;
-    this.y = verticalRange > 0 ? (y / this.viewport.height) * verticalRange : verticalRange / 2;
+    const rangeX = this.getRange('width', this.viewport.width);
+    const rangeY = this.getRange('height', this.viewport.height);
+    this.x = rangeX.min === rangeX.max ? rangeX.min : rangeX.min + (x / this.viewport.width) * (rangeX.max - rangeX.min);
+    this.y = rangeY.min === rangeY.max ? rangeY.min : rangeY.min + (y / this.viewport.height) * (rangeY.max - rangeY.min);
   }
 
   setZoom(zoom, pointerX, pointerY) {
@@ -39,15 +74,12 @@ export default class Camera {
   }
 
   setWorldPointAtScreenPoint(worldPoint, screenX, screenY) {
-    const visibleWidth = this.viewport.width / this.zoom;
-    const visibleHeight = this.viewport.height / this.zoom;
-    const horizontalRange = this.world.width - visibleWidth;
-    const verticalRange = this.world.height - visibleHeight;
     const requestedX = worldPoint.x - screenX / this.zoom;
     const requestedY = worldPoint.y - screenY / this.zoom;
-
-    this.x = horizontalRange > 0 ? Math.max(0, Math.min(horizontalRange, requestedX)) : horizontalRange / 2;
-    this.y = verticalRange > 0 ? Math.max(0, Math.min(verticalRange, requestedY)) : verticalRange / 2;
+    const rangeX = this.getRange('width', this.viewport.width);
+    const rangeY = this.getRange('height', this.viewport.height);
+    this.x = rangeX.min === rangeX.max ? rangeX.min : Math.max(rangeX.min, Math.min(rangeX.max, requestedX));
+    this.y = rangeY.min === rangeY.max ? rangeY.min : Math.max(rangeY.min, Math.min(rangeY.max, requestedY));
   }
 
   centerOnWorldPoint(worldPoint) {
@@ -55,12 +87,12 @@ export default class Camera {
   }
 
   panByScreen(deltaX, deltaY) {
-    const visibleWidth = this.viewport.width / this.zoom;
-    const visibleHeight = this.viewport.height / this.zoom;
-    const horizontalRange = this.world.width - visibleWidth;
-    const verticalRange = this.world.height - visibleHeight;
-    this.x = horizontalRange > 0 ? Math.max(0, Math.min(horizontalRange, this.x - deltaX / this.zoom)) : horizontalRange / 2;
-    this.y = verticalRange > 0 ? Math.max(0, Math.min(verticalRange, this.y - deltaY / this.zoom)) : verticalRange / 2;
+    const requestedX = this.x - deltaX / this.zoom;
+    const requestedY = this.y - deltaY / this.zoom;
+    const rangeX = this.getRange('width', this.viewport.width);
+    const rangeY = this.getRange('height', this.viewport.height);
+    this.x = rangeX.min === rangeX.max ? rangeX.min : Math.max(rangeX.min, Math.min(rangeX.max, requestedX));
+    this.y = rangeY.min === rangeY.max ? rangeY.min : Math.max(rangeY.min, Math.min(rangeY.max, requestedY));
   }
 
   toWorld(x, y) {

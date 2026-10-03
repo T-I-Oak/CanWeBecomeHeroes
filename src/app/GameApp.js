@@ -164,6 +164,16 @@ export async function startGame() {
     trial.informationWindows?.focus(windowElement?.dataset.informationWindowId ?? null);
   });
 
+  let lastHudZoom = null;
+  function syncHudScale() {
+    if (camera.zoom !== lastHudZoom) {
+      lastHudZoom = camera.zoom;
+      const prepScreenWidth = GAME_AREAS.preparation.width * camera.zoom;
+      const scale = Math.min(1, prepScreenWidth / 296);
+      hudPanel?.style.setProperty('--hud-scale', scale);
+    }
+  }
+
   function resizeCanvas() {
     const bounds = canvas.getBoundingClientRect();
     const scale = window.devicePixelRatio || 1;
@@ -174,10 +184,12 @@ export async function startGame() {
     directionCanvas.height = Math.floor(bounds.height * scale);
     directionContext.setTransform(scale, 0, 0, scale, 0, 0);
     camera.setViewport(bounds.width, bounds.height);
+    syncHudScale();
   }
 
   let previousTime = performance.now();
   function render(time) {
+    syncHudScale();
     const deltaSeconds = (time - previousTime) / 1000;
     previousTime = time;
     if (trial.update) trial.update(deltaSeconds, time);
@@ -217,7 +229,7 @@ export async function startGame() {
     const selectedProfessionIds = await new StartPartySelectionModal(document.querySelector('#start-party-selection'), { assets, textRepository }).show(partySelection);
     shell.classList.remove('state-title');
     await new VignetteModal(document.querySelector('#vignette'), { assets, clock }).play(createStartVignette({ professionIds: selectedProfessionIds, textRepository }));
-    camera.zoom = camera.minZoom;
+    camera.fitToScreen();
     resizeCanvas();
     await startTrial({
       selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,

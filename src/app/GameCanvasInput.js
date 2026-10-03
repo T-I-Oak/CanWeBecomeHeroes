@@ -15,6 +15,9 @@ export default class GameCanvasInput {
     this.onPortalOpen = onPortalOpen;
     this.onReleaseStaminaPause = onReleaseStaminaPause;
     this.drag = null;
+    this.pinch = null;
+    this.pinchLockout = false;
+    this.activePointers = new Map();
     this.bindEvents();
   }
 
@@ -23,7 +26,8 @@ export default class GameCanvasInput {
     this.canvas.addEventListener('pointerdown', (event) => this.handlePointerDown(event), { passive: false });
     this.canvas.addEventListener('pointermove', (event) => this.handlePointerMove(event), { passive: false });
     this.canvas.addEventListener('pointerup', (event) => this.handlePointerUp(event));
-    this.canvas.addEventListener('pointercancel', () => this.handlePointerCancel());
+    this.canvas.addEventListener('pointercancel', (event) => this.handlePointerCancel(event));
+    this.canvas.addEventListener('lostpointercapture', (event) => this.handleLostPointerCapture(event));
     this.canvas.addEventListener('wheel', (event) => this.handleWheel(event), { passive: false });
   }
 
@@ -49,6 +53,30 @@ export default class GameCanvasInput {
   handlePointerDown(event, screenTarget = this.getScreenTarget(this.getScreenPoint(event))) {
     if (!this.controller) return;
     event.preventDefault();
+    this.activePointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
+    try {
+      this.canvas.setPointerCapture?.(event.pointerId);
+    } catch (_) {}
+
+    if (this.activePointers.size >= 2) {
+      if (this.drag) {
+        if (this.drag.startedSelection) this.controller.clearSelection();
+        this.drag = null;
+      }
+      if (!this.pinch) {
+        const [firstId, secondId] = Array.from(this.activePointers.keys());
+        const p1 = this.activePointers.get(firstId);
+        const p2 = this.activePointers.get(secondId);
+        const distance = Math.hypot(p2.clientX - p1.clientX, p2.clientY - p1.clientY);
+        const center = { x: (p1.clientX + p2.clientX) / 2, y: (p1.clientY + p2.clientY) / 2 };
+        this.pinch = { pointerIds: [firstId, secondId], lastDistance: distance, lastCenter: center };
+        this.pinchLockout = true;
+      }
+      return;
+    }
+
+    if (this.pinchLockout) return;
+
     const point = this.getWorldPoint(event);
     const entity = screenTarget ? null : this.controller.getEntityAt(point.x, point.y);
     this.drag = {
@@ -62,11 +90,40 @@ export default class GameCanvasInput {
       startedSelection: false,
       screenTarget,
     };
-    this.canvas.setPointerCapture(event.pointerId);
   }
 
   handlePointerMove(event) {
     if (!this.controller) return;
+    if (this.activePointers.has(event.pointerId)) {
+      this.activePointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
+    }
+
+    if (this.pinch && this.pinch.pointerIds.includes(event.pointerId)) {
+      event.preventDefault?.();
+      const [id1, id2] = this.pinch.pointerIds;
+      const p1 = this.activePointers.get(id1);
+      const p2 = this.activePointers.get(id2);
+      if (p1 && p2) {
+        const distance = Math.hypot(p2.clientX - p1.clientX, p2.clientY - p1.clientY);
+        const center = { x: (p1.clientX + p2.clientX) / 2, y: (p1.clientY + p2.clientY) / 2 };
+        const bounds = this.canvas.getBoundingClientRect();
+        const screenLastCenter = { x: this.pinch.lastCenter.x - bounds.left, y: this.pinch.lastCenter.y - bounds.top };
+        const screenCurrentCenter = { x: center.x - bounds.left, y: center.y - bounds.top };
+        const worldTarget = this.camera.toWorld(screenLastCenter.x, screenLastCenter.y);
+
+        if (this.pinch.lastDistance > 0 && distance > 0) {
+          const factor = distance / this.pinch.lastDistance;
+          this.camera.zoom = Math.max(this.camera.getEffectiveMinZoom(), Math.min(this.camera.maxZoom, this.camera.zoom * factor));
+        }
+        this.camera.setWorldPointAtScreenPoint(worldTarget, screenCurrentCenter.x, screenCurrentCenter.y);
+        this.pinch.lastDistance = distance;
+        this.pinch.lastCenter = center;
+      }
+      return;
+    }
+
+    if (this.pinchLockout) return;
+
     const point = this.getWorldPoint(event);
     const screenPoint = this.getScreenPoint(event);
     if (!this.drag || this.drag.pointerId !== event.pointerId) {
@@ -84,7 +141,28 @@ export default class GameCanvasInput {
     this.drag.lastY = event.clientY;
   }
 
+  releaseActivePointer(pointerId) {
+    this.activePointers.delete(pointerId);
+    if (this.pinch) {
+      if (this.pinch.pointerIds.includes(pointerId) || this.activePointers.size < 2) {
+        this.pinch = null;
+      }
+    }
+    if (this.activePointers.size === 0) {
+      const hadLockout = this.pinchLockout;
+      this.pinchLockout = false;
+      if (hadLockout) {
+        this.onReleaseStaminaPause?.();
+        return true;
+      }
+    }
+    return false;
+  }
+
   handlePointerUp(event) {
+    const isLockoutEnd = this.releaseActivePointer(event.pointerId);
+    if (isLockoutEnd || this.pinchLockout) return;
+
     if (!this.drag || this.drag.pointerId !== event.pointerId) return;
     const point = this.getWorldPoint(event);
     this.onReleaseStaminaPause();
@@ -103,9 +181,28 @@ export default class GameCanvasInput {
     this.drag = null;
   }
 
-  handlePointerCancel() {
+  handlePointerCancel(event) {
+    const pointerId = event?.pointerId;
+    if (pointerId != null) {
+      if (this.drag?.pointerId === pointerId) {
+        if (this.drag.startedSelection) this.controller.clearSelection();
+        this.drag = null;
+      }
+      this.releaseActivePointer(pointerId);
+      return;
+    }
     if (this.drag?.startedSelection) this.controller.clearSelection();
     this.drag = null;
+    this.pinch = null;
+    this.activePointers.clear();
+    this.pinchLockout = false;
+    this.onReleaseStaminaPause?.();
+  }
+
+  handleLostPointerCapture(event) {
+    const pointerId = event?.pointerId;
+    if (pointerId == null || !this.activePointers.has(pointerId)) return;
+    this.handlePointerCancel(event);
   }
 
   handleWheel(event) {

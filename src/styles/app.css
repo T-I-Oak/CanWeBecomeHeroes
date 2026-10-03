@@ -56,6 +56,8 @@ body {
   top: 16px;
   left: 16px;
   width: min(296px, calc(100vw - 32px));
+  transform-origin: top left;
+  transform: scale(var(--hud-scale, 1));
   padding: 8px 10px;
   border: 2px solid #bc8d3c;
   border-radius: 12px;
