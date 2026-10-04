@@ -11,6 +11,24 @@
       "en": "Language"
     }
   },
+  "tutorial": {
+    "lang-store": {
+      "ja": "チュートリアル",
+      "en": "Tutorial"
+    }
+  },
+  "resetTutorial": {
+    "lang-store": {
+      "ja": "チュートリアルリセット",
+      "en": "Reset Tutorial"
+    }
+  },
+  "reset": {
+    "lang-store": {
+      "ja": "リセット",
+      "en": "Reset"
+    }
+  },
   "trialCertificateTitle": {
     "lang-store": {
       "ja": "勇者試験 合格証明書",
@@ -331,8 +349,8 @@
   },
   "challengeMode": {
     "lang-store": {
-      "ja": "無限挑戦モード",
-      "en": "Endless Challenge"
+      "ja": "チャレンジモード",
+      "en": "Challenge Mode"
     }
   },
   "records": {

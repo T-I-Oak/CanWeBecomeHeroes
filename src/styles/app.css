@@ -28,6 +28,12 @@
   box-sizing: border-box;
 }
 
+*:focus,
+*:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 html,
 body,
 #app {
@@ -133,6 +139,7 @@ body {
 
 .SettingsModal__Dialog {
   width: min(440px, 100%);
+  min-height: min(180px, calc(100dvh - 20px));
   --modal-dialog-padding: clamp(16px, 4vmin, 28px);
   --modal-body-gap: 14px;
 }
@@ -148,6 +155,38 @@ body {
   color: #fff4d5;
   font-size: 12px;
   font-weight: 700;
+}
+
+.SettingsModal__ActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.SettingsModal__ActionLabel {
+  color: #fff4d5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.SettingsModal__ActionButton {
+  min-width: 66px;
+  min-height: 30px;
+  padding: 4px 12px;
+  border: 1px solid var(--color-modal-control-border);
+  border-radius: 6px;
+  color: var(--color-modal-control-text);
+  background: var(--color-modal-control-surface);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.SettingsModal__ActionButton:hover {
+  background: var(--color-modal-selected-option);
+  color: var(--color-modal-selected-option-text);
 }
 
 .SpeedRange {

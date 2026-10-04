@@ -43,6 +43,7 @@ import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { drawWarehouseMetadata, isWarehousePortalAtPoint } from './WarehouseMetadataRenderer.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
 import TimeSettingsController from './TimeSettingsController.js';
+import SettingsModalController from './SettingsModalController.js';
 import ModalSelect from './ModalSelect.js';
 import OverheadStatusSettingsController from './OverheadStatusSettingsController.js';
 import GameCanvasInput from './GameCanvasInput.js';
@@ -108,7 +109,12 @@ export async function startGame() {
   const assets = new AssetLoader();
   const shell = document.querySelector('.AppShell');
   const hudPanel = document.querySelector('.HudPanel');
-  const titleMenu = new TitleMenu(document.querySelector('#title-menu'), { textRepository, assets, heroProgress });
+  const titleMenu = new TitleMenu(document.querySelector('#title-menu'), {
+    textRepository,
+    assets,
+    heroProgress,
+    onOpenSettings: (opener) => settingsModalController.open('menu', { opener }),
+  });
   const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository, assets);
   const trial = {
     controller: null,
@@ -138,7 +144,7 @@ export async function startGame() {
     dataManager,
     textRepository,
     getHeroes: () => trial.controller?.getHeroes() ?? [],
-    elements: { pauseButton, timeStatus, timeSettings, timeSettingsToggle, timeSettingsClose, speedRange, speedSlider, acceleratedSpeedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
+    elements: { pauseButton, timeStatus, speedRange, speedSlider, acceleratedSpeedSlider, pauseOnInformation, pauseOnStaminaFull, accelerateWithoutPreparation },
     onPauseOnInformationChange: (pauseOnOpen) => trial.informationWindows?.setPauseOnOpen(pauseOnOpen),
   });
   const overheadStatusSettingsController = new OverheadStatusSettingsController({
@@ -147,6 +153,23 @@ export async function startGame() {
     elements: { statuses: overheadStatusInputs, visibility: overheadStatusVisibility, statusLabels: overheadStatusLabels },
   });
   const overheadStatusModalSelect = new ModalSelect(overheadStatusVisibility);
+  const settingsModalController = new SettingsModalController({
+    modal: timeSettings,
+    closeButton: timeSettingsClose,
+    sections: {
+      language: document.querySelector('#settings-section-language'),
+      tutorial: document.querySelector('#settings-section-tutorial'),
+      gameProgress: document.querySelector('#settings-section-game-progress'),
+      overheadStatus: document.querySelector('#settings-section-overhead-status'),
+    },
+    clock,
+    modalSelects: [languageModalSelect, overheadStatusModalSelect],
+    onOpen: () => timeSettingsController.updateStatus(),
+    onClose: () => timeSettingsController.updateStatus(),
+  });
+  timeSettingsToggle.addEventListener('click', () => {
+    settingsModalController.open('hud', { opener: timeSettingsToggle });
+  });
   const canvasInput = new GameCanvasInput(canvas, {
     screenTargetInputRoot: hudPanel,
     camera,
@@ -158,6 +181,20 @@ export async function startGame() {
     onInformationTarget: (target, event) => trial.informationWindows?.open({ ...target, anchor: { x: event.clientX, y: event.clientY } }),
     onPortalOpen: () => window.open(APP_COPYRIGHT.portalUrl, '_blank', 'noopener,noreferrer'),
     onReleaseStaminaPause: () => timeSettingsController.releaseStaminaPause(),
+  });
+  document.addEventListener('keydown', (event) => {
+    // どのキーであっても標準的なUI操作を防止し、ポインター専用とする
+    if (['Tab', 'Enter', ' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+      event.preventDefault();
+    }
+  });
+  document.addEventListener('focusin', (event) => {
+    // フォームコントロール（selectやinput等）は操作にフォーカスが必要なため除外
+    const tagName = event.target?.tagName;
+    if (tagName === 'SELECT' || tagName === 'INPUT' || tagName === 'TEXTAREA') return;
+    
+    // それ以外のボタン等にフォーカスが残るのを完全に防ぐ
+    event.target?.blur?.();
   });
   document.addEventListener('pointerdown', (event) => {
     const windowElement = event.target.closest?.('.InformationWindow');
@@ -222,7 +259,7 @@ export async function startGame() {
   while (true) {
     shell.classList.add('state-title');
     canvasInput.controller = null;
-    timeSettingsController.setDialogOpen(false);
+    settingsModalController.close();
     const action = await titleMenu.show();
     if (action !== 'trial') continue;
     const partySelection = new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() });

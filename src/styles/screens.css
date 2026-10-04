@@ -175,27 +175,32 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: clamp(8px, 3vh, 28px);
+  box-sizing: border-box;
+  width: 100%;
   height: 100%;
+  max-height: 100dvh;
+  padding: clamp(8px, 2vh, 24px) 16px clamp(28px, 6vh, 48px);
+  overflow-y: auto;
   pointer-events: none;
 }
 .TitleMenu__Logo {
   display: block;
-  width: min(640px, 88vw);
-  max-height: 28vh;
+  width: min(640px, 84vw);
+  max-height: clamp(42px, 22vh, 180px);
   object-fit: contain;
   filter: drop-shadow(0 10px 18px rgb(0 0 0 / 45%));
 }
 .TitleMenu__Credit {
   position: absolute;
   z-index: 1;
-  left: 24px;
-  bottom: 20px;
+  left: clamp(12px, 3vw, 24px);
+  bottom: clamp(6px, 2vh, 20px);
   display: flex;
-  gap: 16px;
+  gap: clamp(8px, 2vw, 16px);
   margin: 0;
   color: rgb(255 255 255 / 74%);
-  font: 700 13px system-ui, sans-serif;
+  font: 700 clamp(10px, 1.8vh, 13px) system-ui, sans-serif;
   text-shadow: 0 0 3px rgb(28 20 13 / 82%);
   pointer-events: none;
 }
@@ -206,39 +211,38 @@
 .TitleMenu__Menu {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(5px, 1.4vh, 12px);
   pointer-events: auto;
 }
 .TitleMenu__Menu.state-hidden { display: none; }
 .TitleMenu__Panel {
   display: none;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(8px, 1.8vh, 12px);
   pointer-events: auto;
 }
 .TitleMenu__Panel.state-open { display: flex; }
 .TitleMenu__PanelBody { display: none; }
-.TitleMenu__PanelBody.state-open { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.TitleMenu__PanelBody.state-open { display: flex; flex-direction: column; gap: clamp(8px, 1.8vh, 12px); align-items: center; }
 .TitleMenu__Command {
   min-width: min(280px, 78vw);
-  padding: 12px 18px;
+  padding: clamp(6px, 1.4vh, 12px) clamp(14px, 3vw, 18px);
   border: 2px solid #bc8d3c;
-  border-radius: 12px;
+  border-radius: clamp(8px, 1.6vh, 12px);
   background: linear-gradient(180deg, #3d3224, #241c14);
   color: #f4e7cf;
   font: inherit;
-  font-size: 18px;
+  font-size: clamp(13px, 2.6vh, 18px);
 }
 .TitleMenu__Command.state-primary {
-  padding: 16px 22px;
+  padding: clamp(8px, 2vh, 16px) clamp(16px, 4vw, 22px);
   border-color: #f0cb79;
   background: linear-gradient(#bd8b3b, #825019);
   color: #fff3d0;
-  font-size: 28px;
+  font-size: clamp(16px, 3.6vh, 28px);
   font-weight: 700;
 }
-.TitleMenu__Message { margin: 0; color: #f4e7cf; text-align: center; }
-.TitleMenu__LanguageLabel { display: flex; flex-direction: column; gap: 8px; color: #f4e7cf; }
+.TitleMenu__Message { margin: 0; color: #f4e7cf; text-align: center; font-size: clamp(13px, 2.4vh, 16px); }
 
 .StageSelection__Dialog {
   width: min(920px, 100%);

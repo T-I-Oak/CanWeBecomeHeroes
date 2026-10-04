@@ -100,6 +100,5 @@ export default class ModalSelect {
     this.select.value = value;
     this.select.dispatchEvent(new Event('change', { bubbles: true }));
     this.setOpen(false);
-    this.trigger.focus();
   }
 }

@@ -1,8 +1,6 @@
-import { setupLanguageSelector } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { APP_COPYRIGHT, APP_VERSION } from '../game/AppMetadata.js';
 import ModalLayer from './ModalLayer.js';
-import ModalSelect from './ModalSelect.js';
 import TitleChipRain from './TitleChipRain.js';
 
 function createElement(tagName, className, text = null) {
@@ -14,7 +12,7 @@ function createElement(tagName, className, text = null) {
 
 /** Top menu shown before a trial and after the player leaves a result. */
 export default class TitleMenu {
-  constructor(container, { textRepository, assets, heroProgress } = {}) {
+  constructor(container, { textRepository, assets, heroProgress, onOpenSettings = () => {} } = {}) {
     if (!container || !textRepository || !assets || !heroProgress) {
       throw new Error('Title menu requires a container, text repository, assets, and hero progress.');
     }
@@ -23,6 +21,7 @@ export default class TitleMenu {
     this.textRepository = textRepository;
     this.assets = assets;
     this.heroProgress = heroProgress;
+    this.onOpenSettings = onOpenSettings;
     this.rain = null;
     this.commands = [];
   }
@@ -39,9 +38,7 @@ export default class TitleMenu {
       command.element.textContent = this.textRepository.getLabel(command.label);
     });
     if (this.recordsMessage) this.recordsMessage.textContent = this.textRepository.getLabel('recordsEmpty');
-    if (this.languageCaption) this.languageCaption.textContent = this.textRepository.getLabel('language');
-    this.backButtons?.forEach((button) => { button.textContent = this.textRepository.getLabel('close'); });
-    this.languageSelect?.refresh();
+    if (this.recordsBackButton) this.recordsBackButton.textContent = this.textRepository.getLabel('close');
   }
 
   render() {
@@ -80,13 +77,13 @@ export default class TitleMenu {
     const commands = [
       ['startGame', () => this.choose('trial')],
       ['records', () => this.openPanel('records')],
-      ['settings', () => this.openPanel('settings')],
+      ['settings', (element) => this.onOpenSettings(element)],
     ];
     if (this.heroProgress.hasClearedTrial()) commands.splice(1, 0, ['challengeMode', () => this.choose('challenge')]);
-    this.commands = commands.map(([label, onClick]) => {
+    this.commands = commands.map(([label, action]) => {
       const element = createElement('button', label === 'startGame' ? 'TitleMenu__Command state-primary' : 'TitleMenu__Command', this.textRepository.getLabel(label));
       element.type = 'button';
-      element.addEventListener('click', onClick);
+      element.addEventListener('click', () => action(element));
       return { label, element };
     });
     this.menu.replaceChildren(...this.commands.map((command) => command.element));
@@ -94,38 +91,23 @@ export default class TitleMenu {
 
   renderPanel() {
     this.recordsMessage = createElement('p', 'TitleMenu__Message', this.textRepository.getLabel('recordsEmpty'));
-    this.languageLabel = createElement('label', 'TitleMenu__LanguageLabel');
-    this.languageLabel.htmlFor = 'title-language-selector';
-    this.languageCaption = createElement('span', 'TitleMenu__LanguageCaption', this.textRepository.getLabel('language'));
-    const select = createElement('select', 'TitleMenu__LanguageSelect');
-    select.id = 'title-language-selector';
-    this.languageLabel.append(this.languageCaption, select);
-    setupLanguageSelector(select, ['ja', 'en']);
-    this.languageSelect = new ModalSelect(select);
-    this.backButtons = ['records', 'settings'].map(() => {
-      const button = createElement('button', 'TitleMenu__Command', this.textRepository.getLabel('close'));
-      button.type = 'button';
-      button.addEventListener('click', () => this.closePanel());
-      return button;
-    });
+    this.recordsBackButton = createElement('button', 'TitleMenu__Command', this.textRepository.getLabel('close'));
+    this.recordsBackButton.type = 'button';
+    this.recordsBackButton.addEventListener('click', () => this.closePanel());
     this.recordsView = createElement('div', 'TitleMenu__PanelBody');
-    this.recordsView.append(this.recordsMessage, this.backButtons[0]);
-    this.settingsView = createElement('div', 'TitleMenu__PanelBody');
-    this.settingsView.append(this.languageLabel, this.backButtons[1]);
-    this.panel.append(this.recordsView, this.settingsView);
+    this.recordsView.append(this.recordsMessage, this.recordsBackButton);
+    this.panel.append(this.recordsView);
   }
 
   openPanel(name) {
     this.menu.classList.add('state-hidden');
     this.panel.classList.add('state-open');
     this.recordsView.classList.toggle('state-open', name === 'records');
-    this.settingsView.classList.toggle('state-open', name === 'settings');
   }
 
   closePanel() {
     this.panel.classList.remove('state-open');
     this.recordsView.classList.remove('state-open');
-    this.settingsView.classList.remove('state-open');
     this.menu.classList.remove('state-hidden');
   }
 

@@ -28,13 +28,14 @@
             </div>
           </header>
           <div class="ModalDialog__Body SettingsModal__Body">
-            <fieldset class="ModalFormSection">
+            <fieldset class="ModalFormSection" id="settings-section-language">
               <legend class="ModalFormSection__Legend" id="settings-language-section-title" data-ui="language"></legend>
               <div class="ModalSelect">
                 <select id="language-selector" aria-labelledby="settings-language-section-title"></select>
               </div>
             </fieldset>
-            <fieldset class="ModalFormSection">
+
+            <fieldset class="ModalFormSection" id="settings-section-game-progress">
               <legend class="ModalFormSection__Legend" data-ui="gameProgress"></legend>
               <div class="SpeedRange" id="game-speed-range">
                 <div class="SpeedRange__Legend">
@@ -63,7 +64,7 @@
                 <label class="SettingsModal__ControlOption" for="accelerate-without-preparation"><input id="accelerate-without-preparation" type="checkbox" /> <span data-ui="accelerateEmpty"></span></label>
               </div>
             </fieldset>
-            <fieldset class="ModalFormSection">
+            <fieldset class="ModalFormSection" id="settings-section-overhead-status">
               <legend class="ModalFormSection__Legend" data-ui="overheadStatus"></legend>
               <div class="SettingsModal__OverheadStatusChoices">
                 <label class="SettingsModal__ControlOption"><input name="overhead-status" type="checkbox" value="power" /> <span data-overhead-status="power"></span></label>
@@ -82,6 +83,13 @@
                   </select>
                 </span>
               </label>
+            </fieldset>
+            <fieldset class="ModalFormSection" id="settings-section-tutorial">
+              <legend class="ModalFormSection__Legend" data-ui="tutorial"></legend>
+              <div class="SettingsModal__ActionRow">
+                <span class="SettingsModal__ActionLabel" data-ui="resetTutorial"></span>
+                <button class="SettingsModal__ActionButton" id="reset-tutorial" type="button" data-ui="reset"></button>
+              </div>
             </fieldset>
           </div>
         </section>
