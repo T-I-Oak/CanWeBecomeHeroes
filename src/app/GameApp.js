@@ -189,11 +189,12 @@ export async function startGame() {
     }
   });
   document.addEventListener('focusin', (event) => {
-    // フォームコントロール（selectやinput等）は操作にフォーカスが必要なため除外
+    // selectやtextareaはキーボードやリスト選択にフォーカスが必要なため除外
+    // input（checkboxやrange等）はポインター操作で機能し、フォーカスを残さない
     const tagName = event.target?.tagName;
-    if (tagName === 'SELECT' || tagName === 'INPUT' || tagName === 'TEXTAREA') return;
+    if (tagName === 'SELECT' || tagName === 'TEXTAREA') return;
     
-    // それ以外のボタン等にフォーカスが残るのを完全に防ぐ
+    // それ以外の要素（ボタンやinput等）にフォーカスが残るのを完全に防ぐ
     event.target?.blur?.();
   });
   document.addEventListener('pointerdown', (event) => {
