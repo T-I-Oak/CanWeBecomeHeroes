@@ -305,4 +305,3 @@ test('title menu delegates settings button click to shared settings controller',
     globalThis.document = originalDocument;
   }
 });
-

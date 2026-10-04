@@ -193,7 +193,7 @@ export async function startGame() {
     // input（checkboxやrange等）はポインター操作で機能し、フォーカスを残さない
     const tagName = event.target?.tagName;
     if (tagName === 'SELECT' || tagName === 'TEXTAREA') return;
-    
+
     // それ以外の要素（ボタンやinput等）にフォーカスが残るのを完全に防ぐ
     event.target?.blur?.();
   });
