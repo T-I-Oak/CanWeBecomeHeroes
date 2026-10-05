@@ -17,6 +17,7 @@ export const TEXT_RESOURCE_PARTS = Object.freeze([
   ...INFORMATION_KINDS.map((kind) => Object.freeze({ path: `/data/text/information/${kind}.json`, group: 'information', kind })),
   Object.freeze({ path: '/data/text/nameplate.json', group: 'nameplate' }),
   Object.freeze({ path: '/data/text/vignette.json', group: 'vignette' }),
+  Object.freeze({ path: '/data/text/tutorial.json', group: 'tutorial' }),
 ]);
 
 export function isLogLabel(id) {

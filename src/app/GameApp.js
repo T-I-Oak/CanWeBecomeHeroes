@@ -68,6 +68,8 @@ import VignetteModal from './VignetteModal.js';
 import { createRunScenario } from '../game/RunScenario.js';
 import TitleMenu from './TitleMenu.js';
 import HeroDirectionIndicatorRenderer from './HeroDirectionIndicatorRenderer.js';
+import TutorialController from './TutorialController.js';
+import '../styles/tutorial.css';
 import { getHeroDirectionIndicatorAtPoint, getHeroDirectionIndicators } from '../game/HeroDirectionIndicator.js';
 
 function getChipTagAtPoint(entity, point) {
@@ -153,6 +155,7 @@ export async function startGame() {
     elements: { statuses: overheadStatusInputs, visibility: overheadStatusVisibility, statusLabels: overheadStatusLabels },
   });
   const overheadStatusModalSelect = new ModalSelect(overheadStatusVisibility);
+  const tutorialResetFeedback = document.querySelector('#tutorial-reset-feedback');
   const settingsModalController = new SettingsModalController({
     modal: timeSettings,
     closeButton: timeSettingsClose,
@@ -164,11 +167,26 @@ export async function startGame() {
     },
     clock,
     modalSelects: [languageModalSelect, overheadStatusModalSelect],
-    onOpen: () => timeSettingsController.updateStatus(),
+    onOpen: () => {
+      tutorialResetFeedback.hidden = true;
+      timeSettingsController.updateStatus();
+    },
     onClose: () => timeSettingsController.updateStatus(),
   });
   timeSettingsToggle.addEventListener('click', () => {
     settingsModalController.open('hud', { opener: timeSettingsToggle });
+  });
+  document.querySelector('#reset-tutorial').addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    tutorialResetFeedback.hidden = true;
+    try {
+      if (trial.tutorial) await trial.tutorial.reset();
+      else dataManager.setValue('tutorialState', { completed: [] });
+      tutorialResetFeedback.hidden = false;
+    } finally {
+      button.disabled = false;
+    }
   });
   const canvasInput = new GameCanvasInput(canvas, {
     screenTargetInputRoot: hudPanel,
@@ -256,6 +274,7 @@ export async function startGame() {
     overheadStatusSettingsController.refreshLabels();
     languageModalSelect.refresh();
     overheadStatusModalSelect.refresh();
+    trial.tutorial?.refreshLanguage();
   });
 
   while (true) {
@@ -271,8 +290,10 @@ export async function startGame() {
     camera.fitToScreen();
     resizeCanvas();
     await startTrial({
-      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,
+      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager,
     });
+    trial.tutorial?.dispose();
+    trial.tutorial = null;
     clock.reset();
     trial.update = null;
     trial.controller = null;
@@ -289,7 +310,7 @@ export async function startGame() {
 }
 
 async function startTrial({
-  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController,
+  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager,
 }) {
   const nameplateBounds = createLocationNameplateBoundsRegistry();
   const board = new ChipBoard(WORLD_SIZE);
@@ -357,6 +378,7 @@ async function startTrial({
       informationWindows.closeInvalidEntries();
       stageSelection.hide();
       clock.resume('stage-selection');
+      tutorial.check();
     },
     onTagSelect: (tag, anchor) => informationWindows.open({ type: 'tag', data: { tag }, anchor }),
     onEnemySelect: (enemy, anchor) => informationWindows.open({ type: 'instance', data: { target: informationWindows.createInstanceTarget(enemy) }, anchor }),
@@ -366,6 +388,7 @@ async function startTrial({
     const choices = stageController.createStageChoices({ stageNumber });
     clock.pause('stage-selection');
     stageSelection.show({ stageNumber, choices });
+    tutorial.onStageSelection();
   }
 
   function getRemainingTrialHours() {
@@ -376,6 +399,12 @@ async function startTrial({
     }).remainingHours;
   }
 
+  const tutorial = new TutorialController({ camera, clock, canvas, canvasInput, dataManager, textRepository,
+    getHeroes: () => controller.getHeroes(), getPreparationHeroes: () => preparationHeroes,
+    getItems: () => [...controller.entities.values()].filter(entity => entity.chip.type === 'item'),
+    isStageSelecting: () => stageController.state === 'selecting', isActive: () => runController.isActive,
+  });
+  trial.tutorial = tutorial;
   openStageSelection(1);
   let finishTrial = () => {};
   const completed = new Promise((resolve) => { finishTrial = resolve; });
@@ -447,7 +476,10 @@ async function startTrial({
       stageController.update();
       trialRunFlow.update(controller.getHeroes());
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
+      tutorial.check();
     });
+    tutorial.check();
+    tutorial.update(time);
     controller.updateVisuals();
     timeSettingsController.updateStaminaPause();
     timeSettingsController.updateClockSpeed();

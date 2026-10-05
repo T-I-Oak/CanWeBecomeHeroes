@@ -1,4 +1,7 @@
 {
+  "tutorialNext": {
+    "lang-store": { "ja": "次へ", "en": "Next" }
+  },
   "weaponTargetingNote": {
     "lang-store": {
       "ja": "複数の武器を装備している場合、先に装備した武器で攻撃対象が決まります。",
@@ -27,6 +30,12 @@
     "lang-store": {
       "ja": "リセット",
       "en": "Reset"
+    }
+  },
+  "tutorialResetCompleted": {
+    "lang-store": {
+      "ja": "チュートリアルの進捗をリセットしました。",
+      "en": "Tutorial progress has been reset."
     }
   },
   "trialCertificateTitle": {

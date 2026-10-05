@@ -2,6 +2,32 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import Camera from '../../src/game/Camera.js';
 
+test('resizing preserves a panned view center and leaves unchanged sizes unchanged', () => {
+  const camera = new Camera({ width: 3000, height: 2200 });
+  camera.setViewport(1200, 700);
+  camera.setZoom(1, 600, 350);
+  camera.centerOnWorldPoint({ x: 900, y: 800 });
+  const saved = { x: camera.x, y: camera.y, zoom: camera.zoom };
+  camera.setViewport(1200, 700);
+  assert.deepEqual({ x: camera.x, y: camera.y, zoom: camera.zoom }, saved);
+  camera.setViewport(390, 844);
+  assert.deepEqual(camera.toWorld(195, 422), { x: 900, y: 800 });
+  assert.equal(camera.zoom, 1);
+  camera.setViewport(844, 390);
+  assert.deepEqual(camera.toWorld(422, 195), { x: 900, y: 800 });
+});
+
+test('resizing clamps a view near the world edge only as far as required', () => {
+  const camera = new Camera({ width: 3000, height: 2200 });
+  camera.setViewport(800, 600);
+  camera.setZoom(1, 400, 300);
+  camera.centerOnWorldPoint({ x: 200, y: 1000 });
+  camera.setViewport(1200, 700);
+  assert.equal(camera.x, -camera.padding);
+  assert.equal(camera.toWorld(600, 350).y, 1000);
+  assert.equal(camera.zoom, 1);
+});
+
 test('camera starts at the effective minimum zoom after its viewport is set', () => {
   const camera = new Camera({ width: 1600, height: 1200 });
 

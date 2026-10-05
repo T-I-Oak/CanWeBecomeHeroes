@@ -169,6 +169,13 @@ body {
   gap: 12px;
 }
 
+.SettingsModal__Feedback {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #e4c486;
+}
+
 .SettingsModal__ActionLabel {
   color: #fff4d5;
   font-size: 12px;

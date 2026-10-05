@@ -1,0 +1,18 @@
+#tutorial-layer { position: fixed; inset: 0; z-index: 1000; }
+.HudPanel.is-tutorial-hidden { visibility: hidden; pointer-events: none; }
+#tutorial-layer[hidden], #tutorial-layer .hidden { display: none; }
+#tutorial-mask-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+#tutorial-tooltip { position: fixed; display: flex; flex-direction: column; width: min(480px, calc(100vw - 32px)); box-sizing: border-box; max-height: 44dvh; padding: 18px 22px; border: 2px solid #b99b62; border-radius: 14px; color: #f5ead4; background: #20202bf5; box-shadow: 0 8px 36px #0009; font: 16px/1.65 sans-serif; }
+#tutorial-tooltip.is-centered { transform: translate(-50%, -50%); max-height: 80dvh; }
+#tutorial-title { flex-shrink: 0; margin: 0 0 10px; font-size: 16px; color: #e4c486; }
+#tutorial-message { min-height: 0; overflow-y: auto; white-space: pre-wrap; margin: 0 0 14px; }
+#tutorial-tooltip footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+#tutorial-page-count { color: #bcb4a7; font-size: 13px; }
+#tutorial-next-btn { cursor: pointer; padding: 4px 18px; min-height: 32px; border: 1px solid #d4b47d; border-radius: 8px; background: #514330; color: #fff1d8; font: inherit; }
+#tutorial-next-btn:disabled { opacity: .5; cursor: wait; }
+:root { --tutorial-mask-color: rgba(0, 0, 0, .64); --tutorial-highlight-stroke: #e4c486; }
+.tooltip-arrow { position: absolute; width: 12px; height: 12px; background: #20202b; transform: rotate(45deg); }
+.tooltip-arrow[hidden] { display: none; }
+.tooltip-arrow.arrow-up { top: -7px; border-top: 2px solid #b99b62; border-left: 2px solid #b99b62; }
+.tooltip-arrow.arrow-down { bottom: -7px; border-bottom: 2px solid #b99b62; border-right: 2px solid #b99b62; }
+@media (max-height: 480px) { #tutorial-tooltip { font-size: 14px; line-height: 1.5; padding: 8px 12px; } #tutorial-title { margin-bottom: 4px; font-size: 14px; } #tutorial-message { margin-bottom: 6px; } #tutorial-next-btn { min-height: 28px; padding: 2px 14px; } }

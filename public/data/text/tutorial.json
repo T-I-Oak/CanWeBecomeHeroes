@@ -1,0 +1,341 @@
+{
+  "scenarios": [
+    {
+      "id": "trial-selection-intro",
+      "trigger": "stage-selection",
+      "requires": [],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "君たちが今年の勇者認定試験の受験者だな。よく来てくれた。\n私はギルドマスターのゼインだ。これから試験について案内する。\n大切なことを伝えるので、よく聞いてくれ。",
+              "en": "You must be this year's hero certification candidates. Welcome.\nI am Zane, the guild master. I will guide you through the exam.\nWhat follows is important. Listen carefully."
+            }
+          },
+          "target": null
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "これから君たちには、実際にモンスターと戦う実践的な試験を受けてもらう。\n課題は全部で7つ。第7試験までクリアーすれば合格だ。\n期限は7日間。それを過ぎると不合格になる。試験の期限には気を付けるように。",
+              "en": "Your exam will be a practical one: fighting real monsters.\nThere are seven tasks in all. Clear the seventh exam and you pass.\nYou have seven days. If the deadline passes, you fail. Keep that deadline in mind."
+            }
+          },
+          "target": null
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "各試験では、3つの課題の中から好きなものを選べる。\n最初は簡単な課題を選び、試験に慣れるのがいいだろう。\nただし、簡単な課題ばかり選んでいては、勇者になるのは難しいかもしれないぞ。\nさっそく、挑みたい課題を選んでみてくれ。詳しいことは、そのあとで話そう。",
+              "en": "In each exam, you may choose whichever of three tasks you prefer.\nStart with an easier task to get accustomed to the exam.\nBut choose nothing but easy tasks, and becoming a hero may prove difficult.\nChoose the task you wish to attempt. We will discuss the details afterward."
+            }
+          },
+          "target": "stage-selection"
+        }
+      ]
+    },
+    {
+      "id": "game-screen-intro",
+      "trigger": "game-screen",
+      "requires": [
+        "trial-selection-intro"
+      ],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "ここは受験期間中、君たちが自由に使える準備エリアだ。疲れたらここで休み、スタミナを回復するといい。\nギルドの最新技術で、君たちの能力や状態を数値化して表示している。",
+              "en": "This preparation area is yours to use throughout the exam. Rest here when tired and recover your stamina.\nWith the guild's latest technology, we can display your abilities and condition as numbers."
+            }
+          },
+          "target": "preparation"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "ここは君たちのパーティーが共同で使える倉庫だ。\nあらかじめ君たちに適した装備を支給しておいたが……。\nなんだ！？ 君たちは整理整頓もできないのか？\nまあいい、自由に使ってくれ。\n試験に備えて、少し休んでくれ。また後で声をかける。",
+              "en": "This warehouse is shared by your party.\nI have already supplied equipment suited to you, but...\nWhat is this!? Can none of you keep things tidy?\nNever mind. Use it as you please.\nRest a little before the exam. I will speak to you again later."
+            }
+          },
+          "target": "warehouse"
+        }
+      ]
+    },
+    {
+      "id": "departure-intro",
+      "trigger": "stamina-ready",
+      "requires": [
+        "game-screen-intro"
+      ],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "早く戦いたくて、うずうずしているようだな。\nスタミナが300以上あれば出発できる。自分のチップを倉庫の適当な装備へドラッグしてみるといい。\nただし、いくつか注意がある。",
+              "en": "You look eager to fight.\nWith at least 300 stamina, you can set out. Try dragging your chip onto some equipment in the warehouse.\nThere are a few things to keep in mind, though."
+            }
+          },
+          "target": "hero"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "ショップに行きたいときは、この買い物袋を持っていくように。\n装備を格安で支給するので、足りなくなったらショップに行くといいぞ。",
+              "en": "Take this shopping bag when you wish to visit the shop.\nEquipment is supplied there at a low price. Visit when your stock runs low."
+            }
+          },
+          "target": "shopping-bag"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "試験の残り期限が心もとないときは、この延長申請書を持ってギルドに来い。\nそれまでの試験での戦績に応じて、期限を延長してやらんこともない。",
+              "en": "If the time left for your exam worries you, bring this extension application to the guild.\nDepending on your performance in the exam so far, I may be persuaded to extend your deadline."
+            }
+          },
+          "target": "renewal-form"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "強くなりたいなら、この勇者仮免許を持って訓練場へ行くといい。\n勇者にふさわしい実力を身につけなければ、試験突破は難しいぞ。",
+              "en": "To grow stronger, take this provisional hero license to the training ground.\nWithout strength worthy of a hero, passing the exam will be difficult."
+            }
+          },
+          "target": "hero-license"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "試験場には、買い物袋、延長申請書、勇者仮免許は持ち込めない。試験場へ向かうときは、これらを持たずに来るように。\n整理整頓が苦手な君たちのことだ。ちゃんと装備できるのか、少し疑わしいが……。\nもし気になるものがあれば、タップしてみるといい。詳しい情報を確認できる。\n戦いでは、情報も重要だ。装備や相手のことを知っていれば、有利に戦えるだろう。",
+              "en": "Shopping bags, extension applications, and provisional hero licenses cannot be brought into the exam grounds. Leave them behind when you come to fight.\nGiven your talent for untidiness, I have some doubts about whether you can equip yourselves properly...\nIf something interests you, tap it to see detailed information.\nInformation matters in battle too. Knowing your equipment and your opponent can give you an advantage."
+            }
+          },
+          "target": "warehouse"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "まずは自分のチップを倉庫の適当な装備へドラッグして、何か装備してみろ。詳しいことは、そのあとだ。",
+              "en": "First, drag your chip onto some equipment in the warehouse and equip something. The details can wait until afterward."
+            }
+          },
+          "target": "warehouse"
+        }
+      ]
+    },
+    {
+      "id": "battle-detail",
+      "trigger": "arrival:battle",
+      "requires": [
+        "departure-intro"
+      ],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "いよいよ試験開始だ。\nちゃんと装備は整えてきたんだろうな？",
+              "en": "At last, the exam begins.\nYou have prepared your equipment properly, I trust?"
+            }
+          },
+          "target": "battle"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "持っている武器によって、戦い方は変わる。物理攻撃をするもの、魔法攻撃をするもの、仲間を助けるものなど、さまざまだ。\n装備には「タグ」が付いているものがある。\nタグには、パワーや魔力などのステータスを伸ばすものや、攻撃に炎・水・雷などの属性効果を加えるものがある。\n同じタグをたくさんそろえると、その効果が強くなる。タグスキルで得られる能力も強化されるぞ。",
+              "en": "Your weapons determine how you fight. Some deal physical damage, some use magic, and some help your companions.\nSome equipment carries \"tags.\"\nTags can raise stats such as power and magic, or add elemental effects such as fire, water, and lightning to attacks.\nGather more of the same tag to strengthen its effects. The abilities granted by tag skills become stronger too."
+            }
+          },
+          "target": "equipment"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "武器とタグの組み合わせを考え、装備を厳選するといい。\n……厳選できればの話だがな。\nただし、タグがたくさん付いた装備は重くなりがちだ。\n重くなると移動が遅くなり、攻撃の間隔も長くなる。あまり重い装備は避けた方がいいかもしれない。\n……避けられればの話だがな。",
+              "en": "Consider your weapons and tags together, and choose your equipment carefully.\n...If you can choose carefully, that is.\nEquipment with many tags tends to be heavy.\nMore weight slows movement and lengthens the interval between attacks. You may wish to avoid overly heavy equipment.\n...If you can avoid it, that is."
+            }
+          },
+          "target": "equipment"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "課題は単純明快。モンスターを全滅させればクリアーだ。\n戦闘が始まったら、あとは何も考えずにひたすら戦うだけだ。\nここは試験場だ。モンスターに倒されても、命まで奪われることはない。\nスタミナが尽きると装備を失い、準備エリアへ戻る。スタミナを回復して装備を整えれば、何度でも挑めるぞ。\n……試験の期限が残っていればの話だがな。\n君たちの実力を見せてくれ。\n健闘を祈る。",
+              "en": "The task is straightforward: defeat every monster to clear it.\nOnce battle begins, all you need to do is fight.\nThese are exam grounds. Even if a monster defeats you, it will not take your life.\nWhen your stamina runs out, you lose your equipment and return to the preparation area. Recover your stamina and equip yourself again, and you can attempt the task as often as you like.\n...As long as your exam deadline has not passed, that is.\nShow me what you can do.\nGood luck."
+            }
+          },
+          "target": "battle"
+        }
+      ]
+    },
+    {
+      "id": "shop-detail",
+      "trigger": "arrival:shop",
+      "requires": [
+        "departure-intro"
+      ],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "ほう、買い物に来たか。倉庫の装備だけでは心もとなくなったかな？\nショップに来れば、買い物袋の中身を引き渡す代わりに、装備が2セット、合計10個支給される。\n引き渡すものがなくても支給は受けられる。装備を使い果たしても、遠慮せずに来るといい。\nギルドも、君たちを手ぶらで戦わせるつもりはないからな。",
+              "en": "Ah, here to shop? Is the warehouse stock no longer enough for you?\nAt the shop, hand over the contents of your shopping bag and receive two equipment sets, ten items in all.\nEven with nothing to hand over, you still receive supplies. If you have used up your equipment, come without hesitation.\nThe guild has no intention of sending you into battle empty-handed."
+            }
+          },
+          "target": "shop"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "どんな装備が支給されるかは、この「今回」の掲示を見るといい。\nここに掲げられたタグに傾向を寄せた装備を用意している。\n……君たちが欲しいものと合うかは、また別の話だがな。",
+              "en": "For an idea of what equipment you will receive, look at the \"Current\" board.\nWe prepare equipment with a tendency toward the tag displayed here.\n...Whether that suits your wishes is another matter."
+            }
+          },
+          "target": "sale-board"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "店に引き渡す装備を選びたいなら、出発前にその装備を買い物袋へドラッグしておくといい。\n散らかった倉庫からでも、売りたいものくらいは選べるだろう？\nただし、買い物にはスタミナを300消費する。そのとき身につけている装備もなくなる。\n買い物を終えたら準備エリアで休み、また装備を整えるといい。",
+              "en": "To choose equipment to hand over, drag it into the shopping bag before setting out.\nEven in that untidy warehouse, surely you can pick out what you want to sell?\nShopping costs 300 stamina. You also lose the equipment you are wearing at the time.\nAfter shopping, rest in the preparation area and equip yourself again."
+            }
+          },
+          "target": "shop"
+        }
+      ]
+    },
+    {
+      "id": "guild-detail",
+      "trigger": "arrival:guild",
+      "requires": [
+        "departure-intro"
+      ],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "延長申請書を持ってきたか。試験は順調に進んでいるかな？\n戦闘で得た貢献ポイントを使えば、試験期限を延ばす申請ができる。\n1回の申請で延ばせるのは最大24時間。通常は120ポイントが必要だ。足りなければ、ポイントに応じた時間だけ延長する。\n交渉次第では、必要な貢献ポイントを割り引いてやらんこともない。君たちの腕の見せどころだ。",
+              "en": "You have brought an extension application. Is your exam progressing well?\nUse contribution points earned in battle to apply for an extension to the exam deadline.\nEach application grants up to 24 hours. Normally, that costs 120 points. With fewer points, the extension is proportionally shorter.\nDepending on your negotiation, I may reduce the points required. Here is your chance to prove yourselves."
+            }
+          },
+          "target": "guild"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "貢献ポイントがなくても、申請すれば1時間は延ばしてやる。\n……その1時間をどう使うかは、君たち次第だがな。\n申請にはスタミナを300消費し、そのとき身につけている装備もなくなる。戻ったら準備エリアで休み、また装備を整えるといい。\n試験の残り期限には、常に注意しておくように。装備や実力が十分でも、期限を過ぎれば不合格だ。",
+              "en": "Even with no contribution points, I will grant you one hour if you apply.\n...What you do with that hour is up to you.\nApplying costs 300 stamina, and you lose the equipment you are wearing. On returning, rest in the preparation area and equip yourself again.\nAlways keep an eye on the time remaining. Whatever your strength or equipment, missing the deadline means failure."
+            }
+          },
+          "target": "guild"
+        }
+      ]
+    },
+    {
+      "id": "training-detail",
+      "trigger": "arrival:training",
+      "requires": [
+        "departure-intro"
+      ],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "腕を磨きに来たか。勇者を目指すなら、日々の鍛錬も大切だ。\n訓練では、ステータスの上限を上げられる。今の限界を超えたいなら、ここで鍛えるといい。\n訓練にはスタミナを使う。十分にあれば、1回の訓練で上限を複数上げられるぞ。\n身につけてきた装備によって訓練の内容が変わり、どのステータスが伸びるかも変わる。\n……狙いどおりに鍛えられるかは、君たち次第だがな。",
+              "en": "Here to hone your skills? Daily training matters to an aspiring hero.\nTraining raises your stat limits. If you wish to surpass your current limits, train here.\nTraining uses stamina. With enough, you can raise your limits several times in one visit.\nYour equipment affects the training you receive and which stats improve.\n...Whether you train exactly as intended is up to you."
+            }
+          },
+          "target": "training"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "訓練が終わると、身につけていた装備はなくなる。準備エリアで休み、次の出発に備えるように。",
+              "en": "When training ends, you lose the equipment you were wearing. Rest in the preparation area and prepare for your next departure."
+            }
+          },
+          "target": "training"
+        }
+      ]
+    },
+    {
+      "id": "final-explanation",
+      "trigger": "gameplay",
+      "requires": [
+        "battle-detail",
+        "shop-detail",
+        "guild-detail",
+        "training-detail"
+      ],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "これで、試験に必要な案内は一通り済んだ。最後に、設定について伝えておこう。\nここから設定を開けば、ゲームの進行速度を変更できる。じっくり考えたいときや、待ち時間を短くしたいときに使うといい。\n仲間や敵の頭上に表示する情報も選べる。能力やスタミナ、重量など、確認したいものを表示するといい。常に表示するか、戦闘中だけ表示するかも変更できる。",
+              "en": "That covers the guidance you need for the exam. One last word about settings.\nOpen settings here to change game speed. Use it when you need time to think or want to shorten the wait.\nYou can also choose what information appears above allies and enemies, such as stats, stamina, and weight. You can display it at all times or only during battle."
+            }
+          },
+          "target": "time-settings-toggle"
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "案内をもう一度聞きたいときは、設定の「チュートリアル」にある「リセット」ボタンを押してくれ。次に課題を選ぶときから、改めて案内する。\n……一度で覚えろとは言わん。必要なら、何度でも聞くといい。\nそれでは、君たちの合格を楽しみにしている。",
+              "en": "To hear this guidance again, press \"Reset\" under \"Tutorial\" in settings. I will guide you again starting with the next task selection.\n...I do not expect you to remember everything after hearing it once. Ask as often as you need.\nI look forward to seeing you pass."
+            }
+          },
+          "target": "time-settings-toggle"
+        }
+      ]
+    }
+  ]
+}

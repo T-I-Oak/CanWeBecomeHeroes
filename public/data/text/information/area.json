@@ -35,7 +35,7 @@
           },
           {
             "type": "text",
-            "value": "が3以上の味方をアイテムへドラッグすると、装備を始めて出発する。"
+            "value": "が300以上の味方をアイテムへドラッグすると、装備を始めて出発する。"
           }
         ],
         "en": [
@@ -50,7 +50,7 @@
           },
           {
             "type": "text",
-            "value": " over time. Drag an ally with at least 3 "
+            "value": " over time. Drag an ally with at least 300 "
           },
           {
             "type": "reference",

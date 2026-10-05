@@ -11,6 +11,9 @@ export default class Camera {
   }
 
   setViewport(width, height) {
+    const previousCenter = this.viewport
+      ? this.toWorld(this.viewport.width / 2, this.viewport.height / 2)
+      : null;
     const previousMinZoom = this.viewport ? this.getEffectiveMinZoom() : null;
     const wasAtMin = previousMinZoom !== null && (this.zoom <= previousMinZoom + 1e-4);
     this.viewport = { width, height };
@@ -21,7 +24,8 @@ export default class Camera {
     } else {
       this.zoom = Math.max(newMinZoom, Math.min(this.maxZoom, this.zoom));
     }
-    this.setPointer(width / 2, height / 2);
+    if (previousCenter) this.centerOnWorldPoint(previousCenter);
+    else this.setPointer(width / 2, height / 2);
   }
 
   getEffectiveMinZoom() {

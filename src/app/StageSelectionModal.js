@@ -65,6 +65,7 @@ export default class StageSelectionModal {
     this.textLabels.push({ element: titleElement, key: 'stageNumber', values: { number: stageNumber } });
     const subtitle = this.createLabel('p', 'ModalDialog__Subtitle', 'chooseRoute');
     const options = createElement('div', 'StageSelection__Options');
+    options.id = 'tutorial-stage-choices';
     choices.forEach((choice) => options.append(this.createOption(choice)));
     heading.append(subtitle);
     body.append(options);
