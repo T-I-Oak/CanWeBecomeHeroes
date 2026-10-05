@@ -230,6 +230,7 @@ export async function startGame() {
     syncHudScale();
     const deltaSeconds = (time - previousTime) / 1000;
     previousTime = time;
+    canvasInput.update(deltaSeconds);
     if (trial.update) trial.update(deltaSeconds, time);
     else {
       context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);

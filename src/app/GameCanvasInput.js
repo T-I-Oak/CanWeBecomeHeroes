@@ -1,5 +1,8 @@
 const DRAG_START_DISTANCE = 6;
 const ZOOM_IN_FACTOR = 1.1;
+const EDGE_SCROLL_MARGIN = 56;
+const EDGE_SCROLL_SPEED = 360;
+const MAX_SCROLL_DELTA_SECONDS = 0.05;
 
 export default class GameCanvasInput {
   constructor(canvas, { screenTargetInputRoot, camera, controller, getCursor, getInformationTarget, getScreenTarget, onScreenTarget, onInformationTarget, onPortalOpen, onReleaseStaminaPause }) {
@@ -78,7 +81,7 @@ export default class GameCanvasInput {
     if (this.pinchLockout) return;
 
     const point = this.getWorldPoint(event);
-    const entity = screenTarget ? null : this.controller.getEntityAt(point.x, point.y);
+    const entity = screenTarget ? screenTarget.hero : this.controller.getEntityAt(point.x, point.y);
     this.drag = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -135,10 +138,33 @@ export default class GameCanvasInput {
       this.drag.moved = true;
       this.drag.startedSelection = Boolean(this.drag.entity && !this.controller.hasSelectionSource() && this.controller.beginSelection(this.drag.entity));
     }
-    if (this.drag.startedSelection) this.controller.updateSelectionHover(point.x, point.y);
+    if (this.drag.startedSelection) this.updateSelectionHover(event);
     if (this.drag.moved && !this.drag.entity) this.camera.panByScreen(event.clientX - this.drag.lastX, event.clientY - this.drag.lastY);
     this.drag.lastX = event.clientX;
     this.drag.lastY = event.clientY;
+  }
+
+  updateSelectionHover(event) {
+    const point = this.getWorldPoint(event);
+    const target = this.getScreenTarget(this.getScreenPoint(event));
+    this.controller.updateSelectionHover(point.x, point.y, target?.hero);
+  }
+
+  update(deltaSeconds) {
+    if (!this.drag?.startedSelection || this.pinchLockout || !this.controller) return;
+    const event = { clientX: this.drag.lastX, clientY: this.drag.lastY };
+    const point = this.getScreenPoint(event);
+    const { width, height } = this.canvas.getBoundingClientRect();
+    if (point.x < 0 || point.y < 0 || point.x > width || point.y > height) return;
+    const axisSpeed = (position, size) => {
+      const margin = Math.min(EDGE_SCROLL_MARGIN, size / 2);
+      if (position < margin) return (margin - position) / margin;
+      if (position > size - margin) return -(position - size + margin) / margin;
+      return 0;
+    };
+    const distance = EDGE_SCROLL_SPEED * Math.min(deltaSeconds, MAX_SCROLL_DELTA_SECONDS);
+    this.camera.panByScreen(axisSpeed(point.x, width) * distance, axisSpeed(point.y, height) * distance);
+    this.updateSelectionHover(event);
   }
 
   releaseActivePointer(pointerId) {
@@ -167,8 +193,9 @@ export default class GameCanvasInput {
     const point = this.getWorldPoint(event);
     this.onReleaseStaminaPause();
     if (this.drag.startedSelection) {
-      this.controller.updateSelectionHover(point.x, point.y);
-      if (!this.controller.completeSelectionAt(point.x, point.y)) this.controller.clearSelection();
+      this.updateSelectionHover(event);
+      const target = this.getScreenTarget(this.getScreenPoint(event));
+      if (!this.controller.completeSelectionAt(point.x, point.y, target?.hero)) this.controller.clearSelection();
     }
     if (!this.drag.moved) {
       if (this.drag.screenTarget) this.onScreenTarget(this.drag.screenTarget, event);

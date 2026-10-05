@@ -78,8 +78,8 @@ export default class HeroItemInteractionController {
     return true;
   }
 
-  updateSelectionHover(x, y) {
-    this.selection.hover = { x, y, entity: this.getEntityAt(x, y) };
+  updateSelectionHover(x, y, entity = this.getEntityAt(x, y)) {
+    this.selection.hover = { x, y, entity };
   }
 
   clearSelection() {
@@ -102,8 +102,7 @@ export default class HeroItemInteractionController {
     };
   }
 
-  completeSelectionAt(x, y) {
-    const target = this.getEntityAt(x, y);
+  completeSelectionAt(x, y, target = this.getEntityAt(x, y)) {
     if (!target) {
       if (this.selection.source) this.clearSelection();
       return false;

@@ -40,6 +40,7 @@ body,
   width: 100%;
   min-height: 100%;
   margin: 0;
+  overflow: hidden;
 }
 
 body {
@@ -59,8 +60,12 @@ body {
 .HudPanel {
   position: fixed;
   z-index: 20;
-  top: 16px;
-  left: 16px;
+  top: max(16px, env(safe-area-inset-top));
+  left: max(16px, env(safe-area-inset-left));
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   width: min(296px, calc(100vw - 32px));
   transform-origin: top left;
   transform: scale(var(--hud-scale, 1));
