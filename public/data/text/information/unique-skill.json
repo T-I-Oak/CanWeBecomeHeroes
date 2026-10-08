@@ -473,16 +473,16 @@
       "1": {
         "description": {
           "lang-store": {
-            "ja": "自身に少し水属性を付与する。",
-            "en": "Applies a little water to itself."
+            "ja": "まとった水の量に応じて、命中した攻撃のダメージが増える。",
+            "en": "Water carried by the user increases the damage of successful hits."
           }
         }
       },
       "2": {
         "description": {
           "lang-store": {
-            "ja": "自身にかなり水属性を付与する。",
-            "en": "Applies much water to itself."
+            "ja": "まとった水の量に応じて、命中した攻撃のダメージがさらに大きく増える。",
+            "en": "Water carried by the user increases the damage of successful hits even further."
           }
         }
       }
@@ -617,16 +617,16 @@
       "1": {
         "description": {
           "lang-store": {
-            "ja": "ときどき相手を惑乱状態にすることがある。",
-            "en": "Sometimes bewilders the opponent."
+            "ja": "惑乱が伝染・継続しやすい。",
+            "en": "Bewilderment readily spreads and persists."
           }
         }
       },
       "2": {
         "description": {
           "lang-store": {
-            "ja": "しばしば相手を惑乱状態にすることがある。",
-            "en": "Often bewilders the opponent."
+            "ja": "惑乱がさらに伝染・継続しやすい。",
+            "en": "Bewilderment spreads and persists even more readily."
           }
         }
       }

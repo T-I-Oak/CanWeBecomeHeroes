@@ -35,28 +35,33 @@ export const TAG_TEAM_COMPOSITIONS = Object.freeze(Object.fromEntries(COMBINATIO
   return [tags[0], Object.freeze(tags)];
 })));
 
-function createCombatant(tag, role) {
+function createCombatant(tag, role, equipmentTagBudget, enemy = false) {
+  const equipment = equipmentTagBudget === undefined
+    ? { tags: [tag, tag, tag], weapons: TAG_WEAPON_LOADOUTS[tag] }
+    : { mainTag: tag, ...(enemy ? {} : { tags: [tag, tag] }), equipmentTagBudget };
   return {
-    label: `${role}:${tag} x3`,
-    tags: [tag, tag, tag],
-    weapons: TAG_WEAPON_LOADOUTS[tag],
+    label: `${role}:${tag}`,
+    ...equipment,
     maximums: DEFAULT_MAXIMUMS,
     stamina: DEFAULT_MAXIMUMS.stamina,
   };
 }
 
-function createHeroTeam(mainTag) {
-  return TAG_TEAM_COMPOSITIONS[mainTag].map((tag, index) => createCombatant(tag, ['main', 'support1', 'support2'][index]));
+function createHeroTeam(mainTag, equipmentTagBudget) {
+  return TAG_TEAM_COMPOSITIONS[mainTag].map((tag, index) => createCombatant(tag, ['main', 'support1', 'support2'][index], equipmentTagBudget));
 }
 
-function createEnemyTeam(mainTag) {
+function createEnemyTeam(mainTag, enemyRank, equipmentTagBudget) {
+  const size = { regular: 'small', midBoss: 'medium', boss: 'large' }[enemyRank];
   return TAG_TEAM_COMPOSITIONS[mainTag].map((tag, index) => ({
-    ...createCombatant(tag, ['main', 'support1', 'support2'][index]),
+    ...createCombatant(tag, ['main', 'support1', 'support2'][index], equipmentTagBudget, true),
+    enemyDefinitionId: `${index === 0 ? size : 'small'}-${tag}`,
     maximumHp: DEFAULT_MAXIMUMS.stamina,
   }));
 }
 
-export function analyzeTagMatchups({ tags = TAG_ORDER, heroTags = tags, enemyTags = tags, ticks = 6000, trials = 200, seed = 1 } = {}) {
+export function analyzeTagMatchups({ tags = TAG_ORDER, heroTags = tags, enemyTags = tags, ticks = 6000, trials = 200, seed = 1, enemyRank = 'regular', equipmentTagBudget, collectPartyLoadouts = false } = {}) {
+  if (!['regular', 'midBoss', 'boss'].includes(enemyRank)) throw new RangeError('enemyRank must be regular, midBoss, or boss.');
   const selectedTags = [...tags];
   const selectedHeroTags = [...heroTags];
   const selectedEnemyTags = [...enemyTags];
@@ -65,14 +70,18 @@ export function analyzeTagMatchups({ tags = TAG_ORDER, heroTags = tags, enemyTag
     if (!TAG_TEAM_COMPOSITIONS[tag]) throw new Error(`Tag '${tag}' does not have a main/support team composition.`);
   });
   let sequence = 0;
+  const partyLoadouts = [];
   const matchups = selectedHeroTags.flatMap((heroTag) => selectedEnemyTags.map((enemyTag) => {
     const result = runBattleSimulation({
       ticks,
       trials,
       seed: seed + sequence++,
-      left: createHeroTeam(heroTag),
-      right: createEnemyTeam(enemyTag),
+      collectPartyLoadouts,
+      left: createHeroTeam(heroTag, equipmentTagBudget),
+      right: createEnemyTeam(enemyTag, enemyRank, equipmentTagBudget),
     });
+    if (collectPartyLoadouts) result.partyLoadouts.forEach(party => partyLoadouts.push({ ...party, heroTag, enemyTag,
+      mainTag: party.side === 'left' ? heroTag : enemyTag }));
     return {
       heroTag,
       enemyTag,
@@ -85,8 +94,11 @@ export function analyzeTagMatchups({ tags = TAG_ORDER, heroTags = tags, enemyTag
     };
   }));
   return Object.freeze({
-    conditions: Object.freeze({ tags: selectedTags, heroTags: selectedHeroTags, enemyTags: selectedEnemyTags, tagCount: 3, teamRoles: Object.freeze(['main', 'support1', 'support2']), ticks, trials, seed, maximums: DEFAULT_MAXIMUMS, warehouseItems: 'none' }),
+    conditions: Object.freeze({ tags: selectedTags, heroTags: selectedHeroTags, enemyTags: selectedEnemyTags, enemyRank,
+      ...(equipmentTagBudget === undefined ? { tagCount: 3 } : { equipmentTagBudget, intrinsicTags: 'hero-two-enemy-definition', equipmentGeneration: 'production-enemy-factory-per-trial' }),
+      teamRoles: Object.freeze(['main', 'support1', 'support2']), ticks, trials, seed, maximums: DEFAULT_MAXIMUMS, warehouseItems: 'initially-none' }),
     matchups: Object.freeze(matchups),
+    ...(collectPartyLoadouts ? { partyLoadouts: Object.freeze(partyLoadouts) } : {}),
   });
 }
 

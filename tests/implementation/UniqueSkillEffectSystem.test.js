@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import UniqueSkillEffectSystem from '../../src/game/UniqueSkillEffectSystem.js';
 import { UNIQUE_SKILL_TRIGGER } from '../../src/game/UniqueSkillTrigger.js';
+import { UNIQUE_SKILL_CATALOG } from '../../src/game/UniqueSkillCatalog.js';
 
 test('unique skill effects retain every result from one hook', () => {
   const skills = [
@@ -76,15 +77,15 @@ test('deep sea surge exposes the owner water value and the Ex-specific damage bo
 test('retaliation ember exposes a fire application only for an applied physical or magic damage event', () => {
   const attacker = {};
   const owner = { getTagCount: () => 4 };
-  const effectSystem = new UniqueSkillEffectSystem({
-    uniqueSkillSystem: { getTriggeredSkills: () => [{ id: 'fire-retaliation-ember', level: 1, levelDetail: { fireAttributeRate: 0.5 } }] },
-  });
-
-  const [physical] = effectSystem.resolve(owner, UNIQUE_SKILL_TRIGGER.damageReceived, { damageEvent: { actor: attacker, category: 'physical', damage: 1 } });
-  const [attribute] = effectSystem.resolve(owner, UNIQUE_SKILL_TRIGGER.damageReceived, { damageEvent: { actor: attacker, category: null, damage: 1 } });
-
-  assert.deepEqual(physical.retaliationAttribute, { actor: attacker, attribute: 'fire', value: 2 });
-  assert.equal(attribute.retaliationAttribute, null);
+  for (const [level, expectedValue] of [[1, 0.8], [2, 1.6]]) {
+    const effectSystem = new UniqueSkillEffectSystem({
+      uniqueSkillSystem: { getTriggeredSkills: () => [{ id: 'fire-retaliation-ember', level, levelDetail: UNIQUE_SKILL_CATALOG['fire-retaliation-ember'].levels[level] }] },
+    });
+    const [physical] = effectSystem.resolve(owner, UNIQUE_SKILL_TRIGGER.damageReceived, { damageEvent: { actor: attacker, category: 'physical', damage: 1 } });
+    const [attribute] = effectSystem.resolve(owner, UNIQUE_SKILL_TRIGGER.damageReceived, { damageEvent: { actor: attacker, category: null, damage: 1 } });
+    assert.deepEqual(physical.retaliationAttribute, { actor: attacker, attribute: 'fire', value: expectedValue });
+    assert.equal(attribute.retaliationAttribute, null);
+  }
 });
 
 test('thunder drain reacts only when a lightning-infused direct attacker deals damage', () => {
@@ -118,15 +119,13 @@ test('thunder drain reacts only when a lightning-infused direct attacker deals d
 test('bewildering words uses a fixed Ex chance and ignores luck', () => {
   const target = {};
   const actor = { getLuckDegree: () => 0 };
-  const belowEx1 = new UniqueSkillEffectSystem({ random: () => 0.49 });
-  const atEx1 = new UniqueSkillEffectSystem({ random: () => 0.5 });
-  const belowEx2 = new UniqueSkillEffectSystem({ random: () => 0.74 });
-  const atEx2 = new UniqueSkillEffectSystem({ random: () => 0.75 });
-
-  assert.equal(belowEx1.resolveReputationBewilderingWords(actor, { levelDetail: { chance: 0.5 } }, { target }).bewildermentTarget, target);
-  assert.equal(atEx1.resolveReputationBewilderingWords(actor, { levelDetail: { chance: 0.5 } }, { target }).bewildermentTarget, null);
-  assert.equal(belowEx2.resolveReputationBewilderingWords(actor, { levelDetail: { chance: 0.75 } }, { target }).bewildermentTarget, target);
-  assert.equal(atEx2.resolveReputationBewilderingWords(actor, { levelDetail: { chance: 0.75 } }, { target }).bewildermentTarget, null);
+  for (const [level, chance] of [[1, 0.6], [2, 0.65]]) {
+    const skill = { level, levelDetail: UNIQUE_SKILL_CATALOG['reputation-bewildering-words'].levels[level] };
+    const below = new UniqueSkillEffectSystem({ random: () => chance - 0.001 });
+    const at = new UniqueSkillEffectSystem({ random: () => chance });
+    assert.equal(below.resolveReputationBewilderingWords(actor, skill, { target }).bewildermentTarget, target);
+    assert.equal(at.resolveReputationBewilderingWords(actor, skill, { target }).bewildermentTarget, null);
+  }
 });
 
 test('curse of misfortune applies its Ex-specific critical self-damage rate after the luck check', () => {

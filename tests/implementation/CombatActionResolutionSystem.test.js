@@ -7,6 +7,87 @@ import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
+import { UNIQUE_SKILL_CATALOG } from '../../src/game/UniqueSkillCatalog.js';
+import CombatConditionSystem from '../../src/game/CombatConditionSystem.js';
+
+test('infection and continuation independently use one catalog chance for the inherited Ex level', () => {
+  for (const [level, chance] of [[1, 0.6], [2, 0.65]]) {
+    assert.deepEqual(UNIQUE_SKILL_CATALOG['reputation-bewildering-words'].levels[level], { chance });
+    const recoveryChance = 1 - chance;
+    for (const infectionSucceeded of [false, true]) {
+      for (const recovered of [false, true]) {
+        const actor = { chip: { type: 'hero' } };
+        const conditions = new CombatConditionSystem();
+        conditions.applyBewilderment(actor, level);
+        const values = [infectionSucceeded ? chance - 1e-6 : chance, recovered ? recoveryChance - 1e-6 : recoveryChance];
+        const resolution = new CombatActionResolutionSystem({ conditionSystem: conditions, random: () => values.shift() });
+        resolution.resolveBewildermentTransmission(actor, actor);
+        resolution.resolveBewildermentContinuation(actor);
+        assert.equal(conditions.getBewildermentLevel(actor), recovered ? 0 : level);
+        assert.equal(values.length, 0);
+      }
+    }
+  }
+});
+
+test('bewilderment spreads once per action before missed weapons, preserving Ex level across generations', () => {
+  for (const [level, chance] of [[1, 0.6], [2, 0.65]]) {
+    const conditions = new CombatConditionSystem();
+    const makeActor = () => ({ chip: { type: 'hero' }, getTagCount: () => 0, luckBonus: 0 });
+    const first = makeActor();
+    const second = makeActor();
+    const third = makeActor();
+    conditions.applyBewilderment(first, level);
+    let rolls = 0;
+    const resolution = new CombatActionResolutionSystem({
+      board: { chips: [first.chip, second.chip, third.chip] },
+      conditionSystem: conditions,
+      targetingSystem: { rangeTargets: () => [] },
+      actionLog: { begin: () => {}, flush: () => {}, recordMiss: () => {} },
+      weaponEffectSystem: { applySupportEffect: () => {} },
+      projectionSystem: { areaHeads: [] },
+      uniqueSkillEffectSystem: { resolve: () => [] },
+      uniqueSkillSystem: { refreshBlessingSkills: () => {} },
+      random: () => { rolls += 1; return chance - 0.001; },
+    });
+    resolution.attackTypes = () => ['sword', 'sword'];
+    resolution.isAttackMiss = () => true;
+    resolution.resolve(first, second, [first, second, third]);
+    assert.equal(rolls, 2);
+    assert.equal(conditions.getBewildermentLevel(first), level);
+    assert.equal(conditions.getBewildermentLevel(second), level);
+    resolution.resolve(second, third, [first, second, third]);
+    assert.equal(rolls, 4);
+    assert.equal(conditions.getBewildermentLevel(third), level);
+    conditions.clearBewilderment(third);
+    conditions.applyBewilderment(first, level);
+    resolution.random = () => chance;
+    resolution.resolveBewildermentTransmission(first, third);
+    assert.equal(conditions.hasBewilderment(third), false);
+  }
+});
+
+test('hit probability preserves water-free luck comparisons and attenuates water without eliminating hits', () => {
+  const cases = [
+    [0.05, 0.05, 0, 0, 0, 0.5],
+    [0.15, 0.05, 0, 0, 0, 5 / 6],
+    [0.05, 0.15, 0, 0, 0, 1 / 6],
+    [0.05, 0.05, 1, 0, 0, 0.25],
+    [0.05, 0.05, 7, 0, 0, 1 / 16],
+    [0.05, 0.05, 1, 3, 0, 1 / 3.4],
+    [0.05, 0.05, 0, 0, 1, 1 / 6],
+    [0, 0.05, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1],
+  ];
+  for (const [luck, targetLuck, water, cloth, feather, hitRate] of cases) {
+    const actor = { attributes: { water }, getLuckDegree: () => luck, getTagSkillLevel: () => cloth };
+    const target = { getLuckDegree: () => targetLuck, getTagSkillLevel: () => feather };
+    const resolution = new CombatActionResolutionSystem({ random: () => Math.max(0, hitRate - 1e-9) });
+    assert.equal(resolution.isAttackMiss(actor, target), hitRate === 0);
+    resolution.random = () => Math.min(1 - 1e-9, hitRate + 1e-9);
+    assert.equal(resolution.isAttackMiss(actor, target), hitRate < 1);
+  }
+});
 
 test('night familiars consume their owner state and independently attack random remaining opponents', () => {
   const actor = { getStatus: () => 3 };
@@ -140,11 +221,13 @@ test('deep sea surge turns every successful weapon hit critical and adds the cur
     random: () => 0,
   });
 
-  resolution.resolveWeapon(actor, target, 'sword', [actor, target], { waterDamageBonusRate: 0.5 });
-
-  assert.equal(physicalDamages.length, 1);
-  assert.equal(physicalDamages[0][4], true);
-  assert.equal(physicalDamages[0][3], 4.2);
+  for (const [level, expectedMultiplier] of [[1, 5], [2, 9]]) {
+    resolution.resolveWeapon(actor, target, 'sword', [actor, target], UNIQUE_SKILL_CATALOG['water-deep-sea-surge'].levels[level]);
+    const damage = physicalDamages.at(-1);
+    assert.equal(damage[4], true);
+    assert.ok(Math.abs(damage[3] - 1.4 * expectedMultiplier) < 1e-9);
+  }
+  assert.equal(physicalDamages.length, 2);
 });
 
 test('night familiar visuals use one asset at distinct positions around the owner', () => {
@@ -315,4 +398,4 @@ test('vitality recovers a fixed 0.2 per tag after a successful luck check', () =
   assert.equal(battle.resolveVitality(enemy), 0.5);
   assert.equal(enemy.hp, 3);
 });
-
+

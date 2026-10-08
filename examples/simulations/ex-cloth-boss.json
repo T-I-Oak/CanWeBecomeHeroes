@@ -1,0 +1,12 @@
+{
+  "ticks": 6000,
+  "trials": 200,
+  "seed": 1,
+  "left": [
+    { "label": "武勇x3", "tags": ["valor", "valor", "valor"], "weapons": ["sword", "sword"] },
+    { "label": "加護x3", "tags": ["blessing", "blessing", "blessing"], "weapons": ["holy-symbol", "holy-symbol"] }
+  ],
+  "right": [
+    { "label": "布ボス", "enemyDefinitionId": "large-cloth", "tags": ["cloth", "cloth", "cloth"], "weapons": ["holy-book", "holy-book"], "maximumHp": 3 }
+  ]
+}

@@ -16,7 +16,7 @@ export function getConditionIconEntries(chip) {
   if (attributes.lightning > 0) entries.push({ id: 'lightning', value: attributes.lightning, minimum: 0, maximum: 7 });
   if (chip.physicalDamageReduction > 0) entries.push({ id: 'physical-defense', value: chip.physicalDamageReduction, minimum: 0, maximum: PHYSICAL_DEFENSE_MAXIMUM });
   if (chip.twoEdgedSwordMultiplier > 1) entries.push({ id: 'two-edged-sword', value: chip.twoEdgedSwordMultiplier, minimum: 2, maximum: 4 });
-  if (chip.bewildered) entries.push({ id: 'bewilderment', value: 1, minimum: 1, maximum: 1 });
+  if (chip.bewildermentLevel > 0) entries.push({ id: 'bewilderment', value: chip.bewildermentLevel, minimum: 1, maximum: 2 });
   if (chip.misfortuneDamageRate > 0) entries.push({ id: 'misfortune', value: chip.misfortuneDamageRate, minimum: 0.5, maximum: 1 });
   if (chip.nightFamiliarCount > 0) entries.push({ id: 'night-familiar', value: chip.nightFamiliarCount, minimum: 1, maximum: 6 });
   return entries;

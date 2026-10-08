@@ -5,6 +5,7 @@ import { Worker } from 'node:worker_threads';
 import { TAG_ORDER } from '../src/game/TagCatalog.js';
 import { analyzeTagMatchups, toMatchupMatrixCsv, toMatchupMatrixMarkdown, toTagOutcomeSummaryCsv, toTagOutcomeSummaryMarkdown } from '../src/simulation/TagMatchupMatrix.js';
 import { toCsv } from '../src/simulation/TagAffinityAnalysis.js';
+import { summarizePartyContributions, toPartyLoadoutRows } from '../src/simulation/PartyLoadoutAnalysis.js';
 
 const [inputPath] = process.argv.slice(2);
 const input = inputPath ? JSON.parse(await readFile(resolve(inputPath), 'utf8')) : {};
@@ -32,4 +33,14 @@ await Promise.all([
   writeFile(resolve(outputDirectory, 'tag-outcomes.md'), `${toTagOutcomeSummaryMarkdown(completeAnalysis)}\n`),
   writeFile(resolve(outputDirectory, 'conditions.json'), `${JSON.stringify(completeAnalysis.conditions, null, 2)}\n`),
 ]);
+if (input.collectPartyLoadouts) {
+  const parties = outputs.flatMap(output => output.partyLoadouts).toSorted((a, b) =>
+    tags.indexOf(a.heroTag) - tags.indexOf(b.heroTag) || tags.indexOf(a.enemyTag) - tags.indexOf(b.enemyTag) || a.trial - b.trial || a.side.localeCompare(b.side));
+  const contributions = summarizePartyContributions(parties);
+  await Promise.all([
+    writeFile(resolve(outputDirectory, 'tmp_party-loadouts.csv'), `${toCsv(toPartyLoadoutRows(parties))}\n`),
+    writeFile(resolve(outputDirectory, 'tmp_weapon-contributions.csv'), `${toCsv(contributions.filter(row => row.kind === 'weapon'))}\n`),
+    writeFile(resolve(outputDirectory, 'tmp_tag-contributions.csv'), `${toCsv(contributions.filter(row => row.kind === 'tag'))}\n`),
+  ]);
+}
 process.stdout.write(`${JSON.stringify({ outputDirectory, matchupRows: completeAnalysis.matchups.length, parallelism }, null, 2)}\n`);

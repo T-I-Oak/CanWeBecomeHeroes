@@ -37,6 +37,7 @@ export default class Chip {
     this.physicalDamageReduction = 0;
     this.twoEdgedSwordMultiplier = 0;
     this.bewildered = false;
+    this.bewildermentLevel = 0;
     this.misfortuneDamageRate = 0;
     this.nightFamiliarCount = 0;
     this.effectOffsetX = 0;

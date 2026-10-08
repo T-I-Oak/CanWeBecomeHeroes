@@ -16,14 +16,46 @@ function combatant(type, x, equipment = []) {
   };
 }
 
-test('a bewildered combatant targets another active ally and never itself', () => {
+test('a bewildered combatant includes itself among allies and targets itself when alone', () => {
   const actor = combatant('hero', 0, [{ category: 'weapon', type: 'sword' }]);
   const ally = combatant('hero', 10);
   const opponent = combatant('enemy', 20);
   const board = { chips: [actor.chip, ally.chip, opponent.chip] };
-  const targeting = new CombatTargetingSystem(board, { isBewildered: (candidate) => candidate === actor });
+  const targeting = new CombatTargetingSystem(board, { isBewildered: (candidate) => candidate === actor, includeSelfWhenBewildered: true });
 
-  assert.equal(targeting.findTarget(actor, [actor, ally, opponent]), ally);
+  assert.deepEqual(targeting.getOpponents(actor, [actor, ally, opponent]), [actor, ally]);
+  assert.equal(targeting.findTarget(actor, [actor, ally, opponent]), actor);
+  assert.equal(targeting.findTarget(actor, [actor, opponent]), actor);
+  targeting.isBewildered = () => false;
+  assert.deepEqual(targeting.getOpponents(actor, [actor, ally, opponent]), [opponent]);
+});
+
+test('default bewilderment excludes self with allies and targets self only when alone', () => {
+  const actor = combatant('hero', 0);
+  const ally = combatant('hero', 10);
+  const enemy = combatant('enemy', 20);
+  const targeting = new CombatTargetingSystem({ chips: [actor.chip, ally.chip, enemy.chip] }, { isBewildered: () => true });
+  assert.deepEqual(targeting.getOpponents(actor, [actor, ally, enemy]), [ally]);
+  assert.equal(targeting.findTarget(actor, [actor, enemy]), actor);
+  targeting.isTargetable = candidate => candidate !== ally;
+  assert.equal(targeting.findTarget(actor, [actor, ally, enemy]), actor);
+  targeting.includeSelfWhenAlone = false;
+  assert.equal(targeting.findTarget(actor, [actor, enemy]), null);
+});
+
+test('bewildered area attacks preserve allied slots including self and large enemies', () => {
+  for (const type of ['hero', 'enemy']) {
+    const actor = combatant(type, 0);
+    const ally = combatant(type, 10);
+    actor.slotPosition = type === 'hero' ? 2 : 3;
+    ally.slotPosition = type === 'hero' ? 4 : 6;
+    if (type === 'enemy') actor.definition = { size: 'large' };
+    actor.getTagCount = () => 4;
+    const targeting = new CombatTargetingSystem({ chips: [actor.chip, ally.chip] }, { isBewildered: () => true, includeSelfWhenBewildered: true });
+    const lane = targeting.createRangeLane(actor, [actor, ally]);
+    assert.equal(lane.length, type === 'hero' ? 4 : 5);
+    assert.deepEqual(targeting.rangeTargets(actor, ally, [actor, ally]).map(({ target, coefficient }) => [target, coefficient]), [[actor, 0.6], [ally, 0.9]]);
+  }
 });
 
 test('area keeps empty enemy slots in its coefficient lane', () => {
@@ -83,4 +115,4 @@ test('a knocked-back combatant is excluded from attack candidates', () => {
 
   assert.equal(battle.findTarget(enemy, [hero, enemy]), null);
 });
-
+

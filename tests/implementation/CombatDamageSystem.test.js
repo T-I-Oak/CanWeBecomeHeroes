@@ -8,6 +8,21 @@ import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 
+test('self attacks consume protection and reflect onto self without duplicate defeat', () => {
+  const events = [];
+  let defeats = 0;
+  const actor = { hp: 10, physicalDamageReduction: 2, chip: { type: 'enemy', tilt: 0 }, getTagSkillLevel: () => 1 };
+  const damage = new CombatDamageSystem({ random: () => 0, onDamageApplied: event => events.push(event), onEnemyDefeated: () => { defeats += 1; } });
+  damage.applyPhysicalDamage(actor, actor, 'sword', 4, false, [actor]);
+  assert.equal(actor.physicalDamageReduction, 0);
+  assert.equal(actor.hp, 7);
+  assert.deepEqual(events.map(event => [event.actor === actor, event.target === actor, event.type]), [[true, true, 'sword'], [true, true, 'reflection']]);
+  actor.hp = 0.1;
+  damage.applyPhysicalDamage(actor, actor, 'sword', 4, false, [actor]);
+  assert.equal(actor.hp, 0);
+  assert.equal(defeats, 1);
+});
+
 test('damage application exposes its complete event to damage reactions', () => {
   const events = [];
   const actor = { id: 'actor' };

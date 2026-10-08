@@ -103,7 +103,7 @@ test('retaliation ember applies the mid-boss fire value to an attacker after phy
 
   battle.applyPhysicalDamage(hero, enemy, 'sword', 1, false, [hero, enemy]);
 
-  assert.equal(hero.attributes.fire, 0.5);
+  assert.equal(hero.attributes.fire, 0.2);
   assert.equal(hero.attributeSources.fire, enemy);
 });
 

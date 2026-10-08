@@ -18,7 +18,8 @@ export default class CombatDamageSystem {
     const reflected = afterProtection * target.getTagSkillLevel('iron') * 0.2;
     const dealt = Math.max(0, afterProtection - reflected);
     this.applyDamage(actor, target, type, dealt, critical, { criticalDamageResolved: true, category: 'physical', participants, resolveMisfortune: false, record });
-    if (reflected >= MINIMUM_DAMAGE) {
+    const selfDepleted = actor === target && (isHeroCombatant(target) ? target.stamina <= 0 : target.hp <= 0);
+    if (reflected >= MINIMUM_DAMAGE && !selfDepleted) {
       this.applyDamage(target, actor, 'reflection', reflected);
       propagate?.(target, actor, 'reflection', reflected, participants);
     }

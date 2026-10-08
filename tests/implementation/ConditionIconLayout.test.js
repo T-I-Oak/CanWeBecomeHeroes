@@ -53,6 +53,7 @@ test('active combat states keep a fixed icon order', () => {
     physicalDamageReduction: 0.2,
     twoEdgedSwordMultiplier: 4,
     bewildered: true,
+    bewildermentLevel: 1,
     misfortuneDamageRate: 1,
     nightFamiliarCount: 3,
   });
@@ -79,11 +80,33 @@ test('condition changes are copied onto the combatant chip', () => {
 
   assert.equal(combatant.chip.twoEdgedSwordMultiplier, 2);
   assert.equal(combatant.chip.bewildered, true);
+  assert.equal(combatant.chip.bewildermentLevel, 1);
   assert.equal(combatant.chip.misfortuneDamageRate, 0.5);
   assert.equal(combatant.chip.nightFamiliarCount, 3);
 
   conditions.clearCombatant(combatant);
   assert.equal(combatant.chip.twoEdgedSwordMultiplier, 0);
   assert.equal(combatant.chip.bewildered, false);
+  assert.equal(combatant.chip.bewildermentLevel, 0);
   assert.equal(combatant.chip.nightFamiliarCount, 0);
+});
+
+test('bewilderment icons reflect inherited Ex level and clear on recovery or reset', () => {
+  const conditions = new CombatConditionSystem();
+  const actor = { chip: {} };
+  const icon = () => getConditionIconEntries(actor.chip).find(entry => entry.id === 'bewilderment');
+  assert.equal(icon(), undefined);
+  conditions.applyBewilderment(actor, 1);
+  assert.deepEqual(icon(), { id: 'bewilderment', value: 1, minimum: 1, maximum: 2 });
+  assert.deepEqual(getConditionIconColor(icon().value, icon().minimum, icon().maximum), [0, 51, 255]);
+  conditions.applyBewilderment(actor, 2);
+  conditions.applyBewilderment(actor, 1);
+  assert.equal(actor.chip.bewildermentLevel, 2);
+  assert.deepEqual(getConditionIconColor(icon().value, icon().minimum, icon().maximum), [230, 0, 0]);
+  conditions.clearBewilderment(actor);
+  assert.equal(icon(), undefined);
+  conditions.applyBewilderment(actor, 2);
+  conditions.reset();
+  assert.equal(actor.chip.bewildermentLevel, 0);
+  assert.equal(icon(), undefined);
 });

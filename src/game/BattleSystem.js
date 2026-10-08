@@ -197,7 +197,7 @@ export default class BattleSystem {
     if (target) this.actionResolutionSystem.resolve(actor, target, participants);
     else if (actor.isPhantomHead) this.projectionSystem.returnAreaHead(actor);
     else {
-      this.conditionSystem.clearBewilderment(actor);
+      this.actionResolutionSystem.resolveBewildermentContinuation(actor);
       this.conditionSystem.clearMisfortune(actor);
       this.uniqueSkillSystem.refreshBlessingSkills(actor);
     }

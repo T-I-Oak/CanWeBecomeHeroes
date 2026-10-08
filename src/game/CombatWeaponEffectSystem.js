@@ -39,7 +39,7 @@ export default class CombatWeaponEffectSystem {
   }
 
   applyHolySymbol(actor, participants) {
-    const recovery = actor.getTagCount('blessing') * 0.05 + 0.05;
+    const recovery = actor.getTagCount('blessing') * 0.01 + 0.01;
     participants.filter((candidate) => candidate !== actor && isHeroCombatant(candidate) === isHeroCombatant(actor)).forEach((ally) => {
       if (isHeroCombatant(ally)) ally.stamina = Math.min(ally.maximums.stamina, ally.stamina + recovery);
       else ally.hp = Math.min(ally.maximumHp, ally.hp + recovery);

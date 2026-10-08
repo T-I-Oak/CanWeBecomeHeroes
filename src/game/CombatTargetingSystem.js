@@ -15,10 +15,12 @@ const RANGE_COEFFICIENTS = Object.freeze([
 const LOWEST_DURABILITY_WEAPONS = Object.freeze(['staff', 'holy-symbol', 'holy-book', 'banner', 'tarot-cards']);
 
 export default class CombatTargetingSystem {
-  constructor(board, { isTargetable = () => true, isBewildered = () => false } = {}) {
+  constructor(board, { isTargetable = () => true, isBewildered = () => false, includeSelfWhenBewildered = false, includeSelfWhenAlone = true } = {}) {
     this.board = board;
     this.isTargetable = isTargetable;
     this.isBewildered = isBewildered;
+    this.includeSelfWhenBewildered = includeSelfWhenBewildered;
+    this.includeSelfWhenAlone = includeSelfWhenAlone;
   }
 
   findTarget(actor, participants) {
@@ -48,9 +50,14 @@ export default class CombatTargetingSystem {
 
   getOpponents(actor, participants) {
     const targetsAllies = this.isBewildered(actor);
-    return participants.filter((candidate) => candidate !== actor
+    const candidates = participants.filter((candidate) => (candidate !== actor || targetsAllies)
       && isHeroCombatant(candidate) === (targetsAllies ? isHeroCombatant(actor) : !isHeroCombatant(actor))
       && !candidate.isPhantomHead && isEntityOnBoard(this.board, candidate) && this.isTargetable(candidate));
+    if (targetsAllies && !this.includeSelfWhenBewildered
+      && (!this.includeSelfWhenAlone || candidates.some((candidate) => candidate !== actor))) {
+      return candidates.filter((candidate) => candidate !== actor);
+    }
+    return candidates;
   }
 
   rangeTargets(actor, target, participants) {
@@ -65,7 +72,9 @@ export default class CombatTargetingSystem {
   }
 
   createRangeLane(actor, foes) {
-    const slotCount = isHeroCombatant(actor) ? 6 : 4;
+    const targetsHeroes = foes.length > 0 ? isHeroCombatant(foes[0])
+      : this.isBewildered(actor) ? isHeroCombatant(actor) : !isHeroCombatant(actor);
+    const slotCount = targetsHeroes ? 4 : 6;
     const bySlot = new Map(foes.map((foe) => [getBattleSlotPosition(foe), foe]));
     const hasCompleteSlotPositions = foes.every((foe) => {
       const slot = getBattleSlotPosition(foe);

@@ -11,6 +11,22 @@ test('tag matchup matrix defines every tag with a two-weapon loadout', () => {
   assert.deepEqual(TAG_TEAM_COMPOSITIONS.valor, ['valor', 'lightning', 'arcane']);
 });
 
+test('tag matchup matrix supports production random equipment with intrinsic tags kept separate', () => {
+  const input = { tags: ['blessing', 'water'], equipmentTagBudget: 6, ticks: 800, trials: 2, seed: 17 };
+  const analysis = analyzeTagMatchups(input);
+  assert.equal(analysis.conditions.equipmentTagBudget, 6);
+  assert.equal(analysis.conditions.intrinsicTags, 'hero-two-enemy-definition');
+  assert.equal(analysis.conditions.tagCount, undefined);
+  assert.deepEqual(analyzeTagMatchups(input), analysis);
+});
+
+test('tag matchup matrix can include main-enemy boss Ex skills while retaining regular supports', () => {
+  const analysis = analyzeTagMatchups({ tags: ['cloth', 'water'], enemyRank: 'boss', ticks: 1000, trials: 1 });
+  assert.equal(analysis.conditions.enemyRank, 'boss');
+  assert.equal(analysis.matchups.length, 4);
+  assert.throws(() => analyzeTagMatchups({ enemyRank: 'unknown' }), /enemyRank/);
+});
+
 test('tag matchup matrix produces a square hero win-rate table', () => {
   const analysis = analyzeTagMatchups({ tags: ['valor', 'iron'], ticks: 20, trials: 2, seed: 1 });
   assert.equal(analysis.matchups.length, 4);

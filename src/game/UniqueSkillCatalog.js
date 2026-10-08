@@ -85,8 +85,8 @@ const WATER_DEEP_SEA_SURGE = Object.freeze({
   affinityTag: 'water',
   triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionStarted]),
   levels: Object.freeze({
-    1: Object.freeze({ waterDamageBonusRate: 0.5 }),
-    2: Object.freeze({ waterDamageBonusRate: 1 }),
+    1: Object.freeze({ waterDamageBonusRate: 1 }),
+    2: Object.freeze({ waterDamageBonusRate: 2 }),
   }),
 });
 
@@ -95,8 +95,8 @@ const FIRE_RETALIATION_EMBER = Object.freeze({
   affinityTag: 'fire',
   triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.damageReceived]),
   levels: Object.freeze({
-    1: Object.freeze({ fireAttributeRate: 0.5 }),
-    2: Object.freeze({ fireAttributeRate: 1 }),
+    1: Object.freeze({ fireAttributeRate: 0.2 }),
+    2: Object.freeze({ fireAttributeRate: 0.4 }),
   }),
 });
 
@@ -115,8 +115,8 @@ const REPUTATION_BEWILDERING_WORDS = Object.freeze({
   affinityTag: 'reputation',
   triggers: Object.freeze([UNIQUE_SKILL_TRIGGER.actionStarted]),
   levels: Object.freeze({
-    1: Object.freeze({ chance: 0.5 }),
-    2: Object.freeze({ chance: 0.75 }),
+    1: Object.freeze({ chance: 0.6 }),
+    2: Object.freeze({ chance: 0.65 }),
   }),
 });
 

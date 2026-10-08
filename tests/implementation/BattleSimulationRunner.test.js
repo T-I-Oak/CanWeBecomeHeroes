@@ -18,3 +18,14 @@ test('battle simulation runs the production battle system for a one-hero tag com
   assert.ok(result.averages.damageBySide.right > 0);
   assert.ok(result.averages.damageBySource['attack:sword'] > 0);
 });
+
+test('Ex simulation is deterministic and distinguishes boss skills from a disabled control', () => {
+  const input = { ticks: 2000, trials: 2, seed: 29,
+    left: [{ tags: ['valor', 'valor', 'valor'], weapons: ['sword', 'sword'] }],
+    right: [{ enemyDefinitionId: 'large-cloth', tags: ['cloth', 'cloth', 'cloth'], weapons: ['holy-book', 'holy-book'] }] };
+  const result = runBattleSimulation(input);
+  assert.deepEqual(runBattleSimulation(input), result);
+  assert.ok(result.averages.damageBySource['attack:night-familiar'] > 0);
+  const control = runBattleSimulation({ ...input, right: [{ ...input.right[0], uniqueSkill: null }] });
+  assert.equal(control.averages.damageBySource['attack:night-familiar'], undefined);
+});

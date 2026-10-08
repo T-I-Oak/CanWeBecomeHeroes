@@ -3,6 +3,7 @@ import { logUniqueSkill, skillText, tagText, termText } from './UniqueSkillLog.j
 import { isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 import { WEAPON_ATTACKS, getAttackDamage, getRandomModifier } from './CombatWeaponAttack.js';
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
+import { UNIQUE_SKILL_CATALOG } from './UniqueSkillCatalog.js';
 
 const NIGHT_FAMILIAR_ATTACK = Object.freeze(['power', 1 / 8]);
 
@@ -21,17 +22,18 @@ export default class CombatActionResolutionSystem {
     const actionModifiers = this.resolveActionStartedUniqueSkill(actor, target, participants);
     targets.forEach(({ target: rangeTarget, coefficient }) => this.attributeSystem.applyAttributes(actor, rangeTarget, coefficient));
     this.attackTypes(actor).forEach((type) => this.resolveWeapon(actor, target, type, participants, actionModifiers));
-    this.resolveVitality(actor);
+    const selfDepleted = actor === target && (isHeroCombatant(actor) ? actor.stamina <= 0 : actor.hp <= 0);
+    if (!selfDepleted) this.resolveVitality(actor);
     this.effects?.endAction();
     this.actionLog.flush();
     actor.luckBonus = 0;
     if (actor.isPhantomHead) this.projectionSystem.returnAreaHead(actor);
-    else {
+    else if (!selfDepleted) {
       this.resolveActionUniqueSkill(actor, participants);
       this.uniqueSkillSystem.refreshBlessingSkills(actor);
     }
     this.conditionSystem.clearTwoEdgedSword(actor);
-    this.conditionSystem.clearBewilderment(actor);
+    this.resolveBewildermentContinuation(actor);
     this.conditionSystem.clearMisfortune(actor);
     this.knockbackSystem?.resolveAction()?.forEach(({ actor: attacker, defender, skill }) => {
       if (!skill) return;
@@ -45,6 +47,7 @@ export default class CombatActionResolutionSystem {
   }
 
   resolveActionStartedUniqueSkill(actor, target, participants) {
+    this.resolveBewildermentTransmission(actor, target);
     let waterDamageBonusRate = 0;
     const gustTargets = [];
     this.uniqueSkillEffectSystem.resolve(actor, UNIQUE_SKILL_TRIGGER.actionStarted, { target }).forEach(({ skill, tagRemoval, twoEdgedSwordMultiplier, selfAttribute = null, waterDamageBonusRate: effectWaterDamageBonusRate = 0, bewildermentTarget = null, misfortuneTarget = null, gustTarget = null }) => {
@@ -60,7 +63,7 @@ export default class CombatActionResolutionSystem {
         }
       }
       if (bewildermentTarget) {
-        this.conditionSystem.applyBewilderment(bewildermentTarget);
+        this.conditionSystem.applyBewilderment(bewildermentTarget, skill.level);
         if (this.gameLog) logUniqueSkill(this.gameLog, this.textRepository, 'logBewilderment', { actor: entityText(actor), skill: skillText(skill), target: entityText(bewildermentTarget), condition: termText('bewilderment') });
       }
       if (misfortuneTarget) {
@@ -83,6 +86,28 @@ export default class CombatActionResolutionSystem {
     return Object.freeze({ waterDamageBonusRate, gustTargets: Object.freeze(gustTargets) });
   }
 
+  resolveBewildermentTransmission(actor, target) {
+    const level = this.conditionSystem.getBewildermentLevel?.(actor) ?? 0;
+    if (!level || !target || isHeroCombatant(actor) !== isHeroCombatant(target)) return 0;
+    const skill = UNIQUE_SKILL_CATALOG['reputation-bewildering-words'];
+    if (this.random() >= skill.levels[level].chance) return 0;
+    this.conditionSystem.applyBewilderment(target, level);
+    if (this.gameLog) logUniqueSkill(this.gameLog, this.textRepository, 'logBewilderment', { actor: entityText(actor), skill: skillText({ id: skill.id, level }), target: entityText(target), condition: termText('bewilderment') }, actor);
+    return 0;
+  }
+
+  resolveBewildermentContinuation(actor) {
+    const level = this.conditionSystem.getBewildermentLevel?.(actor) ?? 0;
+    if (!level) {
+      this.conditionSystem.clearBewilderment(actor);
+      return;
+    }
+    const chance = UNIQUE_SKILL_CATALOG['reputation-bewildering-words'].levels[level].chance;
+    // Use the complementary part of the roll to preserve the existing seeded outcomes.
+    const continues = this.random() >= 1 - chance;
+    if (!continues) this.conditionSystem.clearBewilderment(actor);
+  }
+
   attackTypes(actor) {
     if (isHeroCombatant(actor)) {
       return [actor.equipment.rightHand, actor.equipment.leftHand].map((item) => item?.category === 'weapon' ? item.type : 'unarmed');
@@ -92,9 +117,15 @@ export default class CombatActionResolutionSystem {
   }
 
   isAttackMiss(actor, target) {
-    const evade = this.random() * Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * 0.1);
-    const accuracy = this.random() * Math.max(0, actor.getLuckDegree() - actor.attributes.water * 0.1 * (1 - actor.getTagSkillLevel('cloth') * 0.1));
-    return evade > accuracy;
+    const luck = Math.max(0, actor.getLuckDegree());
+    const waterPenalty = actor.attributes.water * 0.05 * (1 - actor.getTagSkillLevel('cloth') * 0.1);
+    const accuracy = luck > 0 ? luck / (1 + waterPenalty / luck) : 0;
+    const evade = Math.max(0, target.getLuckDegree() + target.getTagSkillLevel('feather') * 0.1);
+    // Probability of the former independent uniform rolls, with smooth water attenuation.
+    const hitRate = evade === 0 ? 1 : accuracy <= evade
+      ? accuracy / (2 * evade)
+      : 1 - evade / (2 * accuracy);
+    return this.random() >= hitRate;
   }
 
   resolveVitality(actor) {
@@ -132,6 +163,7 @@ export default class CombatActionResolutionSystem {
   }
 
   resolveWeapon(actor, target, type, participants, { waterDamageBonusRate = 0 } = {}) {
+    if (actor === target && (isHeroCombatant(actor) ? actor.stamina <= 0 : actor.hp <= 0)) return;
     if (!isEntityOnBoard(this.board, target)) return;
     this.weaponEffectSystem.applySupportEffect(actor, type, participants);
     if (this.isAttackMiss(actor, target)) {
@@ -141,6 +173,7 @@ export default class CombatActionResolutionSystem {
     }
     const attack = WEAPON_ATTACKS[type];
     this.targetingSystem.rangeTargets(actor, target, participants).forEach(({ target: rangeTarget, coefficient }) => {
+      if (actor === target && (isHeroCombatant(actor) ? actor.stamina <= 0 : actor.hp <= 0)) return;
       const statTag = attack[0] === 'magic' ? 'arcane' : 'valor';
       const skillLevel = actor.getTagSkillLevel(statTag);
       const tagCritical = skillLevel > 0 && this.random() < actor.getLuckDegree() + actor.luckBonus;

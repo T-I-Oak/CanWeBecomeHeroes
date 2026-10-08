@@ -107,13 +107,13 @@
         "ja": [
           {
             "type": "text",
-            "value": "次の行動で、自分以外の自陣営だけを攻撃する状態。行動後、または対象がいないときは解除される。"
+            "value": "仲間に攻撃を向ける状態。仲間がいなければ、自分に攻撃を向ける。攻撃した対象に惑乱が伝染することがある。行動後も惑乱が継続することがある。"
           }
         ],
         "en": [
           {
             "type": "text",
-            "value": "On the next action, only allies other than the affected combatant are attacked. It ends after that action, or when no such target exists."
+            "value": "A state that turns attacks toward allies, or toward oneself when no ally can be targeted. Bewilderment may spread to the target of an attack and may persist after an action."
           }
         ]
       }

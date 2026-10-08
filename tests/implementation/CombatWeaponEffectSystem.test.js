@@ -80,8 +80,31 @@ test('holy symbol and tarot cards support only other allies', () => {
 
   assert.equal(actor.stamina, 1);
   assert.equal(actor.luckBonus, 0);
-  assert.equal(ally.stamina, 1.15);
+  assert.equal(ally.stamina, 1.03);
   assert.equal(ally.luckBonus, 0.25);
+});
+
+test('holy symbol certainly heals other allies by one percent per blessing plus one percent, capped at maximum', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const actor = new HeroFactory().create({ profession: 'swordfighter', x: 100, y: 100, stamina: 1 });
+  actor.tags = ['blessing', 'blessing', 'blessing'];
+  const ally = new HeroFactory().create({ profession: 'swordfighter', x: 200, y: 100, stamina: 1 });
+  const enemy = new EnemyFactory().createInitialEncounter({ totalTagCount: 0 });
+  enemy.hp = 1;
+  const battle = new BattleSystem(board, { itemFactory: new ItemFactory(), random: () => { throw new Error('Recovery must not roll randomness'); } });
+  battle.applyHolySymbol(actor, [actor, ally, enemy]);
+  assert.equal(actor.stamina, 1);
+  assert.equal(ally.stamina, 1.04);
+  assert.equal(enemy.hp, 1);
+  ally.stamina = 2.99;
+  battle.applyHolySymbol(actor, [actor, ally]);
+  assert.equal(ally.stamina, 3);
+  const enemyAlly = new EnemyFactory().createInitialEncounter({ maximumHp: 3, totalTagCount: 0 });
+  enemyAlly.hp = 1;
+  enemy.tags = ['blessing', 'blessing', 'blessing'];
+  battle.applyHolySymbol(enemy, [enemy, enemyAlly, ally]);
+  assert.equal(enemyAlly.hp, 1.04);
+  assert.equal(enemy.hp, 1);
 });
 
 test('claw steals the highest available eligible item tier for heroes and enemies', () => {
@@ -163,4 +186,4 @@ test('claw proceeds to lower theft tiers when a higher tag tier is absent', () =
   assert.equal(battle.resolveTheft(hero, enemy), item);
   assert.deepEqual(dropped, [item]);
 });
-
+

@@ -22,8 +22,20 @@ test('magic standard damage uses half the physical standard divisor', () => {
 });
 
 test('orb is a tiny physical attack and banner is a tiny magical attack', () => {
-  assert.deepEqual(WEAPON_ATTACKS.orb, ['power', 1 / 8]);
-  assert.deepEqual(WEAPON_ATTACKS.banner, ['magic', 1 / 8]);
+  assert.deepEqual(WEAPON_ATTACKS.orb, ['power', 1 / 3]);
+  assert.deepEqual(WEAPON_ATTACKS.banner, ['magic', 1 / 3]);
+});
+
+test('weapon damage applies the approved standard, medium, small and tiny proportions', () => {
+  const actor = { getStatus: () => 3 };
+  const physical = getAttackDamage(actor, WEAPON_ATTACKS.sword);
+  const magic = getAttackDamage(actor, WEAPON_ATTACKS.staff);
+  assert.equal(physical, 1.75);
+  assert.equal(magic, 0.875);
+  assert.ok(Math.abs(getAttackDamage(actor, WEAPON_ATTACKS.bow) / physical - 2 / 3) < 1e-12);
+  assert.equal(getAttackDamage(actor, WEAPON_ATTACKS['holy-book']) / magic, 1 / 2);
+  for (const type of ['shield', 'claw', 'orb', 'unarmed']) assert.ok(Math.abs(getAttackDamage(actor, WEAPON_ATTACKS[type]) / physical - 1 / 3) < 1e-12);
+  for (const type of ['banner', 'holy-symbol', 'tarot-cards']) assert.ok(Math.abs(getAttackDamage(actor, WEAPON_ATTACKS[type]) / magic - 1 / 3) < 1e-12);
 });
 
 test('battle random modifiers range from eighty through one hundred twenty percent', () => {

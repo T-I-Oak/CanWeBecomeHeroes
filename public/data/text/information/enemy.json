@@ -1147,13 +1147,13 @@
         "ja": [
           {
             "type": "text",
-            "value": "相手を惑乱させ、仲間へ大きく刃を向けさせることがある。"
+            "value": "相手を激しく混乱させ、仲間へ刃を向けさせることがある。"
           }
         ],
         "en": [
           {
             "type": "text",
-            "value": "May strongly bewilder opponents and turn their weapons toward allies."
+            "value": "May deeply confuse opponents and turn their weapons toward allies."
           }
         ]
       }

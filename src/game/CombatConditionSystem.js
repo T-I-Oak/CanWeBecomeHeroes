@@ -6,7 +6,7 @@ export default class CombatConditionSystem {
     this.trackedCombatants = new Set();
     this.twoEdgedSwordMultipliers = new WeakMap();
     this.nightFamiliarCounts = new WeakMap();
-    this.bewilderedCombatants = new WeakSet();
+    this.bewilderedCombatants = new WeakMap();
     this.misfortuneDamageRates = new WeakMap();
   }
 
@@ -15,7 +15,7 @@ export default class CombatConditionSystem {
     this.trackedCombatants = new Set();
     this.twoEdgedSwordMultipliers = new WeakMap();
     this.nightFamiliarCounts = new WeakMap();
-    this.bewilderedCombatants = new WeakSet();
+    this.bewilderedCombatants = new WeakMap();
     this.misfortuneDamageRates = new WeakMap();
     combatants.forEach((combatant) => this.writeChip(combatant));
   }
@@ -34,6 +34,7 @@ export default class CombatConditionSystem {
     const multiplier = this.twoEdgedSwordMultipliers.get(combatant);
     chip.twoEdgedSwordMultiplier = multiplier > 1 ? multiplier : 0;
     chip.bewildered = this.bewilderedCombatants.has(combatant);
+    chip.bewildermentLevel = this.getBewildermentLevel(combatant);
     chip.misfortuneDamageRate = this.misfortuneDamageRates.get(combatant) ?? 0;
     chip.nightFamiliarCount = this.nightFamiliarCounts.get(combatant) ?? 0;
   }
@@ -90,8 +91,8 @@ export default class CombatConditionSystem {
     return true;
   }
 
-  applyBewilderment(combatant) {
-    this.bewilderedCombatants.add(combatant);
+  applyBewilderment(combatant, level = 1) {
+    this.bewilderedCombatants.set(combatant, Math.max(level, this.getBewildermentLevel(combatant)));
     this.effects?.bewilder(combatant);
     this.track(combatant);
   }
@@ -104,6 +105,8 @@ export default class CombatConditionSystem {
   }
 
   hasBewilderment(combatant) { return this.bewilderedCombatants.has(combatant); }
+
+  getBewildermentLevel(combatant) { return this.bewilderedCombatants.get(combatant) ?? 0; }
 
   applyMisfortune(combatant, damageRate) {
     this.misfortuneDamageRates.set(combatant, damageRate);
