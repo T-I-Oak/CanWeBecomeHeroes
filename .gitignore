@@ -3,3 +3,5 @@ dist/
 local_*
 dev_*
 tmp_*
+
+_agent/
