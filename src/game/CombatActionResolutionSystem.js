@@ -145,7 +145,6 @@ export default class CombatActionResolutionSystem {
   resolveNightFamiliarAttacks(actor, participants) {
     const familiarCount = this.conditionSystem.consumeNightFamiliars(actor);
     if (familiarCount === 0) return;
-    this.effects?.consumeNightFamiliars(actor);
     const damageByTarget = new Map();
     for (let index = 0; index < familiarCount; index += 1) {
       const opponents = this.targetingSystem.getOpponents(actor, participants);
@@ -156,6 +155,7 @@ export default class CombatActionResolutionSystem {
       const dealt = this.damageSystem.applyPhysicalDamage(actor, target, 'night-familiar', damage, false, participants, { propagate: (...args) => this.propagate(...args), record: false });
       if (dealt > 0) damageByTarget.set(target, (damageByTarget.get(target) ?? 0) + dealt);
     }
+    this.effects?.consumeNightFamiliars(actor);
     if (!this.gameLog) return;
     damageByTarget.forEach((damage, familiarTarget) => {
       logUniqueSkill(this.gameLog, this.textRepository, 'logFamiliarDamage', { actor: entityText(actor), familiar: termText('familiar'), target: entityText(familiarTarget), damage: Math.round(damage * 100) });

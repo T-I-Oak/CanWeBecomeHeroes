@@ -6,6 +6,8 @@ const HIT_RECOVERY = 0.34;
 const TAG_TRANSFER_DURATION = 0.32;
 const NIGHT_FAMILIAR_FLIGHT_DURATION = 0.28;
 const NIGHT_FAMILIAR_ASSET_PATH = '/assets/effects/night-familiar.png';
+const NIGHT_FAMILIAR_ORBIT_SPEED = 2.2;
+const NIGHT_FAMILIAR_FLAP_SPEED = Math.PI * 2 * 6;
 const BEWILDERMENT_ASSET_PATH = '/assets/effects/bewilderment-swirl.png';
 const BEWILDERMENT_SWIRL_COUNT = 3;
 
@@ -127,7 +129,9 @@ export default class CombatEffectSystem {
   }
 
   launchNightFamiliar(source, target, index, count) {
-    this.nightFamiliarFlights.push({ source: source.chip, target: target.chip, index, count, elapsed: 0 });
+    const familiars = this.nightFamiliars.get(source.chip);
+    const from = this.getNightFamiliarOrbitPosition(familiars ?? { source: source.chip, count, appearedAt: 0 }, index);
+    this.nightFamiliarFlights.push({ source: source.chip, target: target.chip, index, from, elapsed: 0 });
   }
 
   update(deltaSeconds) {
@@ -233,13 +237,14 @@ export default class CombatEffectSystem {
       });
       this.nightFamiliarFlights.forEach((effect) => {
         const progress = Math.min(1, effect.elapsed / NIGHT_FAMILIAR_FLIGHT_DURATION);
-        const from = this.getNightFamiliarOrbitPosition({ source: effect.source, count: effect.count, appearedAt: 0 }, effect.index);
+        const from = effect.from;
         const to = visualPosition(effect.target);
         this.drawNightFamiliar(context, assets, {
           x: from.x + (to.x - from.x) * progress,
           y: from.y + (to.y - from.y) * progress - Math.sin(progress * Math.PI) * 26,
           size: from.size * (1 - progress * 0.2),
-          angle: from.angle + progress * 0.6,
+          angle: Math.atan2(to.y - from.y, Math.abs(to.x - from.x)) * 0.25,
+          flap: this.getNightFamiliarFlap(effect.index),
         });
       });
     }
@@ -286,26 +291,35 @@ export default class CombatEffectSystem {
   getOrbitPosition(source, index, count, appearedAt) {
     const sourcePosition = visualPosition(source);
     const expand = Math.min(1, (this.elapsedSeconds - appearedAt) / 0.45);
-    const phase = this.elapsedSeconds * 4 + index * Math.PI * 2 / count;
+    const phase = this.elapsedSeconds * NIGHT_FAMILIAR_ORBIT_SPEED + index * Math.PI * 2 / count;
     const orbitRadius = source.radius * 1.05 * expand;
     return {
       x: sourcePosition.x + Math.cos(phase) * orbitRadius,
-      y: sourcePosition.y + Math.sin(phase) * orbitRadius * 0.54 - source.radius * 0.15,
+      y: sourcePosition.y + Math.sin(phase) * orbitRadius * 0.54 - source.radius * 0.15 + Math.sin(this.elapsedSeconds * 7 + index * 2.1) * 3 * expand,
       size: Math.max(28, source.radius * 0.58),
       angle: Math.sin(phase) * 0.18,
+      flap: this.getNightFamiliarFlap(index),
     };
   }
 
   drawNightFamiliar(context, assets, pose) {
-    this.drawEffectSprite(context, assets, NIGHT_FAMILIAR_ASSET_PATH, pose);
+    context.save();
+    context.filter = 'grayscale(1) brightness(0.32)';
+    this.drawEffectSprite(context, assets, NIGHT_FAMILIAR_ASSET_PATH, { ...pose, scaleX: pose.flap });
+    context.restore();
   }
 
-  drawEffectSprite(context, assets, path, { x, y, size, angle, pivotX = 0, pivotY = 0 }) {
+  getNightFamiliarFlap(index) {
+    return 0.78 + Math.sin(this.elapsedSeconds * NIGHT_FAMILIAR_FLAP_SPEED + index * 2.1) * 0.22;
+  }
+
+  drawEffectSprite(context, assets, path, { x, y, size, angle, pivotX = 0, pivotY = 0, scaleX = 1 }) {
     const asset = assets.load(path);
     if (!asset.complete || asset.naturalWidth === 0) return;
     context.save();
     context.translate(x, y);
     context.rotate(angle);
+    context.scale(scaleX, 1);
     context.drawImage(asset, -size / 2 + pivotX, -size / 2 + pivotY, size, size);
     context.restore();
   }

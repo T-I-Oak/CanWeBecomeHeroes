@@ -247,6 +247,23 @@ test('night familiar visuals use one asset at distinct positions around the owne
   assert.equal(effects.nightFamiliars.has(source.chip), false);
 });
 
+test('night familiar flight starts at its displayed orbit position and keeps that origin', () => {
+  const effects = new CombatEffectSystem();
+  const source = { chip: { x: 100, y: 120, height: 20, radius: 64 } };
+  const target = { chip: { x: 350, y: 120, height: 20, radius: 64 } };
+  effects.summonNightFamiliars(source, 3);
+  effects.update(0.2);
+  const position = effects.getNightFamiliarOrbitPosition(effects.nightFamiliars.get(source.chip), 1);
+  effects.launchNightFamiliar(source, target, 1, 3);
+  effects.consumeNightFamiliars(source);
+  assert.deepEqual(effects.nightFamiliarFlights[0].from, position);
+  source.chip.x += 100;
+  effects.update(0.1);
+  assert.deepEqual(effects.nightFamiliarFlights[0].from, position);
+  effects.update(0.18);
+  assert.equal(effects.nightFamiliarFlights.length, 0);
+});
+
 test('area head inherits its source tags, attacks immediately, and returns after its action', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const itemFactory = new ItemFactory();
