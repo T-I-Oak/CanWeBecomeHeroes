@@ -12,8 +12,19 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout game
         uses: actions/checkout@v4
+
+      - name: Checkout common library
+        uses: actions/checkout@v4
+        with:
+          repository: T-I-Oak/GameWorksOAK
+          ref: master
+          path: .ci/GameWorksOAK
+          persist-credentials: false
+
+      - name: Link common library beside game
+        run: ln -s "$GITHUB_WORKSPACE/.ci/GameWorksOAK" "$GITHUB_WORKSPACE/../GameWorksOAK"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4

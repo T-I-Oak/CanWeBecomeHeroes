@@ -2,9 +2,9 @@
 
 ## 対象と方針
 
-- ブランチ: `review/v0.40-periodic`。バージョン: `0.40.1`。
+- ブランチ: `review/v0.40-periodic`。バージョン: `0.40.2`。
 - 計画書の開発ルール、文書、テスト、ソース、バックログを点検した。
-- GameWorksOAKの共通文書は参照のみ。新規機能、ゲームバランス、既知バグの修正は行っていない。
+- GameWorksOAKの共通文書は参照のみ。新規機能、ゲームバランス、既存のゲーム内バグの修正は行っていない。オーナー指示によるCIビルド不具合の修正を追加した。
 
 ## 開発ルール
 
@@ -51,6 +51,17 @@
 - バランス調整の経過報告を現在の作業内容へ整理。
 - 惑乱エフェクト残留と課題選択画像の粗さは既に要望・バグ指摘にあるため重複追加せず、今回の対象外とした。
 
+## GitHub Actionsのビルド修正
+
+- 提示ログは0.39.0のビルド。deploy.ymlはゲームだけをcheckoutし、相対import先である隣接GameWorksOAKを配置していなかった。ローカル成功は隣接リポジトリが存在するためであり、CIと配置が異なっていた。
+- ゲームcheckoutはワークスペース直下の従来配置を維持し、T-I-Oak/GameWorksOAKのmasterをpath: .ci/GameWorksOAKへcheckoutするステップと、隣接位置../GameWorksOAKへのシンボリックリンクを追加。共通側の認証情報はpersist-credentials: falseとした。
+- デプロイActionの公式ソースではGITHUB_WORKSPACEをGit操作の作業ディレクトリにするため、ゲームのGitルートを移動する案を取りやめた。run、npmキャッシュ、デプロイのfolder: distは従来のゲームルート配置を維持。
+- tmp_ci_layout/CanWeBecomeHeroesへ作業ソースをコピーし、共通ライブラリ未配置でnpm.cmd run buildを実行。i18n.jsの相対import解決失敗を再現した（提示ログのdataManager.jsと同じ欠落原因）。
+- GameWorksOAKのHEAD c9b153a8ad5f2422f5cc9f27a0a939e5590b9df0のsrc/libだけをgit archiveでtmp_ci_layout/GameWorksOAKへ配置し、同じコマンドを再実行。168モジュール変換で成功した。依存パッケージは既存node_modulesを利用した。
+- GitHub Actions実機とLinux runnerでの成功は未確認。pushしていないためGitHubでの再実行はまだ行っていない。隣接参照の解決を隔離配置で確認し、最終的なcheckoutとリンク設定・デプロイの作業ルートは設定差分および公式ソースで確認した。Linuxのln実行そのものは未実施。
+- 検証用tmp_ci_layoutは点検後に削除した。共通リポジトリは変更していない。
+- 承認後の終了コミット2f32106は履歴に保持し、追加修正は未コミットとして再承認待ちとする。保存済み引継ぎ書のレビュー移行内容は、追加修正を反映した草案の承認後に更新する。
+
 ## 検証
 
 | 区分 | コマンド | 結果 |
@@ -62,7 +73,7 @@
 
 - 初回の全テストでも446件が合格した。変更後の全テスト・ビルドの結果を上表に記載した。
 - Nodeのlocalstorage-fileに関する環境警告は対象テストで出たが、テスト失敗はない。
-- public/data/update_history.jsonはv0運用の空配列を維持。package.jsonとpackage-lock.jsonを0.40.1へ更新。終了草案提示後の修正に着手したため、プロジェクト規定に従ってPatchを更新した。
+- public/data/update_history.jsonはv0運用の空配列を維持。package.jsonとpackage-lock.jsonを0.40.2へ更新。終了草案提示後の修正に着手したため、プロジェクト規定に従ってPatchを更新した。
 - 実機操作・公開環境・新規の画面目視確認は実施していない。
 
 ## ソース分割後のテスト対応
@@ -79,7 +90,7 @@
 - 既存テストにGameAppを直接対象とするものはなく、移動した接続処理を既存446件が直接検証していなかった。テストファイルを機械的に改名せず、追加テストをsrc/appに対応するimplementation/appへ配置した。
 - 追加テストは実際のstartTrialと各ゲームシステムを実行し、DOM・Canvas・画像のブラウザ境界だけを代替する。選択した2名の初期配置、課題選択中の停止、選択後の敵出現、Hero情報対象の実体解決、時刻進行と一時停止中の更新を検証する。画面の見た目は検証しない。
 - 初回実行でHeroDirectionIndicatorRendererのimport欠落によるReferenceErrorを検出した。ソース分割時の誤削除であり、今回の変更が原因なのでimportを復元した。既存テストと本番ビルドの成功だけでは検出できない接続上の欠陥だった。
-- 追加対象テスト: `node --test tests/implementation/app/TrialSession.test.js`。1件合格。上表の全テスト・本番ビルドはimport復元後の0.40.1で再実行した結果。
+- 追加対象テスト: `node --test tests/implementation/app/TrialSession.test.js`。1件合格。上表の全テスト・本番ビルドはCI修正後の0.40.2で再実行した結果。
 
 ## オーナー検証候補
 
