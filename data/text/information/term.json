@@ -1,0 +1,194 @@
+{
+  "tag-skill": {
+    "name": {
+      "lang-store": {
+        "ja": "タグスキル",
+        "en": "Tag Skills"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "同じタグを1・3・5・7個持つと、そのタグに応じた効果が自動で発動する。タグの数に応じて、効果は強化される。効果を持たないタグもある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Having 1, 3, 5, or 7 of the same tag automatically activates that tag's skill. Its effect grows stronger as the tag count increases. Some tags have no skill."
+          }
+        ]
+      }
+    }
+  },
+  "item-value": {
+    "name": {
+      "lang-store": {
+        "ja": "価値",
+        "en": "Value"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "アイテムに付いたタグの種類や数によって決まる値。ショップでは、買い物袋に入れたアイテムの価値が高いほど、多くのタグが付いた装備を受け取れる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A value determined by the types and number of tags on an item. At the Shop, higher-value items in the shopping bag yield equipment with more tags."
+          }
+        ]
+      }
+    }
+  },
+  "action-gauge": {
+    "name": {
+      "lang-store": {
+        "ja": "アクションゲージ",
+        "en": "Action Gauge"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "戦闘中、次の行動までの進み具合を表すゲージ。時間とともにたまり、満タンになると行動する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A gauge that shows progress toward the next action in battle. It fills over time, and the character acts when it is full."
+          }
+        ]
+      }
+    }
+  },
+  "two-edged-sword": {
+    "name": {
+      "lang-store": {
+        "ja": "諸刃の剣",
+        "en": "Two-Edged Sword"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "会心ダメージが増える状態。攻撃を受けるか、自身の攻撃を終えると解除される。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A state that increases critical damage. It ends when the affected combatant takes damage or finishes an attack."
+          }
+        ]
+      }
+    }
+  },
+  "bewilderment": {
+    "name": {
+      "lang-store": {
+        "ja": "惑乱",
+        "en": "Bewilderment"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "仲間に攻撃を向ける状態。仲間がいなければ、自分に攻撃を向ける。攻撃した対象に惑乱が伝染することがある。行動後も惑乱が継続することがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A state that turns attacks toward allies, or toward oneself when no ally can be targeted. Bewilderment may spread to the target of an attack and may persist after an action."
+          }
+        ]
+      }
+    }
+  },
+  "misfortune": {
+    "name": {
+      "lang-store": {
+        "ja": "不運",
+        "en": "Misfortune"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "会心ダメージの一部または全部を自身に与える状態。行動後に解除される。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A state that deals part or all of critical damage to the attacker. It ends after the action."
+          }
+        ]
+      }
+    }
+  },
+  "familiar": {
+    "name": {
+      "lang-store": {
+        "ja": "使い魔",
+        "en": "Familiar"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "召喚元の周囲を周回し、次の攻撃で相手へ飛びかかる。召喚元がダメージを受けると1体消える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Circles its summoner and leaps at an opponent on the next attack. One vanishes each time the summoner takes damage."
+          }
+        ]
+      }
+    }
+  },
+  "physical-defense": {
+    "name": {
+      "lang-store": {
+        "ja": "物理防御",
+        "en": "Physical Defense"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "物理攻撃の一部をやわらげる状態。攻撃を受けると減り、尽きると消える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "A state that softens a portion of physical attacks. It decreases when an attack is received, and ends when depleted."
+          }
+        ]
+      }
+    }
+  }
+}

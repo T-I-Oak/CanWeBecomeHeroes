@@ -1,0 +1,284 @@
+{
+  "shop": {
+    "name": {
+      "lang-store": {
+        "ja": "ショップ",
+        "en": "Shop"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "石畳の店先に、売り物と掘り出し物が並ぶ。",
+        "en": "Goods and hidden bargains line the cobblestone storefront."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "買い物袋に入れた装備を売ると、そのアイテムの"
+          },
+          {
+            "type": "term",
+            "id": "item-value"
+          },
+          {
+            "type": "text",
+            "value": "と"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "negotiation"
+          },
+          {
+            "type": "text",
+            "value": "に応じた装備を受け取れる。取引には"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": "を300消費する。取引を終えると、装備をすべて失って"
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": "へ帰還する。右側の黒板で、今回と次回の販売傾向を確認できる。"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "gem"
+          },
+          {
+            "type": "text",
+            "value": "のタグスキルに応じて、取引で得られる装備のタグ数がさらに増えることがある。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Sell the equipment in your shopping bag to receive equipment based on its "
+          },
+          {
+            "type": "term",
+            "id": "item-value"
+          },
+          {
+            "type": "text",
+            "value": " and your "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "negotiation"
+          },
+          {
+            "type": "text",
+            "value": ". A trade costs 300 "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": ". After trading, you lose all your equipment and return "
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": ". The blackboards on the right show the current and next shop trends. Your "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "gem"
+          },
+          {
+            "type": "text",
+            "value": " tag skill may add more tags to the equipment you receive."
+          }
+        ]
+      }
+    }
+  },
+  "guild": {
+    "name": {
+      "lang-store": {
+        "ja": "ギルド",
+        "en": "Guild"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "木の壁に囲まれた窓口の脇で、掲示板が静かに知らせを待っている。",
+        "en": "Beside a counter framed by wooden walls, a noticeboard quietly awaits the next announcement."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "貢献ポイントを使って試験期限の延長を申請できる。申請には"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": "を300消費する。申請を終えると、装備をすべて失って"
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": "へ帰還する。"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "reputation"
+          },
+          {
+            "type": "text",
+            "value": "のタグスキルに応じて、貢献ポイントあたりの延長時間が増える。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Spend contribution points to request an extension to the exam deadline. Applying costs 300 "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": ". After applying, you lose all your equipment and return "
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": ". Your "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "reputation"
+          },
+          {
+            "type": "text",
+            "value": " tag skill increases the extension time gained per contribution point."
+          }
+        ]
+      }
+    }
+  },
+  "training": {
+    "name": {
+      "lang-store": {
+        "ja": "訓練場",
+        "en": "Training Ground"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "勇者試験に挑む仮免許の勇者たちが、腕を磨く場所。",
+        "en": "A place for provisional heroes to hone their skills for the hero exam."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": "を消費してステータス上限を高められる。"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": "が0になると訓練を終え、装備をすべて失って"
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": "へ帰還する。ゲージで、今回の訓練で上がったステータスを確認できる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Spend "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": " to raise your stat caps. When "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": " reaches 0, training ends. You lose all your equipment and return "
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": ". The gauges show which stats improved during this training session."
+          }
+        ]
+      }
+    }
+  }
+}

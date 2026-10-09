@@ -1,0 +1,196 @@
+{
+  "preparation": {
+    "name": {
+      "lang-store": {
+        "ja": "拠点",
+        "en": "Home"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "次の出発に備え、味方たちが束の間の休息をとる場所。",
+        "en": "A place where companions enjoy a brief rest before setting out again."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "拠点で待機している味方の"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": "は、時間とともに回復する。"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": "が300以上の味方をアイテムへドラッグすると、装備を始めて出発する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Allies resting here recover "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": " over time. Drag an ally with at least 300 "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": " onto an item to have them equip it and set out."
+          }
+        ]
+      }
+    }
+  },
+  "warehouse": {
+    "name": {
+      "lang-store": {
+        "ja": "倉庫",
+        "en": "Warehouse"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "まだ使い手の決まらない装備が、次の出番を待つ場所。",
+        "en": "Equipment without a wielder waits here for its next chance to shine."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "battle"
+          },
+          {
+            "type": "text",
+            "value": "で手に入れた装備や、"
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "shop"
+          },
+          {
+            "type": "text",
+            "value": "から届いた装備が保管される。ここから装備を選び、味方に身につけさせられる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Stores equipment obtained at the "
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "battle"
+          },
+          {
+            "type": "text",
+            "value": " or delivered from the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "shop"
+          },
+          {
+            "type": "text",
+            "value": ". Choose equipment here for your allies to wear."
+          }
+        ]
+      }
+    }
+  },
+  "battle": {
+    "name": {
+      "lang-store": {
+        "ja": "試験場",
+        "en": "Exam Grounds"
+      }
+    },
+    "flavor": {
+      "lang-store": {
+        "ja": "勇者試験に挑む仮免許の勇者たちと、行く手を阻む敵が向かい合う場所。",
+        "en": "Provisional heroes taking the hero exam face the enemies standing in their way."
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "味方と敵が自動で戦う。"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": "が0になった味方は、戦闘から一時離脱して装備をすべて失い、"
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": "へ帰還する。敵を全滅させることで課題クリアーとなる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Allies and enemies fight automatically. When an ally's "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": " reaches 0, they temporarily leave battle, lose all their equipment, and return "
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": ". Defeat all enemies to clear the challenge."
+          }
+        ]
+      }
+    }
+  }
+}

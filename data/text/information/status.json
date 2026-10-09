@@ -1,0 +1,614 @@
+{
+  "power": {
+    "name": {
+      "lang-store": {
+        "ja": "パワー",
+        "en": "Power"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "物理攻撃で与えるダメージに影響する。"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "valor"
+          },
+          {
+            "type": "text",
+            "value": "と"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "iron"
+          },
+          {
+            "type": "text",
+            "value": "のうち多い方のタグ数がパワー値になる。パワー値はパワーステータス上限を超えず、その上限は"
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "で高められる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Affects physical damage dealt. Power equals the higher of your "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "valor"
+          },
+          {
+            "type": "text",
+            "value": " and "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "iron"
+          },
+          {
+            "type": "text",
+            "value": " tag counts, up to your Power cap. You can raise this cap at the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "magic": {
+    "name": {
+      "lang-store": {
+        "ja": "魔力",
+        "en": "Magic"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "魔法攻撃で与えるダメージに影響する。"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "arcane"
+          },
+          {
+            "type": "text",
+            "value": "と"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "cloth"
+          },
+          {
+            "type": "text",
+            "value": "のうち多い方のタグ数が魔力値になる。魔力値は魔力ステータス上限を超えず、その上限は"
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "で高められる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Affects magical damage dealt. Magic equals the higher of your "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "arcane"
+          },
+          {
+            "type": "text",
+            "value": " and "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "cloth"
+          },
+          {
+            "type": "text",
+            "value": " tag counts, up to your Magic cap. You can raise this cap at the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "speed": {
+    "name": {
+      "lang-store": {
+        "ja": "スピード",
+        "en": "Speed"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "スピード値が高いほど、戦闘中の"
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "action-gauge"
+          },
+          {
+            "type": "text",
+            "value": "が短くなる。"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "dexterity"
+          },
+          {
+            "type": "text",
+            "value": "と"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "feather"
+          },
+          {
+            "type": "text",
+            "value": "のうち多い方のタグ数がスピード値になる。スピード値はスピードステータス上限を超えず、その上限は"
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "で高められる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Higher Speed shortens the "
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "action-gauge"
+          },
+          {
+            "type": "text",
+            "value": " in battle. Speed equals the higher of your "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "dexterity"
+          },
+          {
+            "type": "text",
+            "value": " and "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "feather"
+          },
+          {
+            "type": "text",
+            "value": " tag counts, up to your Speed cap. You can raise this cap at the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "negotiation": {
+    "name": {
+      "lang-store": {
+        "ja": "交渉力",
+        "en": "Negotiation"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "ショップの取引で得られる装備のタグ数に影響する。"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "reputation"
+          },
+          {
+            "type": "text",
+            "value": "と"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "gem"
+          },
+          {
+            "type": "text",
+            "value": "のうち多い方のタグ数が交渉力値になる。交渉力値は交渉力ステータス上限を超えず、その上限は"
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "で高められる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Affects how many tags the equipment received in shop trades has. Negotiation equals the higher of your "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "reputation"
+          },
+          {
+            "type": "text",
+            "value": " and "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "gem"
+          },
+          {
+            "type": "text",
+            "value": " tag counts, up to your Negotiation cap. You can raise this cap at the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "luck": {
+    "name": {
+      "lang-store": {
+        "ja": "運",
+        "en": "Luck"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "会心など、偶然に左右される結果に影響する。"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "blessing"
+          },
+          {
+            "type": "text",
+            "value": "と"
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "fortune"
+          },
+          {
+            "type": "text",
+            "value": "のうち多い方のタグ数が運の値になる。運の値は運ステータス上限を超えず、その上限は"
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "で高められる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Affects critical hits and other chance-based outcomes. Luck equals the higher of your "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "blessing"
+          },
+          {
+            "type": "text",
+            "value": " and "
+          },
+          {
+            "type": "reference",
+            "kind": "tag",
+            "id": "fortune"
+          },
+          {
+            "type": "text",
+            "value": " tag counts, up to your Luck cap. You can raise this cap at the "
+          },
+          {
+            "type": "reference",
+            "kind": "facility",
+            "id": "training"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "stamina": {
+    "name": {
+      "lang-store": {
+        "ja": "スタミナ",
+        "en": "Stamina"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "味方の"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "。戦闘で受けたダメージや施設の利用で減る。"
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": "で待機している間は時間とともに回復する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "An ally's "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". Decreases when taking damage in battle or using facilities. Recovers over time while resting at "
+          },
+          {
+            "type": "reference",
+            "kind": "area",
+            "id": "preparation"
+          },
+          {
+            "type": "text",
+            "value": "."
+          }
+        ]
+      }
+    }
+  },
+  "hp": {
+    "name": {
+      "lang-store": {
+        "ja": "HP",
+        "en": "HP"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "敵の"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": "。戦闘で受けたダメージで減る。0になると撃破される。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "An enemy's "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "durability"
+          },
+          {
+            "type": "text",
+            "value": ". Decreases when taking damage in battle. The enemy is defeated when it reaches 0."
+          }
+        ]
+      }
+    }
+  },
+  "durability": {
+    "name": {
+      "lang-store": {
+        "ja": "耐久値",
+        "en": "Durability"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "戦闘でキャラクターが受けられるダメージの残りを表す。味方は"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": "、敵は"
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "hp"
+          },
+          {
+            "type": "text",
+            "value": "で表示される。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "The remaining damage a character can withstand in battle. Displayed as "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "stamina"
+          },
+          {
+            "type": "text",
+            "value": " for allies and "
+          },
+          {
+            "type": "reference",
+            "kind": "status",
+            "id": "hp"
+          },
+          {
+            "type": "text",
+            "value": " for enemies."
+          }
+        ]
+      }
+    }
+  },
+  "weight": {
+    "name": {
+      "lang-store": {
+        "ja": "重量",
+        "en": "Weight"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "タグの種類ごとに決まった重さがある。重量は、移動速度や戦闘での"
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "action-gauge"
+          },
+          {
+            "type": "text",
+            "value": "のたまり方に影響する。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Each tag type has a fixed weight. Weight affects movement speed and how quickly the "
+          },
+          {
+            "type": "reference",
+            "kind": "term",
+            "id": "action-gauge"
+          },
+          {
+            "type": "text",
+            "value": " fills in battle."
+          }
+        ]
+      }
+    }
+  }
+}

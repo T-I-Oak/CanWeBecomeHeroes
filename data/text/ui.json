@@ -1,0 +1,503 @@
+{
+  "tutorialNext": {
+    "lang-store": { "ja": "次へ", "en": "Next" }
+  },
+  "weaponTargetingNote": {
+    "lang-store": {
+      "ja": "複数の武器を装備している場合、先に装備した武器で攻撃対象が決まります。",
+      "en": "When multiple weapons are equipped, the weapon equipped first determines the attack target."
+    }
+  },
+  "language": {
+    "lang-store": {
+      "ja": "言語",
+      "en": "Language"
+    }
+  },
+  "tutorial": {
+    "lang-store": {
+      "ja": "チュートリアル",
+      "en": "Tutorial"
+    }
+  },
+  "resetTutorial": {
+    "lang-store": {
+      "ja": "チュートリアルリセット",
+      "en": "Reset Tutorial"
+    }
+  },
+  "reset": {
+    "lang-store": {
+      "ja": "リセット",
+      "en": "Reset"
+    }
+  },
+  "tutorialResetCompleted": {
+    "lang-store": {
+      "ja": "チュートリアルの進捗をリセットしました。",
+      "en": "Tutorial progress has been reset."
+    }
+  },
+  "trialCertificateTitle": {
+    "lang-store": {
+      "ja": "勇者試験 合格証明書",
+      "en": "Hero Trial Certificate"
+    }
+  },
+  "trialCertificateStatement": {
+    "lang-store": {
+      "ja": "ここに、下記の者が勇者試験に合格したことを証明します。",
+      "en": "This certifies that the following individuals have passed the Hero Trial."
+    }
+  },
+  "trialCertificateDate": {
+    "lang-store": {
+      "ja": "認定日",
+      "en": "Date of certification"
+    }
+  },
+  "trialCertificateIssuer": {
+    "lang-store": {
+      "ja": "勇者ギルド試験委員会",
+      "en": "Hero Guild Examination Committee"
+    }
+  },
+  "trialCertificateSeal": {
+    "lang-store": {
+      "ja": "認定印",
+      "en": "Certified"
+    }
+  },
+  "trialFailureTitle": {
+    "lang-store": {
+      "ja": "不合格通知",
+      "en": "Notice of Failure"
+    }
+  },
+  "trialFailureMessage": {
+    "lang-store": {
+      "ja": "今回の勇者試験は不合格となりました。",
+      "en": "You did not pass this Hero Trial."
+    }
+  },
+  "gameProgress": {
+    "lang-store": {
+      "ja": "ゲーム進行",
+      "en": "Game progress"
+    }
+  },
+  "shopSale": {
+    "lang-store": {
+      "ja": "今回",
+      "en": "CURRENT"
+    }
+  },
+  "shopNext": {
+    "lang-store": {
+      "ja": "次回",
+      "en": "NEXT"
+    }
+  },
+  "combatMiss": {
+    "lang-store": {
+      "ja": "Miss!",
+      "en": "miss!"
+    }
+  },
+  "combatDamage": {
+    "lang-store": {
+      "ja": "Damage {amount}",
+      "en": "damage {amount}"
+    }
+  },
+  "combatCritical": {
+    "lang-store": {
+      "ja": "Critical {amount}",
+      "en": "critical {amount}"
+    }
+  },
+  "documentLanguage": {
+    "lang-store": {
+      "ja": "ja",
+      "en": "en"
+    }
+  },
+  "normalSize": {
+    "lang-store": {
+      "ja": "通常サイズで表示する",
+      "en": "Show at normal size"
+    }
+  },
+  "compactSize": {
+    "lang-store": {
+      "ja": "50%に縮小して表示する",
+      "en": "Show at 50% size"
+    }
+  },
+  "pin": {
+    "lang-store": {
+      "ja": "ピン止めする",
+      "en": "Pin window"
+    }
+  },
+  "unpin": {
+    "lang-store": {
+      "ja": "ピン止めを外す",
+      "en": "Unpin window"
+    }
+  },
+  "openInformation": {
+    "lang-store": {
+      "ja": "{name}の情報を開く",
+      "en": "Open information about {name}"
+    }
+  },
+  "openTagInformation": {
+    "lang-store": {
+      "ja": "{name}タグの情報を開く",
+      "en": "Open information about the {name} tag"
+    }
+  },
+  "heroIdentity": {
+    "lang-store": {
+      "ja": "{profession}・{name}",
+      "en": "{name} the {profession}"
+    }
+  },
+  "gameScreen": {
+    "lang-store": {
+      "ja": "Can We Become Heroes? ゲーム画面",
+      "en": "Can We Become Heroes? game screen"
+    }
+  },
+  "controls": {
+    "lang-store": {
+      "ja": "ゲーム操作",
+      "en": "Game controls"
+    }
+  },
+  "settings": {
+    "lang-store": {
+      "ja": "設定",
+      "en": "Settings"
+    }
+  },
+  "close": {
+    "lang-store": {
+      "ja": "閉じる",
+      "en": "Close"
+    }
+  },
+  "resize": {
+    "lang-store": {
+      "ja": "大きさを変える",
+      "en": "Resize"
+    }
+  },
+  "speed": {
+    "lang-store": {
+      "ja": "通常速度",
+      "en": "Normal speed"
+    }
+  },
+  "acceleratedSpeed": {
+    "lang-store": {
+      "ja": "加速時速度",
+      "en": "Accelerated speed"
+    }
+  },
+  "slow": {
+    "lang-store": {
+      "ja": "遅い",
+      "en": "Slow"
+    }
+  },
+  "normal": {
+    "lang-store": {
+      "ja": "標準",
+      "en": "Normal"
+    }
+  },
+  "fast": {
+    "lang-store": {
+      "ja": "速い",
+      "en": "Fast"
+    }
+  },
+  "autoPause": {
+    "lang-store": {
+      "ja": "自動停止",
+      "en": "Auto-pause"
+    }
+  },
+  "pauseInformation": {
+    "lang-store": {
+      "ja": "詳細表示時",
+      "en": "When viewing details"
+    }
+  },
+  "pauseStamina": {
+    "lang-store": {
+      "ja": "仲間のスタミナ満タン時",
+      "en": "When an ally's Stamina is full"
+    }
+  },
+  "autoAccelerate": {
+    "lang-store": {
+      "ja": "自動加速",
+      "en": "Auto-speed"
+    }
+  },
+  "accelerateEmpty": {
+    "lang-store": {
+      "ja": "待機エリアに仲間がいない時",
+      "en": "When no allies are resting at Home"
+    }
+  },
+  "overheadStatus": {
+    "lang-store": {
+      "ja": "頭上表示",
+      "en": "Overhead display"
+    }
+  },
+  "overheadStatusVisibility": {
+    "lang-store": {
+      "ja": "表示タイミング",
+      "en": "Show"
+    }
+  },
+  "overheadStatusAlways": {
+    "lang-store": {
+      "ja": "常時",
+      "en": "Always"
+    }
+  },
+  "overheadStatusBattle": {
+    "lang-store": {
+      "ja": "戦闘中",
+      "en": "In battle"
+    }
+  },
+  "logs": {
+    "lang-store": {
+      "ja": "ゲームログ",
+      "en": "Game log"
+    }
+  },
+  "informationWindows": {
+    "lang-store": {
+      "ja": "情報ウィンドウ",
+      "en": "Information windows"
+    }
+  },
+  "paused": {
+    "lang-store": {
+      "ja": "停止中",
+      "en": "Paused"
+    }
+  },
+  "autoPaused": {
+    "lang-store": {
+      "ja": "自動停止",
+      "en": "Auto-paused"
+    }
+  },
+  "accelerated": {
+    "lang-store": {
+      "ja": "加速中",
+      "en": "Accelerated"
+    }
+  },
+  "running": {
+    "lang-store": {
+      "ja": "進行中",
+      "en": "Running"
+    }
+  },
+  "resume": {
+    "lang-store": {
+      "ja": "▶ 再開",
+      "en": "▶ Resume"
+    }
+  },
+  "pause": {
+    "lang-store": {
+      "ja": "⏸ 一時停止",
+      "en": "⏸ Pause"
+    }
+  },
+  "chooseRoute": {
+    "lang-store": {
+      "ja": "試験課題を選択してください",
+      "en": "Choose a task"
+    }
+  },
+  "startPartySelection": {
+    "lang-store": {
+      "ja": "パーティー選択",
+      "en": "Party Selection"
+    }
+  },
+  "startTrial": {
+    "lang-store": {
+      "ja": "試験に出発する",
+      "en": "Depart for Trial"
+    }
+  },
+  "beginTrial": {
+    "lang-store": {
+      "ja": "試験をはじめる",
+      "en": "Begin a Trial"
+    }
+  },
+  "startGame": {
+    "lang-store": {
+      "ja": "ゲーム開始",
+      "en": "Start Game"
+    }
+  },
+  "challengeMode": {
+    "lang-store": {
+      "ja": "チャレンジモード",
+      "en": "Challenge Mode"
+    }
+  },
+  "records": {
+    "lang-store": {
+      "ja": "レコード",
+      "en": "Records"
+    }
+  },
+  "recordsEmpty": {
+    "lang-store": {
+      "ja": "まだ記録はありません",
+      "en": "No records yet"
+    }
+  },
+  "returnToTitle": {
+    "lang-store": {
+      "ja": "タイトルへ戻る",
+      "en": "Return to Title"
+    }
+  },
+  "stageNumber": {
+    "lang-store": {
+      "ja": "第{number}試験",
+      "en": "Trial {number}"
+    }
+  },
+  "currentShop": {
+    "lang-store": {
+      "ja": "今回の店",
+      "en": "Current shop"
+    }
+  },
+  "nextShop": {
+    "lang-store": {
+      "ja": "次回の店",
+      "en": "Next shop"
+    }
+  },
+  "selectRoute": {
+    "lang-store": {
+      "ja": "この課題へ",
+      "en": "Take this task"
+    }
+  },
+  "remaining": {
+    "lang-store": {
+      "ja": "残り期限",
+      "en": "Time left"
+    }
+  },
+  "contributionExtension": {
+    "lang-store": {
+      "ja": "延長見込",
+      "en": "Est. extension"
+    }
+  },
+  "elapsed": {
+    "lang-store": {
+      "ja": "経過時間",
+      "en": "Elapsed"
+    }
+  },
+  "contribution": {
+    "lang-store": {
+      "ja": "貢献ポイント",
+      "en": "Contribution points"
+    }
+  },
+  "extension": {
+    "lang-store": {
+      "ja": "延長見込",
+      "en": "Extension"
+    }
+  },
+  "daysHours": {
+    "lang-store": {
+      "ja": "{days}日 {hours}時間",
+      "en": "{days}d {hours}h"
+    }
+  },
+  "hours": {
+    "lang-store": {
+      "ja": "{hours}時間",
+      "en": "{hours} h"
+    }
+  },
+  "maxHours": {
+    "lang-store": {
+      "ja": "24時間（MAX）",
+      "en": "24h (MAX)"
+    }
+  },
+  "headPart": {
+    "lang-store": {
+      "ja": "頭装備",
+      "en": "headgear"
+    }
+  },
+  "torsoPart": {
+    "lang-store": {
+      "ja": "胴装備",
+      "en": "body armor"
+    }
+  },
+  "weaponPart": {
+    "lang-store": {
+      "ja": "手装備",
+      "en": "hand equipment"
+    }
+  },
+  "feetPart": {
+    "lang-store": {
+      "ja": "脚装備",
+      "en": "footwear"
+    }
+  },
+  "battleDestination": {
+    "lang-store": {
+      "ja": "戦闘",
+      "en": "battle"
+    }
+  },
+  "shopDestination": {
+    "lang-store": {
+      "ja": "ショップ",
+      "en": "the shop"
+    }
+  },
+  "guildDestination": {
+    "lang-store": {
+      "ja": "ギルド",
+      "en": "the guild"
+    }
+  },
+  "trainingDestination": {
+    "lang-store": {
+      "ja": "訓練",
+      "en": "training"
+    }
+  }
+}

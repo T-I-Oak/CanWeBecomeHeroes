@@ -1,0 +1,66 @@
+{
+  "swordfighter": {
+    "name": {
+      "lang-store": {
+        "ja": "剣士",
+        "en": "Swordfighter"
+      }
+    }
+  },
+  "guard": {
+    "name": {
+      "lang-store": {
+        "ja": "衛兵",
+        "en": "Guard"
+      }
+    }
+  },
+  "mage": {
+    "name": {
+      "lang-store": {
+        "ja": "魔法使い",
+        "en": "Mage"
+      }
+    }
+  },
+  "cleric": {
+    "name": {
+      "lang-store": {
+        "ja": "僧侶",
+        "en": "Cleric"
+      }
+    }
+  },
+  "thief": {
+    "name": {
+      "lang-store": {
+        "ja": "盗賊",
+        "en": "Thief"
+      }
+    }
+  },
+  "hunter": {
+    "name": {
+      "lang-store": {
+        "ja": "狩人",
+        "en": "Hunter"
+      }
+    }
+  },
+  "merchant": {
+    "name": {
+      "lang-store": {
+        "ja": "商人",
+        "en": "Merchant"
+      }
+    }
+  },
+  "negotiator": {
+    "name": {
+      "lang-store": {
+        "ja": "交渉人",
+        "en": "Negotiator"
+      }
+    }
+  }
+}

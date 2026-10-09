@@ -1,0 +1,322 @@
+{
+  "Avery": {
+    "name": {
+      "lang-store": {
+        "ja": "アヴェリー",
+        "en": "Avery"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "幼なじみのブライアーと、どちらが先に勇者になるか競ってきた。格好よく決めたい気持ちは誰より強く、困っている人は放っておけない。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Avery has competed with childhood friend Briar to see who will become a hero first. No one wants to look impressive more, but Avery can never leave someone in trouble unaided."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "真っ向から斬り込む、物理攻撃の得意手。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Charges straight into the fray, excelling at physical attacks."
+          }
+        ]
+      }
+    }
+  },
+  "Briar": {
+    "name": {
+      "lang-store": {
+        "ja": "ブライアー",
+        "en": "Briar"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "幼なじみのアヴェリーに置いていかれまいと、勇者試験を受けた。慎重に周囲を見ているが、勝負となれば決して譲らない。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Briar entered the hero exam determined not to be left behind by childhood friend Avery. Usually watchful and cautious, Briar refuses to yield when a contest begins."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "物理攻撃を受け止め、仲間を守る。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Withstands physical attacks and protects companions."
+          }
+        ]
+      }
+    }
+  },
+  "Casey": {
+    "name": {
+      "lang-store": {
+        "ja": "ケイシー",
+        "en": "Casey"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "机上の術式より、実地で確かめる方が好き。未知の魔法と出会うため、危険も多い勇者試験へ飛び込んだ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Casey prefers testing spells in the field to studying formulas at a desk. The chance to discover unfamiliar magic was worth plunging into the dangers of the hero exam."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "守りをすり抜ける、強力な魔法攻撃を放つ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Unleashes powerful magical attacks that slip past defenses."
+          }
+        ]
+      }
+    }
+  },
+  "Darcy": {
+    "name": {
+      "lang-store": {
+        "ja": "ダーシー",
+        "en": "Darcy"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "困っている人を見過ごせない。もっと遠くの誰かにも手を伸ばせるよう、勇者になる道を選んだ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Darcy cannot pass by someone in need. Becoming a hero is a way to reach those who need help, even far away."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "仲間が受けた炎・水・雷属性の影響を和らげる。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Reduces the effects of fire, water, and lightning on companions."
+          }
+        ]
+      }
+    }
+  },
+  "Ellis": {
+    "name": {
+      "lang-store": {
+        "ja": "エリス",
+        "en": "Ellis"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "昔は小遣い稼ぎに盗みもしたが、悪い相手から大事な物を取り返した時の方が、ずっと気分がよかった。自分の手癖を胸を張れる仕事へ変えたくて、勇者試験に紛れ込んだ。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Ellis once stole for pocket money, but taking someone's treasured possessions back from a villain felt far better. Hoping to turn sticky fingers into work worth being proud of, Ellis slipped into the hero exam."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "相手の装備を盗み、戦力を崩す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Steals opponents' equipment to weaken them."
+          }
+        ]
+      }
+    }
+  },
+  "Finley": {
+    "name": {
+      "lang-store": {
+        "ja": "フィンリー",
+        "en": "Finley"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "山で迷った人を見つけ、無事に下山させたことがある。危険な場所でも誰かを見つけ出すため、勇者試験に挑む。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Finley once found someone lost in the mountains and guided them safely down. The hero exam is another step toward finding people who need help, even in dangerous places."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "誰より早く動き、弓を持てば遠い相手も狙える。ただし力押しは苦手。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Acts faster than anyone and can target distant opponents with a bow, but struggles with brute force."
+          }
+        ]
+      }
+    }
+  },
+  "Garnet": {
+    "name": {
+      "lang-store": {
+        "ja": "ガーネット",
+        "en": "Garnet"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "必要な物が必要な場所へ届かない場面を見てきた。もっと遠くまで品物と助けを運ぶため、勇者を目指す。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Garnet has seen essential supplies fail to reach the places that need them. Becoming a hero means carrying goods and help farther than ever."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "宝珠で相手の動きを鈍らせる。買い物も得意。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Slows opponents with an orb. Also excels at shopping."
+          }
+        ]
+      }
+    }
+  },
+  "Harper": {
+    "name": {
+      "lang-store": {
+        "ja": "ハーパー",
+        "en": "Harper"
+      }
+    },
+    "description": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "言葉で減らせる争いは多いと信じる。誰にでも届く発言力を得るため、勇者の肩書きを目指している。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Harper believes that words can prevent many conflicts. The title of hero could give those words the authority to reach anyone."
+          }
+        ]
+      }
+    },
+    "combatStyle": {
+      "lang-store": {
+        "ja": [
+          {
+            "type": "text",
+            "value": "仲間の行動を早め、ギルドとの交渉も有利に進める。"
+          }
+        ],
+        "en": [
+          {
+            "type": "text",
+            "value": "Quickens companions' actions and gains an advantage in negotiations with the guild."
+          }
+        ]
+      }
+    }
+  }
+}
