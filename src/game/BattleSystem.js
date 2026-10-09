@@ -47,7 +47,6 @@ export default class BattleSystem {
       getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
       clearCombatant: (combatant) => {
         this.conditionSystem.clearCombatant(combatant);
-        this.effects?.clearNightFamiliars?.(combatant);
       },
     });
     this.uniqueSkillEffectSystem = uniqueSkillEffectSystem ?? new UniqueSkillEffectSystem({ board, controller, enemyFactory, uniqueSkillSystem: this.uniqueSkillSystem, random });
@@ -58,7 +57,10 @@ export default class BattleSystem {
     });
     this.actionGaugeSystem = actionGaugeSystem;
     this.actionLog = actionLog ?? new CombatActionLog({ gameLog, textRepository });
-    this.projectionSystem = projectionSystem ?? new CombatProjectionSystem({ board, controller, actionGaugeSystem });
+    this.projectionSystem = projectionSystem ?? new CombatProjectionSystem({
+      board, controller, actionGaugeSystem,
+      clearCombatant: (combatant) => this.conditionSystem.clearCombatant(combatant),
+    });
     this.attributeSystem = attributeSystem ?? new CombatAttributeSystem({
       board,
       effects,
@@ -78,7 +80,6 @@ export default class BattleSystem {
       onHeroDepleted: (hero) => {
         this.knockbackSystem.cancel(hero);
         this.conditionSystem.clearCombatant(hero);
-        this.effects?.clearNightFamiliars?.(hero);
         this.returnSystem?.begin(hero);
       },
       onDamageApplied: (damageEvent) => this.damageReactionSystem.resolve(damageEvent),
@@ -156,7 +157,6 @@ export default class BattleSystem {
     this.attributeSystem.reset();
     this.uniqueSkillSystem.reset?.();
     this.conditionSystem.reset();
-    this.effects?.clearNightFamiliars?.();
   }
   hasStageVictory() { return this.stageLifecycle.hasVictory(); }
   isStageComplete() { return this.stageLifecycle.isComplete(); }
@@ -248,7 +248,6 @@ export default class BattleSystem {
   defeatEnemy(enemy) {
     this.knockbackSystem.cancel(enemy);
     this.conditionSystem.clearCombatant(enemy);
-    this.effects?.clearNightFamiliars?.(enemy);
     this.contributionPoints += this.defeatSystem.resolve(enemy);
   }
 }

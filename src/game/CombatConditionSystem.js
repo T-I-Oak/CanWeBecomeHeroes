@@ -11,21 +11,21 @@ export default class CombatConditionSystem {
   }
 
   reset() {
-    const combatants = [...this.trackedCombatants];
-    this.trackedCombatants = new Set();
-    this.twoEdgedSwordMultipliers = new WeakMap();
-    this.nightFamiliarCounts = new WeakMap();
-    this.bewilderedCombatants = new WeakMap();
-    this.misfortuneDamageRates = new WeakMap();
-    combatants.forEach((combatant) => this.writeChip(combatant));
+    [...this.trackedCombatants].forEach((combatant) => this.clearCombatant(combatant));
   }
 
   clearCombatant(combatant) {
     this.clearTwoEdgedSword(combatant);
-    this.nightFamiliarCounts.delete(combatant);
+    this.clearNightFamiliars(combatant);
     this.clearBewilderment(combatant);
-    this.misfortuneDamageRates.delete(combatant);
-    this.writeChip(combatant);
+    this.clearMisfortune(combatant);
+    this.trackedCombatants.delete(combatant);
+  }
+
+  clearCondition(combatant, states, clearEffect = null) {
+    states.delete(combatant);
+    if (clearEffect) this.effects?.[clearEffect](combatant);
+    this.track(combatant);
   }
 
   writeChip(combatant) {
@@ -51,8 +51,7 @@ export default class CombatConditionSystem {
   }
 
   clearTwoEdgedSword(combatant) {
-    this.twoEdgedSwordMultipliers.delete(combatant);
-    this.track(combatant);
+    this.clearCondition(combatant, this.twoEdgedSwordMultipliers);
   }
 
   getTwoEdgedSwordMultiplier(combatant) {
@@ -68,6 +67,7 @@ export default class CombatConditionSystem {
 
   summonNightFamiliars(combatant, count) {
     this.nightFamiliarCounts.set(combatant, count);
+    this.effects?.summonNightFamiliars(combatant, count);
     this.track(combatant);
   }
 
@@ -77,9 +77,12 @@ export default class CombatConditionSystem {
 
   consumeNightFamiliars(combatant) {
     const count = this.getNightFamiliarCount(combatant);
-    this.nightFamiliarCounts.delete(combatant);
-    this.track(combatant);
+    this.clearCondition(combatant, this.nightFamiliarCounts, 'consumeNightFamiliars');
     return count;
+  }
+
+  clearNightFamiliars(combatant) {
+    this.clearCondition(combatant, this.nightFamiliarCounts, 'clearNightFamiliars');
   }
 
   removeNightFamiliar(combatant) {
@@ -87,6 +90,7 @@ export default class CombatConditionSystem {
     if (count === 0) return false;
     if (count === 1) this.nightFamiliarCounts.delete(combatant);
     else this.nightFamiliarCounts.set(combatant, count - 1);
+    this.effects?.removeNightFamiliar(combatant);
     this.track(combatant);
     return true;
   }
@@ -98,10 +102,7 @@ export default class CombatConditionSystem {
   }
 
   clearBewilderment(combatant) {
-    if (!this.bewilderedCombatants.has(combatant)) return;
-    this.bewilderedCombatants.delete(combatant);
-    this.effects?.clearBewilderment(combatant);
-    this.track(combatant);
+    this.clearCondition(combatant, this.bewilderedCombatants, 'clearBewilderment');
   }
 
   hasBewilderment(combatant) { return this.bewilderedCombatants.has(combatant); }
@@ -114,8 +115,7 @@ export default class CombatConditionSystem {
   }
 
   clearMisfortune(combatant) {
-    this.misfortuneDamageRates.delete(combatant);
-    this.track(combatant);
+    this.clearCondition(combatant, this.misfortuneDamageRates);
   }
 
   getMisfortuneDamageRate(combatant) { return this.misfortuneDamageRates.get(combatant) ?? 0; }

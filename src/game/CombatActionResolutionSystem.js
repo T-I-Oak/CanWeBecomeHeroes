@@ -143,6 +143,8 @@ export default class CombatActionResolutionSystem {
   }
 
   resolveNightFamiliarAttacks(actor, participants) {
+    // 消費で周回表示を解除するため、飛行開始位置は先に確定する。
+    const launchPositions = this.effects?.getNightFamiliarLaunchPositions(actor);
     const familiarCount = this.conditionSystem.consumeNightFamiliars(actor);
     if (familiarCount === 0) return;
     const damageByTarget = new Map();
@@ -151,11 +153,10 @@ export default class CombatActionResolutionSystem {
       if (opponents.length === 0) break;
       const target = opponents[Math.floor(this.random() * opponents.length)];
       const damage = getAttackDamage(actor, NIGHT_FAMILIAR_ATTACK) * getRandomModifier(this.random);
-      this.effects?.launchNightFamiliar(actor, target, index, familiarCount);
+      this.effects?.launchNightFamiliar(actor, target, index, familiarCount, launchPositions?.[index]);
       const dealt = this.damageSystem.applyPhysicalDamage(actor, target, 'night-familiar', damage, false, participants, { propagate: (...args) => this.propagate(...args), record: false });
       if (dealt > 0) damageByTarget.set(target, (damageByTarget.get(target) ?? 0) + dealt);
     }
-    this.effects?.consumeNightFamiliars(actor);
     if (!this.gameLog) return;
     damageByTarget.forEach((damage, familiarTarget) => {
       logUniqueSkill(this.gameLog, this.textRepository, 'logFamiliarDamage', { actor: entityText(actor), familiar: termText('familiar'), target: entityText(familiarTarget), damage: Math.round(damage * 100) });
@@ -198,7 +199,6 @@ export default class CombatActionResolutionSystem {
     this.uniqueSkillEffectSystem.resolve(enemy, UNIQUE_SKILL_TRIGGER.actionCompleted, { reservedSlots }).forEach(({ skill, heads = [], familiarCount = 0 }) => {
       if (familiarCount > 0) {
         this.conditionSystem.summonNightFamiliars(enemy, familiarCount);
-        this.effects?.summonNightFamiliars(enemy, familiarCount);
         if (this.gameLog) logUniqueSkill(this.gameLog, this.textRepository, 'logNightFamiliars', { actor: entityText(enemy), skill: skillText(skill), familiar: termText('familiar'), count: familiarCount });
       }
       heads.forEach((head) => this.projectionSystem.launchAreaHead(enemy, head));

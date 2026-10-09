@@ -55,6 +55,6 @@ export function createStaticChipPreviewCanvas(chip, previewSize, assets, classNa
 }
 
 /** Draws a non-animated chip preview and redraws it after every asset loads. */
-export function drawStaticChipPreview(canvas, chip, previewSize, assets) {
-  createStaticChipPreviewDrawer(canvas, chip, previewSize, assets);
+export function drawStaticChipPreview(canvas, chip, previewSize, assets, pixelRatio = 1) {
+  createStaticChipPreviewDrawer(canvas, chip, previewSize, assets, pixelRatio);
 }

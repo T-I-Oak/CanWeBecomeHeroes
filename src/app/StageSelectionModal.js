@@ -7,7 +7,7 @@ import { createStaticChipPreview, drawStaticChipPreview } from './ChipPreview.js
 
 const SLOT_COUNT = 6;
 // 課題選択では実戦と同じ小:中:大 = 1:1.5:3 の比率を維持する。
-// キャンバスの内部座標。画面上の大きさは実戦のスロット比で CSS が決める。
+// CSSの最大スロット幅。狭い画面ではCSSが縮小するため、最大幅で描画する。
 const PREVIEW_RENDER_SIZE = 100;
 const TREND_TAG_SIZE = 38;
 
@@ -118,11 +118,12 @@ export default class StageSelectionModal {
     const slot = createElement('div', `StageSelection__EnemySlot${enemy ? '' : ' state-empty'}`);
     slot.style.gridColumn = `${slotPosition} / span ${span}`;
     if (!enemy) return slot;
-    const previewSize = PREVIEW_RENDER_SIZE;
+    const previewSize = PREVIEW_RENDER_SIZE * getEnemyChipScale(enemy.definition.size);
+    const pixelRatio = globalThis.devicePixelRatio ?? 1;
     const canvas = createElement('canvas', 'StageSelection__ChipPreview');
     canvas.style.setProperty('--stage-selection-enemy-chip-scale', getEnemyChipScale(enemy.definition.size));
-    canvas.width = previewSize;
-    canvas.height = previewSize;
+    canvas.width = Math.round(previewSize * pixelRatio);
+    canvas.height = canvas.width;
     const name = this.textRepository.getName('enemy', enemy.definition.id);
     canvas.setAttribute('aria-label', name);
     const label = createElement('span', 'StageSelection__EnemyName', name);
@@ -191,6 +192,6 @@ export default class StageSelectionModal {
   }
 
   drawChipPreview(canvas, chip, previewSize) {
-    drawStaticChipPreview(canvas, chip, previewSize, this.assets);
+    drawStaticChipPreview(canvas, chip, previewSize, this.assets, canvas.width / previewSize);
   }
 }

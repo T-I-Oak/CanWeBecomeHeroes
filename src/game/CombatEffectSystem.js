@@ -128,9 +128,15 @@ export default class CombatEffectSystem {
       : [];
   }
 
-  launchNightFamiliar(source, target, index, count) {
+  getNightFamiliarLaunchPositions(source) {
     const familiars = this.nightFamiliars.get(source.chip);
-    const from = this.getNightFamiliarOrbitPosition(familiars ?? { source: source.chip, count, appearedAt: 0 }, index);
+    if (!familiars) return [];
+    return Array.from({ length: familiars.count }, (_, index) => this.getNightFamiliarOrbitPosition(familiars, index));
+  }
+
+  launchNightFamiliar(source, target, index, count, launchPosition = null) {
+    const familiars = this.nightFamiliars.get(source.chip);
+    const from = launchPosition ?? this.getNightFamiliarOrbitPosition(familiars ?? { source: source.chip, count, appearedAt: 0 }, index);
     this.nightFamiliarFlights.push({ source: source.chip, target: target.chip, index, from, elapsed: 0 });
   }
 

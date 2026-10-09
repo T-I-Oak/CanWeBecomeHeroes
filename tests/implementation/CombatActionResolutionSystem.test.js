@@ -102,7 +102,7 @@ test('night familiars consume their owner state and independently attack random 
     getOpponents: () => [firstTarget, secondTarget],
   };
   const effects = {
-    consumeNightFamiliars: (source) => assert.equal(source, actor),
+    getNightFamiliarLaunchPositions: (source) => { assert.equal(source, actor); return []; },
     launchNightFamiliar: (...arguments_) => launches.push(arguments_),
   };
   const damageSystem = {
@@ -133,7 +133,7 @@ test('night familiars stop after the last opponent has left the candidates', () 
   const resolution = new CombatActionResolutionSystem({
     conditionSystem: { consumeNightFamiliars: () => 3 },
     targetingSystem: { getOpponents: () => (candidateChecks++ === 0 ? [target] : []) },
-    effects: { consumeNightFamiliars: () => {}, launchNightFamiliar: () => {} },
+    effects: { getNightFamiliarLaunchPositions: () => [], launchNightFamiliar: () => {} },
     damageSystem: { applyPhysicalDamage: (...arguments_) => damages.push(arguments_) },
     projectionSystem: { propagate: () => {} },
     random: () => 0,

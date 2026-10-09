@@ -3,9 +3,61 @@ import assert from 'node:assert/strict';
 import ChipBoard from '../../src/chips/ChipBoard.js';
 import BattleSystem from '../../src/game/BattleSystem.js';
 import CombatConditionSystem from '../../src/game/CombatConditionSystem.js';
+import CombatEffectSystem from '../../src/game/CombatEffectSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
+
+test('reset removes bewilderment visuals before discarding conditions and allows reinfection', () => {
+  const effects = new CombatEffectSystem();
+  const conditions = new CombatConditionSystem({ effects });
+  const actors = [{ chip: {} }, { chip: {} }];
+  actors.forEach(actor => conditions.applyBewilderment(actor, 2));
+  conditions.reset();
+  assert.equal(effects.bewildered.size, 0);
+  for (const actor of actors) {
+    assert.equal(conditions.hasBewilderment(actor), false);
+    assert.equal(actor.chip.bewildered, false);
+    assert.equal(actor.chip.bewildermentLevel, 0);
+  }
+  conditions.reset();
+  conditions.applyBewilderment(actors[0]);
+  assert.equal(effects.bewildered.has(actors[0].chip), true);
+  conditions.clearBewilderment(actors[0]);
+  assert.equal(effects.bewildered.size, 0);
+});
+
+test('recovery and combatant removal clear bewilderment state and visuals', () => {
+  for (const clear of ['clearBewilderment', 'clearCombatant']) {
+    const effects = new CombatEffectSystem();
+    const conditions = new CombatConditionSystem({ effects });
+    const actor = { chip: {} };
+    conditions.applyBewilderment(actor, 2);
+    conditions[clear](actor);
+    conditions[clear](actor);
+    assert.equal(effects.bewildered.size, 0);
+    assert.equal(conditions.hasBewilderment(actor), false);
+    assert.equal(actor.chip.bewildermentLevel, 0);
+  }
+});
+
+test('stage transitions and leaving battle remove bewilderment visuals through BattleSystem', () => {
+  for (const exit of ['stage', 'leave']) {
+    const board = new ChipBoard({ width: 3000, height: 2000 });
+    const effects = new CombatEffectSystem();
+    const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 3 });
+    const battle = new BattleSystem(board, { controller: {}, itemFactory: new ItemFactory(), effects });
+    battle.conditionSystem.applyBewilderment(hero, 2);
+    if (exit === 'stage') battle.resetStageState();
+    else {
+      hero.currentArea = 'warehouse';
+      battle.update({ heroes: [hero], enemies: [], tick: 1, tickDelta: 1 });
+    }
+    assert.equal(effects.bewildered.size, 0);
+    assert.equal(hero.chip.bewildered, false);
+    assert.equal(hero.chip.bewildermentLevel, 0);
+  }
+});
 
 test('two-edged sword keeps the highest granted multiplier for one combatant', () => {
   const conditions = new CombatConditionSystem();
@@ -69,7 +121,8 @@ test('a lone bewildered enemy attacks self, can recover, and resolves lethal sel
   actor.currentArea = 'battle';
   actor.chip.height = 0;
   board.addChip(actor.chip);
-  const battle = new BattleSystem(board, { controller: { remove: () => {}, addToWarehouse: () => {} }, itemFactory, random: () => 0 });
+  const effects = new CombatEffectSystem();
+  const battle = new BattleSystem(board, { controller: { remove: () => {}, addToWarehouse: () => {} }, itemFactory, effects, random: () => 0 });
   battle.targetingSystem.includeSelfWhenBewildered = true;
   battle.conditionSystem.applyBewilderment(actor, 2);
   assert.equal(battle.findTarget(actor, [actor]), actor);
@@ -77,12 +130,14 @@ test('a lone bewildered enemy attacks self, can recover, and resolves lethal sel
   battle.resolveAction(actor, actor, [actor]);
   assert.ok(actor.hp < initialHp);
   assert.equal(battle.conditionSystem.hasBewilderment(actor), false);
+  assert.equal(effects.bewildered.size, 0);
   actor.hp = 0.01;
   battle.conditionSystem.applyBewilderment(actor, 2);
   battle.resolveAction(actor, actor, [actor]);
   assert.equal(actor.hp, 0);
   assert.equal(board.chips.includes(actor.chip), false);
   assert.equal(battle.conditionSystem.hasBewilderment(actor), false);
+  assert.equal(effects.bewildered.size, 0);
 });
 
 test('self attacks use independent inherited infection and recovery checks even when both weapons miss', () => {

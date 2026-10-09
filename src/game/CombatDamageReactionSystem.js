@@ -10,7 +10,7 @@ export default class CombatDamageReactionSystem {
 
   resolve(damageEvent) {
     const { target } = damageEvent;
-    if (this.conditionSystem?.removeNightFamiliar(target)) this.effects?.removeNightFamiliar(target);
+    this.conditionSystem?.removeNightFamiliar(target);
     this.uniqueSkillEffectSystem.resolve(target, UNIQUE_SKILL_TRIGGER.damageReceived, { damageEvent }).forEach(({ skill, drops = [], knockback = null, retaliationAttribute = null, actionGaugeAbsorption = null }) => {
       if (knockback) this.knockbackSystem?.queueIronCounterblow({ ...knockback, skill });
       if (retaliationAttribute) {

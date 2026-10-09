@@ -1,8 +1,8 @@
 import { isEntityOnBoard } from './CombatParticipant.js';
 
 export default class CombatProjectionSystem {
-  constructor({ board, controller, actionGaugeSystem }) {
-    Object.assign(this, { board, controller, actionGaugeSystem });
+  constructor({ board, controller, actionGaugeSystem, clearCombatant = () => {} }) {
+    Object.assign(this, { board, controller, actionGaugeSystem, clearCombatant });
     this.areaHeads = [];
   }
 
@@ -25,6 +25,7 @@ export default class CombatProjectionSystem {
 
   returnAreaHead(head, { animate = true } = {}) {
     if (!this.areaHeads.includes(head)) return;
+    this.clearCombatant(head);
     if (this.controller?.destroy) this.controller.destroy(head);
     else {
       this.board.removeChip(head.chip);
