@@ -1,5 +1,4 @@
 import { LARGE_ENEMY_SLOT_SPAN } from './HeroSlotLayout.js';
-import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 import { getEquipmentItems, isEntityOnBoard, isHeroCombatant } from './CombatParticipant.js';
 
 const INNER_TO_OUTER_SLOT_ORDER = Object.freeze([3, 4, 2, 5, 1, 6]);

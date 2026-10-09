@@ -14,14 +14,6 @@ export function getPreparationEquipmentOrigin(heroIndex) {
   };
 }
 
-export function getPreparationInformationOrigin(heroIndex) {
-  const bounds = getPreparationSubareaBounds(heroIndex);
-  return Object.freeze({
-    x: bounds.x + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.characterAreaWidth + PREPARATION_LAYOUT.areaGap,
-    y: bounds.y + PREPARATION_LAYOUT.topPadding,
-  });
-}
-
 export function getPreparationTagAtPoint(point, heroes) {
   const { statusGaugeHeight, sectionGap, statusColumnWidth, statusColumnGap, tagBadgeWidth, tagBadgeHeight, tagRowGap, topPadding } = PREPARATION_LAYOUT;
   for (let heroIndex = 0; heroIndex < heroes.length; heroIndex += 1) {
@@ -72,8 +64,4 @@ export function getPreparationEquipmentTagAtPoint(point, heroes) {
 
 export function getPreparationEquipmentItemAtPoint(point, heroes) {
   return getPreparationEquipmentEntryAtPoint(point, heroes, getEquipmentSlotItemAtPoint);
-}
-
-export function isPreparationPanelPoint(point, bounds) {
-  return isPointInRect(point, bounds.x, bounds.y, bounds.width, bounds.height);
 }

@@ -1,4 +1,4 @@
-import { entityText, logText } from './LocalizedLog.js';
+import { logText } from './LocalizedLog.js';
 import { isHeroCombatant } from './CombatParticipant.js';
 
 const BATTLE_LOG = Object.freeze({ subject: 'enemy', level: 'info', channel: 'battle' });
