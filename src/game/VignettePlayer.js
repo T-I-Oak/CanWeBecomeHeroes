@@ -6,7 +6,7 @@ const FULL_CLIP = Object.freeze({ x: 0, y: 0, width: VIGNETTE_STAGE_WIDTH, heigh
 const CLOSED_CLIP = Object.freeze({ x: VIGNETTE_STAGE_WIDTH / 2, y: VIGNETTE_STAGE_HEIGHT / 2, width: 0, height: 0 });
 
 const COMMAND_DEFAULTS = Object.freeze({
-  background: Object.freeze({ asset: '', scrollX: 0 }),
+  background: Object.freeze({ asset: '', scrollX: 0, offsetX: 0 }),
   facing: Object.freeze({
     instanceId: '', direction: 'right', stepDistance: 0, forwardSeconds: 0, backSeconds: 0, phase: 0, chipRadius: 96, fillColor: '#ffffff',
   }),
@@ -59,12 +59,20 @@ export function facingStepOffset(facing, timeSeconds) {
 
 export function backgroundDrawOffset(background, timeSeconds, width) {
   if (!background || !(width > 0)) return 0;
-  const displacement = background.scrollX * (timeSeconds - background.startedAt);
+  const displacement = (background.offsetX ?? 0) + background.scrollX * (timeSeconds - background.startedAt);
   return ((displacement % width) + width) % width;
 }
 
+export function vignetteActionOffset(state, timeSeconds) {
+  const action = state.action;
+  if (!action || action.type !== 'hop' || !(action.seconds > 0)) return 0;
+  const progress = (timeSeconds - action.startedAt) / action.seconds;
+  if (progress <= 0 || progress >= 1) return 0;
+  return -action.height * Math.sin(Math.PI * progress);
+}
+
 export function createVignettePlayback(scenario) {
-  const instances = new Map((scenario.instances ?? []).map((instance) => [instance.id, { position: null, facing: null }]));
+  const instances = new Map((scenario.instances ?? []).map((instance) => [instance.id, { position: null, facing: null, action: null }]));
   const playback = {
     scenario,
     time: 0,
@@ -122,7 +130,7 @@ function startReadyCommands(playback) {
 
 function startCommand(playback, command) {
   if (command.type === 'background') {
-    playback.background = { asset: command.asset, scrollX: command.scrollX, startedAt: playback.time };
+    playback.background = { asset: command.asset, scrollX: command.scrollX, offsetX: command.offsetX, startedAt: playback.time };
     return;
   }
   if (command.type === 'facing') {
@@ -186,6 +194,10 @@ function startCommand(playback, command) {
     return;
   }
   if (command.type === 'line') {
+    if (command.action) {
+      if (command.action.type !== 'hop') throw new RangeError(`Unknown vignette line action: ${command.action.type}`);
+      playback.instances.get(command.instanceId).action = { ...command.action, startedAt: playback.time };
+    }
     const serial = playback.lineSerial;
     playback.lineSerial += 1;
     const line = {

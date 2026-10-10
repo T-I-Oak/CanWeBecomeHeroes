@@ -18,9 +18,15 @@ export default class RecruitmentController {
     this.onRecruit = onRecruit;
     this.joinedCount = 0;
     this.processedEliteStageIds = new Set();
+    this.pendingRecruitment = null;
   }
 
   processCompletedStage({ stage, stageState, heroes }) {
+    const selection = this.prepareCompletedStage({ stage, stageState, heroes });
+    return selection?.reason === 'candidate-selected' ? this.commitRecruitment(selection) : selection;
+  }
+
+  prepareCompletedStage({ stage, stageState, heroes }) {
     if (stageState !== 'complete' || stage?.kind !== 'elite') return null;
     if (this.processedEliteStageIds.has(stage.id)) return createResult({ reason: 'already-processed' });
     this.processedEliteStageIds.add(stage.id);
@@ -29,8 +35,16 @@ export default class RecruitmentController {
     if (heroes.some((hero) => hero.profession === candidateProfession)) {
       return createResult({ candidateProfession, reason: 'already-joined' });
     }
+    this.pendingRecruitment = createResult({ candidateProfession, reason: 'candidate-selected' });
+    return this.pendingRecruitment;
+  }
+
+  commitRecruitment(selection) {
+    if (selection !== this.pendingRecruitment || !selection) throw new Error('Recruitment requires the pending candidate selection.');
+    const { candidateProfession } = selection;
     this.onRecruit(candidateProfession);
     this.joinedCount += 1;
+    this.pendingRecruitment = null;
     return createResult({ candidateProfession, recruited: true, reason: 'recruited' });
   }
 }
