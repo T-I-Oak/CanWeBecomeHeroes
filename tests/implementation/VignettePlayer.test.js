@@ -18,6 +18,15 @@ test('a vignette stage uses one scale for the available screen', () => {
   assert.equal(vignetteStageScale(1200, 400), 400 / 400);
 });
 
+test('background offset selects plains, boundary and forest without changing scroll speed', () => {
+  for (const offsetX of [0, -280, -560]) {
+    const playback = createVignettePlayback({ instances: [], commands: [{ type: 'background', asset: '/panorama.png', offsetX, scrollX: -20 }] });
+    assert.equal(playback.background.offsetX, offsetX);
+    assert.equal(backgroundDrawOffset(playback.background, 0, 1120), (offsetX + 1120) % 1120);
+    assert.equal(backgroundDrawOffset(playback.background, 2, 1120), (offsetX - 40 + 1120) % 1120);
+  }
+});
+
 test('start vignette lines come from the language resource', async () => {
   const texts = await openingTexts('ja');
   const vignette = createStartVignette({ professionIds: ['swordfighter', 'mage'], textRepository: texts });

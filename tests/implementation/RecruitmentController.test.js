@@ -7,6 +7,21 @@ function createEliteStage(id = 'elite-stage') {
   return { id, kind: 'elite' };
 }
 
+test('preparing a candidate does not provision anything until the selection is committed once', () => {
+  const provisioned = [];
+  const recruitment = new RecruitmentController({ random: () => 0.5, onRecruit: (profession) => provisioned.push(profession) });
+  const selection = recruitment.prepareCompletedStage({ stage: createEliteStage(), stageState: 'complete', heroes: [] });
+  assert.equal(selection.reason, 'candidate-selected');
+  assert.equal(selection.recruited, false);
+  assert.equal(recruitment.joinedCount, 0);
+  assert.deepEqual(provisioned, []);
+  const result = recruitment.commitRecruitment(selection);
+  assert.equal(result.recruited, true);
+  assert.equal(recruitment.joinedCount, 1);
+  assert.deepEqual(provisioned, [HERO_PROFESSION_IDS[4]]);
+  assert.throws(() => recruitment.commitRecruitment(selection), /pending candidate/);
+});
+
 test('candidate selection maps the eight equal random intervals to all hero professions', () => {
   assert.deepEqual(
     HERO_PROFESSION_IDS.map((profession, index) => selectRecruitmentCandidate(HERO_PROFESSION_IDS, () => (index + 0.5) / HERO_PROFESSION_IDS.length)),

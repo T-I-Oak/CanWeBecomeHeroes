@@ -29,6 +29,9 @@ import GuildSystem from '../game/GuildSystem.js';
 import StageController from '../game/StageController.js';
 import RunController from '../game/RunController.js';
 import RecruitmentController from '../game/RecruitmentController.js';
+import { createRecruitmentVignette } from '../game/RecruitmentVignette.js';
+import { selectRecruitmentCast } from '../game/RecruitmentCast.js';
+import VignetteModal from './VignetteModal.js';
 import PreparationHeroProvisioner from '../game/PreparationHeroProvisioner.js';
 import EnemyFactory from '../game/EnemyFactory.js';
 import StageSelectionModal from './StageSelectionModal.js';
@@ -181,6 +184,8 @@ export async function startTrial({
     getMembers: () => preparationHeroes,
     getRemainingHours: getRemainingTrialHours,
     openStageSelection,
+    playRecruitmentVignette: (context) => new VignetteModal(document.querySelector('#vignette'), { assets, clock })
+      .play(createRecruitmentVignette({ cast: selectRecruitmentCast(context), enemies: context.stage.enemies, textRepository, random })),
     onRunCompleted: ({ outcome, members }) => {
       trialRunResultModal.show(createTrialRunResult({ outcome, members })).then(finishTrial);
     },
@@ -240,9 +245,9 @@ export async function startTrial({
       stageController.update();
       trialRunFlow.update(controller.getHeroes());
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
-      tutorial.check();
+      if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();
     });
-    tutorial.check();
+    if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();
     tutorial.update(time);
     controller.updateVisuals();
     timeSettingsController.updateStaminaPause();

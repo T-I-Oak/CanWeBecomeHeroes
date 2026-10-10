@@ -4,7 +4,7 @@ import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
 import { getHeroProfessionDefinition, HERO_PROFESSION_IDS, default as HeroFactory } from '../game/HeroFactory.js';
 import { getItemDefinitionAssetPath } from '../game/ItemFactory.js';
 import { getTagBaseColors, getTagGlyphScales, getTagPaths, getTagWeight } from '../game/TagCatalog.js';
-import { backgroundDrawOffset, createVignettePlayback, facingStepOffset, updateVignettePlayback } from '../game/VignettePlayer.js';
+import { backgroundDrawOffset, createVignettePlayback, facingStepOffset, updateVignettePlayback, vignetteActionOffset } from '../game/VignettePlayer.js';
 import {
   VIGNETTE_BACKGROUND_HEIGHT,
   VIGNETTE_BUBBLE_BORDER,
@@ -175,7 +175,7 @@ export default class VignetteModal {
       const chip = this.chipFor(instance, state.facing);
       const direction = state.facing.direction === 'left' ? -1 : 1;
       chip.x = state.position.x + direction * facingStepOffset(state.facing, playback.time);
-      chip.y = state.position.y - state.facing.chipRadius;
+      chip.y = state.position.y - state.facing.chipRadius + vignetteActionOffset(state, playback.time);
       renderer.draw(chip, playback.time);
     }
     this.drawDialogue(playback);
@@ -222,7 +222,7 @@ export default class VignetteModal {
     );
     const bubble = layoutVignetteBubble({
       chipCenterX: state.position.x + sign * facingStepOffset(state.facing, playback.time),
-      chipCenterY: state.position.y - state.facing.chipRadius,
+      chipCenterY: state.position.y - state.facing.chipRadius + vignetteActionOffset(state, playback.time),
       chipRadius: state.facing.chipRadius,
       direction,
       width: line.width,
