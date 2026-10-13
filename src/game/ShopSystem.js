@@ -20,12 +20,13 @@ export function getGemAttempts(skillLevel) {
 }
 
 export default class ShopSystem {
-  constructor(board, shopState, returnSystem, { itemFactory = new ItemFactory(), onItemPurchased = () => {}, entityRegistry = null, random = Math.random, textRepository = null, gameLog = null } = {}) {
+  constructor(board, shopState, returnSystem, { itemFactory = new ItemFactory(), onItemPurchased = () => {}, entityRegistry = null, random = Math.random, textRepository = null, gameLog = null, onStatistics = () => {} } = {}) {
     this.board = board;
     this.shopState = shopState;
     this.returnSystem = returnSystem;
     this.itemFactory = itemFactory;
     this.onItemPurchased = onItemPurchased;
+    this.onStatistics = onStatistics;
     this.entityRegistry = entityRegistry;
     this.random = random;
     this.gameLog = gameLog;
@@ -78,6 +79,9 @@ export default class ShopSystem {
   deliverSet(hero, state) {
     const start = state.deliveredSets * EQUIPMENT_PARTS.length;
     state.purchases.slice(start, start + EQUIPMENT_PARTS.length).forEach(({ item }) => this.onItemPurchased(item));
+    const addedTags = state.purchases.slice(start, start + EQUIPMENT_PARTS.length)
+      .reduce((sum, purchase) => sum + (purchase.enhanced ? Math.max(0, purchase.item.tags.length - purchase.baseCount) : 0), 0);
+    if (addedTags) this.onStatistics({ type: 'shop-tags', heroId: hero.heroId, count: addedTags });
     state.deliveredSets += 1;
     if (state.deliveredSets < SHOP_SET_COUNT) return;
     if (state.bag) {
@@ -113,7 +117,7 @@ export default class ShopSystem {
       placePart: () => this.getPurchaseDropArea(dropCenter),
       modifyTagCount: ({ count }) => {
         const enhanced = count < 3 && Array.from({ length: attempts }, () => this.random() < hero.getLuckRate()).some(Boolean);
-        return { count: enhanced ? count + 1 : count, enhanced };
+        return { count: enhanced ? count + 1 : count, enhanced, baseCount: count };
       },
     });
   }

@@ -2,12 +2,13 @@ import { unlockClearedTrialMembers } from '../game/TrialCompletionProgress.js';
 import { getHeroProfessionDefinition } from '../game/HeroFactory.js';
 
 export default class TrialRunFlow {
-  constructor({ clock, stageController, runController, recruitmentController, heroProgress, getMembers, getRemainingHours, openStageSelection, onRunCompleted = () => {}, playRecruitmentVignette = async () => {} }) {
+  constructor({ clock, stageController, runController, recruitmentController, heroProgress, getMembers, getRemainingHours, openStageSelection, recordProgress = true, onRunCompleted = () => {}, playRecruitmentVignette = async () => {} }) {
     this.clock = clock;
     this.stageController = stageController;
     this.runController = runController;
     this.recruitmentController = recruitmentController;
     this.heroProgress = heroProgress;
+    this.recordProgress = recordProgress;
     this.getMembers = getMembers;
     this.getRemainingHours = getRemainingHours;
     this.openStageSelection = openStageSelection;
@@ -31,7 +32,7 @@ export default class TrialRunFlow {
       stage: this.stageController.currentStage,
       stageState: this.stageController.state,
     });
-    unlockClearedTrialMembers({
+    if (this.recordProgress) unlockClearedTrialMembers({
       wasRunActive,
       runController: this.runController,
       members: this.getMembers(),

@@ -80,7 +80,7 @@ export default class CombatDamageSystem {
     if (target.hp > 0) this.onDamageResolved?.(target);
     if (target.hp === 0) {
       if (actor) this.recordDefeat?.(actor, target);
-      this.onEnemyDefeated?.(target);
+      this.onEnemyDefeated?.(target, actor);
     }
     return damage;
   }

@@ -52,6 +52,7 @@ import { createRunScenario } from '../game/RunScenario.js';
 import HeroDirectionIndicatorRenderer from './HeroDirectionIndicatorRenderer.js';
 import TutorialController from './TutorialController.js';
 import { getHeroDirectionIndicatorAtPoint, getHeroDirectionIndicators } from '../game/HeroDirectionIndicator.js';
+import TrialStatisticsSession from '../game/TrialStatisticsSession.js';
 
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
@@ -77,16 +78,25 @@ function drawShopPanel(context, assets, shop, bag, transaction, texts) {
 }
 
 export async function startTrial({
-  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager,
+  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager, runRecords,
 }) {
   const nameplateBounds = createLocationNameplateBoundsRegistry();
   const board = new ChipBoard(WORLD_SIZE);
   const slotManager = new HeroSlotManager();
   const gameLog = new GameLog({ textRepository });
   const scenario = createRunScenario({ professionIds: selectedProfessionIds });
+  const statistics = new TrialStatisticsSession({ repository: runRecords, professionIds: selectedProfessionIds });
+  const attemptSave = save => {
+    try { save(); }
+    catch (error) {
+      if (!['QuotaExceededError', 'SecurityError'].includes(error.name)) throw error;
+      console.error('Run records could not be saved.', error);
+    }
+  };
+  const onStatistics = statistics.record;
   const flowLog = new FlowLog(document.querySelector('#flow-log'), gameLog);
   const entityRegistry = new EntityRegistry();
-  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog, textRepository), gameLog, { entityRegistry });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, slotManager, gameLog, textRepository, { onStatistics }), gameLog, { entityRegistry, onHeroAdded: hero => statistics.attachHero(hero) });
   const { preparationHeroes: initialPreparationHeroes, shop, random = Math.random } = scenario.initialize({ controller });
   const preparationHeroes = [...initialPreparationHeroes];
   const heroProvisioner = new PreparationHeroProvisioner({ controller, random });
@@ -95,11 +105,13 @@ export async function startTrial({
     onItemReturned: (item) => controller.addToWarehouse(item),
     onItemDiscarded: (item) => controller.destroy(item, { includeRelated: true }),
   });
-  const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem, textRepository });
-  const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), entityRegistry, gameLog, textRepository });
+  const training = new TrainingSystem(board, slotManager, { gameLog, returnSystem, textRepository, onStatistics });
+  const shopSystem = new ShopSystem(board, shop, returnSystem, { onItemPurchased: (item) => controller.addToWarehouse(item), entityRegistry, gameLog, textRepository, onStatistics });
   const combatEffects = new CombatEffectSystem({ textRepository });
   const enemyFactory = new EnemyFactory();
-  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), enemyFactory, returnSystem, effects: combatEffects, gameLog, textRepository });
+  const battleSystem = new BattleSystem(board, { controller, itemFactory: new ItemFactory(), enemyFactory, returnSystem, effects: combatEffects, gameLog, textRepository,
+    onStatistics: event => onStatistics({ ...event, level: stageController.currentStage.level }),
+  });
   const stageController = new StageController({
     enemySpawn,
     battleSystem,
@@ -108,6 +120,7 @@ export async function startTrial({
     hasActiveShopHero: () => controller.getHeroes().some((hero) => hero.currentArea === 'shop'),
     entityRegistry,
     random,
+    onStatistics,
   });
   const recruitmentController = new RecruitmentController({
     random,
@@ -124,6 +137,7 @@ export async function startTrial({
     setContributionPoints: (points) => { battleSystem.contributionPoints = points; },
     gameLog,
     textRepository,
+    onStatistics,
   });
   const staminaRecovery = new StaminaRecoverySystem();
   const facilitySwing = new FacilitySwingSystem();
@@ -142,6 +156,7 @@ export async function startTrial({
     textRepository,
     onSelect: (choiceId) => {
       stageController.selectStage(choiceId, { tick: clock.tick });
+      attemptSave(() => statistics.checkpoint());
       informationWindows.closeInvalidEntries();
       stageSelection.hide();
       clock.resume('stage-selection');
@@ -181,13 +196,18 @@ export async function startTrial({
     runController,
     recruitmentController,
     heroProgress,
+    recordProgress: false,
     getMembers: () => preparationHeroes,
     getRemainingHours: getRemainingTrialHours,
     openStageSelection,
     playRecruitmentVignette: (context) => new VignetteModal(document.querySelector('#vignette'), { assets, clock })
       .play(createRecruitmentVignette({ cast: selectRecruitmentCast(context), enemies: context.stage.enemies, textRepository, random })),
     onRunCompleted: ({ outcome, members }) => {
-      trialRunResultModal.show(createTrialRunResult({ outcome, members })).then(finishTrial);
+      const record = statistics.finish({ outcome, members, tick: clock.tick, remainingHours: getRemainingTrialHours() });
+      attemptSave(() => runRecords.save());
+      const result = createTrialRunResult({ outcome, members, issuedAt: record.endedAt, record });
+      trial.lastRunResult = result;
+      trialRunResultModal.show(result).then(finishTrial);
     },
   });
 

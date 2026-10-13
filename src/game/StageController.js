@@ -20,9 +20,10 @@ export function rollStageLevel(stageNumber, random = Math.random) {
 }
 
 export default class StageController {
-  constructor({ enemySpawn, battleSystem, enemyFactory = new EnemyFactory(), shopState = null, hasActiveShopHero = () => false, entityRegistry = null, random = Math.random } = {}) {
+  constructor({ enemySpawn, battleSystem, enemyFactory = new EnemyFactory(), shopState = null, hasActiveShopHero = () => false, entityRegistry = null, random = Math.random, onStatistics = () => {} } = {}) {
     if (!enemySpawn || !battleSystem) throw new Error('Stage controller requires enemy spawning and battle systems.');
     Object.assign(this, { enemySpawn, battleSystem, enemyFactory, shopState, hasActiveShopHero, entityRegistry, random });
+    this.onStatistics = onStatistics;
     this.stageNumber = 0;
     this.joinedCount = 0;
     this.state = 'idle';
@@ -38,7 +39,8 @@ export default class StageController {
       const { route, kind } = routeKinds[index % routeKinds.length];
       const level = rollStageLevel(stageNumber, this.random);
       const patterns = COMBINATION_PATTERNS[kind];
-      const pattern = patterns[Math.floor(this.random() * patterns.length)];
+      const patternIndex = Math.floor(this.random() * patterns.length);
+      const pattern = patterns[patternIndex];
       const enemies = createEncounterEnemies({ kind, level, stageNumber, pattern, enemyFactory: this.enemyFactory, random: this.random });
       enemies.forEach((enemy) => this.entityRegistry?.registerTree(enemy));
       return Object.freeze({
@@ -46,6 +48,7 @@ export default class StageController {
         number: stageNumber,
         route,
         kind,
+        patternIndex,
         baseLevel: getStageBaseLevel(stageNumber),
         level,
         enemies: Object.freeze([...enemies]),
@@ -85,6 +88,7 @@ export default class StageController {
     });
     this.choices = Object.freeze([]);
     this.state = 'spawning';
+    this.onStatistics({ type: 'stage-start', kind: choice.kind, patternIndex: choice.patternIndex, level: choice.level });
     return this.currentStage;
   }
 
@@ -95,9 +99,14 @@ export default class StageController {
 
   update() {
     if (!this.currentStage) return this.state;
+    const previous = this.state;
     if (this.battleSystem.isStageComplete()) this.state = 'complete';
     else if (this.battleSystem.hasStageVictory()) this.state = 'victory';
     else if (this.battleSystem.battleStartTick !== null) this.state = 'battle';
+    if (['victory', 'complete'].includes(this.state) && !['victory', 'complete'].includes(previous)) {
+      const { kind, patternIndex, level } = this.currentStage;
+      this.onStatistics({ type: 'stage-clear', kind, patternIndex, level });
+    }
     return this.state;
   }
 }

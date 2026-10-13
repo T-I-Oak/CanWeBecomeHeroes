@@ -8,10 +8,11 @@ const STAT_KEYS = Object.freeze(['power', 'magic', 'speed', 'negotiation', 'luck
 const MAXIMUM_STAT_VALUE = 7;
 
 export default class TrainingSystem {
-  constructor(board, slotManager, { onItemReturned = () => {}, random = Math.random, textRepository = null, gameLog = null, returnSystem = null } = {}) {
+  constructor(board, slotManager, { onItemReturned = () => {}, random = Math.random, textRepository = null, gameLog = null, returnSystem = null, onStatistics = () => {} } = {}) {
     this.board = board;
     this.slotManager = slotManager;
     this.onItemReturned = onItemReturned;
+    this.onStatistics = onStatistics;
     this.random = random;
     this.gameLog = gameLog;
     this.textRepository = textRepository;
@@ -74,6 +75,7 @@ export default class TrainingSystem {
     }
     hero.stamina -= staminaCost;
     hero.maximums[selected.stat] = Math.min(MAXIMUM_STAT_VALUE, hero.maximums[selected.stat] + 1);
+    if (isLucky) this.onStatistics({ type: 'training-luck', heroId: hero.heroId });
     state.gainedCells.push(Object.freeze({ stat: selected.stat, value: hero.maximums[selected.stat] }));
     logText(this.gameLog, this.textRepository, 'logTraining', { hero: entityText(hero, false), stat: { kind: 'status', id: selected.stat } }, { subject: 'hero', level: isLucky ? 'luck' : 'info', channel: 'training' });
   }

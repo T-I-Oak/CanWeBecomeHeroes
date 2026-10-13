@@ -21,6 +21,7 @@ import StartPartySelectionModal from './StartPartySelectionModal.js';
 import VignetteModal from './VignetteModal.js';
 import TitleMenu from './TitleMenu.js';
 import '../styles/tutorial.css';
+import RunRecordsRepository from '../game/RunRecordsRepository.js';
 import { startTrial } from './TrialSession.js';
 
 export async function startGame() {
@@ -36,6 +37,7 @@ export async function startGame() {
   refreshLocalizedUI(document, textRepository);
   const dataManager = new DataManager('can-we-become-heroes');
   const heroProgress = new HeroProgressRepository(dataManager);
+  const runRecords = new RunRecordsRepository(dataManager);
   const assets = new AssetLoader();
   const shell = document.querySelector('.AppShell');
   const hudPanel = document.querySelector('.HudPanel');
@@ -218,7 +220,7 @@ export async function startGame() {
     camera.fitToScreen();
     resizeCanvas();
     await startTrial({
-      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager,
+      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager, runRecords,
     });
     trial.tutorial?.dispose();
     trial.tutorial = null;

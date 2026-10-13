@@ -10,8 +10,9 @@ const ENEMY_DROP_SETS = Object.freeze({
 });
 
 export default class CombatEnemyDefeatSystem {
-  constructor({ board, controller, itemFactory, uniqueSkillEffectSystem, projectionSystem, getWarehouseDropPosition, random = Math.random, gameLog = null, textRepository = null }) {
+  constructor({ board, controller, itemFactory, uniqueSkillEffectSystem, projectionSystem, getWarehouseDropPosition, random = Math.random, gameLog = null, textRepository = null, onStatistics = () => {} }) {
     Object.assign(this, { board, controller, itemFactory, uniqueSkillEffectSystem, projectionSystem, getWarehouseDropPosition, random, gameLog, textRepository });
+    this.onStatistics = onStatistics;
   }
 
   createEnemyDrops(enemy) {
@@ -25,8 +26,9 @@ export default class CombatEnemyDefeatSystem {
     }).map(({ item }) => item)).flat();
   }
 
-  resolve(enemy) {
+  resolve(enemy, actor = null) {
     if (!isEntityOnBoard(this.board, enemy)) return 0;
+    this.onStatistics({ type: 'defeat', enemyId: enemy.definition.id, points: enemy.contributionPoints, heroId: actor?.chip.type === 'hero' ? actor.heroId : null });
     const summonEffects = this.uniqueSkillEffectSystem.resolve(enemy, UNIQUE_SKILL_TRIGGER.entityDefeated);
     const summons = summonEffects.flatMap((effect) => effect.summons ?? []);
     this.projectionSystem.returnAreaHeadsFrom(enemy);

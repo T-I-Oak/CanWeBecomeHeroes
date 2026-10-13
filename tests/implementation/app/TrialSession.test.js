@@ -6,6 +6,8 @@ import GameClock from '../../../src/game/GameClock.js';
 import GameTextRepository from '../../../src/game/GameTextRepository.js';
 import { WORLD_SIZE } from '../../../src/game/GameAreas.js';
 import { readGameText } from '../../../src/game/readGameText.js';
+import RunRecordsRepository from '../../../src/game/RunRecordsRepository.js';
+import { GAME_TICKS_PER_HOUR, INITIAL_TRIAL_HOURS } from '../../../src/game/GuildTime.js';
 import { expandLanguageResource, setLanguage } from '../../../../GameWorksOAK/src/lib/core/i18n.js';
 
 // Browser surfaces are inert; the session and all game systems run unchanged.
@@ -38,13 +40,16 @@ test('trial session connects route selection, information targets and game updat
     if (!elements.has(selector)) elements.set(selector, new Element());
     return elements.get(selector);
   };
-  globalThis.document = { body: new Element(), createElement: tag => new Element(tag),
+  globalThis.document = { documentElement: { lang: 'ja' }, body: new Element(), createElement: tag => new Element(tag),
     querySelector: lookup, getElementById: id => lookup('#' + id), addEventListener() {}, removeEventListener() {} };
   t.after(() => { trial.tutorial?.dispose(); trial.flowLog?.dispose(); globalThis.document = previousDocument; });
   setLanguage('ja');
   const textRepository = new GameTextRepository();
   textRepository.resource = expandLanguageResource(readGameText());
   const completed = textRepository.resource.tutorial.scenarios.filter(s => s.id).map(s => s.id);
+  const values = new Map([['tutorialState', { completed }]]);
+  const dataManager = { getValue: key => values.get(key), setValue: (key, value) => values.set(key, structuredClone(value)) };
+  const runRecords = new RunRecordsRepository(dataManager);
   const canvas = new Element('canvas');
   const context = createContext();
   const camera = new Camera(WORLD_SIZE); camera.setViewport(1280, 720);
@@ -58,7 +63,7 @@ test('trial session connects route selection, information targets and game updat
     camera, clock, trial, canvasInput, informationLayer: { render() {}, setManager: manager => { informationManager = manager; } },
     timeSettingsController: { pauseOnInformation: false, updateStaminaPause() {}, updateClockSpeed() {}, updateStatus() {} },
     overheadStatusSettingsController: { getSettings: () => ({ statuses: [], visibility: 'always' }) },
-    dataManager: { getValue: () => ({ completed }), setValue() {} },
+    dataManager, runRecords,
   });
   let startupError;
   session.catch(error => { startupError = error; });
@@ -79,6 +84,9 @@ test('trial session connects route selection, information targets and game updat
   const route = walk(root).find(element => element.className?.includes('StageSelection__SelectButton'));
   assert.ok(route, 'route selection exposes a selectable choice');
   route.listeners.get('click')();
+  assert.equal(values.get('runRecords').statistics.runs.trial['Avery|Briar'].started, 1);
+  assert.equal(Object.values(values.get('runRecords').statistics.stages)[0].attempts, 1);
+  assert.equal(values.get('runRecords').history.length, 0);
   assert.equal(clock.pauseReasons.has('stage-selection'), false);
   assert.equal(trial.stageSelection.container.hidden, true);
   for (let frame = 0; frame < 300; frame += 1) trial.update(1 / 60, frame * 1000 / 60);
@@ -94,4 +102,15 @@ test('trial session connects route selection, information targets and game updat
   const pausedTick = clock.tick;
   trial.update(1 / 60, 1017);
   assert.equal(clock.tick, pausedTick, 'rendering does not advance a paused game');
+  clock.resume('manual');
+  clock.tick = GAME_TICKS_PER_HOUR * INITIAL_TRIAL_HOURS;
+  trial.update(1 / 60, 1034);
+  assert.equal(trial.lastRunResult.record.outcome, 'expired');
+  assert.equal(values.get('runRecords').history.length, 1);
+  assert.ok(trial.lastRunResult.record.statistics.heroes.Avery.tags.valor > 0);
+  const resultRoot = lookup('#trial-run-result').children[0];
+  const returnButton = walk(resultRoot).find(element => element.textContent === textRepository.getLabel('returnToTitle'));
+  assert.ok(returnButton);
+  returnButton.listeners.get('click')();
+  await session;
 });

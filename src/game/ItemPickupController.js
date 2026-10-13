@@ -1,12 +1,13 @@
 import { logText, entityText } from './LocalizedLog.js';
 
 export default class ItemPickupController {
-  constructor(board, slotManager, gameLog = null, textRepository = null) {
+  constructor(board, slotManager, gameLog = null, textRepository = null, { onStatistics = () => {} } = {}) {
     this.board = board;
     this.slotManager = slotManager;
     this.states = new Map();
     this.gameLog = gameLog;
     this.textRepository = textRepository;
+    this.onStatistics = onStatistics;
   }
 
   start(hero, item, secondItem = null) {
@@ -117,6 +118,7 @@ export default class ItemPickupController {
       return;
     }
     state.destinationSlot = slot;
+    this.onStatistics({ type: 'departure', hero: state.hero, facilityId: area });
     this.board.moveTo(state.hero.chip, slot.x, slot.y, { stepDistance: state.hero.getStepDistance() });
     logText(this.gameLog, this.textRepository, 'logDeparture', { hero: entityText(state.hero), destination: { kind: 'label', id: `${area}Destination` } }, { subject: 'hero', level: 'info', channel: area });
   }

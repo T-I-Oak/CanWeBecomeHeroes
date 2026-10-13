@@ -13,16 +13,25 @@ function snapshotMember({ heroId, profession }) {
   return Object.freeze({ heroId, profession });
 }
 
+function freezeRecord(value) {
+  if (value && typeof value === 'object') {
+    Object.values(value).forEach(freezeRecord);
+    Object.freeze(value);
+  }
+  return value;
+}
+
 /**
  * Snapshots the outcome of one trial run for presentation.
  * Achievement records are intentionally part of the result now so the result
  * screen can render them when their separate specification is introduced.
  */
-export function createTrialRunResult({ outcome, members, issuedAt = new Date() }) {
+export function createTrialRunResult({ outcome, members, issuedAt = new Date(), record = null }) {
   return Object.freeze({
     type: getResultType(outcome),
     members: Object.freeze(members.map(snapshotMember)),
     issuedAt: new Date(issuedAt),
     achievements: Object.freeze([]),
+    record: record === null ? null : freezeRecord(structuredClone(record)),
   });
 }

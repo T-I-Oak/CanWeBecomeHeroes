@@ -5,8 +5,9 @@ import { getLuckDegree } from './Luck.js';
 import { fromDurabilityUnits, toDurabilityUnits } from './Durability.js';
 
 export default class Hero {
-  constructor({ profession, heroId = profession, tags, chip, stamina = 0, maximums = {} }) {
+  constructor({ profession, heroId = profession, tags, chip, stamina = 0, maximums = {}, onStatistics = () => {} }) {
     this.profession = profession;
+    this.onStatistics = onStatistics;
     this.heroId = heroId;
     this.tags = tags;
     this.chip = chip;
@@ -121,5 +122,8 @@ export default class Hero {
     return equippedItems;
   }
 
-  refreshDerivedValues() { this.chip.weight = this.getCarriedWeight(); }
+  refreshDerivedValues() {
+    this.chip.weight = this.getCarriedWeight();
+    this.onStatistics({ type: 'hero-tags', hero: this });
+  }
 }

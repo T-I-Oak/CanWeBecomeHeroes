@@ -5,13 +5,14 @@ import Chip from '../chips/Chip.js';
 import { getWarehouseItemCapacity } from './WarehouseCapacity.js';
 
 export default class HeroItemInteractionController {
-  constructor(board, pickupController, gameLog = null, { entityRegistry = new EntityRegistry() } = {}) {
+  constructor(board, pickupController, gameLog = null, { entityRegistry = new EntityRegistry(), onHeroAdded = () => {} } = {}) {
     this.board = board;
     this.pickupController = pickupController;
     this.activeHero = null;
     this.entities = new Map();
     this.gameLog = gameLog;
     this.entityRegistry = entityRegistry;
+    this.onHeroAdded = onHeroAdded;
     this.bagAbsorptions = [];
     this.itemTransfers = [];
     this.selection = { source: null, hover: null };
@@ -21,6 +22,7 @@ export default class HeroItemInteractionController {
     this.entityRegistry.registerTree(entity);
     this.board.addChip(entity.chip);
     this.entities.set(entity.chip.id, entity);
+    if (entity.chip.type === 'hero') this.onHeroAdded(entity);
     return entity;
   }
 
