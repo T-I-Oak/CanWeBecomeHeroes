@@ -4,7 +4,7 @@ export const OVERHEAD_STATUS_VISIBILITY = Object.freeze({ always: 'always', batt
 export const OVERHEAD_STATUS_SWITCH_INTERVAL_SECONDS = 1;
 
 export const DEFAULT_OVERHEAD_STATUS_SETTINGS = Object.freeze({
-  statuses: Object.freeze([]),
+  statuses: Object.freeze(['durability']),
   visibility: OVERHEAD_STATUS_VISIBILITY.always,
 });
 
@@ -15,12 +15,15 @@ export function normalizeOverheadStatusSettings(value) {
     : [];
   const visibility = Object.values(OVERHEAD_STATUS_VISIBILITY).includes(source.visibility)
     ? source.visibility
-    : DEFAULT_OVERHEAD_STATUS_SETTINGS.visibility;
+    : OVERHEAD_STATUS_VISIBILITY.always;
   return Object.freeze({ statuses: Object.freeze(statuses), visibility });
 }
 
 export function readOverheadStatusSettings(dataManager) {
-  return normalizeOverheadStatusSettings(dataManager?.getValue(OVERHEAD_STATUS_SETTINGS_KEY));
+  const savedSettings = dataManager?.getValue(OVERHEAD_STATUS_SETTINGS_KEY);
+  return savedSettings === undefined
+    ? DEFAULT_OVERHEAD_STATUS_SETTINGS
+    : normalizeOverheadStatusSettings(savedSettings);
 }
 
 export function writeOverheadStatusSettings(value, dataManager) {
