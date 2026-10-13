@@ -1,0 +1,414 @@
+{
+  "items": {
+    "pair:Avery|Briar": {
+      "lang-store": {
+        "ja": {
+          "label": "幼なじみとの連携",
+          "comments": [
+            "二人で勇ましく踏み出せたようですね。",
+            "鋼のような友情が育ってきましたね。",
+            "競い合い、互いを高めあう最高のライバルに成長したようですね。"
+          ]
+        },
+        "en": {
+          "label": "Childhood teamwork",
+          "comments": [
+            "You have bravely taken your first steps together.",
+            "Your friendship is growing strong as steel.",
+            "You seem to have grown into the finest rivals, inspiring each other to improve."
+          ]
+        }
+      }
+    },
+    "pair:Casey|Darcy": {
+      "lang-store": {
+        "ja": {
+          "label": "魔法と支え合い",
+          "comments": [
+            "魔法に夢中な時も、お互いへの気配りを忘れずにいられましたね。",
+            "二人の力で、確かな絆を織りなしてきましたね。",
+            "互いの力を引き出し、奇跡を起こせる相棒に成長したようですね。"
+          ]
+        },
+        "en": {
+          "label": "Magic and mutual support",
+          "comments": [
+            "Even when absorbed in magic, you remembered to look out for each other.",
+            "Together, you have woven a lasting bond.",
+            "You seem to have grown into partners who bring out each other’s strengths and work miracles."
+          ]
+        }
+      }
+    },
+    "pair:Ellis|Finley": {
+      "lang-store": {
+        "ja": {
+          "label": "身軽な連携",
+          "comments": [
+            "二人の身軽さを生かして、一緒に歩み始めましたね。",
+            "互いを信頼し、息の合った動きができるようになりましたね。",
+            "言葉を交わさずとも通じ合う、阿吽の相棒に成長したようですね。"
+          ]
+        },
+        "en": {
+          "label": "Nimble teamwork",
+          "comments": [
+            "You have begun your journey together, making good use of your agility.",
+            "You have learned to trust each other and move in harmony.",
+            "You seem to have grown into partners who understand each other without a word."
+          ]
+        }
+      }
+    },
+    "pair:Garnet|Harper": {
+      "lang-store": {
+        "ja": {
+          "label": "商いと信用",
+          "comments": [
+            "信用を大切に、二人で歩み始めましたね。",
+            "意見を交わし、互いの良さを磨いてきましたね。",
+            "損得を超えた、値札の付けられない絆を築いたようですね。"
+          ]
+        },
+        "en": {
+          "label": "Trade and trust",
+          "comments": [
+            "You have taken your first steps together, putting trust first.",
+            "By sharing your views, you have polished each other’s strengths.",
+            "You seem to have built a bond beyond profit, one that no price can measure."
+          ]
+        }
+      }
+    },
+    "trial-start": {
+      "lang-store": {
+        "ja": {
+          "label": "勇者試験への挑戦",
+          "comments": [
+            "勇者への道に、前向きに踏み出せましたね。",
+            "ひたむきに挑み続ける姿勢が身についてきましたね。",
+            "挑戦を重ね、勇者の風格が身についてきたようですね。"
+          ]
+        },
+        "en": {
+          "label": "Taking on the hero exam",
+          "comments": [
+            "You have taken a positive step toward becoming a hero.",
+            "You are developing a habit of taking on challenges with dedication.",
+            "Repeated challenges seem to have given you the bearing of a hero."
+          ]
+        }
+      }
+    },
+    "trial-clear": {
+      "lang-store": {
+        "ja": {
+          "label": "勇者としての実力",
+          "comments": [
+            "試験を乗り越え、晴れて勇者と認められましたね。",
+            "確かな実力に、ギルドも太鼓判を押しています。",
+            "誰もが認める勇者へと成長したようですね。"
+          ]
+        },
+        "en": {
+          "label": "Ability as a hero",
+          "comments": [
+            "You have overcome the exam and earned recognition as a hero.",
+            "The guild gives its seal of approval to your proven ability.",
+            "You seem to have grown into a hero everyone recognizes."
+          ]
+        }
+      }
+    },
+    "trial-fail": {
+      "lang-store": {
+        "ja": {
+          "label": "くじけない心",
+          "comments": [
+            "つまずきも、次の一歩につながる経験にしていきましょう。",
+            "思うようにいかなくても、挑む気持ちを大切にできていますね。",
+            "幾度のつまずきにも折れない、不屈の心が育ったようですね。"
+          ]
+        },
+        "en": {
+          "label": "Resilience",
+          "comments": [
+            "Let each setback become experience for your next step.",
+            "Even when things do not go as planned, you keep your willingness to try.",
+            "You seem to have developed a spirit that no setback can break."
+          ]
+        }
+      }
+    },
+    "challenge-start": {
+      "lang-store": {
+        "ja": {
+          "label": "限界への挑戦",
+          "comments": [
+            "新たな挑戦に、果敢に踏み出せましたね。",
+            "さらなる高みを目指す、飽くなき意欲が育っていますね。",
+            "可能性に限りを設けず、挑み続ける姿勢が身についたようですね。"
+          ]
+        },
+        "en": {
+          "label": "Challenging your limits",
+          "comments": [
+            "You have boldly stepped into a new challenge.",
+            "You are developing an unquenchable desire to reach greater heights.",
+            "You seem to have learned to keep challenging yourself without limiting your possibilities."
+          ]
+        }
+      }
+    },
+    "stage-clear": {
+      "lang-store": {
+        "ja": {
+          "label": "課題への取り組み",
+          "comments": [
+            "課題を乗り越える手応えが、つかめてきましたね。",
+            "攻略のコツをつかみ、着実に成果を上げていますね。",
+            "課題の攻略は、安心して任せられるようになりましたね。"
+          ]
+        },
+        "en": {
+          "label": "Approach to tasks",
+          "comments": [
+            "You are beginning to feel what it takes to overcome a task.",
+            "You are learning the tricks of success and steadily producing results.",
+            "We can now confidently leave task completion to you."
+          ]
+        }
+      }
+    },
+    "enemy:small": {
+      "lang-store": {
+        "ja": {
+          "label": "［敵名］の討伐",
+          "comments": [
+            "［敵名］退治の心得が身についてきましたね。",
+            "［敵名］への対処に、磨きがかかっていますね。",
+            "［敵名］にとって、まさに天敵と呼べる存在になったようですね。"
+          ]
+        },
+        "en": {
+          "label": "Defeating {enemy}",
+          "comments": [
+            "You are learning the essentials of defeating {enemy}.",
+            "You are becoming increasingly adept at dealing with {enemy}.",
+            "You seem to have become a natural nemesis of {enemy}."
+          ]
+        }
+      }
+    },
+    "enemy:medium": {
+      "lang-store": {
+        "ja": {
+          "label": "［敵名］の討伐",
+          "comments": [
+            "難敵［敵名］にもひるまず、立ち向かえるようになりましたね。",
+            "難敵［敵名］に引けを取らない、確かな力が育っていますね。",
+            "難敵［敵名］を圧倒するほどの実力が身についたようですね。"
+          ]
+        },
+        "en": {
+          "label": "Defeating {enemy}",
+          "comments": [
+            "You have learned to face the formidable {enemy} without fear.",
+            "You are developing the strength to match the formidable {enemy}.",
+            "You seem to have acquired the ability to overwhelm the formidable {enemy}."
+          ]
+        }
+      }
+    },
+    "enemy:large": {
+      "lang-store": {
+        "ja": {
+          "label": "［敵名］の討伐",
+          "comments": [
+            "強敵［敵名］を打ち破る力を示せましたね。",
+            "強敵［敵名］を越える実力を、確かなものにしてきましたね。",
+            "強敵［敵名］を凌ぐその活躍は、伝説として語られるようになるでしょう。"
+          ]
+        },
+        "en": {
+          "label": "Defeating {enemy}",
+          "comments": [
+            "You have shown the strength to defeat the mighty {enemy}.",
+            "You have made your ability to surpass the mighty {enemy} a certainty.",
+            "Your feats surpassing the mighty {enemy} will surely be spoken of as legend."
+          ]
+        }
+      }
+    },
+    "contribution": {
+      "lang-store": {
+        "ja": {
+          "label": "ギルドへの貢献",
+          "comments": [
+            "確かな貢献を積み重ねていますね。",
+            "頼れる働き手として、ギルドの信頼を得ていますね。",
+            "その働きは、ギルドの誇りと呼べるものになったようですね。"
+          ]
+        },
+        "en": {
+          "label": "Contribution to the guild",
+          "comments": [
+            "You are steadily making a meaningful contribution.",
+            "As a dependable contributor, you have earned the guild’s trust.",
+            "Your work seems to have become a source of pride for the guild."
+          ]
+        }
+      }
+    },
+    "facility:shop": {
+      "lang-store": {
+        "ja": {
+          "label": "買い物",
+          "comments": [
+            "試験に必要な品を、上手に揃えられるようになりましたね。",
+            "お店の人とも顔なじみになり、買い物が板についてきましたね。",
+            "お得意さまとして頼りにされる、立派な買い物上手になったようですね。"
+          ]
+        },
+        "en": {
+          "label": "Shopping",
+          "comments": [
+            "You have learned to choose the supplies you need for the exam.",
+            "You are becoming a familiar face at the shop and a capable shopper.",
+            "You seem to have become a skilled shopper whom the shop values as a regular customer."
+          ]
+        }
+      }
+    },
+    "facility:guild": {
+      "lang-store": {
+        "ja": {
+          "label": "ギルドとの交渉",
+          "comments": [
+            "試験の期限について、ギルドに相談できるようになりましたね。",
+            "交渉の経験を重ね、ギルドとも話が通じるようになってきましたね。",
+            "ギルドとの信頼関係を築き、安心して交渉を任せられるようになりましたね。"
+          ]
+        },
+        "en": {
+          "label": "Negotiating with the guild",
+          "comments": [
+            "You have learned to consult the guild about the exam deadline.",
+            "With experience, you are learning to reach an understanding with the guild.",
+            "You have built trust with the guild, and we can confidently leave negotiations to you."
+          ]
+        }
+      }
+    },
+    "facility:training": {
+      "lang-store": {
+        "ja": {
+          "label": "日々の鍛錬",
+          "comments": [
+            "体づくりに取り組む習慣が、身についてきましたね。",
+            "日々の鍛錬を重ね、着実に自分を磨いていますね。",
+            "修行の鬼と呼びたくなるほど、熱心に鍛錬を重ねていますね。"
+          ]
+        },
+        "en": {
+          "label": "Daily training",
+          "comments": [
+            "You are developing a habit of building your strength.",
+            "Through daily training, you are steadily improving yourself.",
+            "You train so enthusiastically that we might call you a training fanatic."
+          ]
+        }
+      }
+    },
+    "tag": {
+      "lang-store": {
+        "ja": {
+          "label": "{tag}の心得",
+          "comments": [
+            "{skill}を身につけましたね。",
+            "{skill}を身につけるまでに成長しましたね。",
+            "ついに{skill}を身につけるまでになりましたね。"
+          ]
+        },
+        "en": {
+          "label": "Knowledge of {tag}",
+          "comments": [
+            "You have acquired {skill}.",
+            "You have grown to the point of acquiring {skill}.",
+            "You have finally reached the point of acquiring {skill}."
+          ]
+        }
+      }
+    }
+  },
+  "conditions": {
+    "pair": {
+      "ja": "{heroes}で試験・チャレンジを開始",
+      "en": "Start a trial or challenge with {heroes}"
+    },
+    "trial-start": {
+      "ja": "試験を開始した回数",
+      "en": "Number of trials started"
+    },
+    "trial-clear": {
+      "ja": "試験に合格した回数",
+      "en": "Number of trials passed"
+    },
+    "trial-fail": {
+      "ja": "試験で不合格になった回数",
+      "en": "Number of failed trials"
+    },
+    "challenge-start": {
+      "ja": "チャレンジを開始した回数",
+      "en": "Number of challenges started"
+    },
+    "stage-clear": {
+      "ja": "全課題のクリアー回数",
+      "en": "Total tasks cleared"
+    },
+    "enemy": {
+      "ja": "{enemy}を倒した数",
+      "en": "Number of {enemy} defeated"
+    },
+    "contribution": {
+      "ja": "ギルドで消費した貢献ポイント",
+      "en": "Contribution points spent at the guild"
+    },
+    "facility": {
+      "ja": "{facility}への出発確定回数",
+      "en": "Confirmed departures to {facility}"
+    },
+    "tag": {
+      "ja": "全Heroの{tag}タグ数の最高値（装備込み）",
+      "en": "Highest {tag} tag count across all Heroes, including equipment"
+    }
+  },
+  "unachieved": {
+    "lang-store": {
+      "ja": "もっと頑張りましょう",
+      "en": "Keep working at it."
+    }
+  },
+  "categories": {
+    "lang-store": {
+      "ja": {
+        "pair": "連携",
+        "run": "挑戦と実力",
+        "stage": "課題攻略",
+        "enemy": "敵討伐",
+        "contribution": "貢献",
+        "facility": "施設利用",
+        "tag": "タグ"
+      },
+      "en": {
+        "pair": "Teamwork",
+        "run": "Challenges and ability",
+        "stage": "Task completion",
+        "enemy": "Enemy defeats",
+        "contribution": "Contribution",
+        "facility": "Facility use",
+        "tag": "Tags"
+      }
+    }
+  }
+}
