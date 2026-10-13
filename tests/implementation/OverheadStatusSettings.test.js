@@ -21,7 +21,30 @@ test('overhead status settings retain supported selections and rotate them every
   assert.equal(getRotatingOverheadStatus(settings.statuses, 0.99), 'power');
   assert.equal(getRotatingOverheadStatus(settings.statuses, 1), 'weight');
   assert.equal(getRotatingOverheadStatus(settings.statuses, 2), 'power');
-  assert.deepEqual(normalizeOverheadStatusSettings({ statuses: 'power', visibility: 'unknown' }), DEFAULT_OVERHEAD_STATUS_SETTINGS);
+  assert.deepEqual(normalizeOverheadStatusSettings({ statuses: 'power', visibility: 'unknown' }), { statuses: [], visibility: 'always' });
+});
+
+test('unsaved settings always show only durability without writing saved data', () => {
+  const settings = readOverheadStatusSettings({ getValue: () => undefined });
+  assert.deepEqual(settings, { statuses: ['durability'], visibility: 'always' });
+  assert.equal(isOverheadStatusVisible({ currentArea: 'battle' }, settings.visibility), true);
+  for (const currentArea of ['preparation', 'warehouse', 'shop']) {
+    assert.equal(isOverheadStatusVisible({ currentArea }, settings.visibility), true);
+  }
+});
+
+test('saved selections, empty selections, and legacy normalization remain unchanged', () => {
+  for (const saved of [
+    { statuses: ['magic', 'weight'], visibility: 'always' },
+    { statuses: [], visibility: 'always' },
+    { statuses: [], visibility: 'battle' },
+  ]) {
+    assert.deepEqual(readOverheadStatusSettings({ getValue: () => saved }), saved);
+  }
+  for (const saved of [null, {}, { statuses: 'power', visibility: 'unknown' }]) {
+    assert.deepEqual(readOverheadStatusSettings({ getValue: () => saved }), { statuses: [], visibility: 'always' });
+  }
+  assert.deepEqual(normalizeOverheadStatusSettings({ statuses: ['durability'] }), { statuses: ['durability'], visibility: 'always' });
 });
 
 test('overhead values use one entity rule for hero and enemy durability, weight, and scaled statuses', () => {

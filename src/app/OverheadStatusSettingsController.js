@@ -34,7 +34,9 @@ export default class OverheadStatusSettingsController {
 
   refreshLabels() {
     this.elements.statusLabels.forEach((label) => {
-      label.textContent = this.textRepository.getName('status', label.dataset.overheadStatus);
+      label.textContent = label.dataset.overheadStatus === 'durability'
+        ? `${this.textRepository.getName('status', 'stamina')} / ${this.textRepository.getName('status', 'hp')}`
+        : this.textRepository.getName('status', label.dataset.overheadStatus);
     });
   }
 

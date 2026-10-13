@@ -18,7 +18,10 @@ export function drawOverheadStatus(context, entity, status, textRepository) {
   const chip = entity.chip;
   const x = chip.x + (chip.effectOffsetX ?? 0);
   const y = chip.y - chip.height + (chip.effectOffsetY ?? 0) - chip.radius - OVERHEAD_STATUS_VERTICAL_GAP;
-  const label = `${textRepository.getName('status', status)} ${getOverheadStatusValue(entity, status)}`;
+  const labelStatus = status === 'durability'
+    ? (chip.type === 'enemy' ? 'hp' : 'stamina')
+    : status;
+  const label = `${textRepository.getName('status', labelStatus)} ${getOverheadStatusValue(entity, status)}`;
   const visual = getStatusVisual(status);
   context.save();
   context.font = `700 ${OVERHEAD_STATUS_FONT_SIZE}px system-ui`;
