@@ -515,6 +515,12 @@
       "en": "Date of notice"
     }
   },
+  "achievementToastTitle": {
+    "lang-store": {
+      "ja": "アチーブメント達成",
+      "en": "Achievement earned"
+    }
+  },
   "trialResultScoreTitle": {
     "lang-store": {
       "ja": "成績表",
