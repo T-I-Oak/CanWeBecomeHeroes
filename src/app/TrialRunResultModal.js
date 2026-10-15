@@ -5,6 +5,7 @@ import { TRIAL_RUN_RESULT_TYPE } from '../game/TrialRunResult.js';
 import { ACHIEVEMENT_DEFINITIONS } from '../game/AchievementDefinitions.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { createAchievementTable } from './AchievementTable.js';
+import { getTrialResultScale } from './TrialResultScale.js';
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const element = (tag, className) => { const node = document.createElement(tag); node.className = className; return node; };
 const signature = '<svg class="Signature" viewBox="0 0 190 65" aria-hidden="true"><text x="12" y="39" fill="currentColor" font-size="37" font-family="Segoe Script, cursive" font-style="italic">Zane</text><path d="M8 50Q65 43 159 48M128 35q18 4 38-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
@@ -70,7 +71,7 @@ export default class TrialRunResultModal {
         }
       };
       const resize = () => {
-        const scale = Math.max(.05, Math.min((this.container.clientWidth - 24) / 840, (this.container.clientHeight - 24) / 600));
+        const scale = getTrialResultScale(this.container.clientWidth, this.container.clientHeight);
         paper.style.transform = `translate(-50%,-50%) scale(${scale})`;
       };
       const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(resize) : null;

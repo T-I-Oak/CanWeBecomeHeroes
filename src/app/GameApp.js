@@ -233,6 +233,8 @@ export async function startGame() {
     trial.informationWindows?.clear({ includePinned: true });
     trial.stageSelection?.hide();
     trial.flowLog?.dispose();
+    trial.achievementToast?.dispose();
+    trial.achievementToast = null;
     trial.flowLog = null;
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     directionContext.clearRect(0, 0, directionCanvas.clientWidth, directionCanvas.clientHeight);

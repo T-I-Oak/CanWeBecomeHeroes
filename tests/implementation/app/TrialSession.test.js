@@ -25,6 +25,14 @@ class Element {
   }
   append(...children) { this.children.push(...children); }
   replaceChildren(...children) { this.children = children; }
+  querySelector(tag) {
+    for (const child of this.children) {
+      if (child.tagName === tag) return child;
+      const match = child.querySelector(tag);
+      if (match) return match;
+    }
+    return null;
+  }
   setAttribute() {}
   addEventListener(name, callback) { this.listeners.set(name, callback); }
   removeEventListener(name) { this.listeners.delete(name); }

@@ -13,7 +13,7 @@ export const FIFTEEN_LEVELS = Object.freeze(['D', 'C', 'B', 'A', 'S'].flatMap((l
     minG: group * 3 + offset + 1,
     label: `${letter}${suffix}`,
     comment: group < 2 ? 1 : group < 4 ? 2 : 3,
-    notice: group + 1,
+    notice: group * 3 + offset + 1,
   })),
 ));
 

@@ -1,0 +1,37 @@
+.AchievementToast {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  width: 320px;
+  transform-origin: bottom right;
+  z-index: 25;
+  pointer-events: none;
+  overflow: hidden;
+  background: #f8ecd0;
+  color: #49371e;
+  box-shadow: 0 3px 12px #0004;
+  visibility: hidden;
+}
+.AchievementToast.state-visible { visibility: visible; }
+.AchievementToast[hidden] { display: none; }
+.AchievementToast__Heading {
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+  font-size: 14px;
+  line-height: 28px;
+}
+.AchievementToast .AchievementTable { table-layout: fixed; }
+.AchievementToast .AchievementTable td { padding: 0; border: 0; white-space: normal; }
+.AchievementToast .AchievementTable__Grade { width: 56px; }
+.AchievementToast__Clip { overflow: hidden; }
+.AchievementToast__Cell {
+  padding: 9px 8px;
+  overflow-wrap: anywhere;
+  box-shadow: inset 0 1px var(--achievement-border-color);
+}
+.AchievementToast .AchievementTable__Grade .AchievementToast__Cell {
+  box-shadow: inset 0 1px var(--achievement-border-color), inset 1px 0 var(--achievement-border-color);
+}
+.AchievementToast__Grade { display: inline-block; color: #000; transform-origin: center; }
+.AchievementToast__Grade.state-updated { color: #b12c29; }

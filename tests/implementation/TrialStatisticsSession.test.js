@@ -4,6 +4,28 @@ import TrialStatisticsSession from '../../src/game/TrialStatisticsSession.js';
 import RunRecordsRepository from '../../src/game/RunRecordsRepository.js';
 import HeroProgressRepository from '../../src/game/HeroProgressRepository.js';
 import { createTrialRunResult } from '../../src/game/TrialRunResult.js';
+import HeroFactory from '../../src/game/HeroFactory.js';
+
+test('startup and initial Hero notifications are captured without replaying saved grades', () => {
+  const values = new Map();
+  const dataManager = { getValue: key => values.get(key), setValue: (key, value) => values.set(key, structuredClone(value)) };
+  const repository = new RunRecordsRepository(dataManager);
+  const changes = [];
+  const first = new TrialStatisticsSession({ repository, professionIds: ['swordfighter', 'guard'],
+    onGradeRaised: items => changes.push(...items) });
+  assert.ok(changes.some(item => item.id === 'trial-start' && item.oldGrade === 0));
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0 });
+  hero.getTags = () => Array(7).fill('valor');
+  first.attachHero(hero);
+  assert.deepEqual(changes.find(item => item.id === 'tag:valor'), { id: 'tag:valor', oldGrade: 0, newGrade: 3 });
+  first.checkpoint();
+  const next = [];
+  const second = new TrialStatisticsSession({ repository, professionIds: ['swordfighter', 'guard'],
+    onGradeRaised: items => next.push(...items) });
+  second.attachHero(hero);
+  assert.ok(!next.some(item => item.id === 'tag:valor'));
+  assert.ok(next.every(item => item.oldGrade > 0));
+});
 
 test('completion keeps ordered members and run-only facts; repeating finish or saving cannot double count', () => {
   const values = new Map();

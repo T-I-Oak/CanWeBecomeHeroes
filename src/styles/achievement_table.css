@@ -1,4 +1,5 @@
 .AchievementTable {
+  --achievement-border-color: #a98b5b;
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
@@ -13,7 +14,7 @@
 }
 .AchievementTable th,
 .AchievementTable td {
-  border: 1px solid #a98b5b;
+  border: 1px solid var(--achievement-border-color);
   padding: 6px 8px;
   white-space: nowrap;
 }

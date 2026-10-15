@@ -27,10 +27,10 @@ function fixture(definition, value) {
   return { data };
 }
 
-test('production tables map all 15 labels to three comments and five notification milestones', () => {
+test('production tables notify every grade while retaining three comments', () => {
   assert.deepEqual(FIFTEEN_LEVELS.map(level => level.label), ['D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+']);
   assert.deepEqual(FIFTEEN_LEVELS.map(level => level.comment), [1,1,1,1,1,1,2,2,2,2,2,2,3,3,3]);
-  assert.deepEqual(FIFTEEN_LEVELS.map(level => level.notice), [1,1,1,2,2,2,3,3,3,4,4,4,5,5,5]);
+  assert.deepEqual(FIFTEEN_LEVELS.map(level => level.notice), Array.from({ length: 15 }, (_, index) => index + 1));
   assert.ok(ACHIEVEMENT_DEFINITIONS.filter(d => !d.id.startsWith('tag:')).every(d => d.levels === FIFTEEN_LEVELS && d.s === 15));
   assert.ok(ACHIEVEMENT_DEFINITIONS.filter(d => d.id.startsWith('tag:')).every(d => d.levels === THREE_LEVELS && d.s === 3));
   const tag = ACHIEVEMENT_DEFINITIONS.find(d => d.id === 'tag:valor');
@@ -45,7 +45,9 @@ test('production tables map all 15 labels to three comments and five notificatio
     if (result.notices.length) milestones.push(p);
     previous = result.grades;
   }
-  assert.deepEqual(milestones, [1,4,7,10,13]);
+  assert.deepEqual(milestones, Array.from({ length: 15 }, (_, index) => index + 1));
+  assert.deepEqual(evaluator.evaluate({ data: { p: 6 } }, { sample: 0 }).notices,
+    [{ id: 'sample', oldGrade: 0, newGrade: 6 }]);
   const pair = ACHIEVEMENT_DEFINITIONS.find(d => d.id === 'pair-start:Avery|Briar');
   assert.equal(new Achievements({ definitions: [pair] }).evaluate(fixture(pair, 1)).entries[0].label, 'C');
   assert.equal(new Achievements({ definitions: [pair] }).evaluate(fixture(pair, 20)).entries[0].label, 'S+');

@@ -53,6 +53,7 @@ import HeroDirectionIndicatorRenderer from './HeroDirectionIndicatorRenderer.js'
 import TutorialController from './TutorialController.js';
 import { getHeroDirectionIndicatorAtPoint, getHeroDirectionIndicators } from '../game/HeroDirectionIndicator.js';
 import TrialStatisticsSession from '../game/TrialStatisticsSession.js';
+import AchievementToast from './AchievementToast.js';
 
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
@@ -85,7 +86,10 @@ export async function startTrial({
   const slotManager = new HeroSlotManager();
   const gameLog = new GameLog({ textRepository });
   const scenario = createRunScenario({ professionIds: selectedProfessionIds });
-  const statistics = new TrialStatisticsSession({ repository: runRecords, professionIds: selectedProfessionIds });
+  const achievementToast = new AchievementToast({ textRepository });
+  trial.achievementToast = achievementToast;
+  const statistics = new TrialStatisticsSession({ repository: runRecords, professionIds: selectedProfessionIds,
+    onGradeRaised: changes => achievementToast.enqueue(changes) });
   const attemptSave = save => {
     try { save(); }
     catch (error) {
@@ -204,6 +208,7 @@ export async function startTrial({
       .play(createRecruitmentVignette({ cast: selectRecruitmentCast(context), enemies: context.stage.enemies, textRepository, random })),
     onRunCompleted: ({ outcome, members }) => {
       const record = statistics.finish({ outcome, members, tick: clock.tick, remainingHours: getRemainingTrialHours() });
+      achievementToast.dispose();
       attemptSave(() => runRecords.save());
       const result = createTrialRunResult({ outcome, members, issuedAt: record.endedAt, record, random, language: document.documentElement.lang?.startsWith('en') ? 'en' : 'ja' });
       trial.lastRunResult = result;
@@ -248,6 +253,7 @@ export async function startTrial({
     };
 
   trial.update = (deltaSeconds, time) => {
+    achievementToast.update(deltaSeconds * 1000, Boolean(document.querySelector('.ModalLayer.state-open, #tutorial-layer:not([hidden])')));
     clock.advance(deltaSeconds, (simulationDeltaSeconds, tickDelta) => {
       enemySpawn.update(clock.tick);
       board.update(simulationDeltaSeconds);
