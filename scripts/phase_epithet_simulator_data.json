@@ -1,0 +1,880 @@
+{
+  "note": "日本語の検討用データ。語句は生成結果を見ながら調整します。深さ制限はありません。",
+  "template": "[person(ally)]",
+  "targets": [
+    {
+      "id": "valor",
+      "group": "tag",
+      "name": "武勇",
+      "words": {
+        "person_base": {
+          "ally": [
+            "キラー",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "一撃必殺の"
+          ]
+        },
+        "actionPerson": {
+          "enemy": [
+            "キラー"
+          ]
+        }
+      }
+    },
+    {
+      "id": "arcane",
+      "group": "tag",
+      "name": "魔導",
+      "words": {
+        "person_base": {
+          "ally": [
+            "賢者",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "秘術の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を封じる"
+          ]
+        }
+      }
+    },
+    {
+      "id": "dexterity",
+      "group": "tag",
+      "name": "軽業",
+      "words": {
+        "person_base": {
+          "ally": [
+            "韋駄天",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "神出鬼没の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を出し抜く"
+          ]
+        }
+      }
+    },
+    {
+      "id": "reputation",
+      "group": "tag",
+      "name": "信用",
+      "words": {
+        "person_base": {
+          "ally": [
+            "雄弁家",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "高潔なる"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を統べる"
+          ]
+        }
+      }
+    },
+    {
+      "id": "blessing",
+      "group": "tag",
+      "name": "加護",
+      "words": {
+        "person_base": {
+          "ally": [
+            "聖者",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "神聖なる"
+          ]
+        },
+        "actionPerson": {
+          "enemy": [
+            "の天敵"
+          ]
+        }
+      }
+    },
+    {
+      "id": "iron",
+      "group": "tag",
+      "name": "鉄",
+      "words": {
+        "person_base": {
+          "ally": [
+            "番人",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "不動の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を打ち砕く"
+          ]
+        }
+      }
+    },
+    {
+      "id": "cloth",
+      "group": "tag",
+      "name": "布",
+      "words": {
+        "person_base": {
+          "ally": [
+            "名匠",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "結界の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を絡め取る"
+          ]
+        }
+      }
+    },
+    {
+      "id": "feather",
+      "group": "tag",
+      "name": "羽",
+      "words": {
+        "modifier": {
+          "ally": [
+            "疾風の"
+          ]
+        },
+        "person_base": {
+          "ally": [
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を翻弄する"
+          ]
+        }
+      }
+    },
+    {
+      "id": "gem",
+      "group": "tag",
+      "name": "宝石",
+      "words": {
+        "person_base": {
+          "ally": [
+            "目利き",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "煌めく"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を魅了する"
+          ]
+        }
+      }
+    },
+    {
+      "id": "fortune",
+      "group": "tag",
+      "name": "幸運",
+      "words": {
+        "person_base": {
+          "ally": [
+            "勝負師",
+            "[tagSkill]の[skillPerson(ally)]"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "天運の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "に競り勝つ"
+          ]
+        }
+      }
+    },
+    {
+      "id": "fire",
+      "group": "tag",
+      "name": "炎",
+      "words": {
+        "modifier": {
+          "ally": [
+            "炎の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を焼き払う"
+          ]
+        }
+      }
+    },
+    {
+      "id": "water",
+      "group": "tag",
+      "name": "水",
+      "words": {
+        "modifier": {
+          "ally": [
+            "水の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を押し流す"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lightning",
+      "group": "tag",
+      "name": "雷",
+      "words": {
+        "person_base": {
+          "ally": [
+            "風雲児"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "雷鳴の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を撃ち抜く"
+          ]
+        }
+      }
+    },
+    {
+      "id": "area",
+      "group": "tag",
+      "name": "範囲",
+      "words": {
+        "person_base": {
+          "ally": [
+            "指揮官"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "雄大なる"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を一掃する"
+          ]
+        }
+      }
+    },
+    {
+      "id": "vitality",
+      "group": "tag",
+      "name": "活力",
+      "words": {
+        "modifier": {
+          "ally": [
+            "不屈の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を押し返す"
+          ]
+        }
+      }
+    },
+    {
+      "id": "sword",
+      "group": "weapon",
+      "name": "剣",
+      "words": {
+        "person_base": {
+          "ally": [
+            "剣豪"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "一刀両断の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を討つ"
+          ]
+        }
+      }
+    },
+    {
+      "id": "shield",
+      "group": "weapon",
+      "name": "盾",
+      "words": {
+        "person_base": {
+          "ally": [
+            "守護者"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "鉄壁の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を打ちのめす"
+          ]
+        }
+      }
+    },
+    {
+      "id": "staff",
+      "group": "weapon",
+      "name": "杖",
+      "words": {
+        "person_base": {
+          "ally": [
+            "術師"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "神秘なる"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を打ち払う"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holy-book",
+      "group": "weapon",
+      "name": "聖書",
+      "words": {
+        "person_base": {
+          "ally": [
+            "祈り手"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "聖なる"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を祓う"
+          ]
+        }
+      }
+    },
+    {
+      "id": "claw",
+      "group": "weapon",
+      "name": "爪",
+      "words": {
+        "person_base": {
+          "ally": [
+            "密偵"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "狡猾なる"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を引き裂く"
+          ]
+        }
+      }
+    },
+    {
+      "id": "bow",
+      "group": "weapon",
+      "name": "弓",
+      "words": {
+        "person_base": {
+          "ally": [
+            "スナイパー"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "百発百中の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を射抜く"
+          ]
+        }
+      }
+    },
+    {
+      "id": "orb",
+      "group": "weapon",
+      "name": "宝珠",
+      "words": {
+        "person_base": {
+          "ally": [
+            "幻術師"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "神秘の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を幻惑する"
+          ]
+        }
+      }
+    },
+    {
+      "id": "banner",
+      "group": "weapon",
+      "name": "旗",
+      "words": {
+        "person_base": {
+          "ally": [
+            "旗手"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "威風堂々たる"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を圧倒する"
+          ]
+        }
+      }
+    },
+    {
+      "id": "holy-symbol",
+      "group": "weapon",
+      "name": "聖印",
+      "words": {
+        "person_base": {
+          "ally": [
+            "聖人"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "荘厳なる"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "を浄化する"
+          ]
+        }
+      }
+    },
+    {
+      "id": "tarot-cards",
+      "group": "weapon",
+      "name": "タロット",
+      "words": {
+        "person_base": {
+          "ally": [
+            "占い師"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "強運の"
+          ]
+        },
+        "action": {
+          "enemy": [
+            "の運命を操る"
+          ]
+        }
+      }
+    },
+    {
+      "id": "facility-0",
+      "group": "facility",
+      "name": "試験場への出発回数",
+      "words": {
+        "person_base": {
+          "ally": [
+            "英傑"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "歴戦の"
+          ]
+        }
+      }
+    },
+    {
+      "id": "facility-1",
+      "group": "facility",
+      "name": "ショップへの出発回数",
+      "words": {
+        "person_base": {
+          "ally": [
+            "買付人"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "黄金の"
+          ]
+        }
+      }
+    },
+    {
+      "id": "facility-2",
+      "group": "facility",
+      "name": "ギルドへの出発回数",
+      "words": {
+        "modifier": {
+          "ally": [
+            "威厳ある"
+          ]
+        }
+      }
+    },
+    {
+      "id": "facility-3",
+      "group": "facility",
+      "name": "訓練場への出発回数",
+      "words": {
+        "person_base": {
+          "ally": [
+            "修行者"
+          ]
+        },
+        "modifier": {
+          "ally": [
+            "屈強なる"
+          ]
+        }
+      }
+    },
+    {
+      "id": "facility-4",
+      "group": "facility",
+      "name": "ショップのタグ追加数",
+      "words": {
+        "modifier": {
+          "ally": [
+            "華麗なる"
+          ]
+        }
+      }
+    },
+    {
+      "id": "facility-5",
+      "group": "facility",
+      "name": "ギルドの期限延長時間",
+      "words": {
+        "modifier": {
+          "ally": [
+            "不退転の"
+          ]
+        }
+      }
+    },
+    {
+      "id": "facility-6",
+      "group": "facility",
+      "name": "訓練の幸運成功回数",
+      "words": {
+        "modifier": {
+          "ally": [
+            "非凡なる"
+          ]
+        }
+      }
+    }
+  ],
+  "enemies": [
+    {
+      "id": "small-valor",
+      "name": "ゴブリン"
+    },
+    {
+      "id": "small-iron",
+      "name": "リビングアーマー"
+    },
+    {
+      "id": "small-arcane",
+      "name": "ゴースト"
+    },
+    {
+      "id": "medium-arcane",
+      "name": "リッチ"
+    },
+    {
+      "id": "large-arcane",
+      "name": "メデューサ"
+    },
+    {
+      "id": "small-reputation",
+      "name": "ドワーフ"
+    },
+    {
+      "id": "small-lightning",
+      "name": "雷狼"
+    },
+    {
+      "id": "small-cloth",
+      "name": "ミイラ"
+    },
+    {
+      "id": "medium-cloth",
+      "name": "レイス"
+    },
+    {
+      "id": "large-cloth",
+      "name": "ドラキュラ"
+    },
+    {
+      "id": "small-dexterity",
+      "name": "コボルト"
+    },
+    {
+      "id": "small-feather",
+      "name": "ハーピー"
+    },
+    {
+      "id": "medium-feather",
+      "name": "グリフォン"
+    },
+    {
+      "id": "large-feather",
+      "name": "ワイバーン"
+    },
+    {
+      "id": "small-gem",
+      "name": "ミミック"
+    },
+    {
+      "id": "medium-blessing",
+      "name": "デーモン"
+    },
+    {
+      "id": "large-blessing",
+      "name": "堕天使"
+    },
+    {
+      "id": "small-blessing",
+      "name": "インプ"
+    },
+    {
+      "id": "small-fortune",
+      "name": "ピクシー"
+    },
+    {
+      "id": "small-fire",
+      "name": "サラマンダー"
+    },
+    {
+      "id": "small-water",
+      "name": "半魚人"
+    },
+    {
+      "id": "medium-water",
+      "name": "クラーケン"
+    },
+    {
+      "id": "large-water",
+      "name": "リヴァイアサン"
+    },
+    {
+      "id": "medium-fire",
+      "name": "ヘルハウンド"
+    },
+    {
+      "id": "large-fire",
+      "name": "フェニックス"
+    },
+    {
+      "id": "medium-lightning",
+      "name": "サンダーバード"
+    },
+    {
+      "id": "large-lightning",
+      "name": "雷龍"
+    },
+    {
+      "id": "medium-reputation",
+      "name": "ホブゴブリン"
+    },
+    {
+      "id": "large-reputation",
+      "name": "スフィンクス"
+    },
+    {
+      "id": "medium-fortune",
+      "name": "レプラコーン"
+    },
+    {
+      "id": "large-fortune",
+      "name": "麒麟"
+    },
+    {
+      "id": "small-vitality",
+      "name": "マンドラゴラ"
+    },
+    {
+      "id": "small-area",
+      "name": "ケルベロス"
+    },
+    {
+      "id": "medium-vitality",
+      "name": "トレント"
+    },
+    {
+      "id": "large-vitality",
+      "name": "歩く世界樹"
+    },
+    {
+      "id": "medium-gem",
+      "name": "クリスタルゴーレム"
+    },
+    {
+      "id": "large-gem",
+      "name": "ファフニール"
+    },
+    {
+      "id": "medium-area",
+      "name": "ヒュドラ"
+    },
+    {
+      "id": "large-area",
+      "name": "八岐大蛇"
+    },
+    {
+      "id": "medium-dexterity",
+      "name": "ウェアウルフ"
+    },
+    {
+      "id": "large-dexterity",
+      "name": "天狗"
+    },
+    {
+      "id": "medium-valor",
+      "name": "オーガ"
+    },
+    {
+      "id": "large-valor",
+      "name": "サイクロプス"
+    },
+    {
+      "id": "medium-iron",
+      "name": "ゴーレム"
+    },
+    {
+      "id": "large-iron",
+      "name": "タロス"
+    }
+  ],
+  "generic": {
+    "person": {
+      "ally": [
+        "[person_base(ally)]",
+        "[modifier(ally)][person_base(ally)]",
+        "[modifier(ally)][qualifiedPerson(ally)]"
+      ],
+      "enemy": [
+        "[person_base(enemy)]",
+        "[modifier(enemy)][person_base(enemy)]"
+      ]
+    },
+    "qualifiedPerson": {
+      "ally": [
+        "使い手",
+        "使者",
+        "守り手"
+      ]
+    },
+    "skillPerson": {
+      "ally": [
+        "使い手",
+        "達人",
+        "名人",
+        "匠"
+      ]
+    }
+  },
+  "defaults": {
+    "person_base(ally)": [
+      "勇者"
+    ],
+    "person_base(enemy)": [
+      "強敵"
+    ],
+    "modifier(ally)": [
+      "伝説の"
+    ],
+    "modifier(enemy)": [
+      "恐るべき"
+    ],
+    "action(enemy)": [
+      "を倒す"
+    ],
+    "actionPerson(enemy)": [
+      "[action(enemy)][person_base(ally)]",
+      "[action(enemy)][modifier(ally)][person_base(ally)]"
+    ]
+  }
+}

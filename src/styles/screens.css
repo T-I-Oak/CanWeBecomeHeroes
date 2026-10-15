@@ -88,27 +88,6 @@
   text-align: center;
 }
 
-.TrialRunResult__Confetti {
-  position: absolute;
-  z-index: 1;
-  inset: -22dvh 0 auto;
-  height: 42dvh;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.TrialRunResult__ConfettiPiece {
-  position: absolute;
-  left: var(--trial-result-confetti-position);
-  width: 9px;
-  height: 16px;
-  background: var(--trial-result-confetti-color);
-}
-
-.TrialRunResult.state-open .TrialRunResult__ConfettiPiece {
-  animation: trial-run-result-confetti-fall 1450ms var(--trial-result-confetti-delay) ease-in both;
-}
-
 @keyframes trial-run-result-backdrop-enter {
   from { background-color: rgb(8 13 20 / 0%); }
 }
@@ -117,11 +96,6 @@
   from { opacity: 0; transform: translateY(-28dvh); }
 }
 
-@keyframes trial-run-result-confetti-fall {
-  from { opacity: 0; transform: translateY(-10dvh) rotate(0deg); }
-  15% { opacity: 1; }
-  to { opacity: 0; transform: translateY(54dvh) rotate(300deg); }
-}
 
 .StartPartySelection__Dialog {
   --party-chip-size: min(17vw, 17vh, 132px);

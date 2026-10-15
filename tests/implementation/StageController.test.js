@@ -4,6 +4,29 @@ import BattleSystem from '../../src/game/BattleSystem.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import EnemySpawnSystem from '../../src/game/EnemySpawnSystem.js';
 import StageController, { getStageBaseLevel, rollStageLevel } from '../../src/game/StageController.js';
+import RunController from '../../src/game/RunController.js';
+
+test('final stage records its clear immediately, waits, and is not recorded twice on completion', () => {
+  const events = [];
+  let complete = false;
+  const stages = new StageController({
+    enemySpawn: {},
+    battleSystem: { isStageComplete: () => complete, hasStageVictory: () => true },
+    onStatistics: event => events.push(event),
+  });
+  stages.currentStage = { number: 7, kind: 'boss', patternIndex: 0, level: 9 };
+  stages.state = 'battle';
+  const run = new RunController();
+  stages.update();
+  run.update({ remainingHours: 1, stage: stages.currentStage, stageState: stages.state });
+  assert.deepEqual(events, [{ type: 'stage-clear', kind: 'boss', patternIndex: 0, level: 9 }]);
+  assert.equal(run.isActive, true);
+  complete = true;
+  stages.update();
+  run.update({ remainingHours: 1, stage: stages.currentStage, stageState: stages.state });
+  assert.equal(events.length, 1);
+  assert.equal(run.state, 'cleared');
+});
 
 test('stage one rolls a level from one through five', () => {
   assert.equal(getStageBaseLevel(1), 3);

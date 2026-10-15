@@ -205,7 +205,7 @@ export async function startTrial({
     onRunCompleted: ({ outcome, members }) => {
       const record = statistics.finish({ outcome, members, tick: clock.tick, remainingHours: getRemainingTrialHours() });
       attemptSave(() => runRecords.save());
-      const result = createTrialRunResult({ outcome, members, issuedAt: record.endedAt, record });
+      const result = createTrialRunResult({ outcome, members, issuedAt: record.endedAt, record, random, language: document.documentElement.lang?.startsWith('en') ? 'en' : 'ja' });
       trial.lastRunResult = result;
       trialRunResultModal.show(result).then(finishTrial);
     },

@@ -277,7 +277,7 @@ test('Ellis and Finley use a separate opening script with a dash and a backward 
           { heroId: 'Finley', text: 'エリスですか。今でも旅団から荷物を盗んでいるのですか？' },
           { heroId: 'Ellis', text: '俺は荷物を盗んでいるわけじゃない。敵の装備を剝いで、戦力を落とすのが俺の戦術だ。' },
           { heroId: 'Finley', text: '確かに。あの盗賊団を追っていたときも、そんな戦い方でしたね。' },
-          { heroId: 'Ellis', text: 'この技術を世の中に活かすため、勇者試験を受けに行くところだ。' },
+          { heroId: 'Ellis', text: 'この技術を世の中に活かすため、勇者認定試験を受けに行くところだ。' },
           { heroId: 'Finley', text: '私も試験を受けに行くところです。これも何かの縁ですね。一緒に行きましょうか。' },
         ],
       },

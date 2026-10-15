@@ -1,6 +1,9 @@
 {
   "tutorialNext": {
-    "lang-store": { "ja": "次へ", "en": "Next" }
+    "lang-store": {
+      "ja": "次へ",
+      "en": "Next"
+    }
   },
   "weaponTargetingNote": {
     "lang-store": {
@@ -40,14 +43,14 @@
   },
   "trialCertificateTitle": {
     "lang-store": {
-      "ja": "勇者試験 合格証明書",
+      "ja": "勇者認定試験 合格証明書",
       "en": "Hero Trial Certificate"
     }
   },
   "trialCertificateStatement": {
     "lang-store": {
-      "ja": "ここに、下記の者が勇者試験に合格したことを証明します。",
-      "en": "This certifies that the following individuals have passed the Hero Trial."
+      "ja": "ここに、下記の者が勇者認定試験に合格したことを証明します。\n勇者ギルドより、その功績を称える二つ名を授与します。\nその名に誇りを持ち、人々の希望となることを願います。",
+      "en": "This certifies that the following individuals have passed the Hero Certification Trial.\nThe Hero Guild grants each a title in recognition of their achievements.\nMay they bear that name with pride and bring hope to the people."
     }
   },
   "trialCertificateDate": {
@@ -70,14 +73,14 @@
   },
   "trialFailureTitle": {
     "lang-store": {
-      "ja": "不合格通知",
-      "en": "Notice of Failure"
+      "ja": "勇者認定試験 結果通知",
+      "en": "Hero Certification Trial Results"
     }
   },
   "trialFailureMessage": {
     "lang-store": {
-      "ja": "今回の勇者試験は不合格となりました。",
-      "en": "You did not pass this Hero Trial."
+      "ja": "今回の勇者認定試験では、合格基準に達しなかったため、\n不合格となりました。\n再びの挑戦をお待ちしております。",
+      "en": "You did not meet the passing standard in this Hero Certification Trial.\nWe look forward to your next attempt."
     }
   },
   "gameProgress": {
@@ -498,6 +501,60 @@
     "lang-store": {
       "ja": "訓練",
       "en": "training"
+    }
+  },
+  "trialCertificateChair": {
+    "lang-store": {
+      "ja": "委員長 ギルドマスター ゼイン",
+      "en": "Chairman and Guild Master Zane"
+    }
+  },
+  "trialFailureDate": {
+    "lang-store": {
+      "ja": "通知日",
+      "en": "Date of notice"
+    }
+  },
+  "trialResultScoreTitle": {
+    "lang-store": {
+      "ja": "成績表",
+      "en": "Report Card"
+    }
+  },
+  "trialResultFlip": {
+    "lang-store": {
+      "ja": "裏返す",
+      "en": "Turn over"
+    }
+  },
+  "trialResultCategory": {
+    "lang-store": {
+      "ja": "カテゴリ",
+      "en": "Category"
+    }
+  },
+  "trialResultItem": {
+    "lang-store": {
+      "ja": "評価項目",
+      "en": "Achievement"
+    }
+  },
+  "trialResultGrade": {
+    "lang-store": {
+      "ja": "判定",
+      "en": "Grade"
+    }
+  },
+  "trialResultComment": {
+    "lang-store": {
+      "ja": "所見",
+      "en": "Comment"
+    }
+  },
+  "trialResultEnd": {
+    "lang-store": {
+      "ja": "試験終了",
+      "en": "Trial Complete"
     }
   }
 }

@@ -32,7 +32,7 @@ export default class RunController {
 
   update({ remainingHours, stage, stageState }) {
     if (!this.isActive) return this.state;
-    if (isFinalBossVictory(stage, stageState)) this.complete(RUN_STATE.cleared, stage);
+    if (isFinalBossVictory(stage, stageState) && (stageState === 'complete' || remainingHours <= 0)) this.complete(RUN_STATE.cleared, stage);
     else if (remainingHours <= 0) this.complete(RUN_STATE.expired, stage);
     return this.state;
   }

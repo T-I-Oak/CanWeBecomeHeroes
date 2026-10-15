@@ -1,0 +1,40 @@
+.TrialRunResult__Confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.TrialRunResult__ConfettiPiece {
+  position: absolute;
+  top: -32px;
+  left: var(--trial-result-confetti-position);
+  width: 9px;
+  height: 16px;
+  perspective: 100px;
+  animation: trial-result-confetti-shower var(--trial-result-confetti-duration) var(--trial-result-confetti-delay) linear both;
+}
+.TrialRunResult__ConfettiPiece::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--trial-result-confetti-color);
+  animation: trial-result-confetti-flutter var(--trial-result-confetti-flutter-duration) var(--trial-result-confetti-flutter-phase) linear infinite;
+}
+@keyframes trial-result-confetti-flutter {
+  from { transform: rotateY(0deg); filter: brightness(1); }
+  25% { filter: brightness(.7); }
+  50% { filter: brightness(.85); }
+  75% { filter: brightness(.7); }
+  to { transform: rotateY(360deg); filter: brightness(1); }
+}
+.TrialRunResult__ConfettiPiece.state-continuous { animation-iteration-count: infinite; }
+@keyframes trial-result-confetti-shower {
+  from { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+  8%, 85% { opacity: 1; }
+  to { opacity: 0; transform: translate3d(var(--trial-result-confetti-drift), calc(100dvh + 64px), 0) rotate(640deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .TrialRunResult__Confetti { display: none; }
+}

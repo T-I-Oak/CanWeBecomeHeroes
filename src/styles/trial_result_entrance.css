@@ -1,0 +1,12 @@
+.TrialResultEntrance__End {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #f5e9d1;
+  font: 44px/1.5 "Yu Mincho", "Hiragino Mincho ProN", Georgia, serif;
+  letter-spacing: .18em;
+  text-shadow: 0 2px 16px #000;
+  background: linear-gradient(to bottom, transparent calc(50% - 90px), rgb(10 12 16 / 90%) calc(50% - 40px), rgb(10 12 16 / 90%) calc(50% + 40px), transparent calc(50% + 90px));
+  pointer-events: none;
+}

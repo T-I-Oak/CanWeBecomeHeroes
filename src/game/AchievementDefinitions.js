@@ -65,11 +65,11 @@ export function createAchievementDefinitions({ normalLevels = FIFTEEN_LEVELS, ta
     ].map(([id, mode, field, t]) => normal({ id, category: 'run', read: sumRuns(mode, field), t })),
     normal({ id: 'stage-clear', category: 'stage', read: data => sumRecorded(Object.values(data.stages ?? {}).map(stage => stage.clears)), t: 100 }),
     ...Object.values(ENEMY_CATALOG).filter(enemy => !enemy.id.startsWith('phantom-')).map(enemy => normal({
-      id: `enemy-defeat:${enemy.id}`, category: 'enemy', read: data => data.combat?.enemies?.[enemy.id],
+      id: `enemy-defeat:${enemy.id}`, category: 'stage', read: data => data.combat?.enemies?.[enemy.id],
       t: { small: 100, medium: 60, large: 20 }[enemy.size], key: `enemy:${enemy.size}`, condition: 'enemy',
       variables: language => ({ enemy: name(enemyTexts, enemy.id, language) }),
     })),
-    normal({ id: 'contribution', category: 'contribution', read: data => data.guildPoints, t: 20000 }),
+    normal({ id: 'contribution', category: 'facility', read: data => data.guildPoints, t: 20000 }),
     ...[['shop', 400], ['guild', 100], ['training', 400]].map(([id, t]) => normal({
       id: `facility:${id}`, category: 'facility', read: data => data.facilities?.[id], t, condition: 'facility',
       variables: language => ({ facility: name(facilityTexts, id, language) }),
