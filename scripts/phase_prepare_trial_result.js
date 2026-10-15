@@ -3,7 +3,7 @@ const source = fs.readFileSync('scripts/phase_trial_result_mockup.css', 'utf8');
 let css = '.TrialResultViewport{position:absolute;inset:0;overflow:hidden}\n';
 for (const match of source.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
  let selector=match[1].trim();
- if(selector.includes('Preview') || selector.includes('@') || selector.includes('html') || selector==='*' || selector==='body') continue;
+ if(selector.includes('.ScoreTable') || selector.includes('Preview') || selector.includes('@') || selector.includes('html') || selector==='*' || selector==='body') continue;
  selector=selector.split(',').map(part=>part.trim().startsWith('.ResultPaper') ? part.trim().replace('.ResultPaper','.TrialResultPaper') : '.TrialResultPaper '+part.trim()).join(',');
  selector=selector.replaceAll('#flip','.FlipButton');
  css+=selector+'{'+match[2]+'}\n';

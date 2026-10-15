@@ -1,0 +1,32 @@
+.AchievementTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.AchievementTable th {
+  font-weight: 600;
+  color: #f8ecd0;
+  background: #7d643f;
+  letter-spacing: 1px;
+}
+.AchievementTable th,
+.AchievementTable td {
+  border: 1px solid #a98b5b;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+.AchievementTable__Category {
+  text-align: center;
+  background: #b69a6424;
+}
+.AchievementTable__Grade {
+  width: 48px;
+  text-align: center;
+  font: bold 18px/1 Georgia, serif;
+  color: #71532d;
+}
+.AchievementTable__Grade.state-updated { color: #b12c29; }
+.AchievementTable tbody tr:nth-child(even) { background: #fff8e129; }
+.AchievementTable__Condition { display: block; white-space: normal; }
