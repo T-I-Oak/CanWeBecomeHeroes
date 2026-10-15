@@ -1,4 +1,24 @@
-# v0.44.0 正式な試験終了画面：レビュー報告
+# v0.44.1 正式な試験終了画面：レビュー報告
+
+## 再レビュー結果（2026-10-15）
+
+修正コミット6754d04を前回レビュー時点c63d6f3と照合した。R1・R2は解消済み。今回の確認範囲に未解決指摘はなく、マージへ進めると判断する。ソースは変更していない。
+
+- R1：AchievementTableがmode・翻訳済みentries・headingsを受ける独立したDOM生成となり、終了画面がresultモードを利用している。選定・評価・保存・翻訳は呼び出し側に残り、連続カテゴリーの結合と更新判定の色を共通部品が担当する。共通CSSはachievement_table.cssへ集約され、終了画面固有の表CSSは除去された。仕様14・15・17章とUIスタイル規約の契約も照合した。トースト・レコード画面自体は追加されていない。
+- R2：主要7件は恒久ファイルEpithetExpansion.test.jsへ移動され、本番エンジンとpublic/data/epithet.jsonを直接参照している。フィルター・default・終端選択・未定義と循環エラー・本番定義・修飾位置の検証がマージ後も残る。phase_テストにはシミュレータ固有データの確認だけが残る。
+- package.jsonとpackage-lock.jsonは0.44.1で一致。修正差分に終了判定・記録保存・二つ名本番定義の変更はない。src・public/dataと追加恒久テストからphase_・dev_・tmp_成果物への参照は見つからなかった。
+- 承認済みの固定比率・静止ボタン・通知面は変更対象外。表の余白・字体・色の移設を照合し、日英10件表示のブラウザー検証記録を確認した。今回ブラウザーの再操作・実プレイでの期限境界再現は行っていない。表示面の再承認は不要とする既存判断を維持する。
+
+### 再レビューの検証
+
+- 対象11件：node --test tests/implementation/AchievementTable.test.js tests/implementation/EpithetExpansion.test.js tests/implementation/phase_epithet_simulator.test.js tests/implementation/app/TrialSession.test.js、全件成功。
+- 本番ビルド：npm.cmd run build、成功、192モジュール変換。
+- 差分形式：git diff --check master...HEAD、成功。
+- 全テスト：npm.cmd test、523件成功、失敗0、スキップ0。
+
+## 初回レビューの記録（v0.44.0）
+
+以下の指摘は初回レビュー時点の記録であり、現在の判定は上記の再レビュー結果を正本とする。
 
 ## 結論
 
