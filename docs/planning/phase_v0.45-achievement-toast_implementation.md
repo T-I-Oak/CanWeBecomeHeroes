@@ -58,3 +58,15 @@
 - `npm.cmd run build`：194モジュールで成功。初回のサンドボックスアクセス制限を受け、制限外で再実行。
 - ブラウザーで拡大中の文字倍率1.483倍、セルtransformなし、上下のセル境界と判定列の罫線の維持を確認。オーナーの全体了承で確認済み。
 - `npm.cmd test`：526件成功、失敗0件。`git diff --check`も成功。
+
+## レビュー指摘R-01への対応（0.45.3）
+
+- 仕様15の通常項目の通知段階を、文字ごとの1〜5から細分段階を含む1〜15へ修正。一度の更新で複数段階を越えた場合は最終判定1件のみ通知することも明記した。
+- 表示対象選定・取得トーストを後続開発とする古い記述を修正し、未実装のレコード画面と区別した。
+- TrialSessionがTrialStatisticsSession生成前にAchievementToastを用意して通知を接続する構成、共通DOM生成1回につき1行から複数行を追加する構成を記載した。表示詳細は仕様18へ参照を集約した。
+- バージョンを0.45.3へ更新し、確認ページの表示も一致させた。ゲームの処理・表示仕様は変更していない。
+- `rg -n '後続|未実装|別タスク|通知段階|トースト|AchievementToast|TrialSession' docs/specifications/15.achievement_classes.md`で旧条件と未実装記述を点検し、仕様14・18、AchievementDefinitions・TrialSession・AchievementToastと照合した。
+- 対象テスト：`node --test tests/implementation/AchievementToast.test.js tests/implementation/Achievements.test.js tests/implementation/TrialStatisticsSession.test.js tests/implementation/AchievementTable.test.js tests/implementation/app/TrialSession.test.js`：16件成功、失敗0件。
+- `npm.cmd run build`：成功、194モジュール。`git diff --check`：成功。
+- 確認済みのオーナー検証項目は再依頼していない。R-01の修正結果を再レビューへ引き継ぐ。
+- `npm.cmd test`：526件成功、失敗0件。既存のNode `--localstorage-file`警告はあるが、失敗はない。
