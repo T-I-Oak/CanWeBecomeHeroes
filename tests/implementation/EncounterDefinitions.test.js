@@ -104,14 +104,31 @@ test('slot allocation keeps main roles first and reserves two slots for each lar
   ]);
 });
 
-test('boss roles scale their main count by stage while keeping both supports fixed', () => {
+test('boss roles scale their main count by level while keeping both supports fixed', () => {
   assert.equal(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.main.maximumHp, 4);
   assert.deepEqual(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.main.maximums, { power: 4, magic: 4, speed: 4, negotiation: 4, luck: 4 });
   assert.equal(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.support1.maximumHp, 3);
   assert.deepEqual(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.support2.maximums, { power: 3, magic: 3, speed: 3, negotiation: 3, luck: 3 });
   assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 7 }).roles).map(({ count }) => count), [1, 2, 2]);
   assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 14 }).roles).map(({ count }) => count), [1, 2, 2]);
-  assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 15 }).roles).map(({ count }) => count), [2, 2, 2]);
+  assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 15 }).roles).map(({ count }) => count), [1, 2, 2]);
+  for (const [level, count] of [[1, 1], [2, 1], [3, 1], [16, 1], [17, 2], [30, 2], [31, 3]]) {
+    assert.equal(DIFFICULTIES.boss(level).roles.main.count, count);
+  }
+});
+
+test('boss formation depends only on pattern and level, with the same six-slot limits', () => {
+  const factory = { createFromDefinition: ({ enemyDefinitionId, slotPosition }) => ({ enemyDefinitionId, slotPosition }) };
+  const create = (level, stageNumber) => createEncounterEnemies({
+    kind: 'boss', level, stageNumber, pattern: COMBINATION_PATTERNS.boss[0], enemyFactory: factory,
+  });
+  for (const [level, mainCount, totalCount] of [[1, 1, 5], [16, 1, 5], [17, 2, 4], [30, 2, 4], [31, 3, 3]]) {
+    const enemies = create(level);
+    assert.equal(enemies.length, totalCount);
+    assert.equal(enemies.filter(enemy => enemy.enemyDefinitionId.startsWith('large-')).length, mainCount);
+    assert.deepEqual(create(level, 7), enemies);
+    assert.deepEqual(create(level, 28), enemies);
+  }
 });
 
 test('slot allocation fills from the center across roles without role-specific slot preferences', () => {

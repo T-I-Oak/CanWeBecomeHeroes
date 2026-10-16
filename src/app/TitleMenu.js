@@ -2,6 +2,7 @@ import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { APP_COPYRIGHT, APP_VERSION } from '../game/AppMetadata.js';
 import ModalLayer from './ModalLayer.js';
 import TitleChipRain from './TitleChipRain.js';
+import RecordScreen from './RecordScreen.js';
 
 function createElement(tagName, className, text = null) {
   const element = document.createElement(tagName);
@@ -12,7 +13,7 @@ function createElement(tagName, className, text = null) {
 
 /** Top menu shown before a trial and after the player leaves a result. */
 export default class TitleMenu {
-  constructor(container, { textRepository, assets, heroProgress, onOpenSettings = () => {} } = {}) {
+  constructor(container, { textRepository, assets, heroProgress, runRecords, onOpenSettings = () => {} } = {}) {
     if (!container || !textRepository || !assets || !heroProgress) {
       throw new Error('Title menu requires a container, text repository, assets, and hero progress.');
     }
@@ -21,6 +22,7 @@ export default class TitleMenu {
     this.textRepository = textRepository;
     this.assets = assets;
     this.heroProgress = heroProgress;
+    this.runRecords = runRecords;
     this.onOpenSettings = onOpenSettings;
     this.rain = null;
     this.commands = [];
@@ -37,8 +39,7 @@ export default class TitleMenu {
     this.commands.forEach((command) => {
       command.element.textContent = this.textRepository.getLabel(command.label);
     });
-    if (this.recordsMessage) this.recordsMessage.textContent = this.textRepository.getLabel('recordsEmpty');
-    if (this.recordsBackButton) this.recordsBackButton.textContent = this.textRepository.getLabel('close');
+    this.recordScreen.refreshLanguage();
   }
 
   render() {
@@ -90,25 +91,24 @@ export default class TitleMenu {
   }
 
   renderPanel() {
-    this.recordsMessage = createElement('p', 'TitleMenu__Message', this.textRepository.getLabel('recordsEmpty'));
-    this.recordsBackButton = createElement('button', 'TitleMenu__Command', this.textRepository.getLabel('close'));
-    this.recordsBackButton.type = 'button';
-    this.recordsBackButton.addEventListener('click', () => this.closePanel());
-    this.recordsView = createElement('div', 'TitleMenu__PanelBody');
-    this.recordsView.append(this.recordsMessage, this.recordsBackButton);
-    this.panel.append(this.recordsView);
+    this.recordScreen = new RecordScreen(this.panel, {
+      repository: this.runRecords, textRepository: this.textRepository, assets: this.assets,
+      onClose: () => this.closePanel(),
+    });
   }
 
   openPanel(name) {
     this.menu.classList.add('state-hidden');
     this.panel.classList.add('state-open');
-    this.recordsView.classList.toggle('state-open', name === 'records');
+    this.container.classList.add('state-records');
+    if (name === 'records') this.recordScreen.open();
   }
 
   closePanel() {
     this.panel.classList.remove('state-open');
-    this.recordsView.classList.remove('state-open');
+    this.container.classList.remove('state-records');
     this.menu.classList.remove('state-hidden');
+    this.commands.find(command => command.label === 'records').element.focus();
   }
 
   choose(action) {

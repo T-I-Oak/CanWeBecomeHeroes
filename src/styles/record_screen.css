@@ -1,0 +1,91 @@
+.TitleMenu.state-records .TitleMenu__Logo { display: none; }
+.TitleMenu.state-records .TitleMenu__Stage { min-width: 0; min-height: 0; }
+.TitleMenu.state-records .TitleMenu__Content { overflow: hidden; justify-content: start; }
+.TitleMenu.state-records .TitleMenu__Panel { width: min(1080px, 100%); height: 100%; min-height: 0; }
+.RecordScreenViewport { position: relative; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; }
+.RecordScreen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 22px;
+  color: #45351f;
+  background: linear-gradient(110deg, #f5e8c9, #e6d4ae);
+  border: 3px double #927346;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px #100b0780, inset 0 0 32px #ab814426;
+}
+.RecordScreen__Header { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 12px; }
+.RecordScreen__Header h1 { margin: 0; font: 700 30px/1.3 Georgia, serif; }
+.RecordScreen__Button {
+  min-height: 44px;
+  padding: 8px 12px;
+  color: #604725;
+  background: #f8edce;
+  border: 1px solid #a08455;
+  border-radius: 3px;
+  font: inherit;
+  cursor: pointer;
+}
+.RecordScreen__Button.state-selected { color: #fff1d1; background: #735a36; border-color: #5e462b; }
+.RecordScreen__Button:focus-visible { outline: 2px solid #8c4829; outline-offset: -4px; }
+.RecordScreen__Tabs { display: flex; flex-shrink: 0; gap: 6px; flex-wrap: wrap; padding: 12px 0; border-bottom: 2px solid #a08455; }
+.RecordScreen__Tabs .RecordScreen__Button { flex: 1 1 auto; font-size: 16px; }
+.RecordScreen__ScrollViewport { min-width: 0; min-height: 0; flex: 1; overflow: auto; overscroll-behavior: contain; touch-action: pan-x pan-y; }
+.RecordScreen__ContentFrame { position: relative; }
+.RecordScreen__Content { position: absolute; top: 0; left: 0; padding-top: 12px; transform-origin: top left; }
+.RecordScreen__Controls { flex-shrink: 0; padding-top: 12px; }
+.RecordScreen__Controls:empty { display: none; }
+.RecordScreen__Portrait:focus-visible,
+.CroppedEnemyLine__Slot:focus-visible { outline: 2px solid #8c4829; outline-offset: -2px; }
+.RecordScreen__Selectors { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.RecordScreen__Selectors .RecordScreen__Button { font-size: 13px; }
+.RecordScreen__Table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.RecordScreen__Table th, .RecordScreen__Table td { padding: 8px; border: 1px solid #a98b5b; text-align: center; }
+.RecordScreen__Table th { font-weight: 600; background: #7d643f; color: #f8ecd0; }
+.RecordScreen__Table tbody tr:nth-child(even) { background: #fff8e129; }
+.RecordScreen__Rankings { min-width: 840px; font-variant-numeric: tabular-nums; }
+.RecordScreen__Date { white-space: nowrap; font-size: 14px; font-variant-numeric: tabular-nums; }
+.RecordScreen__Rankings .state-sort-value { font-size: 17px; font-weight: 700; }
+.RecordScreen__Members { display: flex; gap: 3px; justify-content: center; }
+.RecordScreen__Portrait { display: block; position: relative; width: 36px; height: 36px; flex: 0 0 36px; overflow: hidden; border-radius: 50%; border: 2px solid #967847; background: #3d4536; }
+.RecordScreen__Portrait img { position: absolute; width: 190%; max-width: none; height: 190%; left: -45%; top: -18.4%; }
+.RecordScreen__Empty { padding: 30px 8px; text-align: center; line-height: 1.8; }
+.RecordScreen .AchievementTable { min-width: 740px; }
+.RecordScreen .AchievementTable__Condition { display: table-cell; min-width: 180px; max-width: 360px; white-space: normal; }
+.RecordScreen .AchievementTable__Item { white-space: normal; min-width: 120px; }
+.RecordScreen__Help { margin: 0 0 8px; font-size: 13px; line-height: 1.7; }
+.RecordScreen__GroupTitle { margin: 18px 0 8px; font-size: 18px; }
+.RecordScreen__Tasks { table-layout: fixed; min-width: 640px; }
+.RecordScreen__Tasks th:nth-child(2) { width: 20%; }
+.RecordScreen__Tasks th:last-child { width: 24%; }
+.RecordScreen__Tasks th { font-size: 14px; }
+.RecordScreen__Tasks td { padding: 6px 4px; }
+.RecordScreen__Level { font-size: 18px; font-weight: 600; }
+.CroppedEnemyLine { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); max-width: 600px; margin: auto; container-type: inline-size; }
+.CroppedEnemyLine__Slot { position: relative; height: calc(100cqw / 6 * var(--enemy-line-scale)); border-bottom: 1px solid #a98b5b70; }
+.CroppedEnemyLine__Image { position: absolute; width: calc(100cqw / 6 * var(--enemy-scale)); max-width: none; height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.RecordScreen__Portrait, .CroppedEnemyLine__Slot[role="img"] { cursor: pointer; }
+.RecordInformation { z-index: 41; }
+
+@media (max-height: 480px) {
+  .TitleMenu.state-records .TitleMenu__Content { padding: 6px 10px 26px; }
+}
+@media (max-width: 480px) {
+  .TitleMenu.state-records .TitleMenu__Content { padding-left: max(6px, env(safe-area-inset-left)); padding-right: max(6px, env(safe-area-inset-right)); }
+  .RecordScreen { padding: 10px; }
+  .RecordScreen__Header h1 { font-size: 22px; }
+  .RecordScreen__Tabs .RecordScreen__Button { font-size: 14px; }
+}
+@media (max-width: 900px), (max-height: 480px) {
+  .RecordScreen__Button { min-height: 36px; padding: 6px 10px; font-size: 14px; }
+  .RecordScreen__Tabs .RecordScreen__Button,
+  .RecordScreen__Selectors .RecordScreen__Button { font-size: 14px; }
+  .RecordScreen__Tabs { padding: 8px 0; }
+  .RecordScreen__Controls { padding-top: 8px; }
+}

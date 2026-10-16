@@ -1,0 +1,6 @@
+.PaperScroll { scrollbar-width: thin; scrollbar-color: #967446 #eadab8; }
+.PaperScroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.PaperScroll::-webkit-scrollbar-track,
+.PaperScroll::-webkit-scrollbar-corner { background: #eadab8; }
+.PaperScroll::-webkit-scrollbar-thumb { background: #967446; border: 2px solid #eadab8; border-radius: 6px; }
+.PaperScroll::-webkit-scrollbar-thumb:hover { background: #735a36; }

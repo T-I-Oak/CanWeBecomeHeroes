@@ -325,6 +325,7 @@
         "ja": {
           "label": "{tag}の心得",
           "comments": [
+            "{skill}が使えるようになりましたね。",
             "{skill}を身につけましたね。",
             "{skill}を身につけるまでに成長しましたね。",
             "ついに{skill}を身につけるまでになりましたね。"
@@ -333,6 +334,7 @@
         "en": {
           "label": "Knowledge of {tag}",
           "comments": [
+            "You can now use {skill}.",
             "You have acquired {skill}.",
             "You have grown to the point of acquiring {skill}.",
             "You have finally reached the point of acquiring {skill}."
@@ -359,8 +361,8 @@
       "en": "Number of failed trials"
     },
     "challenge-start": {
-      "ja": "チャレンジを開始した回数",
-      "en": "Number of challenges started"
+      "ja": "実力判定試験を開始した回数",
+      "en": "Number of proficiency exams started"
     },
     "stage-clear": {
       "ja": "全課題のクリアー回数",
@@ -382,6 +384,18 @@
       "ja": "全Heroの{tag}タグ数の最高値（装備込み）",
       "en": "Highest {tag} tag count across all Heroes, including equipment"
     }
+  },
+  "recordConditions": {
+    "pair": { "ja": "{heroes}で試験に挑む", "en": "Take on trials with {heroes}" },
+    "trial-start": { "ja": "勇者認定試験に挑む", "en": "Take on the hero certification exam" },
+    "trial-clear": { "ja": "勇者認定試験に合格する", "en": "Pass the hero certification exam" },
+    "trial-fail": { "ja": "勇者認定試験で不合格になる", "en": "Fail the hero certification exam" },
+    "challenge-start": { "ja": "実力判定試験に挑む", "en": "Take on the proficiency exam" },
+    "stage-clear": { "ja": "課題をクリアーする", "en": "Clear tasks" },
+    "enemy": { "ja": "{enemy}を倒す", "en": "Defeat {enemy}" },
+    "contribution": { "ja": "ギルドで貢献ポイントを消費する", "en": "Spend contribution points at the guild" },
+    "facility": { "ja": "{facility}へ出発する", "en": "Depart for {facility}" },
+    "tag": { "ja": "いずれかの受験者で{tag}タグを集める", "en": "Collect {tag} tags with any examinee" }
   },
   "unachieved": {
     "lang-store": {

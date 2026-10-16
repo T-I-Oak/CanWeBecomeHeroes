@@ -22,7 +22,7 @@ test('expired trial produces a failure notice result', () => {
 });
 
 test('result fixes ten selected grades and generated epithets independently of later record changes', () => {
-  const record = { statistics: { heroes: {} }, achievements: { entries: Array.from({ length: 12 }, (_, index) => ({ id: `item-${index}`, updated: index === 11, runG: index, label: 'B+' })) } };
+  const record = { statistics: { heroes: {} }, achievements: { entries: Array.from({ length: 12 }, (_, index) => ({ id: `item-${index}`, updated: index === 11, deltaG: index, label: 'B+' })) } };
   const result = createTrialRunResult({ outcome: { state: 'cleared' }, members: [{ heroId: 'Avery', profession: 'swordfighter' }], record, random: () => 0 });
   assert.equal(result.achievements.length, 10);
   assert.ok(result.achievements.some(entry => entry.id === 'item-11'));

@@ -31,3 +31,6 @@
 .AchievementTable__Grade.state-updated { color: #b12c29; }
 .AchievementTable tbody tr:nth-child(even) { background: #fff8e129; }
 .AchievementTable__Condition { display: block; white-space: normal; }
+.AchievementTable__Progress { min-width: 110px; text-align: center; font-variant-numeric: tabular-nums; }
+.AchievementTable__ProgressTrack { display: block; overflow: hidden; height: 4px; margin-top: 5px; border: 1px solid #a78b60; background: #b69a6424; }
+.AchievementTable__ProgressFill { display: block; height: 100%; background: #8b7950; }

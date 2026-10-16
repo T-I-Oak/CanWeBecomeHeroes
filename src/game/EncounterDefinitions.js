@@ -1,5 +1,6 @@
 import { ENEMY_CATALOG } from './EnemyCatalog.js';
 import { STATUS_KEYS } from './TagCatalog.js';
+import { STAGE_LEVEL_OFFSET } from './StageLevel.js';
 
 export const COMBINATION_PATTERNS = Object.freeze({
   regular: Object.freeze([
@@ -97,10 +98,10 @@ function createEliteRoles(level) {
   });
 }
 
-function createBossRoles(level, stageNumber) {
+function createBossRoles(level) {
   const main = createSharedSettings('boss', level);
   const support = createSharedSettings('boss', level, 1);
-  return Object.freeze({ main: role(Math.ceil(stageNumber / 14), main), support1: role(2, support), support2: role(2, support) });
+  return Object.freeze({ main: role(Math.max(1, Math.ceil((level - STAGE_LEVEL_OFFSET) / 14)), main), support1: role(2, support), support2: role(2, support) });
 }
 
 export function normalizeEnemyMaximum(value) {
@@ -110,10 +111,7 @@ export function normalizeEnemyMaximum(value) {
 export const DIFFICULTIES = Object.freeze({
   regular: (level) => Object.freeze({ roles: createNormalRoles(level) }),
   elite: (level) => Object.freeze({ roles: createEliteRoles(level) }),
-  boss: (level, { stageNumber } = {}) => {
-    if (!Number.isInteger(stageNumber) || stageNumber < 1) throw new RangeError('Boss difficulty requires a positive integer stage number.');
-    return Object.freeze({ roles: createBossRoles(level, stageNumber) });
-  },
+  boss: (level) => Object.freeze({ roles: createBossRoles(level) }),
 });
 
 function getSlotSpan(definition) {
@@ -133,8 +131,8 @@ function allocateRoleSlots({ definition, count, occupied }) {
   return slots;
 }
 
-export function createEncounterEnemies({ kind, level, stageNumber, pattern, enemyFactory, random = Math.random }) {
-  const difficulty = DIFFICULTIES[kind]?.(level, { stageNumber });
+export function createEncounterEnemies({ kind, level, pattern, enemyFactory, random = Math.random }) {
+  const difficulty = DIFFICULTIES[kind]?.(level);
   if (!difficulty) throw new RangeError(`Unknown encounter difficulty kind: ${kind}`);
   const occupiedSlots = new Set();
   return Object.entries(difficulty.roles).flatMap(([roleName, settings]) => {

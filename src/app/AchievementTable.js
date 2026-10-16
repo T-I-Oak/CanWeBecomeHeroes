@@ -10,6 +10,7 @@ function cell(tag, className, text) {
 /**
  * Presentation only: entries are already selected, ordered and localized.
  * Each entry has categoryId, category, label, condition, gradeLabel, comment, updated.
+ * Record entries also supply progress (ratio) and a localized progressLabel.
  * This component never selects entries, evaluates achievements or saves records.
  */
 export function createAchievementTable({ mode, entries, headings = {} }) {
@@ -20,7 +21,8 @@ export function createAchievementTable({ mode, entries, headings = {} }) {
   if (mode !== 'toast') {
     const head = document.createElement('thead');
     const row = document.createElement('tr');
-    for (const key of ['category', 'item', 'grade', 'comment']) row.append(cell('th', '', headings[key]));
+    const columns = mode === 'record' ? ['category', 'item', 'grade', 'condition', 'progress'] : ['category', 'item', 'grade', 'comment'];
+    for (const key of columns) row.append(cell('th', '', headings[key]));
     head.append(row);
     table.append(head);
   }
@@ -35,9 +37,16 @@ export function createAchievementTable({ mode, entries, headings = {} }) {
       row.append(category);
     }
     const item = cell('td', 'AchievementTable__Item', entry.label);
-    if (mode === 'record') item.append(cell('span', 'AchievementTable__Condition', entry.condition));
     row.append(item, cell('td', `AchievementTable__Grade${entry.updated ? ' state-updated' : ''}`, entry.gradeLabel));
-    if (mode !== 'toast') row.append(cell('td', 'AchievementTable__Comment', entry.comment));
+    if (mode === 'record') {
+      const progress = cell('td', 'AchievementTable__Progress', entry.progressLabel);
+      const track = cell('span', 'AchievementTable__ProgressTrack', '');
+      const fill = cell('span', 'AchievementTable__ProgressFill', '');
+      fill.style.width = `${entry.progress.ratio * 100}%`;
+      track.append(fill);
+      progress.append(track);
+      row.append(cell('td', 'AchievementTable__Condition', entry.condition), progress);
+    } else if (mode !== 'toast') row.append(cell('td', 'AchievementTable__Comment', entry.comment));
     body.append(row);
   });
   table.append(body);

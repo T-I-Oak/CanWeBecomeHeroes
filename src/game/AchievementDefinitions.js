@@ -6,7 +6,9 @@ import tagTexts from '../../public/data/text/information/tag.json' with { type: 
 import heroTexts from '../../public/data/text/information/hero.json' with { type: 'json' };
 import facilityTexts from '../../public/data/text/information/facility.json' with { type: 'json' };
 
-export const THREE_LEVELS = Object.freeze(['B+', 'A+', 'S+'].map((label, index) => Object.freeze({ minG: index + 1, label, comment: index + 1, notice: index + 1 })));
+export const SEVEN_LEVELS = Object.freeze(['D', 'C', 'B', 'A', 'A+', 'S', 'S+'].map((label, index) => Object.freeze({
+  minG: index / 2, label, comment: Math.floor(index / 2) + 1, notice: index + 1,
+})));
 
 export const FIFTEEN_LEVELS = Object.freeze(['D', 'C', 'B', 'A', 'S'].flatMap((letter, group) =>
   ['-', '', '+'].map((suffix, offset) => Object.freeze({
@@ -31,12 +33,13 @@ function resources(key, category, condition, variables, tagId) {
     const localized = texts.items[key]['lang-store'][language];
     const values = variables(language);
     const comments = localized.comments.map((template, index) => fill(template, tagId
-      ? { ...values, skill: tagTexts[tagId].skillNames['lang-store'][language][index + 1] }
+      ? { ...values, skill: tagTexts[tagId].skillNames['lang-store'][language][index] }
       : values));
     return [language, Object.freeze({
       category: texts.categories['lang-store'][language][category],
       label: fill(localized.label, values),
       condition: fill(texts.conditions[condition][language], values),
+      recordCondition: fill(texts.recordConditions[condition][language], values),
       comments: Object.freeze(comments),
       unachieved: texts.unachieved['lang-store'][language],
     })];
@@ -46,13 +49,13 @@ function resources(key, category, condition, variables, tagId) {
 function definition({ id, category, read, t, key = id, condition = id, variables = () => ({}), levels, tagId }) {
   return Object.freeze({
     id, category, read, levels, s: levels.at(-1).minG, t,
-    gradeFormula: tagId ? p => (p - 1) / 2 : p => Math.cbrt(p / t) * levels.at(-1).minG,
+    gradeFormula: tagId ? p => (p - 1) / 2 : p => Math.sqrt(p / t) * levels.at(-1).minG,
     resources: resources(key, category, condition, variables, tagId),
   });
 }
 
 // The level table is injectable: category-specific presentation does not live in the evaluator.
-export function createAchievementDefinitions({ normalLevels = FIFTEEN_LEVELS, tagLevels = THREE_LEVELS } = {}) {
+export function createAchievementDefinitions({ normalLevels = FIFTEEN_LEVELS, tagLevels = SEVEN_LEVELS } = {}) {
   const normal = options => definition({ ...options, levels: normalLevels });
   return Object.freeze([
     ...['Avery|Briar', 'Casey|Darcy', 'Ellis|Finley', 'Garnet|Harper'].map(pair => normal({

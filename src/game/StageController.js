@@ -3,27 +3,18 @@ import { COMBINATION_PATTERNS, createEncounterEnemies } from './EncounterDefinit
 import { TAGS } from './TagCatalog.js';
 import { createStageRouteKinds } from './StageKindDistribution.js';
 import { MAX_RECRUITED_HERO_COUNT } from './RecruitmentLimits.js';
+import { getStageBaseLevel, rollStageLevel } from './StageLevel.js';
 
-export const STAGE_LEVEL_OFFSET = 2;
-export const STAGE_LEVEL_VARIATION = 2;
+export { STAGE_LEVEL_OFFSET, STAGE_LEVEL_VARIATION, getStageBaseLevel, rollStageLevel } from './StageLevel.js';
 export const STAGE_CHOICE_COUNT = 3;
 const TAG_KEYS = Object.freeze(Object.keys(TAGS));
 
-export function getStageBaseLevel(stageNumber) {
-  if (!Number.isInteger(stageNumber) || stageNumber < 1) throw new RangeError('Stage number must be a positive integer.');
-  return stageNumber + STAGE_LEVEL_OFFSET;
-}
-
-export function rollStageLevel(stageNumber, random = Math.random) {
-  const variation = Math.floor(random() * (STAGE_LEVEL_VARIATION * 2 + 1)) - STAGE_LEVEL_VARIATION;
-  return Math.max(1, getStageBaseLevel(stageNumber) + variation);
-}
-
 export default class StageController {
-  constructor({ enemySpawn, battleSystem, enemyFactory = new EnemyFactory(), shopState = null, hasActiveShopHero = () => false, entityRegistry = null, random = Math.random, onStatistics = () => {} } = {}) {
+  constructor({ enemySpawn, battleSystem, enemyFactory = new EnemyFactory(), shopState = null, hasActiveShopHero = () => false, entityRegistry = null, random = Math.random, onStatistics = () => {}, now = () => new Date().toISOString() } = {}) {
     if (!enemySpawn || !battleSystem) throw new Error('Stage controller requires enemy spawning and battle systems.');
     Object.assign(this, { enemySpawn, battleSystem, enemyFactory, shopState, hasActiveShopHero, entityRegistry, random });
     this.onStatistics = onStatistics;
+    this.now = now;
     this.stageNumber = 0;
     this.joinedCount = 0;
     this.state = 'idle';
@@ -41,7 +32,7 @@ export default class StageController {
       const patterns = COMBINATION_PATTERNS[kind];
       const patternIndex = Math.floor(this.random() * patterns.length);
       const pattern = patterns[patternIndex];
-      const enemies = createEncounterEnemies({ kind, level, stageNumber, pattern, enemyFactory: this.enemyFactory, random: this.random });
+      const enemies = createEncounterEnemies({ kind, level, pattern, enemyFactory: this.enemyFactory, random: this.random });
       enemies.forEach((enemy) => this.entityRegistry?.registerTree(enemy));
       return Object.freeze({
         id: `stage-${stageNumber}-choice-${index + 1}`,
@@ -105,7 +96,7 @@ export default class StageController {
     else if (this.battleSystem.battleStartTick !== null) this.state = 'battle';
     if (['victory', 'complete'].includes(this.state) && !['victory', 'complete'].includes(previous)) {
       const { kind, patternIndex, level } = this.currentStage;
-      this.onStatistics({ type: 'stage-clear', kind, patternIndex, level });
+      this.onStatistics({ type: 'stage-clear', kind, patternIndex, level, clearedAt: this.now() });
     }
     return this.state;
   }
