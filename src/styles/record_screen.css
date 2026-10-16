@@ -41,22 +41,6 @@
 .RecordScreen__Content { position: absolute; top: 0; left: 0; padding-top: 12px; transform-origin: top left; }
 .RecordScreen__Controls { flex-shrink: 0; padding-top: 12px; }
 .RecordScreen__Controls:empty { display: none; }
-.RecordTooltip {
-  position: fixed;
-  inset: auto;
-  margin: 0;
-  max-width: min(240px, calc(100vw - 16px));
-  padding: 7px 11px;
-  color: #fff0cf;
-  background: #493921;
-  border: 1px solid #ba9a63;
-  border-radius: 4px;
-  box-shadow: 0 3px 10px #21170855;
-  font: 13px/1.5 system-ui, sans-serif;
-  overflow-wrap: anywhere;
-  pointer-events: none;
-}
-.RecordTooltip::backdrop { background: transparent; }
 .RecordScreen__Portrait:focus-visible,
 .CroppedEnemyLine__Slot:focus-visible { outline: 2px solid #8c4829; outline-offset: -2px; }
 .RecordScreen__Selectors { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
