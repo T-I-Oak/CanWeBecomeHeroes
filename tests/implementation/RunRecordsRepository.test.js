@@ -43,6 +43,16 @@ test('51 completions keep history at 50, stats and clear dates at all runs; old 
   assert.equal(repository.data.clear.lastAt, repository.data.history[0].endedAt);
 });
 
+test('highest-level clear time survives checkpoints and reload', () => {
+  const storage = manager();
+  const repository = new RunRecordsRepository(storage);
+  const session = repository.beginRun();
+  session.total.record({ type: 'stage-clear', kind: 'boss', patternIndex: 0, level: 17, clearedAt: '2026-10-16T01:00:00.000Z' });
+  repository.checkpoint(session);
+  const loaded = new RunRecordsRepository(storage);
+  assert.equal(loaded.data.statistics.stages['boss:0'].highestLevelClearedAt, '2026-10-16T01:00:00.000Z');
+});
+
 test('failed storage writes are reported and retry writes same absolute data without double counting', () => {
   const storage = manager();
   const original = storage.setValue;

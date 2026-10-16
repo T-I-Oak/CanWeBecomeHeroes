@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import Achievements from '../../src/game/Achievements.js';
-import { ACHIEVEMENT_DEFINITIONS, FIFTEEN_LEVELS, THREE_LEVELS } from '../../src/game/AchievementDefinitions.js';
+import { ACHIEVEMENT_DEFINITIONS, FIFTEEN_LEVELS, SEVEN_LEVELS } from '../../src/game/AchievementDefinitions.js';
 import GameStatistics from '../../src/game/GameStatistics.js';
 import StatisticsCollector from '../../src/game/StatisticsCollector.js';
 import GuildSystem from '../../src/game/GuildSystem.js';
@@ -27,16 +27,17 @@ function fixture(definition, value) {
   return { data };
 }
 
-test('production tables notify every grade while retaining three comments', () => {
+test('production tables notify every grade with three normal comments and four tag comments', () => {
   assert.deepEqual(FIFTEEN_LEVELS.map(level => level.label), ['D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+']);
   assert.deepEqual(FIFTEEN_LEVELS.map(level => level.comment), [1,1,1,1,1,1,2,2,2,2,2,2,3,3,3]);
   assert.deepEqual(FIFTEEN_LEVELS.map(level => level.notice), Array.from({ length: 15 }, (_, index) => index + 1));
   assert.ok(ACHIEVEMENT_DEFINITIONS.filter(d => !d.id.startsWith('tag:')).every(d => d.levels === FIFTEEN_LEVELS && d.s === 15));
-  assert.ok(ACHIEVEMENT_DEFINITIONS.filter(d => d.id.startsWith('tag:')).every(d => d.levels === THREE_LEVELS && d.s === 3));
+  assert.ok(ACHIEVEMENT_DEFINITIONS.filter(d => d.id.startsWith('tag:')).every(d => d.levels === SEVEN_LEVELS && d.s === 3));
   const tag = ACHIEVEMENT_DEFINITIONS.find(d => d.id === 'tag:valor');
   const tagEvaluator = new Achievements({ definitions: [tag] });
-  assert.deepEqual([0, 2, 3, 4, 5, 6, 7, 10].map(count => tagEvaluator.evaluate(fixture(tag, count)).entries[0].label),
-    ['E', 'E', 'B+', 'B+', 'A+', 'A+', 'S+', 'S+']);
+  assert.deepEqual([0, 1, 2, 3, 4, 5, 6, 7, 10].map(count => tagEvaluator.evaluate(fixture(tag, count)).entries[0].label),
+    ['E', 'D', 'C', 'B', 'A', 'A+', 'S', 'S+', 'S+']);
+  assert.deepEqual([1, 2, 3, 4, 5, 6, 7].map(count => tagEvaluator.evaluate(fixture(tag, count)).entries[0].comment), [1, 1, 2, 2, 3, 3, 4]);
   const evaluator = new Achievements({ definitions: [{ id: 'sample', read: data => data.p, gradeFormula: p => p, levels: FIFTEEN_LEVELS }] });
   let previous = {};
   const milestones = [];
@@ -49,7 +50,7 @@ test('production tables notify every grade while retaining three comments', () =
   assert.deepEqual(evaluator.evaluate({ data: { p: 6 } }, { sample: 0 }).notices,
     [{ id: 'sample', oldGrade: 0, newGrade: 6 }]);
   const pair = ACHIEVEMENT_DEFINITIONS.find(d => d.id === 'pair-start:Avery|Briar');
-  assert.equal(new Achievements({ definitions: [pair] }).evaluate(fixture(pair, 1)).entries[0].label, 'C');
+  assert.equal(new Achievements({ definitions: [pair] }).evaluate(fixture(pair, 1)).entries[0].label, 'D+');
   assert.equal(new Achievements({ definitions: [pair] }).evaluate(fixture(pair, 20)).entries[0].label, 'S+');
 });
 
@@ -59,13 +60,36 @@ test('68 formula definitions evaluate all boundaries, keeping unbounded G above 
   for (const definition of ACHIEVEMENT_DEFINITIONS) {
     const evaluator = new Achievements({ definitions: [definition] });
     definition.levels.forEach((level, index) => {
-      const threshold = definition.id.startsWith('tag:') ? 2 * level.minG + 1 : definition.t * (level.minG / definition.s) ** 3;
+      const threshold = definition.id.startsWith('tag:') ? 2 * level.minG + 1 : definition.t * (level.minG / definition.s) ** 2;
       assert.equal(evaluator.evaluate(fixture(definition, threshold - 0.00000001)).grades[definition.id], index, definition.id);
       assert.equal(evaluator.evaluate(fixture(definition, threshold)).grades[definition.id], index + 1, definition.id);
     });
     const result = evaluator.evaluate(fixture(definition, definition.id.startsWith('tag:') ? 15 : definition.t * 8));
     assert.equal(result.grades[definition.id], definition.levels.length);
     assert.ok(result.entries[0].G > definition.s);
+  }
+});
+
+test('square root grading gives B at twenty out of sixty and preserves target values', () => {
+  const definition = ACHIEVEMENT_DEFINITIONS.find(item => item.id === 'trial-start');
+  assert.equal(definition.t, 60);
+  const entry = new Achievements({ definitions: [definition] }).evaluate(fixture(definition, 20)).entries[0];
+  assert.ok(Math.abs(entry.G - 8.660254037844386) < 1e-12);
+  assert.equal(entry.label, 'B');
+});
+
+test('all ten tags expose seven notices and retain four count-based comment bands', () => {
+  for (const definition of ACHIEVEMENT_DEFINITIONS.filter(item => item.category === 'tag')) {
+    const evaluator = new Achievements({ definitions: [definition] });
+    let previous = {};
+    for (let count = 1; count <= 7; count++) {
+      const result = evaluator.evaluate(fixture(definition, count), previous);
+      assert.equal(result.grades[definition.id], count);
+      assert.equal(result.notices.length, 1);
+      assert.equal(result.entries[0].comment, Math.floor((count - 1) / 2) + 1);
+      previous = result.grades;
+    }
+    assert.equal(evaluator.evaluate(fixture(definition, 8), previous).notices.length, 0);
   }
 });
 
@@ -87,12 +111,12 @@ test('all definitions have completed Japanese and English resources, including g
   for (const definition of ACHIEVEMENT_DEFINITIONS) for (const language of ['ja', 'en']) {
     const resource = definition.resources[language];
     assert.ok(resource.label && resource.category && resource.condition && resource.unachieved);
-    assert.equal(resource.comments.length, 3);
+    assert.equal(resource.comments.length, definition.category === 'tag' ? 4 : 3);
     assert.ok(resource.comments.every(comment => comment && !/\{|［/.test(comment)));
     assert.ok(!/\{|［/.test(resource.condition));
   }
   const valor = ACHIEVEMENT_DEFINITIONS.find(d => d.id === 'tag:valor').resources.ja.comments;
-  assert.deepEqual(valor, ['急所見切りを身につけましたね。','一撃必殺を身につけるまでに成長しましたね。','ついに英雄の一閃を身につけるまでになりましたね。']);
+  assert.deepEqual(valor, ['勘所が使えるようになりましたね。','急所見切りを身につけましたね。','一撃必殺を身につけるまでに成長しましたね。','ついに英雄の一閃を身につけるまでになりましたね。']);
   assert.ok(ACHIEVEMENT_DEFINITIONS.find(d => d.id === 'enemy-defeat:small-valor').resources.ja.comments[0].includes('ゴブリン'));
 });
 
@@ -124,10 +148,13 @@ test('run evaluation retains E candidates, cumulative grades, raw run G, and def
   total.data.combat.enemies['small-valor'] = 30;
   run.data.combat.enemies['small-valor'] = 30;
   const before = structuredClone(total.data);
-  const result = evaluator.evaluateRun({ startGrades: { 'facility:shop': 15 }, total, run });
+  const startG = Object.fromEntries(evaluator.evaluate(new GameStatistics()).entries.map(({ id, G }) => [id, G]));
+  startG['facility:shop'] = 15;
+  const result = evaluator.evaluateRun({ startGrades: { 'facility:shop': 15 }, startG, total, run });
   assert.equal(result.entries.length, 68);
   assert.deepEqual(result.entries.map(entry => entry.id), ACHIEVEMENT_DEFINITIONS.map(d => d.id));
   assert.equal(result.entries.find(entry => entry.id === 'facility:shop').grade, 15);
+  assert.equal(result.entries.find(entry => entry.id === 'facility:shop').deltaG, 0);
   assert.ok(result.entries.find(entry => entry.id === 'facility:shop').runG < 15);
   assert.equal(result.entries.find(entry => entry.id === 'tag:valor').label, 'E');
   assert.ok(result.entries.find(entry => entry.id === 'enemy-defeat:small-valor').updated);
@@ -170,4 +197,24 @@ test('collector only calls notification callback when notice stage rises', () =>
   assert.equal(calls.length, 2);
   assert.equal(collector.previousGrades.one, 3);
   assert.equal(collector.startGrades.one, 0);
+});
+
+test('collector retains starting cumulative G and measures growth instead of high run tag G', () => {
+  const total = new GameStatistics();
+  total.record({ type: 'hero-tags', heroId: 'Avery', counts: { valor: 7 } });
+  total.data.combat.enemies['small-valor'] = 100;
+  const collector = new StatisticsCollector({ run: new GameStatistics({ run: true }), total, achievements: new Achievements() });
+  const start = structuredClone(collector.startG);
+  collector.record({ type: 'hero-tags', hero: { heroId: 'Avery', getTags: () => Array(7).fill('valor') } });
+  collector.record({ type: 'defeat', enemyId: 'small-valor', points: 0, level: 1 });
+  const entries = collector.getRunAchievements().entries;
+  const tag = entries.find(entry => entry.id === 'tag:valor');
+  const enemy = entries.find(entry => entry.id === 'enemy-defeat:small-valor');
+  assert.equal(tag.runG, 3);
+  assert.equal(tag.deltaG, 0);
+  assert.equal(tag.updated, false);
+  assert.equal(enemy.updated, false);
+  assert.ok(Math.abs(enemy.deltaG - (15 * Math.sqrt(101 / 100) - 15)) < 1e-12);
+  assert.ok(enemy.deltaG > tag.deltaG);
+  assert.deepEqual(collector.startG, start);
 });

@@ -5,7 +5,7 @@ import { TRIAL_RUN_RESULT_TYPE } from '../game/TrialRunResult.js';
 import { ACHIEVEMENT_DEFINITIONS } from '../game/AchievementDefinitions.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { createAchievementTable } from './AchievementTable.js';
-import { getTrialResultScale } from './TrialResultScale.js';
+import { getTrialPaperLayout } from './TrialPaperScale.js';
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const element = (tag, className) => { const node = document.createElement(tag); node.className = className; return node; };
 const signature = '<svg class="Signature" viewBox="0 0 190 65" aria-hidden="true"><text x="12" y="39" fill="currentColor" font-size="37" font-family="Segoe Script, cursive" font-style="italic">Zane</text><path d="M8 50Q65 43 159 48M128 35q18 4 38-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
@@ -26,6 +26,8 @@ export default class TrialRunResultModal {
       const date = new Intl.DateTimeFormat(language, { year: 'numeric', month: 'long', day: 'numeric' }).format(result.issuedAt);
       const screen = element('section', 'TrialResultViewport');
       const paper = element('div', 'TrialResultPaper');
+      const scroll = element('div', 'TrialResultScroll');
+      const paperFrame = element('div', 'TrialResultFrame');
       const surface = element('article', 'PaperSurface');
       const heading = element('header', 'ResultHeading');
       const content = element('div', 'ResultContent');
@@ -58,21 +60,20 @@ export default class TrialRunResultModal {
         if (reverse) content.replaceChildren(score());
         else if (pass) content.innerHTML = `<p class="Statement">${escape(label('trialCertificateStatement')).replace(/\n/g, '<br>')}</p><ul class="Recipients">${result.members.map(member => `<li><span class="Epithet">${escape(member.epithet)}</span><span class="HeroName">${escape(this.textRepository.getName('hero', member.heroId))}</span></li>`).join('')}</ul><div class="Issue"><div class="IssueText"><p class="IssueDate">${escape(label('trialCertificateDate'))}：${escape(date)}</p><div class="IssuerLine"><div>${escape(label('trialCertificateIssuer'))}<br>${escape(label('trialCertificateChair'))}</div>${signature}</div></div><img class="Seal" src="${resolvePublicAssetPath('/assets/results/trial-guild-seal-v1.png')}" alt="${escape(label('trialCertificateSeal'))}"></div>`;
         else content.innerHTML = `<div class="Failure"><p class="Statement">${escape(label('trialFailureMessage')).replace(/\n/g, '<br>')}</p><div class="Issue"><div class="IssueText">${escape(label('trialFailureDate'))}：${escape(date)}<br>${escape(label('trialCertificateIssuer'))}</div></div></div>`;
-        const table = content.querySelector?.('table');
-        if (table) {
-          let size = 14;
-          table.style.fontSize = `${size}px`;
-          while ((table.scrollWidth > content.clientWidth - 60 || table.scrollHeight > content.clientHeight) && size > 8) table.style.fontSize = `${size -= .25}px`;
-        }
-        for (const recipient of content.querySelectorAll?.('.Recipients li') ?? []) {
-          const epithet = recipient.querySelector('.Epithet');
-          let size = 17;
-          while (recipient.scrollWidth > recipient.clientWidth && size > 8) epithet.style.fontSize = `${size -= .25}px`;
-        }
+        const body = element('div', 'ResultContentBody');
+        body.append(...content.childNodes);
+        content.replaceChildren(body);
+        const style = getComputedStyle(content);
+        const height = content.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+        const width = content.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        const scale = Math.min(1, height / body.scrollHeight, width / body.scrollWidth);
+        body.style.transform = `scale(${scale})`;
       };
       const resize = () => {
-        const scale = getTrialResultScale(this.container.clientWidth, this.container.clientHeight);
-        paper.style.transform = `translate(-50%,-50%) scale(${scale})`;
+        const layout = getTrialPaperLayout(scroll.clientWidth - 24, scroll.clientHeight - 24);
+        paperFrame.style.width = `${layout.width}px`;
+        paperFrame.style.height = `${layout.height}px`;
+        paper.style.transform = `scale(${layout.scale})`;
       };
       const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(resize) : null;
       back.addEventListener('click', () => {
@@ -97,13 +98,15 @@ export default class TrialRunResultModal {
         } catch (error) { if (!closed) throw error; }
         finally { surface.getAnimations?.().forEach(animation => animation.cancel()); flipping = false; flip.disabled = false; }
       });
-      paper.setAttribute('role', 'dialog');
-      paper.setAttribute('aria-modal', 'true');
-      paper.setAttribute('aria-labelledby', 'trial-run-result-title');
+      screen.setAttribute('role', 'dialog');
+      screen.setAttribute('aria-modal', 'true');
+      screen.setAttribute('aria-labelledby', 'trial-run-result-title');
       surface.append(frame, heading, content);
       actions.append(flip, back);
-      paper.append(surface, actions);
-      screen.append(paper);
+      paper.append(surface);
+      paperFrame.append(paper);
+      scroll.append(paperFrame);
+      screen.append(scroll, actions);
       if (pass) screen.append(createCelebrationConfetti());
       this.container.replaceChildren(screen);
       this.modalLayer.open();

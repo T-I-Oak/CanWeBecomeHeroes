@@ -38,9 +38,10 @@ function createCompactIcon(isCompact) {
 }
 
 export default class InformationWindowLayer {
-  constructor(element, manager, textRepository = null, assets = null) {
+  constructor(element, manager, textRepository = null, assets = null, { allowPin = true } = {}) {
     this.element = element;
     this.manager = manager;
+    this.allowPin = allowPin;
     this.textRepository = textRepository;
     const open = (entry) => this.manager.open(entry);
     this.references = new InformationWindowReferenceRenderer({ textRepository, open });
@@ -129,7 +130,9 @@ export default class InformationWindowLayer {
     close.append(createCloseIcon());
     close.addEventListener('pointerdown', (event) => event.stopPropagation());
     close.addEventListener('click', (event) => { event.stopPropagation(); this.manager.close(entry.id); });
-    actions.append(compact, pin, close);
+    actions.append(compact);
+    if (this.allowPin) actions.append(pin);
+    actions.append(close);
     title.append(actions);
     title.addEventListener('pointerdown', (event) => this.dragController.begin(event, windowElement, entry));
   }

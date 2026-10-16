@@ -4,7 +4,7 @@ function levelFor(definition, G, recorded) {
   if (!recorded) return { grade: 0, label: 'E', comment: 0, notice: 0 };
   for (let index = definition.levels.length - 1; index >= 0; index -= 1) {
     const level = definition.levels[index];
-    // Cube-root roundoff must not put a value exactly on a boundary one level below it.
+    // Formula roundoff must not put a value exactly on a boundary one level below it.
     const tolerance = Number.EPSILON * Math.max(1, Math.abs(G), Math.abs(level.minG)) * 4;
     if (G >= level.minG - tolerance) return { grade: index + 1, label: level.label, comment: level.comment, notice: level.notice };
   }
@@ -37,13 +37,14 @@ export default class Achievements {
     return { grades, gained, notices, entries };
   }
 
-  evaluateRun({ startGrades, total, run }) {
+  evaluateRun({ startGrades, startG, total, run }) {
     const lifetime = this.evaluate(total, startGrades);
     const current = this.evaluate(run);
     const updated = new Set(lifetime.gained.map(item => item.id));
-    // Preserve definition/category order. G is selection priority, never display order.
+    // Capture cumulative growth, including progress below the next grade and above S+.
     const entries = lifetime.entries.map((entry, index) => ({
       ...entry, updated: updated.has(entry.id), runG: current.entries[index].G,
+      startG: startG[entry.id], deltaG: entry.G - startG[entry.id],
     }));
     return {
       new: lifetime.gained,

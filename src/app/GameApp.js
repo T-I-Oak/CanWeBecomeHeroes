@@ -45,6 +45,7 @@ export async function startGame() {
     textRepository,
     assets,
     heroProgress,
+    runRecords,
     onOpenSettings: (opener) => settingsModalController.open('menu', { opener }),
   });
   const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository, assets);

@@ -31,7 +31,10 @@ export default class GameStatistics {
       if (type === 'stage-start') stage.attempts += 1;
       else {
         stage.clears += 1;
-        stage.highestLevel = Math.max(stage.highestLevel ?? 0, event.level);
+        if (event.level >= (stage.highestLevel ?? 0)) {
+          stage.highestLevel = event.level;
+          stage.highestLevelClearedAt = event.clearedAt;
+        }
       }
     } else if (type === 'defeat') {
       this.data.combat.defeats += 1;

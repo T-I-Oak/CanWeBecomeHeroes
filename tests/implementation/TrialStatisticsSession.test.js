@@ -14,10 +14,12 @@ test('startup and initial Hero notifications are captured without replaying save
   const first = new TrialStatisticsSession({ repository, professionIds: ['swordfighter', 'guard'],
     onGradeRaised: items => changes.push(...items) });
   assert.ok(changes.some(item => item.id === 'trial-start' && item.oldGrade === 0));
+  assert.equal(first.collector.startG['trial-start'], 0);
+  assert.ok(first.collector.getRunAchievements().entries.find(entry => entry.id === 'trial-start').deltaG > 0);
   const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0 });
   hero.getTags = () => Array(7).fill('valor');
   first.attachHero(hero);
-  assert.deepEqual(changes.find(item => item.id === 'tag:valor'), { id: 'tag:valor', oldGrade: 0, newGrade: 3 });
+  assert.deepEqual(changes.find(item => item.id === 'tag:valor'), { id: 'tag:valor', oldGrade: 0, newGrade: 7 });
   first.checkpoint();
   const next = [];
   const second = new TrialStatisticsSession({ repository, professionIds: ['swordfighter', 'guard'],

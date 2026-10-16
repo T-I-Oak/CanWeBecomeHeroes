@@ -17,7 +17,9 @@ export default class StatisticsCollector {
   constructor({ run, total, achievements, onGradeRaised = () => {} }) {
     Object.assign(this, { run, total, achievements, onGradeRaised });
     this.statistics = [run, total];
-    this.startGrades = { ...achievements.evaluate(total).grades };
+    const initial = achievements.evaluate(total);
+    this.startGrades = { ...initial.grades };
+    this.startG = Object.fromEntries(initial.entries.map(({ id, G }) => [id, G]));
     this.previousGrades = { ...this.startGrades };
   }
 
@@ -30,6 +32,6 @@ export default class StatisticsCollector {
   }
 
   getRunAchievements() {
-    return this.achievements.evaluateRun({ startGrades: this.startGrades, total: this.total, run: this.run });
+    return this.achievements.evaluateRun({ startGrades: this.startGrades, startG: this.startG, total: this.total, run: this.run });
   }
 }

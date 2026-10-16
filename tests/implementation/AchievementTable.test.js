@@ -3,13 +3,14 @@ import assert from 'node:assert/strict';
 import { createAchievementTable } from '../../src/app/AchievementTable.js';
 
 class Node {
-  constructor(tag) { this.tagName = tag; this.children = []; }
+  constructor(tag) { this.tagName = tag; this.children = []; this.style = {}; }
   set textContent(value) { this.text = value; this.children = []; }
   get textContent() { return this.text; }
   append(...nodes) { this.children.push(...nodes); }
 }
 const entry = (categoryId, label) => ({ categoryId, category: `category-${categoryId}`, label,
-  condition: 'a < b & c', gradeLabel: 'E', comment: 'Keep working.', updated: false });
+  condition: 'a < b & c', gradeLabel: 'E', comment: 'Keep working.', updated: false,
+  progressLabel: '3 / 5', progress: { current: 3, target: 5, ratio: .6 } });
 
 test('result mode draws supplied order, merges only adjacent categories, and marks updated grades', t => {
   const old = globalThis.document;
@@ -40,7 +41,12 @@ test('record exposes conditions while toast draws only one label and grade', t =
   const record = createAchievementTable({mode:'record',entries:[entry('a','<example>')]});
   const item = record.children[1].children[0].children[1];
   assert.equal(item.textContent,'<example>');
-  assert.equal(item.children[0].textContent,'a < b & c');
+  assert.equal(item.children.length,0);
+  const row = record.children[1].children[0];
+  assert.equal(row.children.length,5);
+  assert.equal(row.children[3].textContent,'a < b & c');
+  assert.equal(row.children[4].textContent,'3 / 5');
+  assert.equal(row.children[4].children[0].children[0].style.width,'60%');
   const toast = createAchievementTable({mode:'toast',entries:[entry('a','Title')]});
   assert.equal(toast.children.length,1);
   assert.deepEqual(toast.children[0].children[0].children.map(c=>c.textContent),['Title','E']);

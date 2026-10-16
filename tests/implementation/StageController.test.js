@@ -13,13 +13,14 @@ test('final stage records its clear immediately, waits, and is not recorded twic
     enemySpawn: {},
     battleSystem: { isStageComplete: () => complete, hasStageVictory: () => true },
     onStatistics: event => events.push(event),
+    now: () => '2026-10-16T01:00:00.000Z',
   });
   stages.currentStage = { number: 7, kind: 'boss', patternIndex: 0, level: 9 };
   stages.state = 'battle';
   const run = new RunController();
   stages.update();
   run.update({ remainingHours: 1, stage: stages.currentStage, stageState: stages.state });
-  assert.deepEqual(events, [{ type: 'stage-clear', kind: 'boss', patternIndex: 0, level: 9 }]);
+  assert.deepEqual(events, [{ type: 'stage-clear', kind: 'boss', patternIndex: 0, level: 9, clearedAt: '2026-10-16T01:00:00.000Z' }]);
   assert.equal(run.isActive, true);
   complete = true;
   stages.update();

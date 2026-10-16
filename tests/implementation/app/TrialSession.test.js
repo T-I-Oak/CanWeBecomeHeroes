@@ -21,8 +21,9 @@ class Element {
   constructor(tagName = 'div') {
     this.tagName = tagName; this.children = []; this.hidden = true; this.dataset = {};
     this.style = { setProperty() {} }; this.classList = { add() {}, remove() {} };
-    this.clientWidth = 1280; this.clientHeight = 720; this.listeners = new Map();
+    this.clientWidth = 1280; this.clientHeight = 720; this.scrollWidth = 1280; this.scrollHeight = 720; this.listeners = new Map();
   }
+  get childNodes() { return this.children; }
   append(...children) { this.children.push(...children); }
   replaceChildren(...children) { this.children = children; }
   querySelector(tag) {
@@ -43,6 +44,9 @@ class Element {
 
 test('trial session connects route selection, information targets and game updates', async t => {
   const previousDocument = globalThis.document;
+  const previousGetComputedStyle = globalThis.getComputedStyle;
+  globalThis.getComputedStyle = () => ({ paddingTop: '0px', paddingBottom: '0px', paddingLeft: '0px', paddingRight: '0px' });
+  t.after(() => { globalThis.getComputedStyle = previousGetComputedStyle; });
   const elements = new Map();
   const lookup = selector => {
     if (!elements.has(selector)) elements.set(selector, new Element());
