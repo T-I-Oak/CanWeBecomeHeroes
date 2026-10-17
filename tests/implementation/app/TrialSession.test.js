@@ -44,6 +44,11 @@ class Element {
 
 test('trial session connects route selection, information targets and game updates', async t => {
   const previousDocument = globalThis.document;
+  const previousWindow = globalThis.window;
+  const previousAnimationFrame = globalThis.requestAnimationFrame;
+  globalThis.window = { getComputedStyle: () => ({ getPropertyValue: () => '10s' }) };
+  globalThis.requestAnimationFrame = callback => callback();
+  t.after(() => { globalThis.window = previousWindow; globalThis.requestAnimationFrame = previousAnimationFrame; });
   const previousGetComputedStyle = globalThis.getComputedStyle;
   globalThis.getComputedStyle = () => ({ paddingTop: '0px', paddingBottom: '0px', paddingLeft: '0px', paddingRight: '0px' });
   t.after(() => { globalThis.getComputedStyle = previousGetComputedStyle; });
@@ -53,6 +58,7 @@ test('trial session connects route selection, information targets and game updat
     return elements.get(selector);
   };
   globalThis.document = { documentElement: { lang: 'ja' }, body: new Element(), createElement: tag => new Element(tag),
+    createTextNode: text => Object.assign(new Element('#text'), { textContent: text }),
     querySelector: lookup, getElementById: id => lookup('#' + id), addEventListener() {}, removeEventListener() {} };
   t.after(() => { trial.tutorial?.dispose(); trial.flowLog?.dispose(); globalThis.document = previousDocument; });
   setLanguage('ja');
@@ -117,6 +123,8 @@ test('trial session connects route selection, information targets and game updat
   clock.resume('manual');
   clock.tick = GAME_TICKS_PER_HOUR * INITIAL_TRIAL_HOURS;
   trial.update(1 / 60, 1034);
+  const deadlineLogs = trial.flowLog.gameLog.getRecords().filter(record => record.localized?.key === 'logTrialDeadlineWarning');
+  assert.deepEqual(deadlineLogs.map(record => record.localized.values.days), [3, 2, 1]);
   assert.equal(trial.lastRunResult.record.outcome, 'expired');
   assert.equal(values.get('runRecords').history.length, 1);
   assert.ok(trial.lastRunResult.record.statistics.heroes.Avery.tags.valor > 0);

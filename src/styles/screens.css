@@ -183,6 +183,7 @@
   pointer-events: auto;
 }
 .TitleMenu__Menu {
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: clamp(5px, 1.4vh, 12px);
@@ -213,7 +214,7 @@
   border-color: #f0cb79;
   background: linear-gradient(#bd8b3b, #825019);
   color: #fff3d0;
-  font-size: clamp(16px, 3.6vh, 28px);
+  font-size: clamp(16px, min(3.6vh, 5.5vw), 28px);
   font-weight: 700;
 }
 .TitleMenu__Message { margin: 0; color: #f4e7cf; text-align: center; font-size: clamp(13px, 2.4vh, 16px); }

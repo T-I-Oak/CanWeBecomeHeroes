@@ -54,6 +54,7 @@ import TutorialController from './TutorialController.js';
 import { getHeroDirectionIndicatorAtPoint, getHeroDirectionIndicators } from '../game/HeroDirectionIndicator.js';
 import TrialStatisticsSession from '../game/TrialStatisticsSession.js';
 import AchievementToast from './AchievementToast.js';
+import TrialDeadlineWarning from '../game/TrialDeadlineWarning.js';
 
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
@@ -85,6 +86,7 @@ export async function startTrial({
   const board = new ChipBoard(WORLD_SIZE);
   const slotManager = new HeroSlotManager();
   const gameLog = new GameLog({ textRepository });
+  const deadlineWarning = new TrialDeadlineWarning(gameLog);
   const scenario = createRunScenario({ professionIds: selectedProfessionIds });
   const achievementToast = new AchievementToast({ textRepository });
   trial.achievementToast = achievementToast;
@@ -263,7 +265,10 @@ export async function startTrial({
       timeSettingsController.updateStaminaPause();
       timeSettingsController.updateClockSpeed();
       training.update(controller.getHeroes(), simulationDeltaSeconds);
+      // 同じtickで期限延長が成立する場合も、時間経過による境界通過を先に通知する。
+      deadlineWarning.update(getRemainingTrialHours());
       guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
+      deadlineWarning.update(getRemainingTrialHours());
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
       informationWindows.closeInvalidEntries();

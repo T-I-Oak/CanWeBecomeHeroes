@@ -2,6 +2,8 @@
   --flow-subject-color: var(--color-subject-system);
   --flow-level-color: var(--color-level-info);
   --flow-duration: 6s;
+  --flow-font-size: clamp(18px, 4vmin, 32px);
+  --flow-font-emphasis: 1;
   position: fixed;
   top: var(--flow-y, 62%);
   left: 0;
@@ -34,7 +36,7 @@
 .FlowLog__Message {
   margin: 0;
   color: var(--flow-subject-color);
-  font-size: 32px;
+  font-size: calc(var(--flow-font-size) * var(--flow-font-emphasis));
   font-weight: 700;
   line-height: 1.35;
   text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, 0 0 6px var(--flow-level-color);
@@ -72,7 +74,7 @@
 .FlowLog__Entry.system.luck {
   --flow-level-color: var(--color-level-luck);
   --flow-duration: 9s;
-  font-size: 42px;
+  --flow-font-emphasis: 1.3125;
 }
 
 
@@ -81,14 +83,14 @@
 .FlowLog__Entry.system.unluck {
   --flow-level-color: var(--color-level-unluck);
   --flow-duration: 7s;
-  font-size: 36px;
+  --flow-font-emphasis: 1.125;
 }
 
 .FlowLog__Entry.system.warning {
   --flow-level-color: var(--color-level-warning);
   --flow-duration: 10s;
   color: var(--color-level-warning);
-  font-size: 46px;
+  --flow-font-emphasis: 1.4375;
 }
 
 .FlowLog__Entry.system.warning .FlowLog__Text {

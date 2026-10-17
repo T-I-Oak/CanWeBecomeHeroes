@@ -1,4 +1,10 @@
 {
+  "logTrialDeadlineWarning": {
+    "lang-store": {
+      "ja": "試験の残り期限 あと{days}日",
+      "en": "Exam time remaining: {days}d"
+    }
+  },
   "logCategory_hero": {
     "lang-store": {
       "ja": "キャラクター",

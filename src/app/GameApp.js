@@ -1,4 +1,3 @@
-import '../styles.css';
 import AssetLoader from '../chips/AssetLoader.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, WORLD_SIZE } from '../game/GameAreas.js';
