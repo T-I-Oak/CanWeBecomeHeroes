@@ -378,19 +378,19 @@
   },
   "startGame": {
     "lang-store": {
-      "ja": "ゲーム開始",
-      "en": "Start Game"
+      "ja": "勇者認定試験に挑む",
+      "en": "Take the Hero Certification Exam"
     }
   },
   "challengeMode": {
     "lang-store": {
-      "ja": "チャレンジモード",
-      "en": "Challenge Mode"
+      "ja": "実力判定試験",
+      "en": "Ability Assessment"
     }
   },
   "records": {
     "lang-store": {
-      "ja": "レコード",
+      "ja": "成績表",
       "en": "Records"
     }
   },
