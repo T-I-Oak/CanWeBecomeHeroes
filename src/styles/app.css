@@ -94,7 +94,7 @@ body {
 }
 
 .HudPanel__PauseButton,
-.HudPanel__SettingsButton {
+.HudPanel__LogButton {
   min-height: 30px;
   padding: 4px 8px;
   border: 1px solid #d3ad62;
@@ -107,7 +107,7 @@ body {
   cursor: pointer;
 }
 
-.HudPanel__SettingsButton {
+.HudPanel__LogButton {
   background: #2c4736;
   color: #fff4d5;
 }

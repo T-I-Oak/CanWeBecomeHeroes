@@ -1,4 +1,5 @@
 import { getEnemyDefinitionById } from './EnemyCatalog.js';
+import { getAchievementLogLabel } from './AchievementLog.js';
 import { getHeroDefinitionAssetPath } from './HeroFactory.js';
 import { getItemDefinitionAssetPath } from './ItemFactory.js';
 import { getLocationVisual } from './LocationVisualCatalog.js';
@@ -20,6 +21,7 @@ function iconPathFor(kind, id) {
 }
 
 function createValuePart(textRepository, value) {
+  if (value?.kind === 'achievement') return { type: 'text', value: getAchievementLogLabel(textRepository, value) };
   if (!value || typeof value !== 'object' || value.kind === 'label') {
     const text = value?.kind === 'label' ? textRepository.getLabel(value.id, value.values) : value;
     return { type: 'text', value: String(text) };

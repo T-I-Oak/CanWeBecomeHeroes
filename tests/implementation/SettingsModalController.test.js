@@ -224,9 +224,7 @@ test('settings modal controller closes on backdrop click without focusing opener
   assert.equal(opener.isFocused, false);
 });
 
-test('title menu delegates settings button click to shared settings controller', () => {
-  let openedSource = null;
-  let receivedOpener = null;
+test('title commands omit settings, which is provided by the shared corner button', () => {
 
   const originalDocument = globalThis.document;
   globalThis.document = {
@@ -278,10 +276,6 @@ test('title menu delegates settings button click to shared settings controller',
       textRepository,
       assets,
       heroProgress,
-      onOpenSettings: (opener) => {
-        openedSource = 'menu';
-        receivedOpener = opener;
-      },
     });
 
     // Verify command buttons include challengeMode
@@ -290,17 +284,12 @@ test('title menu delegates settings button click to shared settings controller',
     titleMenu.renderMenu();
 
     const settingsCommand = titleMenu.commands.find((c) => c.label === 'settings');
-    assert.ok(settingsCommand, 'Settings command should exist in title menu');
-    assert.equal(settingsCommand.element.textContent, '設定');
+    assert.equal(settingsCommand, undefined);
 
     const challengeCommand = titleMenu.commands.find((c) => c.label === 'challengeMode');
     assert.ok(challengeCommand, 'Challenge mode command should exist when trial is cleared');
     assert.equal(challengeCommand.element.textContent, 'チャレンジモード');
 
-    // Trigger settings
-    settingsCommand.element.click();
-    assert.equal(openedSource, 'menu');
-    assert.equal(receivedOpener, settingsCommand.element);
   } finally {
     globalThis.document = originalDocument;
   }

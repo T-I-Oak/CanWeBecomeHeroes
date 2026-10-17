@@ -1,4 +1,4 @@
-import { entityText, logText } from './LocalizedLog.js';
+import { entityText } from './LocalizedLog.js';
 import { logUniqueSkill, skillText, tagText, termText } from './UniqueSkillLog.js';
 import { UNIQUE_SKILL_TRIGGER } from './UniqueSkillTrigger.js';
 import { isHeroCombatant } from './CombatParticipant.js';
@@ -36,7 +36,7 @@ export default class CombatDamageReactionSystem {
         this.controller?.addToWarehouse?.(item);
         return item;
       });
-      logText(this.gameLog, this.textRepository, 'logOrb', { actor: entityText(target), skill: { kind: 'unique-skill', id: skill.id }, item: { kind: 'item', id: droppedItems[0].type }, count: droppedItems.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
+      logUniqueSkill(this.gameLog, this.textRepository, 'logOrb', { actor: entityText(target), skill: { kind: 'unique-skill', id: skill.id }, item: { kind: 'item', id: droppedItems[0].type }, count: droppedItems.length });
     });
   }
 

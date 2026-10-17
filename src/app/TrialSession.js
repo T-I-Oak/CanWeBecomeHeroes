@@ -55,6 +55,7 @@ import { getHeroDirectionIndicatorAtPoint, getHeroDirectionIndicators } from '..
 import TrialStatisticsSession from '../game/TrialStatisticsSession.js';
 import AchievementToast from './AchievementToast.js';
 import TrialDeadlineWarning from '../game/TrialDeadlineWarning.js';
+import { createAchievementNotifier } from '../game/AchievementLog.js';
 
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
@@ -91,7 +92,7 @@ export async function startTrial({
   const achievementToast = new AchievementToast({ textRepository });
   trial.achievementToast = achievementToast;
   const statistics = new TrialStatisticsSession({ repository: runRecords, professionIds: selectedProfessionIds,
-    onGradeRaised: changes => achievementToast.enqueue(changes) });
+    onGradeRaised: createAchievementNotifier(gameLog, achievementToast) });
   const attemptSave = save => {
     try { save(); }
     catch (error) {
@@ -156,6 +157,7 @@ export async function startTrial({
     onChange: (entries) => informationLayer.render(entries),
   });
   informationLayer.setManager(informationWindows);
+  informationLayer.setLogHistory(gameLog, dataManager);
   informationWindows.setPauseOnOpen(timeSettingsController.pauseOnInformation);
   const stageSelection = new StageSelectionModal(document.querySelector('#stage-selection'), {
     assets,
@@ -211,6 +213,8 @@ export async function startTrial({
     onRunCompleted: ({ outcome, members }) => {
       const record = statistics.finish({ outcome, members, tick: clock.tick, remainingHours: getRemainingTrialHours() });
       achievementToast.dispose();
+      informationWindows.clear({ includePinned: true });
+      informationLayer.setLogHistory(null);
       attemptSave(() => runRecords.save());
       const result = createTrialRunResult({ outcome, members, issuedAt: record.endedAt, record, random, language: document.documentElement.lang?.startsWith('en') ? 'en' : 'ja' });
       trial.lastRunResult = result;

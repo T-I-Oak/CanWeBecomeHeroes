@@ -211,7 +211,7 @@ export default class CombatActionResolutionSystem {
         if (target) this.resolve(actor, target, participants, { preserveGaugePresentation: true });
       });
       if (heads.length > 0 || cooperatingMinions.length > 0) {
-        logText(this.gameLog, this.textRepository, heads.length > 0 ? (cooperatingMinions.length > 0 ? 'logHeadsMinions' : 'logHeads') : 'logMinions', { actor: entityText(enemy), skill: skillText(skill), head: { kind: 'enemy', id: 'phantom-area-head' }, count: heads.length, minions: cooperatingMinions.length }, { subject: 'enemy', level: 'info', channel: 'battle' });
+        logText(this.gameLog, this.textRepository, heads.length > 0 ? (cooperatingMinions.length > 0 ? 'logHeadsMinions' : 'logHeads') : 'logMinions', { actor: entityText(enemy), skill: skillText(skill), head: { kind: 'enemy', id: 'phantom-area-head' }, count: heads.length, minions: cooperatingMinions.length }, { subject: 'enemy', level: 'info', channel: 'ex-skill' });
       }
     });
   }

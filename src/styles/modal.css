@@ -22,6 +22,7 @@
 }
 
 .VignetteModal {
+  z-index: 34;
   background: rgb(8 13 20 / 78%);
 }
 

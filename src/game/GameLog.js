@@ -13,6 +13,7 @@ export const DEFAULT_LOG_LEVELS = Object.freeze({
 
 export const DEFAULT_LOG_CHANNELS = Object.freeze({
   battle: { labelKey: 'logCategory_battle' },
+  'ex-skill': { labelKey: 'logCategory_exSkill' },
   shop: { labelKey: 'logCategory_shop' },
   guild: { labelKey: 'logCategory_guild' },
   training: { labelKey: 'logCategory_training' },

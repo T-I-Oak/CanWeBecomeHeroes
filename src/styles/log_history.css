@@ -1,0 +1,112 @@
+.HudPanel__LogButton { display: inline-flex; align-items: center; gap: 4px; }
+.HudPanel__LogIcon { width: 1.2em; height: 1.2em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.InformationWindow:has(.LogHistory) {
+  width: min(620px, calc(100vw - 32px));
+}
+
+.InformationWindow__Content:has(.LogHistory) { overflow: hidden; }
+
+.LogHistory {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: min(460px, calc(100dvh - 150px));
+}
+
+.LogHistory__Controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #c8b58b;
+  background: #f4ead2;
+}
+
+.LogHistory__Filter { display: flex; align-items: center; gap: 4px; font-size: 16px; cursor: pointer; }
+.LogHistory__Filter input { accent-color: #435d3d; width: 18px; height: 18px; margin: 0; }
+.LogHistory__Latest {
+  margin-left: auto;
+  min-height: 30px;
+  padding: 4px 10px;
+  color: #2d301f;
+  background: #f6e6be;
+  border: 1px solid #9b7142;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.LogHistory__Viewport {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  background: #fff9eb;
+  border-radius: 0 0 10px 10px;
+}
+
+.LogHistory__Row {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2d6bb;
+  font-size: 18px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.LogHistory__Reference {
+  display: inline;
+  padding: 0;
+  border: 0;
+  color: #294b38;
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: inherit;
+}
+.LogHistory__Reference:hover { color: #82500c; }
+.LogHistory__Reference .FlowLog__ReferenceIcon,
+.LogHistory__Reference .FlowLog__TermIcon {
+  display: inline-block;
+  width: 1.3em;
+  height: 1.3em;
+  vertical-align: -.3em;
+  transform: none;
+}
+
+.SettingsButton {
+  position: fixed;
+  z-index: 22;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: #fff4d5;
+  background: #263b2a;
+  border: 2px solid #bc8d3c;
+  border-radius: 50%;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+.SettingsButton__Gear { display: block; font-size: 30px; line-height: 1; transition: transform .3s ease; }
+.AppShell.state-title .SettingsButton { z-index: 31; }
+@media (hover: hover) {
+  .SettingsButton:hover .SettingsButton__Gear { transform: rotate(60deg); }
+  .SettingsButton:hover { background: #405839; }
+}
+.SettingsButton:active .SettingsButton__Gear { transform: rotate(90deg) scale(.9); }
+.AppShell:has(.StartPartySelection.state-open, .VignetteModal.state-open, .StageSelection.state-open, .TrialRunResult.state-open, #tutorial-layer:not([hidden])) .SettingsButton { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  .SettingsButton__Gear { transition: none; }
+  .SettingsButton:hover .SettingsButton__Gear, .SettingsButton:active .SettingsButton__Gear { transform: none; }
+}

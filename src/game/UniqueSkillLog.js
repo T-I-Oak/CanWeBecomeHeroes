@@ -1,7 +1,7 @@
 import { logText } from './LocalizedLog.js';
 import { isHeroCombatant } from './CombatParticipant.js';
 
-const BATTLE_LOG = Object.freeze({ subject: 'enemy', level: 'info', channel: 'battle' });
+const BATTLE_LOG = Object.freeze({ subject: 'enemy', level: 'info', channel: 'ex-skill' });
 
 export function skillText(skill) {
   return { kind: 'unique-skill', id: skill.id };

@@ -26,7 +26,7 @@ export default class FlowLog {
   }
 
   getFlowY(channel) {
-    const range = channel === 'battle' ? FLOW_Y_RANGES.battle : FLOW_Y_RANGES.other;
+    const range = ['battle', 'ex-skill'].includes(channel) ? FLOW_Y_RANGES.battle : FLOW_Y_RANGES.other;
     return range.min + (range.max - range.min) * this.random();
   }
 

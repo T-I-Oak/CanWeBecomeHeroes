@@ -45,7 +45,6 @@ export async function startGame() {
     assets,
     heroProgress,
     runRecords,
-    onOpenSettings: (opener) => settingsModalController.open('menu', { opener }),
   });
   const informationLayer = new InformationWindowLayer(document.querySelector('#information-windows'), null, textRepository, assets);
   const trial = {
@@ -61,6 +60,7 @@ export async function startGame() {
   const timeStatus = document.querySelector('#time-status');
   const timeSettings = document.querySelector('#time-settings');
   const timeSettingsToggle = document.querySelector('#time-settings-toggle');
+  timeSettingsToggle.title = textRepository.getLabel('settings');
   const timeSettingsClose = document.querySelector('#time-settings-close');
   const speedRange = document.querySelector('#game-speed-range');
   const speedSlider = document.querySelector('#game-speed');
@@ -104,7 +104,10 @@ export async function startGame() {
     onClose: () => timeSettingsController.updateStatus(),
   });
   timeSettingsToggle.addEventListener('click', () => {
-    settingsModalController.open('hud', { opener: timeSettingsToggle });
+    settingsModalController.open(shell.classList.contains('state-title') ? 'menu' : 'hud', { opener: timeSettingsToggle });
+  });
+  document.querySelector('#log-history-toggle').addEventListener('click', event => {
+    trial.informationWindows?.open({ type: 'log-history', data: {}, anchor: { x: event.clientX, y: event.clientY } });
   });
   document.querySelector('#reset-tutorial').addEventListener('click', async (event) => {
     const button = event.currentTarget;
@@ -199,6 +202,7 @@ export async function startGame() {
     trial.informationWindows?.refreshEntries();
     trial.stageSelection?.refreshLanguage();
     refreshLocalizedUI(document, textRepository);
+    timeSettingsToggle.title = textRepository.getLabel('settings');
     trial.flowLog?.refreshLanguage();
     timeSettingsController.updateStatus();
     overheadStatusSettingsController.refreshLabels();
@@ -231,6 +235,7 @@ export async function startGame() {
     trial.getInformationTarget = null;
     canvasInput.controller = null;
     trial.informationWindows?.clear({ includePinned: true });
+    informationLayer.setLogHistory(null);
     trial.stageSelection?.hide();
     trial.flowLog?.dispose();
     trial.achievementToast?.dispose();

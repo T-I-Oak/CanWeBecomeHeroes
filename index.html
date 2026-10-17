@@ -15,9 +15,10 @@
         <div class="HudPanel__Controls">
           <span class="HudPanel__Status state-running" id="time-status" aria-live="polite"><span data-ui="running"></span></span>
           <button class="HudPanel__PauseButton" id="pause-game" type="button"><span data-ui="pause"></span></button>
-          <button class="HudPanel__SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings" data-ui-aria="settings">⚙ <span data-ui="settings"></span></button>
+          <button class="HudPanel__LogButton" id="log-history-toggle" type="button" data-ui-aria="logHistory"><svg class="HudPanel__LogIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h6" /></svg><span data-ui="logHistory"></span></button>
         </div>
       </aside>
+      <button class="SettingsButton" id="time-settings-toggle" type="button" aria-expanded="false" aria-controls="time-settings" data-ui-aria="settings"><span class="SettingsButton__Gear" aria-hidden="true">⚙</span></button>
       <aside class="ModalLayer SettingsModal" id="time-settings" hidden data-ui-aria="settings">
         <section class="ModalDialog SettingsModal__Dialog" role="dialog" aria-modal="true" aria-labelledby="time-settings-title">
           <header class="ModalDialog__Header">

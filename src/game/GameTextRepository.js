@@ -1,6 +1,7 @@
 import { loadJsonWithL10nCached } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { TEXT_RESOURCE_PARTS, assignTextPart, createTextResource, textPart } from './textResourceParts.js';
+import { getAchievementLogLabel } from './AchievementLog.js';
 
 const TEXT_RESOURCE_PATHS = TEXT_RESOURCE_PARTS.map((part) => resolvePublicAssetPath(part.path));
 
@@ -37,7 +38,8 @@ export default class GameTextRepository {
     const resolved = Object.fromEntries(Object.entries(values).map(([id, value]) => {
       if (!value || typeof value !== 'object') return [id, value];
       let name;
-      if (value.kind === 'hero') name = this.getHeroLabel(value);
+      if (value.kind === 'achievement') name = getAchievementLogLabel(this, value);
+      else if (value.kind === 'hero') name = this.getHeroLabel(value);
       else if (value.kind === 'label') name = this.getLabel(value.id, value.values);
       else name = this.getName(value.kind, value.id);
       return [id, value.framed ? `【${name}】` : name];

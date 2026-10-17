@@ -2,6 +2,7 @@ import { DEFAULT_WINDOW_SCALE, nextToggleScale } from './InformationWindowScale.
 
 function isSameTarget(entry, type, data) {
   if (entry.type !== type) return false;
+  if (type === 'log-history') return true;
   if (type === 'tag') return entry.data.tag === data.tag;
   if (type === 'status') return entry.data.status === data.status;
   if (type === 'instance') return entry.data.target.instanceId === data.target.instanceId;

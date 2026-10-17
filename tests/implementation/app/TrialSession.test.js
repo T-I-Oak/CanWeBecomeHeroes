@@ -78,7 +78,7 @@ test('trial session connects route selection, information targets and game updat
   const session = startTrial({ selectedProfessionIds: ['swordfighter', 'guard'], textRepository,
     assets: { load: () => ({ complete: true, naturalWidth: 100, naturalHeight: 100 }) },
     heroProgress: { unlock() {} }, canvas, context, directionCanvas: canvas, directionContext: createContext(),
-    camera, clock, trial, canvasInput, informationLayer: { render() {}, setManager: manager => { informationManager = manager; } },
+    camera, clock, trial, canvasInput, informationLayer: { render() {}, setLogHistory() {}, setManager: manager => { informationManager = manager; } },
     timeSettingsController: { pauseOnInformation: false, updateStaminaPause() {}, updateClockSpeed() {}, updateStatus() {} },
     overheadStatusSettingsController: { getSettings: () => ({ statuses: [], visibility: 'always' }) },
     dataManager, runRecords,

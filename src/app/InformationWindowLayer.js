@@ -7,6 +7,7 @@ import InformationWindowDragController from './InformationWindowDragController.j
 import { fitInformationWindowTitle } from './InformationWindowTitleLayout.js';
 import InformationWindowResizeController from './InformationWindowResizeController.js';
 import { COMPACT_WINDOW_SCALE, isDefaultWindowScale } from './InformationWindowScale.js';
+import LogHistoryPanel from './LogHistoryPanel.js';
 
 const CATALOG_INFORMATION_TYPES = Object.freeze(['tag', 'status', 'term', 'facility', 'area', 'definition']);
 const ENTITY_INFORMATION_TYPES = Object.freeze(['instance']);
@@ -77,7 +78,16 @@ export default class InformationWindowLayer {
     this.resizeController.manager = manager;
   }
 
+  setLogHistory(gameLog, dataManager) {
+    this.logHistory?.dispose();
+    this.logHistory = null;
+    this.gameLog = gameLog;
+    this.logHistoryDataManager = dataManager;
+  }
+
   render(entries) {
+    const logScroll = this.logHistory?.captureScroll();
+    if (!entries.some(entry => entry.type === 'log-history')) this.logHistory?.close();
     const windows = entries.map((entry) => this.#renderWindow(entry));
     this.element.replaceChildren(...windows);
     windows.forEach((window, index) => {
@@ -85,6 +95,7 @@ export default class InformationWindowLayer {
       const title = window.querySelector('.InformationWindow__Title');
       if (title) fitInformationWindowTitle(title, window);
     });
+    this.logHistory?.restoreScroll(logScroll);
   }
 
   #renderWindow(entry) {
@@ -100,6 +111,10 @@ export default class InformationWindowLayer {
   }
 
   #renderContent(entry) {
+    if (entry.type === 'log-history') {
+      this.logHistory ??= new LogHistoryPanel({ gameLog: this.gameLog, manager: this.manager, textRepository: this.textRepository, dataManager: this.logHistoryDataManager });
+      return this.logHistory.render(entry);
+    }
     if (CATALOG_INFORMATION_TYPES.includes(entry.type)) return this.catalogRenderer.render(entry);
     if (ENTITY_INFORMATION_TYPES.includes(entry.type)) return this.entityRenderer.render(entry);
     throw new RangeError(`Unsupported information window type: ${entry.type}`);

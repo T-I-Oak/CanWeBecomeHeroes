@@ -13,7 +13,7 @@ function createElement(tagName, className, text = null) {
 
 /** Top menu shown before a trial and after the player leaves a result. */
 export default class TitleMenu {
-  constructor(container, { textRepository, assets, heroProgress, runRecords, onOpenSettings = () => {} } = {}) {
+  constructor(container, { textRepository, assets, heroProgress, runRecords } = {}) {
     if (!container || !textRepository || !assets || !heroProgress) {
       throw new Error('Title menu requires a container, text repository, assets, and hero progress.');
     }
@@ -23,7 +23,6 @@ export default class TitleMenu {
     this.assets = assets;
     this.heroProgress = heroProgress;
     this.runRecords = runRecords;
-    this.onOpenSettings = onOpenSettings;
     this.rain = null;
     this.commands = [];
   }
@@ -78,7 +77,6 @@ export default class TitleMenu {
     const commands = [
       ['startGame', () => this.choose('trial')],
       ['records', () => this.openPanel('records')],
-      ['settings', (element) => this.onOpenSettings(element)],
     ];
     if (this.heroProgress.hasClearedTrial()) commands.splice(1, 0, ['challengeMode', () => this.choose('challenge')]);
     this.commands = commands.map(([label, action]) => {

@@ -42,7 +42,7 @@ export default class CombatEnemyDefeatSystem {
       summon.chip.beginDrop();
       this.controller?.add(summon);
     });
-    summonEffects.filter((effect) => effect.summons?.length > 0).forEach(({ skill, summons: effectSummons }) => logText(this.gameLog, this.textRepository, 'logSummon', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, target: entityText(effectSummons[0]), count: effectSummons.length }, { subject: 'enemy', level: 'info', channel: 'battle' }));
+    summonEffects.filter((effect) => effect.summons?.length > 0).forEach(({ skill, summons: effectSummons }) => logText(this.gameLog, this.textRepository, 'logSummon', { actor: entityText(enemy), skill: { kind: 'unique-skill', id: skill.id }, target: entityText(effectSummons[0]), count: effectSummons.length }, { subject: 'enemy', level: 'info', channel: 'ex-skill' }));
     return enemy.contributionPoints;
   }
 }
