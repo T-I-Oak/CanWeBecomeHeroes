@@ -274,5 +274,41 @@
       "ja": "{hero}はギルドとの巧みな交渉で好条件を引き出し、試験期限を{hours}延長した。",
       "en": "{hero} skillfully secured favorable terms from the guild and extended the exam deadline by {hours}."
     }
+  },
+  "logCategory_exSkill": {
+    "lang-store": {
+      "ja": "Exスキル",
+      "en": "Ex skills"
+    }
+  },
+  "logHistory": {
+    "lang-store": {
+      "ja": "ログ履歴",
+      "en": "Log history"
+    }
+  },
+  "logShowOrdinary": {
+    "lang-store": {
+      "ja": "通常ダメージ・ミスを表示",
+      "en": "Show normal damage / misses"
+    }
+  },
+  "logShowExSkill": {
+    "lang-store": {
+      "ja": "Exスキル関連を表示",
+      "en": "Show Ex skill logs"
+    }
+  },
+  "logLatest": {
+    "lang-store": {
+      "ja": "最新へ",
+      "en": "Latest"
+    }
+  },
+  "logAchievement": {
+    "lang-store": {
+      "ja": "アチーブメント達成：{achievement}",
+      "en": "Achievement: {achievement}"
+    }
   }
 }
