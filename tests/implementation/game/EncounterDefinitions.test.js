@@ -1,0 +1,141 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import ChipBoard from '../../../src/chips/ChipBoard.js';
+import EnemyFactory from '../../../src/game/EnemyFactory.js';
+import { COMBINATION_PATTERNS, createEncounterEnemies, DIFFICULTIES, normalizeEnemyMaximum } from '../../../src/game/EncounterDefinitions.js';
+
+test('regular encounter definitions provide complete concrete patterns for the available enemy types', () => {
+  assert.equal(COMBINATION_PATTERNS.regular.length, 15);
+  COMBINATION_PATTERNS.regular.forEach((pattern) => {
+    assert.ok(pattern.main);
+    assert.ok(pattern.support1);
+    assert.ok(pattern.support2);
+  });
+});
+
+test('elite and boss patterns include each implemented mid-boss and boss with its regular supports', () => {
+  assert.deepEqual(COMBINATION_PATTERNS.elite.map(({ main }) => main), ['medium-vitality', 'medium-gem', 'medium-area', 'medium-iron', 'medium-arcane', 'medium-cloth', 'medium-water', 'medium-fire', 'medium-lightning', 'medium-reputation', 'medium-fortune', 'medium-feather', 'medium-valor', 'medium-dexterity', 'medium-blessing']);
+  assert.deepEqual(COMBINATION_PATTERNS.boss.map(({ main }) => main), ['large-vitality', 'large-gem', 'large-area', 'large-iron', 'large-arcane', 'large-cloth', 'large-water', 'large-fire', 'large-lightning', 'large-reputation', 'large-fortune', 'large-feather', 'large-valor', 'large-dexterity', 'large-blessing']);
+  assert.deepEqual(COMBINATION_PATTERNS.elite.at(-3), { main: 'medium-valor', support1: 'small-lightning', support2: 'small-arcane' });
+  assert.deepEqual(COMBINATION_PATTERNS.elite.at(-2), { main: 'medium-dexterity', support1: 'small-water', support2: 'small-blessing' });
+  assert.deepEqual(COMBINATION_PATTERNS.elite.at(-1), { main: 'medium-blessing', support1: 'small-feather', support2: 'small-water' });
+  assert.deepEqual(COMBINATION_PATTERNS.boss.at(-3), { main: 'large-valor', support1: 'small-lightning', support2: 'small-arcane' });
+  assert.deepEqual(COMBINATION_PATTERNS.boss.at(-2), { main: 'large-dexterity', support1: 'small-water', support2: 'small-blessing' });
+  assert.deepEqual(COMBINATION_PATTERNS.boss.at(-1), { main: 'large-blessing', support1: 'small-feather', support2: 'small-water' });
+});
+
+test('every affinity keeps its two regular supports while its main enemy changes for regular, elite, and boss encounters', () => {
+  const affinities = ['valor', 'iron', 'arcane', 'cloth', 'dexterity', 'feather', 'reputation', 'gem', 'blessing', 'fortune', 'fire', 'water', 'lightning', 'vitality', 'area'];
+  assert.equal(COMBINATION_PATTERNS.regular.length, affinities.length);
+  assert.equal(COMBINATION_PATTERNS.elite.length, affinities.length);
+  assert.equal(COMBINATION_PATTERNS.boss.length, affinities.length);
+
+  for (const affinity of affinities) {
+    const regular = COMBINATION_PATTERNS.regular.find(({ main }) => main === `small-${affinity}`);
+    const elite = COMBINATION_PATTERNS.elite.find(({ main }) => main === `medium-${affinity}`);
+    const boss = COMBINATION_PATTERNS.boss.find(({ main }) => main === `large-${affinity}`);
+
+    assert.ok(regular, `Missing regular encounter for ${affinity}`);
+    assert.ok(elite, `Missing elite encounter for ${affinity}`);
+    assert.ok(boss, `Missing boss encounter for ${affinity}`);
+    assert.deepEqual(
+      { support1: elite.support1, support2: elite.support2 },
+      { support1: regular.support1, support2: regular.support2 },
+      `Elite supports must match regular supports for ${affinity}`,
+    );
+    assert.deepEqual(
+      { support1: boss.support1, support2: boss.support2 },
+      { support1: regular.support1, support2: regular.support2 },
+      `Boss supports must match regular supports for ${affinity}`,
+    );
+  }
+});
+
+test('regular difficulty derives enemy count and each enemy tag budget from its level', () => {
+  const first = DIFFICULTIES.regular(1);
+  const later = DIFFICULTIES.regular(99);
+  assert.equal(first.roles.main.weaponCount, 2);
+  assert.equal(first.roles.main.totalTagBudget, 3);
+  assert.equal(DIFFICULTIES.regular(3).roles.main.contributionMultiplier, 1);
+  assert.equal(DIFFICULTIES.regular(9).roles.main.contributionMultiplier, 1.5);
+  assert.equal(first.roles.main.maximumHp, 1 / 3);
+  assert.deepEqual(first.roles.main.maximums, { power: 1 / 3, magic: 1 / 3, speed: 1 / 3, negotiation: 1 / 3, luck: 1 / 3 });
+  assert.equal(later.roles.main.totalTagBudget, 101);
+  assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8].map((level) => {
+    const { roles } = DIFFICULTIES.regular(level);
+    return roles.main.count + roles.support1.count + roles.support2.count;
+  }), [1, 2, 2, 3, 4, 4, 5, 6]);
+
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const enemies = createEncounterEnemies({
+    kind: 'regular', level: 1, pattern: COMBINATION_PATTERNS.regular[1], enemyFactory: new EnemyFactory(), random: () => 0,
+  });
+  enemies.forEach((enemy) => board.addChip(enemy.chip));
+
+  assert.equal(enemies.length, 1);
+  assert.ok(enemies.every((enemy) => enemy.definition.id === 'small-iron'));
+  assert.deepEqual(enemies.map((enemy) => enemy.slotPosition), [3]);
+  assert.ok(enemies.every((enemy) => enemy.equipment.length === 5));
+  assert.ok(enemies.every((enemy) => enemy.equipment.filter((item) => item.category === 'weapon').length === 2));
+  assert.ok(enemies.every((enemy) => enemy.equipment.flatMap((item) => item.tags).length === 3));
+  assert.ok(enemies.every((enemy) => enemy.maximumHp === 1));
+  assert.ok(enemies.every((enemy) => enemy.maximums.power === 1));
+  assert.ok(enemies.every((enemy) => enemy.contributionPoints === 9));
+  assert.equal(normalizeEnemyMaximum(19 / 3), 7);
+});
+
+test('elite roles add main and support enemies at their separate level intervals', () => {
+  assert.equal(DIFFICULTIES.elite(3).roles.main.maximumHp, 2.5);
+  assert.deepEqual(DIFFICULTIES.elite(3).roles.main.maximums, { power: 2.5, magic: 2.5, speed: 2.5, negotiation: 2.5, luck: 2.5 });
+  assert.equal(DIFFICULTIES.elite(3).roles.support1.maximumHp, 1.5);
+  assert.deepEqual(DIFFICULTIES.elite(3).roles.support2.maximums, { power: 1.5, magic: 1.5, speed: 1.5, negotiation: 1.5, luck: 1.5 });
+  assert.deepEqual(Object.values(DIFFICULTIES.elite(6).roles).map(({ count }) => count), [1, 1, 1]);
+  assert.deepEqual(Object.values(DIFFICULTIES.elite(8).roles).map(({ count }) => count), [2, 1, 1]);
+  assert.deepEqual(Object.values(DIFFICULTIES.elite(15).roles).map(({ count }) => count), [3, 2, 1]);
+  assert.deepEqual(Object.values(DIFFICULTIES.elite(22).roles).map(({ count }) => count), [4, 2, 2]);
+});
+
+test('slot allocation keeps main roles first and reserves two slots for each large boss', () => {
+  const enemies = createEncounterEnemies({
+    kind: 'boss', level: 9, stageNumber: 7, pattern: COMBINATION_PATTERNS.boss[0], enemyFactory: new EnemyFactory(), random: () => 0,
+  });
+  assert.deepEqual(enemies.map(({ definition, slotPosition }) => [definition.size, slotPosition]), [
+    ['large', 3], ['small', 2], ['small', 5], ['small', 1], ['small', 6],
+  ]);
+});
+
+test('boss roles scale their main count by level while keeping both supports fixed', () => {
+  assert.equal(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.main.maximumHp, 4);
+  assert.deepEqual(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.main.maximums, { power: 4, magic: 4, speed: 4, negotiation: 4, luck: 4 });
+  assert.equal(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.support1.maximumHp, 3);
+  assert.deepEqual(DIFFICULTIES.boss(3, { stageNumber: 7 }).roles.support2.maximums, { power: 3, magic: 3, speed: 3, negotiation: 3, luck: 3 });
+  assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 7 }).roles).map(({ count }) => count), [1, 2, 2]);
+  assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 14 }).roles).map(({ count }) => count), [1, 2, 2]);
+  assert.deepEqual(Object.values(DIFFICULTIES.boss(9, { stageNumber: 15 }).roles).map(({ count }) => count), [1, 2, 2]);
+  for (const [level, count] of [[1, 1], [2, 1], [3, 1], [16, 1], [17, 2], [30, 2], [31, 3]]) {
+    assert.equal(DIFFICULTIES.boss(level).roles.main.count, count);
+  }
+});
+
+test('boss formation depends only on pattern and level, with the same six-slot limits', () => {
+  const factory = { createFromDefinition: ({ enemyDefinitionId, slotPosition }) => ({ enemyDefinitionId, slotPosition }) };
+  const create = (level, stageNumber) => createEncounterEnemies({
+    kind: 'boss', level, stageNumber, pattern: COMBINATION_PATTERNS.boss[0], enemyFactory: factory,
+  });
+  for (const [level, mainCount, totalCount] of [[1, 1, 5], [16, 1, 5], [17, 2, 4], [30, 2, 4], [31, 3, 3]]) {
+    const enemies = create(level);
+    assert.equal(enemies.length, totalCount);
+    assert.equal(enemies.filter(enemy => enemy.enemyDefinitionId.startsWith('large-')).length, mainCount);
+    assert.deepEqual(create(level, 7), enemies);
+    assert.deepEqual(create(level, 28), enemies);
+  }
+});
+
+test('slot allocation fills from the center across roles without role-specific slot preferences', () => {
+  const enemies = createEncounterEnemies({
+    kind: 'elite', level: 6, pattern: COMBINATION_PATTERNS.elite[0], enemyFactory: new EnemyFactory(), random: () => 0,
+  });
+  assert.deepEqual(enemies.map(({ definition, slotPosition }) => [definition.size, slotPosition]), [
+    ['medium', 3], ['small', 4], ['small', 2],
+  ]);
+});

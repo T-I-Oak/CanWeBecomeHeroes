@@ -5,7 +5,6 @@ import { FACILITY_LAYOUT, getFacilitySlotOrigin } from './FacilityLayout.js';
 export const SHOP_CUSTOMER_WIDTH = HERO_SLOT_SIZE + 112;
 export const SHOP_COUNTER_WIDTH = 64;
 export const SHOP_BAG_ROW_GAP = 12;
-export const SHOP_BAG_ROW_HEIGHT = 72;
 export const SHOP_TRANSACTION_PADDING = 12;
 export const SHOP_TRANSACTION_ARROW_WIDTH = 44;
 export const SHOP_SALE_BOARD_WIDTH = 176;

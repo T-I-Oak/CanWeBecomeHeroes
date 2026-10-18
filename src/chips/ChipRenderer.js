@@ -1,4 +1,4 @@
-import { CHIP_CENTER_ART_SCALE, getCenterImagePlacement } from './ChipArtLayout.js';
+import { CHIP_CENTER_ART_MASK_RADIUS_RATIO, getCenterImagePlacement } from './ChipArtLayout.js';
 import {
   CONDITION_GLYPH_SCALE,
   CONDITION_ICON_CORNER_RATIO,
@@ -10,7 +10,6 @@ import {
 } from './ConditionIconLayout.js';
 
 const DEFAULT_TAG_SLOT_COUNT = 8;
-export const CENTER_IMAGE_SCALE = CHIP_CENTER_ART_SCALE;
 const CHIP_RIM_WIDTH_RATIO = 0.065;
 
 export function getChipRimWidth(radius) {
@@ -129,7 +128,7 @@ export default class ChipRenderer {
 
     context.save();
     context.beginPath();
-    context.arc(0, 0, chip.radius * 0.94, 0, Math.PI * 2);
+    context.arc(0, 0, chip.radius * CHIP_CENTER_ART_MASK_RADIUS_RATIO, 0, Math.PI * 2);
     context.clip();
     const centerImage = getCenterImagePlacement(chip.radius);
     context.save();

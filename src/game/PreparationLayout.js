@@ -1,5 +1,5 @@
 import { CHIP_RADIUS } from '../chips/Chip.js';
-import { CENTER_IMAGE_SCALE } from '../chips/ChipRenderer.js';
+import { CHIP_CENTER_ART_SCALE } from '../chips/ChipArtLayout.js';
 
 export const PREPARATION_LAYOUT = Object.freeze({
   characterAreaWidth: 168,
@@ -45,8 +45,7 @@ export const PREPARATION_PANEL_WIDTH = PREPARATION_LAYOUT.characterAreaWidth
   + PREPARATION_LAYOUT.areaGap * 2
   + PREPARATION_LAYOUT.topPadding * 2;
 
-export const HERO_PREPARATION_IMAGE_SIZE = CHIP_RADIUS.hero * 2 * CENTER_IMAGE_SCALE;
-export const ITEM_PREPARATION_IMAGE_SIZE = CHIP_RADIUS.item * 2 * CENTER_IMAGE_SCALE;
+export const HERO_PREPARATION_IMAGE_SIZE = CHIP_RADIUS.hero * 2 * CHIP_CENTER_ART_SCALE;
 export const PREPARATION_TOP_CONTENT_HEIGHT = Math.max(
   PREPARATION_LAYOUT.headerHeight + PREPARATION_LAYOUT.sectionGap + HERO_PREPARATION_IMAGE_SIZE,
   PREPARATION_INFORMATION_HEIGHT,
