@@ -49,6 +49,9 @@
 .TrialResultPaper .AchievementTable th,
 .TrialResultPaper .AchievementTable td { white-space: normal; }
 .TrialResultPaper .IssueText { font-size: 14px; }
+.TrialResultPaper .Recipients li { white-space: normal; }
+.TrialResultPaper .Epithet { min-width: 0; overflow-wrap: anywhere; }
+.TrialResultPaper .ResultContent { padding-bottom: 24px; }
 @media (max-width: 900px), (max-height: 480px) {
   .TrialResultViewport .ResultActions { min-height: 54px; gap: 10px; padding-top: 8px; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
   .TrialResultViewport .ResultActions button { min-height: 36px; padding: 6px 14px; font-size: 14px; }
