@@ -72,7 +72,7 @@ for (const previous of previousTests) {
 }
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
-assert.equal(packageJson.version, '0.50.0');
+assert.equal(packageJson.version, '0.50.1');
 assert.equal(lock.version, packageJson.version);
 assert.equal(lock.packages[''].version, packageJson.version);
 assert.deepEqual(JSON.parse(fs.readFileSync('public/data/update_history.json', 'utf8')), []);
