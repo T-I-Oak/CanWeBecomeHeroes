@@ -216,7 +216,7 @@ export async function startGame() {
     canvasInput.controller = null;
     settingsModalController.close();
     const action = await titleMenu.show();
-    if (action !== 'trial') continue;
+    if (!['trial', 'challenge'].includes(action)) continue;
     const partySelection = new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() });
     const selectedProfessionIds = await new StartPartySelectionModal(document.querySelector('#start-party-selection'), { assets, textRepository }).show(partySelection);
     shell.classList.remove('state-title');
@@ -224,6 +224,7 @@ export async function startGame() {
     camera.fitToScreen();
     resizeCanvas();
     await startTrial({
+      mode: action,
       selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager, runRecords,
     });
     trial.tutorial?.dispose();

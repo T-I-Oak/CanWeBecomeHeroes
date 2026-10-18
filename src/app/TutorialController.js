@@ -8,6 +8,10 @@ import Camera from '../game/Camera.js';
 export const TUTORIAL_STATE_KEY = 'tutorialState';
 const PAUSE_REASON = 'tutorial';
 
+export function selectTutorialScenarios(scenarios, mode) {
+  return scenarios.filter(scenario => (scenario.mode ?? 'trial') === mode);
+}
+
 export function calculateRestoredCamera(saved, camera) {
   const restored = new Camera(camera.world, { minZoom: camera.minZoom, maxZoom: camera.maxZoom, padding: camera.padding });
   Object.assign(restored, { x: saved.x, y: saved.y, zoom: saved.zoom, viewport: { ...saved.viewport } });
@@ -41,7 +45,8 @@ export function calculateTutorialFocus(bounds, viewport, maximumZoom = 1.5) {
 }
 
 export default class TutorialController {
-  constructor({ camera, clock, canvas, canvasInput, dataManager, textRepository, getHeroes, getPreparationHeroes, getItems, isStageSelecting, isActive }) {
+  constructor({ mode = 'trial', camera, clock, canvas, canvasInput, dataManager, textRepository, getHeroes, getPreparationHeroes, getItems, isStageSelecting, isActive }) {
+    this.mode = mode;
     Object.assign(this, { camera, clock, canvas, canvasInput, dataManager, textRepository, getHeroes, getPreparationHeroes, getItems, isStageSelecting, isActive });
     this.armed = true;
     this.hero = null;
@@ -92,7 +97,7 @@ export default class TutorialController {
   }
 
   getScenarios() {
-    return this.textRepository.resource.tutorial.scenarios.map(scenario => ({
+    return selectTutorialScenarios(this.textRepository.resource.tutorial.scenarios, this.mode).map(scenario => ({
       ...scenario,
       pages: scenario.pages.map(page => ({
         ...page,

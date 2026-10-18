@@ -42,7 +42,7 @@ class Element {
   getBoundingClientRect() { return { x: 0, y: 0, left: 0, top: 0, width: 1280, height: 720 }; }
 }
 
-test('trial session connects route selection, information targets and game updates', async t => {
+for (const mode of ['trial', 'challenge']) test(`${mode} session connects route selection, information targets and game updates`, async t => {
   const previousDocument = globalThis.document;
   const previousWindow = globalThis.window;
   const previousAnimationFrame = globalThis.requestAnimationFrame;
@@ -75,7 +75,7 @@ test('trial session connects route selection, information targets and game updat
   const trial = {};
   const canvasInput = { controller: null, activePointers: new Map() };
   let informationManager;
-  const session = startTrial({ selectedProfessionIds: ['swordfighter', 'guard'], textRepository,
+  const session = startTrial({ mode, selectedProfessionIds: ['swordfighter', 'guard'], textRepository,
     assets: { load: () => ({ complete: true, naturalWidth: 100, naturalHeight: 100 }) },
     heroProgress: { unlock() {} }, canvas, context, directionCanvas: canvas, directionContext: createContext(),
     camera, clock, trial, canvasInput, informationLayer: { render() {}, setLogHistory() {}, setManager: manager => { informationManager = manager; } },
@@ -102,7 +102,7 @@ test('trial session connects route selection, information targets and game updat
   const route = walk(root).find(element => element.className?.includes('StageSelection__SelectButton'));
   assert.ok(route, 'route selection exposes a selectable choice');
   route.listeners.get('click')();
-  assert.equal(values.get('runRecords').statistics.runs.trial['Avery|Briar'].started, 1);
+  assert.equal(values.get('runRecords').statistics.runs[mode]['Avery|Briar'].started, 1);
   assert.equal(Object.values(values.get('runRecords').statistics.stages)[0].attempts, 1);
   assert.equal(values.get('runRecords').history.length, 0);
   assert.equal(clock.pauseReasons.has('stage-selection'), false);
@@ -125,7 +125,8 @@ test('trial session connects route selection, information targets and game updat
   trial.update(1 / 60, 1034);
   const deadlineLogs = trial.flowLog.gameLog.getRecords().filter(record => record.localized?.key === 'logTrialDeadlineWarning');
   assert.deepEqual(deadlineLogs.map(record => record.localized.values.days), [3, 2, 1]);
-  assert.equal(trial.lastRunResult.record.outcome, 'expired');
+  assert.equal(trial.lastRunResult.record.outcome, mode === 'challenge' ? 'completed' : 'expired');
+  assert.equal(trial.lastRunResult.record.mode, mode);
   assert.equal(values.get('runRecords').history.length, 1);
   assert.ok(trial.lastRunResult.record.statistics.heroes.Avery.tags.valor > 0);
   const resultRoot = lookup('#trial-run-result').children[0];

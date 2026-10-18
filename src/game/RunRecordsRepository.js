@@ -43,10 +43,10 @@ export default class RunRecordsRepository {
     this.data.statistics = session.total.exportData();
     const summary = this.data.summary;
     summary.completed += 1;
-    summary[record.outcome] += 1;
+    if (record.mode === 'trial') summary[record.outcome] += 1;
     summary.points += record.points;
     summary.highestPoints = Math.max(summary.highestPoints, record.points);
-    if (record.outcome === 'cleared') {
+    if (record.mode === 'trial' && record.outcome === 'cleared') {
       this.data.clear.count += 1;
       this.data.clear.firstAt ??= record.endedAt;
       this.data.clear.lastAt = record.endedAt;

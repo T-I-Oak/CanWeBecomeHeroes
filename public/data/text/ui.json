@@ -1,6 +1,11 @@
 {
+  "recordChallengeRankings": {"lang-store":{"ja":"実力判定試験","en":"Proficiency exam"}},
+  "recordElapsedHours": {"lang-store":{"ja":"経過時間","en":"Elapsed time"}},
+  "challengeResultTitle": {"lang-store":{"ja":"勇者実力判定試験 試験結果","en":"Hero Proficiency Exam Results"}},
+  "challengeResultMessage": {"lang-store":{"ja":"今回の実力判定試験では、試験期限内に第{number}課題まで到達しました。\nこの成果を糧に、さらなる高みを目指してください。","en":"In this proficiency exam, you reached task {number} within the time limit.\nBuild on this achievement and strive for even greater heights."}},
+  "challengeResultDate": {"lang-store":{"ja":"判定日","en":"Assessment date"}},
   "recordTitle": { "lang-store": { "ja": "レコード", "en": "Records" } },
-  "recordRankings": { "lang-store": { "ja": "勇者認定試験ランキング", "en": "Hero exam rankings" } },
+  "recordRankings": { "lang-store": { "ja": "勇者認定試験", "en": "Hero certification exam" } },
   "recordAchievements": { "lang-store": { "ja": "アチーブメント", "en": "Achievements" } },
   "recordTasks": { "lang-store": { "ja": "課題記録", "en": "Task records" } },
   "recordRank": { "lang-store": { "ja": "順位", "en": "Rank" } },
@@ -385,7 +390,7 @@
   "challengeMode": {
     "lang-store": {
       "ja": "実力判定試験",
-      "en": "Ability Assessment"
+      "en": "Proficiency exam"
     }
   },
   "records": {

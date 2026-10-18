@@ -1,0 +1,6 @@
+.ChallengePreview { height: 100dvh; overflow: auto; padding: 20px; color: #f5ead4; background: #29273a; font: 16px/1.6 system-ui; }
+.ChallengePreview h1 { font-size: 22px; }
+.ChallengePreview label { display: inline-block; margin: 6px; }
+.ChallengePreview button, .ChallengePreview select { padding: 8px; margin: 6px; }
+.ChallengePreview canvas { display: block; max-width: 100%; height: auto; margin: 16px 0; }
+.ChallengePreview__Records { padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }

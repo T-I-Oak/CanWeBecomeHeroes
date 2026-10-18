@@ -4,6 +4,7 @@ const RUN_STATE = Object.freeze({
   active: 'active',
   cleared: 'cleared',
   expired: 'expired',
+  completed: 'completed',
 });
 
 function isFinalBossVictory(stage, stageState) {
@@ -21,7 +22,8 @@ function createOutcome(state, stage) {
 }
 
 export default class RunController {
-  constructor() {
+  constructor({ mode = 'trial' } = {}) {
+    this.mode = mode;
     this.state = RUN_STATE.active;
     this.outcome = null;
   }
@@ -32,8 +34,8 @@ export default class RunController {
 
   update({ remainingHours, stage, stageState }) {
     if (!this.isActive) return this.state;
-    if (isFinalBossVictory(stage, stageState) && (stageState === 'complete' || remainingHours <= 0)) this.complete(RUN_STATE.cleared, stage);
-    else if (remainingHours <= 0) this.complete(RUN_STATE.expired, stage);
+    if (this.mode === 'trial' && isFinalBossVictory(stage, stageState) && (stageState === 'complete' || remainingHours <= 0)) this.complete(RUN_STATE.cleared, stage);
+    else if (remainingHours <= 0) this.complete(this.mode === 'challenge' ? RUN_STATE.completed : RUN_STATE.expired, stage);
     return this.state;
   }
 

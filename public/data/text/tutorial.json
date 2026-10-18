@@ -336,6 +336,47 @@
           "target": "time-settings-toggle"
         }
       ]
+    },
+    {
+      "id": "challenge-selection-intro",
+      "mode": "challenge",
+      "trigger": "stage-selection",
+      "requires": [],
+      "title": {
+        "lang-store": {
+          "ja": "ギルドマスター・ゼイン",
+          "en": "Guild Master Zane"
+        }
+      },
+      "pages": [
+        {
+          "message": {
+            "lang-store": {
+              "ja": "やあ、君たちか。よく来てくれた。\n実力判定試験は初めてかな？ それでは、試験について案内しよう。\n勇者認定試験を受けた君たちなら、すぐに分かるはずだ。",
+              "en": "Ah, it is you. Welcome.\nIs this your first proficiency exam? Then let me explain it.\nHaving taken the hero certification exam, you should find it easy to understand."
+            }
+          },
+          "target": null
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "期限は7日間。\n勇者認定試験とは違い、第7課題をクリアーしても試験は終わらない。\n期限が尽きるまでに、どこまで課題をクリアーできるか。その実力を測る試験だ。",
+              "en": "You have seven days.\nUnlike the hero certification exam, this exam does not end when you clear task seven.\nIt measures your ability by how far you can progress before time runs out."
+            }
+          },
+          "target": null
+        },
+        {
+          "message": {
+            "lang-store": {
+              "ja": "これまでと同じく、ギルドで貢献ポイントを使えば期限を延ばせる。\n持てる力を尽くし、どこまで進めるか見せてくれ。\n君たちの健闘を祈る。",
+              "en": "As before, you can use contribution points at the guild to extend the deadline.\nGive it your all and show me how far you can go.\nGood luck."
+            }
+          },
+          "target": null
+        }
+      ]
     }
   ]
 }

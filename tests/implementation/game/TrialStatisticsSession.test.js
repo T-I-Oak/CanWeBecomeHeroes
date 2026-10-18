@@ -6,6 +6,57 @@ import HeroProgressRepository from '../../../src/game/HeroProgressRepository.js'
 import { createTrialRunResult } from '../../../src/game/TrialRunResult.js';
 import HeroFactory from '../../../src/game/HeroFactory.js';
 
+test('challenge save retries retain one completion and coexist with trial records after reload', () => {
+  const values = new Map();
+  let fail = true;
+  const storage = { getValue: key => values.get(key), setValue: (key, value) => {
+    if (fail) throw Object.assign(new Error('storage full'), { name: 'QuotaExceededError' });
+    values.set(key, structuredClone(value));
+  } };
+  const repository = new RunRecordsRepository(storage);
+  const challenge = new TrialStatisticsSession({ repository, mode: 'challenge', professionIds: ['swordfighter', 'guard'] });
+  challenge.finish({ outcome: { state: 'completed', stageNumber: 1 }, members: challenge.startMembers, tick: 84000, remainingHours: 0 });
+  assert.throws(() => repository.save(), { name: 'QuotaExceededError' });
+  assert.equal(repository.hasUnsavedChanges, true);
+  fail = false;
+  repository.save(); repository.save();
+  const loaded = new RunRecordsRepository(storage);
+  const trial = new TrialStatisticsSession({ repository: loaded, professionIds: ['swordfighter', 'guard'] });
+  trial.finish({ outcome: { state: 'expired', stageNumber: 1 }, members: trial.startMembers, tick: 84000, remainingHours: 0 });
+  assert.equal(loaded.data.summary.completed, 2);
+  assert.equal(loaded.data.summary.expired, 1);
+  assert.equal(loaded.data.statistics.runs.challenge['Avery|Briar'].completed, 1);
+  assert.equal(loaded.data.statistics.runs.trial['Avery|Briar'].expired, 1);
+  assert.deepEqual(loaded.data.rankings.map(row => row.mode), ['challenge', 'trial']);
+});
+
+test('challenge records reached task separately from clears, saves once, and never grants a trial pass or failure', () => {
+  for (const cleared of [0, 7]) {
+    const values = new Map();
+    const repository = new RunRecordsRepository({ getValue: key => values.get(key), setValue: (key, value) => values.set(key, structuredClone(value)) });
+    const session = new TrialStatisticsSession({ repository, mode: 'challenge', professionIds: ['swordfighter', 'guard'] });
+    for (let n = 0; n < cleared; n++) session.record({ type: 'stage-clear', kind: 'regular', patternIndex: 0, level: n + 1, clearedAt: '2026-10-18T00:00:00Z' });
+    const input = { outcome: { state: 'completed', stageNumber: cleared + 1, stageKind: 'regular' }, members: session.startMembers, tick: 84000, remainingHours: 0 };
+    const record = session.finish(input);
+    assert.equal(session.finish(input), record);
+    repository.save(); repository.save();
+    assert.equal(record.mode, 'challenge');
+    assert.equal(record.stageNumber, cleared + 1);
+    assert.equal(record.clearedStages, cleared);
+    assert.equal(repository.data.summary.completed, 1);
+    assert.equal(repository.data.summary.cleared, 0);
+    assert.equal(repository.data.summary.expired, 0);
+    assert.equal(repository.data.clear.count, 0);
+    assert.equal(repository.data.statistics.runs.trial, undefined);
+    assert.equal(repository.data.statistics.runs.challenge['Avery|Briar'].started, 1);
+    assert.equal(repository.data.rankings[0].mode, 'challenge');
+    const result = createTrialRunResult({ ...input, record });
+    assert.equal(result.type, 'challenge-notice');
+    assert.equal(result.stageNumber, cleared + 1);
+    assert.ok(result.members.every(member => member.epithet));
+  }
+});
+
 test('startup and initial Hero notifications are captured without replaying saved grades', () => {
   const values = new Map();
   const dataManager = { getValue: key => values.get(key), setValue: (key, value) => values.set(key, structuredClone(value)) };

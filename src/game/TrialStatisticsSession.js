@@ -3,7 +3,8 @@ import Achievements from './Achievements.js';
 import { getHeroProfessionDefinition } from './HeroFactory.js';
 
 export default class TrialStatisticsSession {
-  constructor({ repository, professionIds, onGradeRaised, startedAt = new Date().toISOString() }) {
+  constructor({ repository, professionIds, mode = 'trial', onGradeRaised, startedAt = new Date().toISOString() }) {
+    this.mode = mode;
     this.repository = repository;
     this.session = repository.beginRun();
     this.collector = new StatisticsCollector({ ...this.session, achievements: new Achievements(), onGradeRaised });
@@ -12,7 +13,7 @@ export default class TrialStatisticsSession {
     this.startMembers = professionIds.map((profession, index) => ({ profession, heroId: this.heroIds[index] }));
     this.finishedRecord = null;
     this.record = event => this.collector.record(event);
-    this.record({ type: 'run-start', mode: 'trial', heroIds: this.heroIds });
+    this.record({ type: 'run-start', mode: this.mode, heroIds: this.heroIds });
   }
 
   attachHero(hero) {
@@ -26,11 +27,11 @@ export default class TrialStatisticsSession {
 
   finish({ outcome, members, tick, remainingHours, endedAt = new Date().toISOString() }) {
     if (this.finishedRecord) return this.finishedRecord;
-    this.record({ type: 'run-end', mode: 'trial', heroIds: this.heroIds, outcome: outcome.state });
+    this.record({ type: 'run-end', mode: this.mode, heroIds: this.heroIds, outcome: outcome.state });
     const { run } = this.session;
     this.finishedRecord = {
-      id: `trial-${this.session.sequence}-${this.startedAt}`, sequence: this.session.sequence,
-      mode: 'trial', startedAt: this.startedAt, endedAt, outcome: outcome.state,
+      id: `${this.mode}-${this.session.sequence}-${this.startedAt}`, sequence: this.session.sequence,
+      mode: this.mode, startedAt: this.startedAt, endedAt, outcome: outcome.state,
       stageNumber: outcome.stageNumber, stageKind: outcome.stageKind,
       startMembers: structuredClone(this.startMembers),
       members: members.map(({ heroId, profession }) => ({ heroId, profession })),

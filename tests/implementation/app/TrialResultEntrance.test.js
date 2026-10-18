@@ -33,3 +33,14 @@ test('failure entrance fades the announcement out before scaling the notice up',
   assert.equal(calls[0].frames.at(-1).opacity, 0);
   assert.deepEqual(calls[1].frames, [{ opacity: 0, scale: '.65' }, { opacity: 1, scale: '1' }]);
 });
+
+test('challenge announces the end then shrinks a transparent oversized paper', async t => {
+  const calls = [];
+  const previous = globalThis.document;
+  globalThis.document = { createElement: () => node('announcement', calls) };
+  t.after(() => { globalThis.document = previous; });
+  const entrance = playTrialResultEntrance({ paper: node('paper', calls), container: { append() {} }, pass: false, announceEnd: true, shrinkPaper: true, endText: '試験終了' });
+  await entrance.finished;
+  assert.deepEqual(calls.map(call => call.name), ['announcement', 'paper']);
+  assert.deepEqual(calls[1].frames, [{ opacity: 0, scale: '1.35' }, { opacity: 1, scale: '1' }]);
+});

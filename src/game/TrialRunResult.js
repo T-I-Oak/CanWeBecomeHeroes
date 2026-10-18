@@ -4,9 +4,11 @@ import { createHeroEpithets } from './HeroEpithets.js';
 export const TRIAL_RUN_RESULT_TYPE = Object.freeze({
   certificate: 'certificate',
   failureNotice: 'failure-notice',
+  challengeNotice: 'challenge-notice',
 });
 
 function getResultType(outcome) {
+  if (outcome?.state === 'completed') return TRIAL_RUN_RESULT_TYPE.challengeNotice;
   if (outcome?.state === 'cleared') return TRIAL_RUN_RESULT_TYPE.certificate;
   if (outcome?.state === 'expired') return TRIAL_RUN_RESULT_TYPE.failureNotice;
   throw new RangeError('A trial result requires a completed run outcome.');
@@ -31,9 +33,10 @@ function freezeRecord(value) {
  */
 export function createTrialRunResult({ outcome, members, issuedAt = new Date(), record = null, random = Math.random, language = 'ja' }) {
   const type = getResultType(outcome);
-  const epithets = type === TRIAL_RUN_RESULT_TYPE.certificate && record ? createHeroEpithets(record.statistics, members, { random, language }) : {};
+  const epithets = type !== TRIAL_RUN_RESULT_TYPE.failureNotice && record ? createHeroEpithets(record.statistics, members, { random, language }) : {};
   return Object.freeze({
     type: getResultType(outcome),
+    stageNumber: outcome.stageNumber,
     members: Object.freeze(members.map(member => epithets[member.heroId] ? Object.freeze({ ...snapshotMember(member), epithet: epithets[member.heroId] }) : snapshotMember(member))),
     issuedAt: new Date(issuedAt),
     achievements: freezeRecord(structuredClone(selectResultAchievements(record?.achievements?.entries ?? [], 10))),

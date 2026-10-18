@@ -91,6 +91,7 @@ export default class TitleMenu {
   renderPanel() {
     this.recordScreen = new RecordScreen(this.panel, {
       repository: this.runRecords, textRepository: this.textRepository, assets: this.assets,
+      heroProgress: this.heroProgress,
       onClose: () => this.closePanel(),
     });
   }

@@ -6,11 +6,12 @@ import { createCroppedEnemyLine } from './CroppedEnemyLine.js';
 import { getRecordAchievements, getTaskRecords } from './RecordScreenData.js';
 import RecordInformation from './RecordInformation.js';
 import { getRecordScreenLayout } from './RecordScreenScale.js';
+import { GAME_TICKS_PER_HOUR } from '../game/GuildTime.js';
 
 const TABS = ['recordRankings', 'recordAchievements', 'recordTasks'];
-const CRITERION_LABELS = { remainingHours: 'recordRemainingHours', defeats: 'recordDefeats', points: 'recordPoints' };
+const CRITERION_LABELS = { remainingHours: 'recordRemainingHours', elapsedTicks: 'recordElapsedHours', clearedStages: 'recordClearedStages', defeats: 'recordDefeats', points: 'recordPoints' };
 const COLUMNS = ['recordRank', 'recordClearedStages', 'recordRemainingHours', 'recordDefeats', 'recordPoints', 'recordMembers', 'recordAchievedAt'];
-const CRITERION_COLUMNS = { remainingHours: 2, defeats: 3, points: 4 };
+const CRITERION_COLUMNS = { clearedStages: 1, remainingHours: 2, elapsedTicks: 2, defeats: 3, points: 4 };
 const KIND_LABELS = { regular: 'recordRegular', elite: 'recordElite', boss: 'recordBoss' };
 
 function node(tag, className = '', text = null) {
@@ -21,14 +22,16 @@ function node(tag, className = '', text = null) {
 }
 
 export default class RecordScreen {
-  constructor(container, { repository, textRepository, assets, onClose }) {
+  constructor(container, { repository, textRepository, assets, heroProgress, onClose }) {
     this.container = container;
     this.repository = repository;
     this.texts = textRepository;
     this.assets = assets;
+    this.heroProgress = heroProgress;
     this.onClose = onClose;
     this.tab = TABS[0];
     this.criterion = 'remainingHours';
+    this.challengeCriterion = 'clearedStages';
     this.isOpen = false;
     this.resizeObserver = new ResizeObserver(() => this.resize());
   }
@@ -61,6 +64,7 @@ export default class RecordScreen {
   }
 
   render() {
+    const tabsAvailable = this.heroProgress.hasClearedTrial() ? ['recordRankings', 'recordChallengeRankings', ...TABS.slice(1)] : TABS;
     const screen = node('section', 'RecordScreen');
     const header = node('header', 'RecordScreen__Header');
     const title = node('h1', '', this.texts.getLabel('recordTitle'));
@@ -70,7 +74,7 @@ export default class RecordScreen {
     const tabs = node('div', 'RecordScreen__Tabs');
     tabs.setAttribute('role', 'tablist');
     tabs.setAttribute('aria-label', this.texts.getLabel('recordTitle'));
-    TABS.forEach((key, index) => {
+    tabsAvailable.forEach((key, index) => {
       const button = this.button(key, () => this.selectTab(key), key === this.tab);
       button.id = `record-tab-${key}`;
       button.setAttribute('role', 'tab');
@@ -81,8 +85,8 @@ export default class RecordScreen {
         const offset = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
         if (offset || event.key === 'Home' || event.key === 'End') {
           event.preventDefault();
-          const next = event.key === 'Home' ? 0 : event.key === 'End' ? TABS.length - 1 : (index + offset + TABS.length) % TABS.length;
-          this.selectTab(TABS[next]);
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabsAvailable.length - 1 : (index + offset + tabsAvailable.length) % tabsAvailable.length;
+          this.selectTab(tabsAvailable[next]);
         }
       });
       tabs.append(button);
@@ -96,7 +100,7 @@ export default class RecordScreen {
     content.setAttribute('aria-labelledby', `record-tab-${this.tab}`);
     content.tabIndex = 0;
     // Read live repository state on every visit; no collection or persistence here.
-    if (this.tab === 'recordRankings') this.renderRankings(content);
+    if (['recordRankings', 'recordChallengeRankings'].includes(this.tab)) this.renderRankings(content);
     else if (this.tab === 'recordAchievements') this.renderAchievements(content);
     else this.renderTasks(content);
     contentFrame.append(content);
@@ -146,33 +150,38 @@ export default class RecordScreen {
   }
 
   renderRankings(content) {
+    const challenge = this.tab === 'recordChallengeRankings';
+    const mode = challenge ? 'challenge' : 'trial';
+    const criterionKey = challenge ? 'challengeCriterion' : 'criterion';
+    const selectedCriterion = this[criterionKey];
     const selectors = node('div', 'RecordScreen__Selectors');
-    RANKING_CRITERIA.trial.forEach(criterion => {
+    RANKING_CRITERIA[mode].forEach(criterion => {
       const button = this.button(CRITERION_LABELS[criterion], () => {
-        this.criterion = criterion;
+        this[criterionKey] = criterion;
         this.render();
         this.container.querySelector('.RecordScreen__Selectors .state-selected').focus();
-      }, this.criterion === criterion);
-      button.setAttribute('aria-pressed', String(this.criterion === criterion));
+      }, selectedCriterion === criterion);
+      button.setAttribute('aria-pressed', String(selectedCriterion === criterion));
       selectors.append(button);
     });
     this.controls.append(selectors);
-    const rankings = new RunRankings(this.repository.data.rankings).get('trial', this.criterion);
+    const rankings = new RunRankings(this.repository.data.rankings).get(mode, selectedCriterion);
     if (!rankings.length) {
       content.append(node('p', 'RecordScreen__Empty', this.texts.getLabel('recordEmpty')));
       return;
     }
-    const { table, row, body } = this.createTable(COLUMNS);
+    const columns = COLUMNS.map(key => challenge && key === 'recordRemainingHours' ? 'recordElapsedHours' : key);
+    const { table, row, body } = this.createTable(columns);
     table.classList.add('RecordScreen__Rankings');
-    row.children[CRITERION_COLUMNS[this.criterion]].setAttribute('aria-sort', 'descending');
+    row.children[CRITERION_COLUMNS[selectedCriterion]].setAttribute('aria-sort', 'descending');
     const number = value => new Intl.NumberFormat(document.documentElement.lang).format(value);
     rankings.forEach((record, index) => {
-      const hours = Math.max(0, Math.ceil(record.remainingHours));
-      const remaining = record.outcome === 'expired' ? this.texts.getLabel('recordFailed')
+      const hours = Math.max(0, challenge ? Math.floor(record.elapsedTicks / GAME_TICKS_PER_HOUR) : Math.ceil(record.remainingHours));
+      const remaining = !challenge && record.outcome === 'expired' ? this.texts.getLabel('recordFailed')
         : this.texts.getLabel('daysHours', { days: Math.floor(hours / 24), hours: hours % 24 });
       const tr = node('tr');
       [index + 1, number(record.clearedStages), remaining, number(record.defeats), number(record.points)].forEach((value, column) => {
-        tr.append(node('td', column === CRITERION_COLUMNS[this.criterion] ? 'state-sort-value' : '', value));
+        tr.append(node('td', column === CRITERION_COLUMNS[selectedCriterion] ? 'state-sort-value' : '', value));
       });
       const members = node('td');
       const portraits = node('div', 'RecordScreen__Members');

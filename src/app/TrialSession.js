@@ -81,6 +81,7 @@ function drawShopPanel(context, assets, shop, bag, transaction, texts) {
 }
 
 export async function startTrial({
+  mode = 'trial',
   selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager, runRecords,
 }) {
   const nameplateBounds = createLocationNameplateBoundsRegistry();
@@ -91,7 +92,7 @@ export async function startTrial({
   const scenario = createRunScenario({ professionIds: selectedProfessionIds });
   const achievementToast = new AchievementToast({ textRepository });
   trial.achievementToast = achievementToast;
-  const statistics = new TrialStatisticsSession({ repository: runRecords, professionIds: selectedProfessionIds,
+  const statistics = new TrialStatisticsSession({ repository: runRecords, mode, professionIds: selectedProfessionIds,
     onGradeRaised: createAchievementNotifier(gameLog, achievementToast) });
   const attemptSave = save => {
     try { save(); }
@@ -137,7 +138,7 @@ export async function startTrial({
       return hero;
     },
   });
-  const runController = new RunController();
+  const runController = new RunController({ mode });
   const trialRunResultModal = new TrialRunResultModal(document.querySelector('#trial-run-result'), { textRepository });
   const guildSystem = new GuildSystem(returnSystem, {
     getContributionPoints: () => battleSystem.contributionPoints,
@@ -189,7 +190,7 @@ export async function startTrial({
     }).remainingHours;
   }
 
-  const tutorial = new TutorialController({ camera, clock, canvas, canvasInput, dataManager, textRepository,
+  const tutorial = new TutorialController({ mode, camera, clock, canvas, canvasInput, dataManager, textRepository,
     getHeroes: () => controller.getHeroes(), getPreparationHeroes: () => preparationHeroes,
     getItems: () => [...controller.entities.values()].filter(entity => entity.chip.type === 'item'),
     isStageSelecting: () => stageController.state === 'selecting', isActive: () => runController.isActive,
@@ -299,6 +300,7 @@ export async function startTrial({
     drawFacilitySlots(context);
     drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction(), textRepository);
     guildTimelineHours = drawGuildPanel(context, {
+      mode,
       textRepository,
       stageNumber: stageController.stageNumber,
       animationTime: performance.now() / 1000,
