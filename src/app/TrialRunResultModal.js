@@ -2,13 +2,12 @@ import ModalLayer from './ModalLayer.js';
 import { playTrialResultEntrance } from './TrialResultEntrance.js';
 import { createCelebrationConfetti } from './TrialResultConfetti.js';
 import { TRIAL_RUN_RESULT_TYPE } from '../game/TrialRunResult.js';
-import { ACHIEVEMENT_DEFINITIONS } from '../game/AchievementDefinitions.js';
-import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
-import { createAchievementTable } from './AchievementTable.js';
+import { renderTrialResultPaper } from './TrialResultPaper.js';
+import { createTrialResultShareImage } from './TrialResultShareImage.js';
+import { shareTrialResultImage, createTrialResultShareText } from './TrialResultShareService.js';
 import { getTrialPaperLayout } from './TrialPaperScale.js';
-const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+import TrialResultShareConfirm from './TrialResultShareConfirm.js';
 const element = (tag, className) => { const node = document.createElement(tag); node.className = className; return node; };
-const signature = '<svg class="Signature" viewBox="0 0 190 65" aria-hidden="true"><text x="12" y="39" fill="currentColor" font-size="37" font-family="Segoe Script, cursive" font-style="italic">Zane</text><path d="M8 50Q65 43 159 48M128 35q18 4 38-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
 
 /** Presentation uses the immutable ending snapshot, without resaving on flips. */
 export default class TrialRunResultModal {
@@ -24,15 +23,11 @@ export default class TrialRunResultModal {
       const pass = result.type === TRIAL_RUN_RESULT_TYPE.certificate;
       const challenge = result.type === TRIAL_RUN_RESULT_TYPE.challengeNotice;
       const language = document.documentElement.lang?.startsWith('en') ? 'en' : 'ja';
-      const date = new Intl.DateTimeFormat(language, { year: 'numeric', month: 'long', day: 'numeric' }).format(result.issuedAt);
       const screen = element('section', 'TrialResultViewport');
       const paper = element('div', 'TrialResultPaper');
       const scroll = element('div', 'TrialResultScroll');
       const paperFrame = element('div', 'TrialResultFrame');
-      const surface = element('article', 'PaperSurface');
-      const heading = element('header', 'ResultHeading');
-      const content = element('div', 'ResultContent');
-      const frame = element('div', 'PaperFrame');
+      let surface;
       const actions = element('footer', 'ResultActions');
       const flip = element('button', 'FlipButton');
       flip.type = 'button';
@@ -41,38 +36,46 @@ export default class TrialRunResultModal {
       const back = element('button', 'ReturnButton');
       back.type = 'button';
       back.textContent = label('returnToTitle');
+      const share = element('button', 'ShareButton');
+      share.type = 'button';
+      share.textContent = label('trialResultShare');
+      const status = element('p', 'ResultShareStatus');
+      status.setAttribute('role', 'status');
       let reverse = false, closed = false, flipping = false;
       let entrance;
-      const score = () => {
-        const entries = result.achievements.map(entry => {
-          const r = ACHIEVEMENT_DEFINITIONS.find(item => item.id === entry.id).resources[language];
-          return { categoryId: entry.category, category: r.category, label: r.label,
-            condition: r.condition, gradeLabel: entry.label, updated: entry.updated,
-            comment: entry.grade ? r.comments[entry.comment - 1] : r.unachieved };
-        });
-        return createAchievementTable({ mode: 'result', entries, headings: {
-          category: label('trialResultCategory'), item: label('trialResultItem'),
-          grade: label('trialResultGrade'), comment: label('trialResultComment'),
-        } });
-      };
+      const shareConfirm = new TrialResultShareConfirm();
+      let preparedImage, sharing = false;
+      const prepareImage = () => createTrialResultShareImage(result, this.textRepository, language)
+        .then(blob => ({ blob }), error => ({ error }));
+      share.addEventListener('click', async () => {
+        if (sharing || closed) return;
+        sharing = true;
+        share.disabled = true;
+        status.textContent = label('trialResultSharing');
+        resize();
+        try {
+          const prepared = await (preparedImage ??= prepareImage());
+          if (closed) return;
+          if (prepared.error) throw prepared.error;
+          const text = createTrialResultShareText(result.type, language);
+          const mode = await shareTrialResultImage(prepared.blob, text);
+          if (closed) return;
+          status.textContent = '';
+          if (mode === 'copied') await shareConfirm.show(this.textRepository, text);
+        } catch (error) {
+          console.error('Result sharing failed:', error);
+          preparedImage = null;
+          if (!closed) status.textContent = label('trialResultShareFailed');
+        } finally {
+          sharing = false;
+          if (!closed) { share.disabled = false; resize(); }
+        }
+      });
       const render = () => {
-        heading.innerHTML = `<div class="GuildLabel">${escape(label('trialCertificateIssuer'))}</div><h1 id="trial-run-result-title">${escape(label(reverse ? 'trialResultScoreTitle' : challenge ? 'challengeResultTitle' : pass ? 'trialCertificateTitle' : 'trialFailureTitle'))}</h1><div class="HeadingRule"></div>`;
-        content.className = `ResultContent${reverse ? ' state-score' : ''}`;
-        if (reverse) content.replaceChildren(score());
-        else if (challenge) content.innerHTML = `<p class="Statement">${escape(this.textRepository.getLabel('challengeResultMessage', { number: result.stageNumber })).replace(/\n/g, '<br>')}</p><ul class="Recipients">${result.members.map(member => `<li><span class="Epithet">${escape(member.epithet)}</span><span class="HeroName">${escape(this.textRepository.getName('hero', member.heroId))}</span></li>`).join('')}</ul><div class="Issue"><div class="IssueText"><p class="IssueDate">${escape(label('challengeResultDate'))}：${escape(date)}</p>${escape(label('trialCertificateIssuer'))}</div></div>`;
-        else if (pass) content.innerHTML = `<p class="Statement">${escape(label('trialCertificateStatement')).replace(/\n/g, '<br>')}</p><ul class="Recipients">${result.members.map(member => `<li><span class="Epithet">${escape(member.epithet)}</span><span class="HeroName">${escape(this.textRepository.getName('hero', member.heroId))}</span></li>`).join('')}</ul><div class="Issue"><div class="IssueText"><p class="IssueDate">${escape(label('trialCertificateDate'))}：${escape(date)}</p><div class="IssuerLine"><div>${escape(label('trialCertificateIssuer'))}<br>${escape(label('trialCertificateChair'))}</div>${signature}</div></div><img class="Seal" src="${resolvePublicAssetPath('/assets/results/trial-guild-seal-v1.png')}" alt="${escape(label('trialCertificateSeal'))}"></div>`;
-        else content.innerHTML = `<div class="Failure"><p class="Statement">${escape(label('trialFailureMessage')).replace(/\n/g, '<br>')}</p><div class="Issue"><div class="IssueText">${escape(label('trialFailureDate'))}：${escape(date)}<br>${escape(label('trialCertificateIssuer'))}</div></div></div>`;
-        const body = element('div', 'ResultContentBody');
-        body.append(...content.childNodes);
-        content.replaceChildren(body);
-        const style = getComputedStyle(content);
-        const height = content.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
-        const width = content.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-        const scale = Math.min(1, height / body.scrollHeight, width / body.scrollWidth);
-        body.style.transform = `scale(${scale})`;
+        surface = renderTrialResultPaper(paper, result, this.textRepository, language, reverse, 'trial-run-result-title');
       };
       const resize = () => {
-        const layout = getTrialPaperLayout(screen.clientWidth - 24, screen.clientHeight - actions.clientHeight - 24);
+        const layout = getTrialPaperLayout(screen.clientWidth - 24, screen.clientHeight - actions.clientHeight - status.clientHeight - 24);
         scroll.style.height = `${layout.height + 24}px`;
         paperFrame.style.width = `${layout.width}px`;
         paperFrame.style.height = `${layout.height}px`;
@@ -81,6 +84,7 @@ export default class TrialRunResultModal {
       const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(resize) : null;
       back.addEventListener('click', () => {
         closed = true;
+        shareConfirm.close();
         entrance?.dispose();
         observer?.disconnect();
         surface.getAnimations?.().forEach(animation => animation.cancel());
@@ -104,20 +108,20 @@ export default class TrialRunResultModal {
       screen.setAttribute('role', 'dialog');
       screen.setAttribute('aria-modal', 'true');
       screen.setAttribute('aria-labelledby', 'trial-run-result-title');
-      surface.append(frame, heading, content);
-      actions.append(flip, back);
-      paper.append(surface);
+      actions.append(flip, share, back);
       paperFrame.append(paper);
       scroll.append(paperFrame);
-      screen.append(scroll, actions);
+      screen.append(scroll, actions, status);
       if (pass) screen.append(createCelebrationConfetti());
       this.container.replaceChildren(screen);
       this.modalLayer.open();
       render(); resize(); observer?.observe(this.container);
+      preparedImage = prepareImage();
       flip.disabled = true;
+      share.disabled = true;
       back.disabled = true;
       entrance = playTrialResultEntrance({ paper: surface, container: screen, pass, announceEnd: !pass, shrinkPaper: pass || challenge, endText: label('trialResultEnd') });
-      entrance.finished.then(() => { if (!closed) { flip.disabled = false; back.disabled = false; } });
+      entrance.finished.then(() => { if (!closed) { flip.disabled = false; share.disabled = false; back.disabled = false; } });
     });
   }
 }

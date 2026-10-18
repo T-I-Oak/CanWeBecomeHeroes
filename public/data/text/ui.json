@@ -1,4 +1,9 @@
 {
+  "trialResultCopied": {"lang-store":{"ja":"画像をクリップボードにコピーしました。\nXの投稿画面を開き、画像を貼り付けてください。","en":"The image has been copied to the clipboard.\nOpen X and paste the image into your post."}},
+  "trialResultOpenX": {"lang-store":{"ja":"Xを開く","en":"Open X"}},
+  "trialResultShare": {"lang-store":{"ja":"結果をシェアする","en":"Share results"}},
+  "trialResultSharing": {"lang-store":{"ja":"共有画像を準備しています…","en":"Preparing result image…"}},
+  "trialResultShareFailed": {"lang-store":{"ja":"共有できませんでした。もう一度お試しください。","en":"Sharing failed. Please try again."}},
   "recordChallengeRankings": {"lang-store":{"ja":"実力判定試験","en":"Proficiency exam"}},
   "recordElapsedHours": {"lang-store":{"ja":"経過時間","en":"Elapsed time"}},
   "challengeResultTitle": {"lang-store":{"ja":"勇者実力判定試験 試験結果","en":"Hero Proficiency Exam Results"}},

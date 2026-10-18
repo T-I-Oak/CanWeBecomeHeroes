@@ -1,0 +1,6 @@
+html, body { overflow: auto; height: auto; }
+.ResultSharePreview { max-width: 920px; margin: auto; padding: 16px; color: #f9edcd; font: 16px/1.6 system-ui, sans-serif; }
+.ResultSharePreview h1 { font-size: 22px; }
+.ResultSharePreview label { display: inline-block; margin: 4px 8px; }
+.ResultSharePreview button { min-height: 44px; margin: 4px; }
+.ResultSharePreview img { width: 100%; height: auto; }
