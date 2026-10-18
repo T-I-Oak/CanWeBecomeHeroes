@@ -1,17 +1,19 @@
 {
   "name": "can-we-become-heroes",
-  "version": "0.53.1",
+  "version": "0.54.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "test": "node --test",
+    "test:browser": "playwright test",
     "simulate:battle": "node scripts/simulate-battle.js",
     "analyze:tag-affinity": "node scripts/analyze-tag-affinity.js",
     "analyze:tag-matchups": "node scripts/analyze-tag-matchups.js"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "vite": "^7.0.0"
   }
 }
