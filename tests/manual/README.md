@@ -1,15 +1,31 @@
-# Localization review
+# 画面の手動確認
 
-Start the normal Vite development server and open
-`/CanWeBecomeHeroes/tests/manual/localization.html`.
-This is a development-only entry, not included in the normal production build.
+通常のVite開発サーバーを起動し、以下のURLを開く。これらは開発用入口であり、通常の本番ビルドには含まれない。自動テストの配置と要求との対応は[テスト構成](../README.md)を参照する。
 
-The page uses the production repository and information-window renderer. Language selection uses the shared setting, so restore the original language after reviewing.
-The Detail selector covers areas, facilities, statuses, tags, terms, items, heroes, and level-2 unique skills (70 cases).
-Item previews use a representative icon and tags; this fixture verifies localized text and layout, not individual item artwork.
+## 情報ウィンドウの多言語表示
 
-Reviewed at 1280×720, 800×600, and 390×844: no horizontal window overflow or out-of-viewport window bounds after the responsive fixes. Long content scrolls vertically. Hero, tag-skill, and facility details were also visually inspected at the smallest size. Enemy details were previously checked in the game.
+`/CanWeBecomeHeroes/tests/manual/localization.html`
 
-Run `node scripts/review-localization.mjs` to print bilingual prose for review.
-Run `node --test` for resource integrity, translated references, and state-preservation regressions.
-Public deployment verification is handled by the user.
+本番のGameTextRepositoryと情報ウィンドウRendererを使う。言語選択は共通設定へ保存されるため、確認後は元の言語へ戻す。
+
+Detailにはエリア、施設、ステータス、タグ、用語、Item、Hero、固有スキルを列挙する。固有スキルはEx1・Ex2を含む共通の静的情報を開く。件数は現行リソースから生成する。敵の詳細は実ゲームまたはレコード画面から確認する。
+
+Itemは代表の画像とタグを用いる。個別のItem画像ではなく、多言語の文言・参照・配置を確認するための入口である。
+
+1280×720、800×600、390×844を目安に、日本語と英語で以下を確認する。
+
+- ウィンドウが画面内に配置され、本文が横にはみ出さない。
+- 長い本文を内部の縦スクロールで最後まで読める。
+- Hero、タグスキル、施設など長さの異なる説明で、文字と操作が収まる。
+
+`node scripts/review-localization.mjs`で日英文言を出力できる。言語リソースの整合性と設定・状態維持の回帰検証は`npm.cmd test`で行う。
+
+## アチーブメント取得トースト
+
+`/CanWeBecomeHeroes/tests/manual/achievement-toast.html`
+
+初取得・細分段階更新・8件同時追加・モーダル中の待機・破棄と再作成を操作する。演出の静止と100ms進行で、各行の判定変化と寿命を確認する。言語選択はこの確認ページ内の表示言語だけを変える。
+
+## 操作と実機
+
+[操作・モバイル表示の確認](controls.md)を参照する。実機・公開環境の確認済み／保留の判断は[バックログ](../../docs/planning/backlog.md)とフェーズ報告で管理する。この手順書は実行済みの検証結果を表さない。

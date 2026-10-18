@@ -21,7 +21,7 @@ for (const kind of ['area', 'facility', 'status', 'tag', 'term']) {
   }
 }
 for (const id of Object.keys(texts.resource.information.item)) {
-  const item = { type: id, tags: ['valor', 'fire'], chip: { type: 'item', centerPath: '/assets/items/sword.png', weight: 3 }, value: 8 };
+  const item = { type: id, tags: ['valor', 'fire'], chip: { type: 'item', centerPath: '/assets/items/hand-sword.png', weight: 3 }, value: 8 };
   entityRegistry.register(item);
   entries.set('item/' + id, { type: 'instance', data: { target: manager.createInstanceTarget(item) } });
 }

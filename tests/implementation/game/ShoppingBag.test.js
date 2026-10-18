@@ -1,0 +1,92 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import ChipBoard from '../../../src/chips/ChipBoard.js';
+import HeroItemInteractionController from '../../../src/game/HeroItemInteractionController.js';
+import HeroSlotManager from '../../../src/game/HeroSlotManager.js';
+import HeroFactory from '../../../src/game/HeroFactory.js';
+import ItemFactory from '../../../src/game/ItemFactory.js';
+import ItemPickupController from '../../../src/game/ItemPickupController.js';
+
+test('shopping bag stores up to three warehouse items without allowing retrieval', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
+  const factory = new ItemFactory();
+  const bag = factory.createDestination({ destination: 'shopping-bag', x: 700, y: 700 });
+  const destination = factory.createDestination({ destination: 'hero-license', x: 750, y: 700 });
+  const items = ['staff', 'sword', 'shield', 'bow'].map((weapon, index) => factory.createWeapon({ weapon, tags: [], x: 800 + index * 50, y: 700 }));
+  controller.addToWarehouse(bag);
+  controller.addToWarehouse(destination);
+  items.forEach((item) => controller.addToWarehouse(item));
+
+  assert.equal(controller.storeInShoppingBag(items[0], bag), true);
+  assert.equal(controller.storeInShoppingBag(items[1], bag), true);
+  assert.equal(controller.storeInShoppingBag(items[2], bag), true);
+  assert.equal(controller.storeInShoppingBag(items[3], bag), false);
+  assert.equal(controller.storeInShoppingBag(destination, bag), false);
+  assert.equal(bag.storedItems.length, 3);
+  assert.equal(bag.chip.storageCount, 3);
+  assert.equal(items[0].chip.isAbsorbing, true);
+  controller.update(0.3);
+  assert.equal(board.chips.includes(items[0].chip), false);
+  assert.equal(board.chips.includes(items[3].chip), true);
+});
+
+test('an item transfer uses a temporary visual chip and removes it after arrival', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
+  const item = new ItemFactory().createWeapon({ weapon: 'sword', tags: [], x: 800, y: 700 });
+  let completed = false;
+
+  assert.equal(controller.animateItemTransfer(item, { from: { x: 800, y: 700 }, to: { x: 1200, y: 700 }, onComplete: () => { completed = true; } }), true);
+  assert.equal(board.chips.length, 1);
+  assert.equal(board.chips[0].isTransferVisual, true);
+  controller.update(0.14);
+  assert.ok(board.chips[0].x > 800 && board.chips[0].x < 1200);
+  controller.update(0.14);
+  assert.equal(board.chips.length, 0);
+  assert.equal(completed, true);
+});
+
+test('an invalid target clears an item-to-bag selection', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
+  const factory = new ItemFactory();
+  const item = factory.createWeapon({ weapon: 'sword', tags: [], x: 800, y: 700 });
+  const invalidItem = factory.createDestination({ destination: 'hero-license', x: 900, y: 700 });
+  controller.add(item);
+  controller.add(invalidItem);
+
+  controller.beginSelection(item);
+  assert.equal(controller.hasSelectionSource(), true);
+  assert.equal(controller.completeSelectionAt(invalidItem.chip.x, invalidItem.chip.y), false);
+  assert.equal(controller.hasSelectionSource(), false);
+});
+
+test('an empty endpoint or invalid item clears a hero selection', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const pickupController = new ItemPickupController(board, new HeroSlotManager());
+  const controller = new HeroItemInteractionController(board, pickupController);
+  const factory = new ItemFactory();
+  const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700, stamina: 0 });
+  const item = factory.createWeapon({ weapon: 'staff', tags: [], x: 800, y: 700 });
+  controller.add(hero);
+  controller.add(item);
+
+  controller.beginSelection(hero);
+  assert.equal(controller.completeSelectionAt(item.chip.x, item.chip.y), false);
+  assert.equal(controller.hasSelectionSource(), false);
+
+  controller.beginSelection(item);
+  assert.equal(controller.completeSelectionAt(0, 0), false);
+  assert.equal(controller.hasSelectionSource(), false);
+});
+
+test('a tap only identifies an entity and does not begin a selection', () => {
+  const board = new ChipBoard({ width: 3000, height: 2000 });
+  const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
+  const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700, stamina: 3 });
+  controller.add(hero);
+
+  assert.equal(controller.tap(hero.chip.x, hero.chip.y), hero);
+  assert.equal(controller.hasSelectionSource(), false);
+});

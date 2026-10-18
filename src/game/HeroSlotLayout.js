@@ -5,7 +5,6 @@ export const HERO_SLOT_PADDING = 16;
 export const HERO_CHIP_DIAMETER = CHIP_RADIUS.hero * 2;
 export const HERO_SLOT_SIZE = HERO_CHIP_DIAMETER + HERO_SLOT_PADDING * 2;
 export const BATTLE_ENEMY_SLOT_COUNT = 6;
-export const BATTLE_FRIENDLY_SLOT_COUNT = 4;
 // Large enemies and their floating combat information need dedicated space above
 // the enemy slot lane; it is not part of the lanes where chips stand.
 export const BATTLE_OVERHEAD_DISPLAY_HEIGHT = 70;

@@ -10,9 +10,6 @@ export const VIGNETTE_BUBBLE_TAIL = 14;
 export const VIGNETTE_BUBBLE_TAIL_BASE = 22;
 export const VIGNETTE_BUBBLE_RADIUS = 12;
 export const VIGNETTE_BUBBLE_BORDER = 2;
-export const VIGNETTE_START_FOOT_Y = 248;
-export const VIGNETTE_CHIP_RADIUS = 56;
-export const VIGNETTE_BACKGROUND_WIDTH = 1120;
 export const VIGNETTE_BACKGROUND_HEIGHT = 400;
 
 export function vignetteStageScale(availableWidth, availableHeight) {
