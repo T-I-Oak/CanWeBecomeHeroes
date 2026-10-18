@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>実力判定試験の表示確認</title>
+  <link rel="stylesheet" href="../../src/styles.css">
+  <link rel="stylesheet" href="../../src/styles/tutorial.css">
+  <link rel="stylesheet" href="./challenge-mode.css">
+</head>
+<body>
+  <main class="ChallengePreview">
+    <h1>実力判定試験の表示確認 <span id="version"></span></h1>
+    <p>表示用サンプルです。プレイ記録・解放・チュートリアルの既読は保存しません。</p>
+    <label>言語 <select id="language"><option value="ja">日本語</option><option value="en">English</option></select></label>
+    <label>課題 <select id="stage"></select></label>
+    <canvas id="guild" width="570" height="310"></canvas>
+    <button id="tutorial" type="button">専用チュートリアル</button>
+    <button id="result" type="button">終了通知（第8課題到達・7課題クリアー）</button>
+    <label><input id="unlock" type="checkbox" checked>勇者認定試験クリアー済み</label>
+    <button id="records" type="button">レコード</button>
+    <aside class="HudPanel" hidden></aside>
+  </main>
+  <aside id="trial-run-result" class="ModalLayer TrialRunResultModal" hidden></aside>
+  <aside id="record-preview" class="ModalLayer ChallengePreview__Records" hidden></aside>
+  <script type="module" src="./challenge-mode.js"></script>
+</body>
+</html>

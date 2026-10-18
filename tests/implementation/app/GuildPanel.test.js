@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { drawGuildPanel } from '../../../src/app/GuildPanel.js';
+import { drawGuildPanel, getStageProgress } from '../../../src/app/GuildPanel.js';
 import GameTextRepository from '../../../src/game/GameTextRepository.js';
 import { readGameText } from '../../../src/game/readGameText.js';
 
@@ -15,6 +15,21 @@ function createContext() {
     fillText(text, x, y) { this.labels.push({ text, x, y, align: this.textAlign, font: this.font, baseline: this.textBaseline, color: this.fillStyle }); },
   };
 }
+
+test('challenge progress overwrites each full seven-task band without emptying it', () => {
+  const purple = '#71509d', red = '#a34e63';
+  for (const [number, fraction, background, fill] of [
+    [1, 1 / 7, '#49355f', purple], [7, 1, '#49355f', purple],
+    [8, 1 / 7, purple, red], [14, 1, purple, red],
+    [15, 1 / 7, red, purple], [21, 1, red, purple], [22, 1 / 7, purple, red],
+  ]) {
+    const progress = getStageProgress(number, 'challenge');
+    assert.equal(progress.fraction, fraction);
+    assert.equal(progress.background, background);
+    assert.equal(progress.fill, fill);
+  }
+  assert.equal(getStageProgress(8, 'trial').fraction, 1);
+});
 
 test('guild panel follows trial progress and current localized labels on every draw', () => {
   const raw = readGameText();

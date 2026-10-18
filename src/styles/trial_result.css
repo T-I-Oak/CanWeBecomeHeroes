@@ -1,4 +1,4 @@
-.TrialResultViewport{position:absolute;inset:0;overflow:hidden;display:grid;grid-template-rows:minmax(0,1fr) auto}
+.TrialResultViewport{position:absolute;inset:0;overflow:hidden;display:grid;grid-template-rows:auto auto;align-content:center}
 .TrialResultPaper{position:absolute;left:50%;top:50%;width:840px;height:600px;transform-origin:center;background:linear-gradient(135deg,#fff5d6,#ead3a1);box-shadow:0 20px 70px #0008;border:2px solid #a37b3d;display:grid;grid-template-rows:120px 1fr 66px}
 .TrialResultPaper .PaperFrame{position:absolute;inset:12px;border:1px solid #ad8545;box-shadow:inset 0 0 0 5px #79511e22;pointer-events:none}
 .TrialResultPaper .ResultHeading{text-align:center;padding:29px 40px 0}
@@ -39,7 +39,7 @@
 
 .TrialResultPaper{color:#392f24;font-family:"Yu Mincho","Hiragino Mincho ProN",Georgia,serif;box-sizing:border-box}.TrialResultPaper *{box-sizing:border-box}.TrialResultPaper .ResultContent{overflow:hidden}.TrialResultPaper .Statement{white-space:normal}.TrialResultPaper .Epithet{letter-spacing:0}.TrialResultPaper .Recipients li{white-space:nowrap}.TrialResultPaper .HeroName{flex-shrink:0}
 
-.TrialResultScroll { display: flex; min-width: 0; min-height: 0; overflow: hidden; padding: 12px; }
+.TrialResultScroll { display: flex; min-width: 0; min-height: 0; overflow: visible; padding: 12px; }
 .TrialResultFrame { position: relative; flex: none; margin: auto; }
 .TrialResultPaper { left: 0; top: 0; height: 534px; grid-template-rows: 534px; transform-origin: top left; }
 .TrialResultViewport .ResultActions { min-height: 66px; padding: 11px max(12px, env(safe-area-inset-right)) max(11px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }

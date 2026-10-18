@@ -3,11 +3,27 @@ import assert from 'node:assert/strict';
 import { TutorialManager } from '../../../../GameWorksOAK/src/lib/core/tutorialManager.js';
 import { expandLanguageResource, setLanguage } from '../../../../GameWorksOAK/src/lib/core/i18n.js';
 import { readGameText } from '../../../src/game/readGameText.js';
-import { calculateTutorialFocus, calculateRestoredCamera, getTutorialTimings } from '../../../src/app/TutorialController.js';
+import { calculateTutorialFocus, calculateRestoredCamera, getTutorialTimings, selectTutorialScenarios } from '../../../src/app/TutorialController.js';
 import Camera from '../../../src/game/Camera.js';
 import GameClock from '../../../src/game/GameClock.js';
 
 function scenarios() { setLanguage('ja'); return expandLanguageResource(readGameText()).tutorial.scenarios; }
+
+test('challenge intro has no prerequisites, remains separate from trial guidance, and can be reset', async t => {
+  const previousDocument = globalThis.document;
+  globalThis.document = { getElementById: () => null, querySelector: () => null };
+  t.after(() => { globalThis.document = previousDocument; });
+  const all = scenarios();
+  const challenge = selectTutorialScenarios(all, 'challenge');
+  assert.deepEqual(challenge.map(s => s.id), ['challenge-selection-intro']);
+  assert.equal(selectTutorialScenarios(all, 'trial').some(s => s.id === challenge[0].id), false);
+  const manager = new TutorialManager(challenge, { initialState: { completed: ['trial-selection-intro'] } });
+  assert.equal(manager.willTrigger('stage-selection', {}), true);
+  manager.state.completed.push('challenge-selection-intro');
+  assert.equal(manager.willTrigger('stage-selection', {}), false);
+  await manager.resetTutorialAsync();
+  assert.equal(manager.willTrigger('stage-selection', {}), true);
+});
 
 test('camera restoration uses normal viewport calculations with and without resizing', () => {
   const camera = new Camera({ width: 3000, height: 2000 });

@@ -21,6 +21,20 @@ const REMAINING_COLOR = '#a486d1';
 const EXTENSION_COLOR = '#f0c879';
 const STAGE_PROGRESS_FILL = '#71509d';
 const STAGE_PROGRESS_STRIPE = '#8965b4';
+const CHALLENGE_PROGRESS_FILL = '#a34e63';
+const CHALLENGE_PROGRESS_STRIPE = '#c56b7d';
+
+export function getStageProgress(stageNumber, mode = 'trial') {
+  const cycle = mode === 'challenge' ? Math.floor(Math.max(0, stageNumber - 1) / TRIAL_FINAL_STAGE_NUMBER) : 0;
+  const position = mode === 'challenge' ? (Math.max(1, stageNumber) - 1) % TRIAL_FINAL_STAGE_NUMBER + 1 : stageNumber;
+  const red = cycle % 2 === 1;
+  return {
+    fraction: Math.min(1, Math.max(0, position / TRIAL_FINAL_STAGE_NUMBER)),
+    background: cycle === 0 ? STAGE_BAND_FILL : red ? STAGE_PROGRESS_FILL : CHALLENGE_PROGRESS_FILL,
+    fill: red ? CHALLENGE_PROGRESS_FILL : STAGE_PROGRESS_FILL,
+    stripe: red ? CHALLENGE_PROGRESS_STRIPE : STAGE_PROGRESS_STRIPE,
+  };
+}
 
 function getPanelBounds() {
   const area = GAME_AREAS.guild;
@@ -85,22 +99,23 @@ function drawValue(context, text, { x, y, width, size, color = PANEL_TEXT, align
   context.restore();
 }
 
-function drawStageProgress(context, { x, y, width, height }, stageNumber, animationTime) {
-  const progressWidth = width * Math.min(1, Math.max(0, stageNumber / TRIAL_FINAL_STAGE_NUMBER));
+function drawStageProgress(context, { x, y, width, height }, stageNumber, animationTime, mode) {
+  const progress = getStageProgress(stageNumber, mode);
+  const progressWidth = width * progress.fraction;
   context.save();
   context.beginPath();
   context.roundRect(x, y, width, height, 6);
   context.clip();
-  context.fillStyle = STAGE_BAND_FILL;
+  context.fillStyle = progress.background;
   context.fillRect(x, y, width, height);
   context.beginPath();
   context.rect(x, y, progressWidth, height);
   context.clip();
-  context.fillStyle = STAGE_PROGRESS_FILL;
+  context.fillStyle = progress.fill;
   context.fillRect(x, y, progressWidth, height);
   const stripeSpacing = 32;
   const offset = (animationTime * 20) % stripeSpacing;
-  context.fillStyle = STAGE_PROGRESS_STRIPE;
+  context.fillStyle = progress.stripe;
   for (let stripeX = x - height - stripeSpacing + offset; stripeX < x + progressWidth; stripeX += stripeSpacing) {
     context.beginPath();
     context.moveTo(stripeX, y + height);
@@ -139,7 +154,7 @@ function drawTimelineLegend(context, { x, y, width }, texts) {
   context.fillText(label, labelX, y);
 }
 
-export function drawGuildPanel(context, { stageNumber, animationTime = 0, tick, contributionPoints, extensionHours, extensionRate, timelineHours, textRepository: texts }) {
+export function drawGuildPanel(context, { mode = 'trial', stageNumber, animationTime = 0, tick, contributionPoints, extensionHours, extensionRate, timelineHours, textRepository: texts }) {
   const time = (hours) => texts.getLabel('daysHours', { days: Math.floor(hours / 24), hours: hours % 24 });
   const panel = getPanelBounds();
   const status = getGuildTimeStatus({ tick, contributionPoints, extensionHours, extensionRate, timelineHours });
@@ -182,7 +197,7 @@ export function drawGuildPanel(context, { stageNumber, animationTime = 0, tick, 
   drawMetric(context, texts, 'contribution', `${Math.floor(contributionPoints)} pt`, {
     x: contentX, y: panel.y + 162, width: leftWidth, size: 30,
   });
-  drawStageProgress(context, { x: contentX, y: panel.y + 228, width: contentWidth, height: 44 }, stageNumber, animationTime);
+  drawStageProgress(context, { x: contentX, y: panel.y + 228, width: contentWidth, height: 44 }, stageNumber, animationTime, mode);
   drawValue(context, texts.getLabel('stageNumber', { number: stageNumber }), {
     x: contentX, y: panel.y + 250, width: contentWidth, size: 36,
     color: STAGE_BAND_TEXT, align: 'center',

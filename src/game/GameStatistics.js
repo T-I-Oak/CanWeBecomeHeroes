@@ -25,6 +25,7 @@ export default class GameStatistics {
       if (type === 'run-start') counts.started += 1;
       else if (event.outcome === 'cleared') counts.cleared += 1;
       else if (event.outcome === 'expired') counts.expired += 1;
+      else if (event.outcome === 'completed') increment(counts, 'completed');
     } else if (type === 'stage-start' || type === 'stage-clear') {
       const key = `${event.kind}:${event.patternIndex}`;
       const stage = this.data.stages[key] ??= { attempts: 0, clears: 0, highestLevel: null };

@@ -345,7 +345,7 @@
   },
   "conditions": {
     "pair": {
-      "ja": "{heroes}で試験・チャレンジを開始",
+      "ja": "{heroes}で勇者認定試験・実力判定試験を開始",
       "en": "Start a trial or challenge with {heroes}"
     },
     "trial-start": {

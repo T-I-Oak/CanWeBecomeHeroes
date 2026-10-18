@@ -22,6 +22,7 @@ export default class TrialRunResultModal {
     return new Promise(resolve => {
       const label = id => this.textRepository.getLabel(id);
       const pass = result.type === TRIAL_RUN_RESULT_TYPE.certificate;
+      const challenge = result.type === TRIAL_RUN_RESULT_TYPE.challengeNotice;
       const language = document.documentElement.lang?.startsWith('en') ? 'en' : 'ja';
       const date = new Intl.DateTimeFormat(language, { year: 'numeric', month: 'long', day: 'numeric' }).format(result.issuedAt);
       const screen = element('section', 'TrialResultViewport');
@@ -55,9 +56,10 @@ export default class TrialRunResultModal {
         } });
       };
       const render = () => {
-        heading.innerHTML = `<div class="GuildLabel">${escape(label('trialCertificateIssuer'))}</div><h1 id="trial-run-result-title">${escape(label(reverse ? 'trialResultScoreTitle' : pass ? 'trialCertificateTitle' : 'trialFailureTitle'))}</h1><div class="HeadingRule"></div>`;
+        heading.innerHTML = `<div class="GuildLabel">${escape(label('trialCertificateIssuer'))}</div><h1 id="trial-run-result-title">${escape(label(reverse ? 'trialResultScoreTitle' : challenge ? 'challengeResultTitle' : pass ? 'trialCertificateTitle' : 'trialFailureTitle'))}</h1><div class="HeadingRule"></div>`;
         content.className = `ResultContent${reverse ? ' state-score' : ''}`;
         if (reverse) content.replaceChildren(score());
+        else if (challenge) content.innerHTML = `<p class="Statement">${escape(this.textRepository.getLabel('challengeResultMessage', { number: result.stageNumber })).replace(/\n/g, '<br>')}</p><ul class="Recipients">${result.members.map(member => `<li><span class="Epithet">${escape(member.epithet)}</span><span class="HeroName">${escape(this.textRepository.getName('hero', member.heroId))}</span></li>`).join('')}</ul><div class="Issue"><div class="IssueText"><p class="IssueDate">${escape(label('challengeResultDate'))}：${escape(date)}</p>${escape(label('trialCertificateIssuer'))}</div></div>`;
         else if (pass) content.innerHTML = `<p class="Statement">${escape(label('trialCertificateStatement')).replace(/\n/g, '<br>')}</p><ul class="Recipients">${result.members.map(member => `<li><span class="Epithet">${escape(member.epithet)}</span><span class="HeroName">${escape(this.textRepository.getName('hero', member.heroId))}</span></li>`).join('')}</ul><div class="Issue"><div class="IssueText"><p class="IssueDate">${escape(label('trialCertificateDate'))}：${escape(date)}</p><div class="IssuerLine"><div>${escape(label('trialCertificateIssuer'))}<br>${escape(label('trialCertificateChair'))}</div>${signature}</div></div><img class="Seal" src="${resolvePublicAssetPath('/assets/results/trial-guild-seal-v1.png')}" alt="${escape(label('trialCertificateSeal'))}"></div>`;
         else content.innerHTML = `<div class="Failure"><p class="Statement">${escape(label('trialFailureMessage')).replace(/\n/g, '<br>')}</p><div class="Issue"><div class="IssueText">${escape(label('trialFailureDate'))}：${escape(date)}<br>${escape(label('trialCertificateIssuer'))}</div></div></div>`;
         const body = element('div', 'ResultContentBody');
@@ -70,7 +72,8 @@ export default class TrialRunResultModal {
         body.style.transform = `scale(${scale})`;
       };
       const resize = () => {
-        const layout = getTrialPaperLayout(scroll.clientWidth - 24, scroll.clientHeight - 24);
+        const layout = getTrialPaperLayout(screen.clientWidth - 24, screen.clientHeight - actions.clientHeight - 24);
+        scroll.style.height = `${layout.height + 24}px`;
         paperFrame.style.width = `${layout.width}px`;
         paperFrame.style.height = `${layout.height}px`;
         paper.style.transform = `scale(${layout.scale})`;
@@ -113,7 +116,7 @@ export default class TrialRunResultModal {
       render(); resize(); observer?.observe(this.container);
       flip.disabled = true;
       back.disabled = true;
-      entrance = playTrialResultEntrance({ paper: surface, container: screen, pass, endText: label('trialResultEnd') });
+      entrance = playTrialResultEntrance({ paper: surface, container: screen, pass, announceEnd: !pass, shrinkPaper: pass || challenge, endText: label('trialResultEnd') });
       entrance.finished.then(() => { if (!closed) { flip.disabled = false; back.disabled = false; } });
     });
   }
