@@ -19,13 +19,14 @@ export default class Chip {
     this.borderColor = borderColor;
     this.borderColors = null;
     this.scale = 1;
-    this.height = this.radius * 2.8;
+    this.height = this.dropHeight;
     this.verticalVelocity = 0;
     this.impactOnLanding = true;
     this.tilt = 0;
     this.poseTilt = 0;
     this.tiltVelocity = 0;
     this.step = null;
+    this.rise = null;
     this.impact = 0;
     this.storageCount = null;
     this.storageCapacity = null;
@@ -47,14 +48,17 @@ export default class Chip {
     this.flipped = false;
   }
 
+  get dropHeight() { return this.radius * 2.8; }
+
   get isSettled() {
-    return this.height < 0.2 && Math.abs(this.verticalVelocity) < 1 && !this.step;
+    return this.height < 0.2 && Math.abs(this.verticalVelocity) < 1 && !this.step && !this.rise;
   }
 
   beginDrop() {
+    this.rise = null;
     this.baseY = this.y;
     this.scale = 1;
-    this.height = this.radius * 2.8;
+    this.height = this.dropHeight;
     this.verticalVelocity = 0;
     this.impactOnLanding = true;
     this.tilt = 0;

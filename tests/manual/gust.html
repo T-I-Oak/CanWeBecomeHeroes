@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>暴風の翼の演出確認</title>
+  <link rel="stylesheet" href="./gust.css">
+</head>
+<body>
+  <main>
+    <h1>暴風の翼 <span id="version"></span></h1>
+    <p>「再生」で、上への吹き飛ばし→倉庫でHeroと装備の同時落下→着地後の移動を確認できます。記録は保存しません。</p>
+    <label>着地後の行動 <select id="stamina"><option value="100">第1武器を拾い直す</option><option value="2">準備エリアへ戻る</option></select></label>
+    <label>再生速度 <select id="speed"><option value="1">通常</option><option value="0.25">1/4速度</option></select></label>
+    <button id="play" type="button">再生</button>
+    <p id="state" aria-live="polite"></p>
+    <canvas id="board" width="960" height="800" aria-label="戦闘エリアと倉庫の演出"></canvas>
+  </main>
+  <script type="module" src="./gust.js"></script>
+</body>
+</html>
