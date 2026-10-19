@@ -13,6 +13,7 @@ function distanceBetween(first, second) {
 }
 
 function canCollideAtHeight(first, second) {
+  if (first.rise || second.rise) return false;
   const contactHeight = Math.min(first.radius, second.radius) * COLLISION_HEIGHT_RATIO;
   return Math.abs(first.height - second.height) <= contactHeight;
 }
@@ -64,10 +65,29 @@ export default class ChipBoard {
     return true;
   }
 
+  launchUp(chip, destination = { x: chip.x, y: chip.y }) {
+    const height = chip.dropHeight;
+    chip.step = null;
+    chip.height = 0;
+    chip.verticalVelocity = 0;
+    chip.rise = { height, startX: chip.x, startY: chip.y, targetX: destination.x, targetY: destination.y, elapsed: 0, duration: Math.sqrt(2 * height / GRAVITY) };
+  }
+
+  updateRise(chip, deltaSeconds) {
+    const rise = chip.rise;
+    rise.elapsed = Math.min(rise.duration, rise.elapsed + deltaSeconds);
+    const progress = rise.elapsed / rise.duration;
+    chip.x = rise.startX + (rise.targetX - rise.startX) * progress;
+    chip.y = rise.startY + (rise.targetY - rise.startY) * progress;
+    chip.height = rise.height - GRAVITY * (rise.duration - rise.elapsed) ** 2 / 2;
+    if (rise.elapsed >= rise.duration) chip.rise = null;
+  }
+
   update(deltaSeconds) {
     this.chips.forEach((chip) => {
       if (chip.isTransferVisual) return;
-      this.updateFall(chip, deltaSeconds);
+      if (chip.rise) this.updateRise(chip, deltaSeconds);
+      else this.updateFall(chip, deltaSeconds);
       this.updateStep(chip, deltaSeconds);
       if (hasPhysicalTilt(chip)) {
         chip.tilt += chip.tiltVelocity * deltaSeconds;
@@ -239,7 +259,7 @@ export default class ChipBoard {
 
     this.chips.forEach((first, firstIndex) => {
       this.chips.slice(firstIndex + 1).forEach((second) => {
-        if (first.height > 1 || second.height > 1 || first.isPickupTarget || second.isPickupTarget || first.isTransferVisual || second.isTransferVisual) return;
+        if (first.rise || second.rise || first.height > 1 || second.height > 1 || first.isPickupTarget || second.isPickupTarget || first.isTransferVisual || second.isTransferVisual) return;
 
         const dx = second.x - first.x || 1;
         const dy = second.y - first.y || 1;

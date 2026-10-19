@@ -45,6 +45,7 @@ export default class BattleSystem {
       pickupController: controller?.pickupController,
       returnSystem,
       getWarehouseDropPosition: () => this.getWarehouseDropPosition(),
+      random,
       clearCombatant: (combatant) => {
         this.conditionSystem.clearCombatant(combatant);
       },

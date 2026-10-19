@@ -224,6 +224,48 @@ test('ground chips separate smoothly after movement stops', () => {
   assert.ok(distance >= firstChip.radius + secondChip.radius);
 });
 
+test('upward launch preserves the ground position and scale without pushing overlapping chips', () => {
+  const board = new ChipBoard({ width: 1000, height: 600 });
+  const hero = addChip(board, 'hero', 300, 300, 15);
+  const item = addChip(board, 'item', 310, 300, 1);
+  hero.height = 0;
+  item.height = 0;
+  board.launchUp(hero);
+  assert.equal(hero.isSettled, false);
+  board.update(0.01);
+  assert.equal(hero.x, 300);
+  assert.equal(hero.y, 300);
+  assert.equal(item.x, 310);
+  assert.equal(item.y, 300);
+  assert.equal(hero.scale, 1);
+  assert.ok(hero.height > 0);
+  board.update(2);
+  assert.equal(hero.rise, null);
+  assert.equal(hero.height, hero.dropHeight);
+  hero.beginDrop();
+  assert.equal(hero.rise, null);
+  assert.equal(hero.verticalVelocity, 0);
+});
+
+test('upward flight moves toward its landing point continuously without shrinking or teleporting', () => {
+  const board = new ChipBoard({ width: 2000, height: 2000 });
+  const hero = addChip(board, 'hero', 300, 300, 15);
+  board.launchUp(hero, { x: 1000, y: 1000 });
+  board.update(0.1);
+  assert.ok(hero.x > 300 && hero.x < 1000);
+  assert.ok(hero.y > 300 && hero.y < 1000);
+  assert.ok(hero.height > 0);
+  assert.equal(hero.scale, 1);
+  board.update(2);
+  assert.equal(hero.x, 1000);
+  assert.equal(hero.y, 1000);
+  assert.equal(hero.height, hero.dropHeight);
+  hero.beginDrop();
+  assert.equal(hero.x, 1000);
+  assert.equal(hero.y, 1000);
+  assert.equal(hero.scale, 1);
+});
+
 test('tagless item chips separate without invalid positions', () => {
   const board = new ChipBoard({ width: 1000, height: 600 });
   const firstChip = addChip(board, 'item', 300, 300, 1);
