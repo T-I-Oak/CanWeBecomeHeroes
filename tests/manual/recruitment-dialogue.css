@@ -1,0 +1,4 @@
+.RecruitmentPreview { padding: 20px; height: 100dvh; overflow: auto; color: #f4e4bf; }
+.RecruitmentPreview label { display: inline-block; margin: 8px; }
+.RecruitmentPreview label[hidden] { display: none; }
+.RecruitmentPreview li { margin-block: 10px; }

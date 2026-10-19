@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>加入会話の確認</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../../src/styles.css">
+  <link rel="stylesheet" href="./recruitment-dialogue.css">
+</head>
+<body>
+  <main class="RecruitmentPreview">
+    <h1>加入会話の確認 <span id="version"></span></h1>
+    <p>既存メンバーと加入者を選ぶと、本番の処理が知人の有無・配役・会話を自動決定します。台詞の収まりと会話のつながりを確認してください。</p>
+    <label>言語 <select id="language"><option value="ja">日本語</option><option value="en">English</option></select></label>
+    <label>加入者 <select id="recruit"></select></label>
+    <label>Party人数 <select id="count"><option>2</option><option>3</option></select></label>
+    <fieldset id="members"><legend>既存Party（通常の配役優先順）</legend></fieldset>
+    <p>メンバー1→2→3は試験場スロット2→3→1の順です。加入者と重複する人物は選べません。</p>
+    <p id="relationship" role="status"></p>
+    <button id="play" type="button">再生</button>
+    <p id="cast"></p>
+    <ol id="lines"></ol>
+    <p id="status" role="status"></p>
+  </main>
+  <aside id="vignette" class="ModalLayer VignetteModal" hidden></aside>
+  <script type="module" src="./recruitment-dialogue.js"></script>
+</body>
+</html>
