@@ -26,8 +26,8 @@ const input = (textRepository, count = 2) => ({ cast: { A: 'Briar', B: 'Avery', 
 
 test('members use battle slots 2,3,1,4 then preparation order regardless of current area', () => {
   const members = [hero('swordfighter', 'battle-4'), hero('guard', 'battle-3'), hero('mage', 'battle-2')];
-  assert.deepEqual(selectRecruitmentCast({ members, recruitedHero: hero('cleric') }), { A: 'Casey', B: 'Briar', C: 'Avery', X: 'Darcy' });
-  assert.deepEqual(selectRecruitmentCast({ members: [hero('swordfighter', 'battle-4'), hero('guard', null, 'shop'), hero('mage', 'battle-1')], recruitedHero: hero('cleric') }), { A: 'Casey', B: 'Avery', C: 'Briar', X: 'Darcy' });
+  assert.deepEqual(selectRecruitmentCast({ members, recruitedHero: hero('cleric') }), { A: 'Briar', B: 'Avery', C: 'Casey', X: 'Darcy' });
+  assert.deepEqual(selectRecruitmentCast({ members: [hero('swordfighter', 'battle-4'), hero('guard', null, 'shop'), hero('mage', 'battle-1')], recruitedHero: hero('cleric') }), { A: 'Avery', B: 'Briar', C: 'Casey', X: 'Darcy' });
   assert.deepEqual(selectRecruitmentCast({ members: [hero('swordfighter', null, 'training'), hero('guard', null, 'shop')], recruitedHero: hero('cleric') }), { A: 'Avery', B: 'Briar', X: 'Darcy' });
   assert.equal(members[0].profession, 'swordfighter');
 });

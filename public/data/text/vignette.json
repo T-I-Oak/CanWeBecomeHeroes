@@ -359,49 +359,49 @@
       "Avery": {
         "lang-store": {
           "ja": "よし、倒した！私たち、なかなかやるね！",
-          "en": "Yes, we beat it! We make a pretty good team!"
+          "en": "Yes, we beat them! We're pretty good together!"
         }
       },
       "Briar": {
         "lang-store": {
-          "ja": "一人だったら、危なかったかもしれないね。",
-          "en": "It might have been dangerous on our own."
+          "ja": "やっと倒せた。一人だったら、危なかったかもしれないね。",
+          "en": "We finally did it. Alone, I might have been in trouble."
         }
       },
       "Casey": {
         "lang-store": {
-          "ja": "なるほどね……やってみないと分からないこと、まだまだあるね！",
-          "en": "I see... There is still so much you only learn by trying!"
+          "ja": "頑張った甲斐があった！やってみると、いろいろ分かって面白いね！",
+          "en": "Our hard work paid off! It's fun finding things out by trying them!"
         }
       },
       "Darcy": {
         "lang-store": {
           "ja": "緊張しましたね。でも、こうして乗り切れてよかったです。",
-          "en": "That was tense. But I am glad we made it through."
+          "en": "That was tense. But I'm glad we made it through together."
         }
       },
       "Ellis": {
         "lang-store": {
           "ja": "やれやれ、ずいぶん手こずらせてくれたな。",
-          "en": "Well, that one really made us work for it."
+          "en": "Whew, they sure gave us a hard time."
         }
       },
       "Finley": {
         "lang-store": {
-          "ja": "倒れましたね。これで少し安心できます。",
-          "en": "It is down. We can feel a little safer now."
+          "ja": "倒せましたね。これで少し安心できます。",
+          "en": "We defeated them. That's a little weight off our shoulders."
         }
       },
       "Garnet": {
         "lang-store": {
           "ja": "勝てましたね。これだけ頑張ったんですから、試験官にも見ていてほしいです。",
-          "en": "We won. After all that effort, I hope the examiner was watching."
+          "en": "We won! After all that effort, I do hope the examiner was watching."
         }
       },
       "Harper": {
         "lang-store": {
-          "ja": "ようやく一息つけますね。今なら座り込んでしまいそうです。",
-          "en": "We can finally catch our breath. I feel like sitting down right here."
+          "ja": "ようやく一息つけますね。少し腰を下ろしたいところです。",
+          "en": "We can finally catch our breath. I'd quite like to sit down for a moment."
         }
       }
     },
@@ -409,31 +409,31 @@
       "Avery": {
         "lang-store": {
           "ja": "うん！よく頑張ったよね！",
-          "en": "Yeah! We did really well!"
+          "en": "Yeah! We really gave it our all!"
         }
       },
       "Briar": {
         "lang-store": {
           "ja": "そうだね。ひとまず、お疲れさま。",
-          "en": "Right. Good work, for now."
+          "en": "Yes. Good work, everyone. Let's take a moment."
         }
       },
       "Casey": {
         "lang-store": {
           "ja": "うん、あたしたち、頑張ったよね！",
-          "en": "Yeah, we worked hard, did we not!"
+          "en": "Yeah, we worked hard for that!"
         }
       },
       "Darcy": {
         "lang-store": {
           "ja": "ええ、お疲れさまでした。少し息を整えましょう。",
-          "en": "Yes, well done. Let us catch our breath."
+          "en": "Yes, well done. Let's catch our breath."
         }
       },
       "Ellis": {
         "lang-store": {
           "ja": "ああ、ひとまず片付いたな。お疲れさん。",
-          "en": "Yeah, that is dealt with for now. Good work."
+          "en": "Yeah, that's taken care of. Good work."
         }
       },
       "Finley": {
@@ -445,113 +445,113 @@
       "Garnet": {
         "lang-store": {
           "ja": "ええ、頑張った甲斐がありましたね。",
-          "en": "Yes, our effort paid off."
+          "en": "Indeed, our efforts were worthwhile."
         }
       },
       "Harper": {
         "lang-store": {
           "ja": "ええ。まずは一息つきましょう。",
-          "en": "Yes. Let us catch our breath first."
+          "en": "Yes. Let's take a breather first."
         }
       }
     },
     "praise": {
       "Avery": {
         "lang-store": {
-          "ja": "今の戦い、見てたよ！私も負けていられないな！",
-          "en": "I saw that fight! I cannot let you outdo me!"
+          "ja": "今の戦い、見てたよ！私はアヴェリー。私も受験中なんだ。あなたたち、いいチームだね！",
+          "en": "I saw that fight! I'm Avery. I'm taking the trial too. You make a great team!"
         }
       },
       "Briar": {
         "lang-store": {
-          "ja": "見事な戦いだったね。息が合っていて、感心したよ。",
-          "en": "That was an impressive fight. I admired how well you worked together."
+          "ja": "見事な戦いだったね。息が合っていて、感心したよ。僕はブライアー。僕も受験者なんだ。",
+          "en": "That was an impressive fight. I'm amazed at how well you work together. I'm Briar, another candidate."
         }
       },
       "Casey": {
         "lang-store": {
-          "ja": "へえ、今の戦い、面白かった！あたしも近くで見たかったな。",
-          "en": "Wow, that fight was interesting! I wish I could have watched up close."
+          "ja": "へえ、今の戦い、面白かった！……あ、あたしはケイシー。受験中なんだけど、つい見入っちゃった！",
+          "en": "Wow, that fight was fascinating! ...Oh, I'm Casey. I'm taking the trial, but I couldn't help watching!"
         }
       },
       "Darcy": {
         "lang-store": {
-          "ja": "素晴らしい戦いぶりでしたね。とても頼もしく感じました。",
-          "en": "That was a wonderful display of teamwork. I found it very reassuring."
+          "ja": "素晴らしい戦いぶりでしたね。私はダーシー。私も試験を受けています。お怪我があれば、手当てしますよ。",
+          "en": "That was wonderful fighting. I'm Darcy, and I'm taking the trial too. If you're hurt, I can tend to you."
         }
       },
       "Ellis": {
         "lang-store": {
-          "ja": "いい腕してるな。俺も受験中だけど、うかうかしてられないぜ。",
-          "en": "You have got skill. I am taking the trial too, so I had better stay sharp."
+          "ja": "いい腕してるな。俺はエリス。俺も受験中だけど、うかうかしてられないぜ。",
+          "en": "You've got some skill. I'm Ellis. I'm taking the trial too, and I'd better stay on my toes."
         }
       },
       "Finley": {
         "lang-store": {
-          "ja": "戦いの音がしたので来てみたんです。もう倒してしまったんですね。",
-          "en": "I heard fighting and came to see. You have already defeated them."
+          "ja": "戦いの音がしたので来てみたんです。私はフィンリー。受験者です。",
+          "en": "I heard fighting and came to see. I'm Finley, a candidate."
         }
       },
       "Garnet": {
         "lang-store": {
-          "ja": "お見事です。私にも、こんな頼もしい仲間がいれば心強いのですが。",
-          "en": "Impressive. It would be reassuring to have companions as dependable as you."
+          "ja": "お見事です！私はガーネット。私にもこんな頼もしい仲間がいれば、試験も心強いのですが。",
+          "en": "Well fought! I'm Garnet. With companions that dependable, I'd feel much more confident about the trial."
         }
       },
       "Harper": {
         "lang-store": {
-          "ja": "鮮やかな戦いぶりでしたね。力を合わせる良さを、改めて感じました。",
-          "en": "That was a splendid fight. It reminded me of the value of working together."
+          "ja": "鮮やかな戦いぶりでしたね。わたくしはハーパー。わたくしも受験中ですが、皆さまの連携には感心いたしました。",
+          "en": "What splendid fighting. I am Harper. I'm taking the trial too, and your teamwork was most impressive."
         }
       }
     },
     "invitation": {
       "Avery": {
         "lang-store": {
-          "ja": "あなたも受験者だよね？ねえ、ここから一緒に戦わない？力を合わせて、合格しようよ！",
-          "en": "You are an examinee too, right? Hey, want to fight alongside us from here? Let us work together and pass!"
+          "ja": "あなたも受験中なんだね！ねえ、ここから一緒に戦わない？",
+          "en": "You're taking the trial too! Hey, want to fight alongside us from here on?"
         }
       },
       "Briar": {
         "lang-store": {
-          "ja": "君も、この試験を受けているんだね。よかったら、一緒に進まない？協力できる相手が増えると心強いよ。",
-          "en": "You are taking this trial too. Would you like to join us? Having another person to work with would be reassuring."
+          "ja": "よかったら、一緒に進まない？協力できる相手が増えると心強いよ。",
+          "en": "Would you like to come with us? It's reassuring to have more people we can count on."
         }
       },
       "Casey": {
         "lang-store": {
-          "ja": "ここにいるってことは、あなたも受験者だよね？あたしたちと組んでみない？力を合わせたら、もっと面白い戦い方ができそう！",
-          "en": "Since you are here, you are an examinee too, right? Want to team up with us? Working together might lead to even more interesting ways to fight!"
+          "ja": "ねえ、あたしたちと組んでみない？力を合わせたら、もっと面白い戦い方ができそう！",
+          "en": "Hey, want to team up with us? Together, we could try even more interesting ways to fight!"
         }
       },
       "Darcy": {
         "lang-store": {
-          "ja": "あなたも試験を受けていらっしゃるんですね。よろしければ、私たちと一緒に進みませんか？支え合っていけたらと思います。",
-          "en": "You are taking the trial too. Would you like to join us as we continue? I hope we can support each other along the way."
+          "ja": "よろしければ、私たちと一緒に進みませんか？支え合っていけたらと思います。",
+          "en": "Would you care to join us? I hope we can support one another along the way."
         }
       },
       "Ellis": {
         "lang-store": {
-          "ja": "あんたも受験者ってわけか。せっかく会ったんだ。一緒にやらないか？手が増えるのは歓迎だぜ。",
-          "en": "So you are an examinee too. Since we have met, want to team up? Another pair of hands is always welcome."
+          "ja": "せっかく会ったんだ。一緒にやらないか？手が増えるのは歓迎だぜ。",
+          "en": "Since we've met, why not join us? We could always use another pair of hands."
         }
       },
       "Finley": {
         "lang-store": {
-          "ja": "あなたも、この試験を受けているんですよね。よかったら、一緒に行きませんか？目が届くところが増えると安心です。",
-          "en": "You are taking this trial too, right? Would you like to join us? Having more eyes on our surroundings would help us feel safer."
+          "ja": "よかったら、一緒に行きませんか？一人で進むより、お互いに助け合える方が安心ですから。",
+          "en": "Would you like to come with us? It's more reassuring when we can help each other than going alone."
         }
       },
       "Garnet": {
         "lang-store": {
-          "ja": "あなたも受験中なのですね。私たちと組みませんか？得意なことを持ち寄れば、試験も進めやすくなるでしょう。",
-          "en": "You are taking the trial too. Would you team up with us? Bringing our strengths together should make the trial easier to navigate."
+          "ja": "私たちと組みませんか？得意なことを持ち寄れば、試験も進めやすくなるでしょう。",
+          "en": "Why not team up with us? Combining our strengths should make the trial easier to tackle."
         }
       },
       "Harper": {
         "lang-store": {
-          "ja": "あなたも、勇者認定試験の受験者なのですね。よろしければ、ご一緒しませんか？合格を目指す仲間を探しているんです。",
-          "en": "You too are an examinee in the hero certification trial. Would you care to join us? We are looking for companions to work toward passing together."
+          "ja": "よろしければ、ご一緒しませんか？共に試験に挑む仲間を探しているんです。",
+          "en": "Would you care to join us? We're looking for companions to take on the trial together."
         }
       }
     },
@@ -559,99 +559,251 @@
       "Avery": {
         "lang-store": {
           "ja": "うん、一緒に行こう！私も力になるから、頼りにしてよね！",
-          "en": "Yes, let us go together! I will help too, so count on me!"
+          "en": "Yeah, let's go together! I'll do my part, so count on me!"
         }
       },
       "Briar": {
         "lang-store": {
           "ja": "ありがとう。一緒に行こう。僕も力を尽くすよ。",
-          "en": "Thank you. Let us go together. I will do my part."
+          "en": "Thank you. Let's go together. I'll give it my best too."
         }
       },
       "Casey": {
         "lang-store": {
           "ja": "もちろん！あたしも一緒に戦うよ。いろいろ試せそうで、楽しみ！",
-          "en": "Of course! I will fight alongside you. I cannot wait to try all sorts of things!"
+          "en": "Of course! I'll fight alongside you. I can't wait to try all sorts of things!"
         }
       },
       "Darcy": {
         "lang-store": {
           "ja": "ありがとうございます。ぜひ、ご一緒させてください。私も支えになれたら嬉しいです。",
-          "en": "Thank you. I would love to join you. I would be happy to lend my support."
+          "en": "Thank you. I'd be delighted to join you. I'll be happy if I can be of help."
         }
       },
       "Ellis": {
         "lang-store": {
           "ja": "いいぜ、一緒にやろう。俺の腕も、頼りにしてくれよ。",
-          "en": "Sure, let us team up. You can count on my skills too."
+          "en": "Sure, let's do it. You can count on my skills too."
         }
       },
       "Finley": {
         "lang-store": {
           "ja": "はい、一緒に行きます。私にできることがあれば、何でも言ってください。",
-          "en": "Yes, I will join you. If there is anything I can do, just tell me."
+          "en": "Yes, I'll come along. If there's anything I can do, just ask."
         }
       },
       "Garnet": {
         "lang-store": {
           "ja": "ありがたいお話です！ぜひ、ご一緒させてください。私もお役に立ってみせますよ。",
-          "en": "That is a welcome offer! I would love to join you. I will show you I can be useful too."
+          "en": "What a welcome offer! I'd be delighted to join you. I'll make myself useful, you'll see."
         }
       },
       "Harper": {
         "lang-store": {
           "ja": "喜んでご一緒します。わたくしも一員として、力を尽くしましょう。",
-          "en": "I would be delighted to join you. As a member of your group, I shall do my utmost."
+          "en": "I'd be happy to join you. I'll do my utmost as part of the team."
         }
       }
     },
     "closing": {
       "Avery": {
         "lang-store": {
-          "ja": "よし、仲間も増えたし、次も勝つよ！合格まで突っ走ろう！",
-          "en": "All right, with another companion, we will win the next fight too! Let us charge on until we pass!"
+          "ja": "よし、仲間も増えたし、次も勝つよ！この調子で突っ走ろう！",
+          "en": "All right, our team's grown, and we're winning the next one too! Let's keep charging ahead!"
         }
       },
       "Briar": {
         "lang-store": {
           "ja": "心強くなったね。この仲間で、一つずつ課題を越えていこう。",
-          "en": "That is reassuring. Together, let us overcome the tasks one at a time."
+          "en": "That's reassuring. Together, let's tackle the tasks one at a time."
         }
       },
       "Casey": {
         "lang-store": {
           "ja": "さて、どんな戦い方ができるかな！次の課題が楽しみになってきた！",
-          "en": "Now, what ways of fighting can we try? I am starting to look forward to the next task!"
+          "en": "Now, what kinds of tactics can we try? I'm getting excited for the next task!"
         }
       },
       "Darcy": {
         "lang-store": {
           "ja": "頼もしい仲間が増えましたね。支え合って、最後まで乗り切りましょう。",
-          "en": "We have gained a dependable companion. Let us support each other and make it through to the end."
+          "en": "We've gained a dependable companion. Let's support each other and see this through."
         }
       },
       "Ellis": {
         "lang-store": {
           "ja": "よし、いい顔ぶれになったな。次の相手にも、一泡吹かせてやろうぜ。",
-          "en": "Good, we have got a fine crew now. Let us give the next opponent a nasty surprise too."
+          "en": "All right, we've got a good crew now. Let's give the next enemy a nasty surprise."
         }
       },
       "Finley": {
         "lang-store": {
           "ja": "一緒に進む人が増えると、足取りも軽くなりますね。次も頑張りましょう。",
-          "en": "Having another person alongside us puts a spring in our step. Let us do our best on the next task too."
+          "en": "Having more people along puts a spring in our step. Let's do our best on the next task too."
         }
       },
       "Garnet": {
         "lang-store": {
-          "ja": "頼もしい戦力が加わりましたね。合格への見込みも上がってきました！",
-          "en": "We have gained a dependable ally. Our prospects of passing are looking better!"
+          "ja": "頼もしい戦力が加わりましたね！これなら、次の課題も期待できそうです！",
+          "en": "A valuable addition to our strength! Things are looking promising for the next task!"
         }
       },
       "Harper": {
         "lang-store": {
-          "ja": "では、この仲間で合格を目指しましょう。力を合わせれば、道も開けるはずです。",
-          "en": "Then let us work toward passing together. With our combined efforts, a way forward should open."
+          "ja": "では、この仲間で先へ進みましょう。力を合わせれば、道も開けるはずです。",
+          "en": "Then let us press on together. By combining our strengths, we'll find a way forward."
+        }
+      }
+    }
+  },
+  "recruitmentAcquaintance": {
+    "praise": {
+      "Avery": {
+        "lang-store": {
+          "ja": "あっ、ブライアー！あなたも試験を受けてたんだ！今の戦い、なかなかだったね。でも、私だって負けてないからね！",
+          "en": "Oh, Briar! You're taking the trial too! That was a pretty good fight. But I'm doing just as well, you know!"
+        }
+      },
+      "Briar": {
+        "lang-store": {
+          "ja": "アヴェリー！会えてうれしいよ。ここまで一人で戦ってきたから、知っている顔を見るとほっとするね。",
+          "en": "Avery! I'm glad to see you. I've been fighting alone so far, so it's a relief to see a familiar face."
+        }
+      },
+      "Casey": {
+        "lang-store": {
+          "ja": "あれ、ダーシー？あなたも試験を受けてたの？診療所じゃなくて、こんなところで会うなんてね！",
+          "en": "Huh, Darcy? You're taking the trial too? Fancy meeting you here instead of at the clinic!"
+        }
+      },
+      "Darcy": {
+        "lang-store": {
+          "ja": "あら、ケイシー。あなたも試験に来ていたのね。さっきの魔法、見事でしたよ。",
+          "en": "Oh, Casey. You've come for the trial too. That was some wonderful magic just now."
+        }
+      },
+      "Ellis": {
+        "lang-store": {
+          "ja": "おっ、フィンリーじゃないか。あんたも受験中だったのか。相変わらずいい腕してるな。",
+          "en": "Oh, Finley! You're taking the trial too? You're as good as ever."
+        }
+      },
+      "Finley": {
+        "lang-store": {
+          "ja": "おや、エリス。まじめに試験を受けに来るとは思いませんでした。",
+          "en": "Well, Ellis. I didn't expect you to come and take the trial seriously."
+        }
+      },
+      "Garnet": {
+        "lang-store": {
+          "ja": "おや、ハーパー！あなたも受験していたんですね。もう頼もしい仲間まで見つけるとは、さすがです。",
+          "en": "Oh, Harper! You're taking the trial too. You've already found dependable companions. Just as I'd expect of you."
+        }
+      },
+      "Harper": {
+        "lang-store": {
+          "ja": "まあ、ガーネット。試験場でお会いするとは。よい仲間に恵まれましたね。あなたも戦っていらしたのですね。",
+          "en": "Well, Garnet. Fancy meeting you at the trial grounds. You've found good company. So you've been fighting too."
+        }
+      }
+    },
+    "invitation": {
+      "Briar": {
+        "lang-store": {
+          "ja": "うん、君も頑張ってるんだね。よかったら、僕たちと一緒に行こう。君がいてくれたら心強いよ。",
+          "en": "Yes, you've been working hard too. Why not come along with us? I'd feel better with you here."
+        }
+      },
+      "Avery": {
+        "lang-store": {
+          "ja": "ブライアー！あなたも一緒に来ない？私の活躍、近くで見せてあげる！",
+          "en": "Briar! Why don't you come along too? I'll give you a front-row seat to my victories!"
+        }
+      },
+      "Darcy": {
+        "lang-store": {
+          "ja": "ケイシー、久しぶり。よかったら、私たちと一緒に進みませんか？あなたの魔法があれば心強いです。",
+          "en": "Casey, it's been a while. Would you like to come with us? Your magic would be a great help."
+        }
+      },
+      "Casey": {
+        "lang-store": {
+          "ja": "ダーシー！ねえ、あたしたちと一緒に行こうよ。あなたが属性を軽減してくれたら、すごく助かる！",
+          "en": "Darcy! Hey, come with us! If you can reduce elemental damage for us, that'd be a huge help!"
+        }
+      },
+      "Finley": {
+        "lang-store": {
+          "ja": "エリス。あなたも一緒に行きませんか？装備を奪う相手は、敵だけにしてくださいね。",
+          "en": "Ellis. Would you like to join us? Please keep your equipment stealing to the enemy."
+        }
+      },
+      "Ellis": {
+        "lang-store": {
+          "ja": "俺だって、やるときはやるさ。あんたも一緒に来ないか？あの盗賊団を追ってたときみたいに、頼りにしてるぜ。",
+          "en": "I can get serious when it counts. Want to join us? I'm counting on you, just like when we were tracking that bandit gang."
+        }
+      },
+      "Harper": {
+        "lang-store": {
+          "ja": "ええ、皆さまに助けていただいています。あなたもご一緒しませんか？仕入れを任せられる方がいると心強いです。",
+          "en": "Yes, everyone has been most helpful. Would you care to join us? It would be reassuring to have someone I can trust with supplies."
+        }
+      },
+      "Garnet": {
+        "lang-store": {
+          "ja": "私だって、仕入れだけではありませんよ。あなたも加わりませんか？ギルドとの交渉を任せられると助かります。",
+          "en": "There's more to me than procuring supplies, you know. Why not join us? It would help to leave guild negotiations to you."
+        }
+      }
+    },
+    "acceptance": {
+      "Avery": {
+        "lang-store": {
+          "ja": "うん、一緒に行こう！力になるから、頼りにしてよね！",
+          "en": "Yeah, let's go together! I'll do my part, so count on me!"
+        }
+      },
+      "Briar": {
+        "lang-store": {
+          "ja": "うん、一緒に行こう。僕にも手伝わせてね。",
+          "en": "Yes, let's go together. Let me help too."
+        }
+      },
+      "Casey": {
+        "lang-store": {
+          "ja": "もちろん！ダーシーが支えてくれるなら、あたしも安心して戦えるよ。",
+          "en": "Of course! With you supporting me, Darcy, I can fight without worrying."
+        }
+      },
+      "Darcy": {
+        "lang-store": {
+          "ja": "ええ、ご一緒します。私にできることは任せてください。でも、無理はしないでくださいね。",
+          "en": "Yes, I'll join you. Leave what I can do to me. But please don't push yourself too hard."
+        }
+      },
+      "Ellis": {
+        "lang-store": {
+          "ja": "敵だけ、ね。分かってるって。仲間の荷物には手を出さないさ。",
+          "en": "Just the enemy, huh? I know, I know. I'll keep my hands off our companions' bags."
+        }
+      },
+      "Finley": {
+        "lang-store": {
+          "ja": "はい、一緒に行きます。敵だけでなく、あなたにも目を光らせておきますね。",
+          "en": "Yes, I'll come along. I'll keep an eye on you as well as the enemy."
+        }
+      },
+      "Garnet": {
+        "lang-store": {
+          "ja": "もちろんです！必要な品は私が揃えましょう。戦う方も、できる限りはお手伝いしますよ。",
+          "en": "Of course! I'll get us whatever we need. I'll help with the fighting as much as I can too."
+        }
+      },
+      "Harper": {
+        "lang-store": {
+          "ja": "ええ、喜んで。交渉はわたくしにお任せください。戦いでは、皆さまのお力をお借りしますね。",
+          "en": "Yes, gladly. Leave the negotiations to me. In battle, I'll be relying on everyone's strength."
         }
       }
     }

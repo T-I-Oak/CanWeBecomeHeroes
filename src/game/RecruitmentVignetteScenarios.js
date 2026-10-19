@@ -20,20 +20,21 @@ function facing(instanceId, chipRadius, direction = 'right', stepDistance = 0, p
   return { type: 'facing', instanceId, chipRadius, direction, stepDistance, phase, forwardSeconds: 0.14, backSeconds: 0.36, fillColor };
 }
 
-function dialogue(role, lineId, heroId, texts) {
+function dialogue(role, lineId, heroId, texts, playId = 'recruitmentObservedVictory') {
   return [
-    { type: 'line', instanceId: role, text: texts.getVignetteLine('recruitmentObservedVictory', lineId, heroId), width: 528, direction: 'up', seconds: LINE_SECONDS, wait: -1,
+    { type: 'line', instanceId: role, text: texts.getVignetteLine(playId, lineId, heroId), width: 528, direction: 'up', seconds: LINE_SECONDS, wait: -1,
       action: { type: 'hop', height: TALK_HOP, seconds: TALK_HOP_SECONDS * 2 } },
   ];
 }
 
-export function createObservedVictoryScenario({ cast, enemies, textRepository }) {
+export function createObservedVictoryScenario({ cast, acquaintance, enemies, textRepository }) {
   const roles = cast.C ? ['A', 'B', 'C'] : ['A', 'B'];
   const enemyActors = enemies.map((enemy, index) => {
     return { id: `enemy-${index}`, kind: 'enemy', enemyId: enemy.definition.id, ...recruitmentEnemyPlacement(enemy) };
   });
   const frontToBackEnemies = [...enemyActors].sort((left, right) => right.y - left.y);
   const inviteRole = cast.C ? 'C' : 'B';
+  const joiningPlayId = acquaintance ? 'recruitmentAcquaintance' : 'recruitmentObservedVictory';
   return {
     instances: [
       ...Object.entries(cast).map(([id, heroId]) => ({ id, kind: 'character', heroId })),
@@ -57,9 +58,9 @@ export function createObservedVictoryScenario({ cast, enemies, textRepository })
       facing('X', HERO_RADIUS, 'left', 10),
       position('X', HERO_X.X, HERO_FOOT_Y, ENTRANCE_SECONDS),
       facing('X', HERO_RADIUS, 'left'),
-      ...dialogue('X', 'praise', cast.X, textRepository),
-      ...dialogue(inviteRole, 'invitation', cast[inviteRole], textRepository),
-      ...dialogue('X', 'acceptance', cast.X, textRepository),
+      ...dialogue('X', 'praise', cast.X, textRepository, joiningPlayId),
+      ...dialogue(inviteRole, 'invitation', cast[inviteRole], textRepository, joiningPlayId),
+      ...dialogue('X', 'acceptance', cast.X, textRepository, joiningPlayId),
       ...dialogue('A', 'closing', cast.A, textRepository),
       { type: 'pinchIn', seconds: FRAME_SECONDS, wait: -1 },
     ],
