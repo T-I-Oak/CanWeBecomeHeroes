@@ -665,7 +665,7 @@
       "1": {
         "description": {
           "lang-store": {
-            "ja": "不運状態の攻撃者の会心ダメージが半分跳ね返る。",
+            "ja": "不運状態の攻撃者の会心ダメージは半分自身に跳ね返る。",
             "en": "Half of a misfortunate attacker's critical damage rebounds."
           }
         }
@@ -673,7 +673,7 @@
       "2": {
         "description": {
           "lang-store": {
-            "ja": "不運状態の攻撃者の会心ダメージがすべて跳ね返る。",
+            "ja": "不運状態の攻撃者の会心ダメージはすべて自身に跳ね返る。",
             "en": "All of a misfortunate attacker's critical damage rebounds."
           }
         }

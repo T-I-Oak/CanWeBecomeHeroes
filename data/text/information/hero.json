@@ -91,13 +91,13 @@
         "ja": [
           {
             "type": "text",
-            "value": "机上の術式より、実地で確かめる方が好き。未知の魔法と出会うため、危険も多い勇者認定試験へ飛び込んだ。"
+            "value": "机上の術式より、実地で確かめる方が好き。勇者になれば好きなだけ魔法を使えると考え、勇者認定試験を受けに来た。"
           }
         ],
         "en": [
           {
             "type": "text",
-            "value": "Casey prefers testing spells in the field to studying formulas at a desk. The chance to discover unfamiliar magic was worth plunging into the dangers of the hero exam."
+            "value": "Casey prefers testing spells in the field to studying formulas at a desk. Believing that becoming a hero would let her use magic as much as she liked, she came to take the hero exam."
           }
         ]
       }
