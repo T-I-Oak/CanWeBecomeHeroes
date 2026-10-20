@@ -12,7 +12,7 @@ import { GAME_AREAS, WORLD_SIZE } from '../../../src/game/GameAreas.js';
 
 export function near(actual, expected) { assert.ok(Math.abs(actual - expected) < 1e-8, `${actual} != ${expected}`); }
 
-export function fixture() {
+export function fixture({ effects = null } = {}) {
   const board = new ChipBoard(WORLD_SIZE);
   const slots = new HeroSlotManager();
   const pickup = new ItemPickupController(board, slots);
@@ -24,7 +24,7 @@ export function fixture() {
   const random = () => draws.length ? draws.shift() : roll;
   const returns = new FacilityReturnSystem(board, slots);
   const damage = [];
-  const battle = new BattleSystem(board, { controller, itemFactory: items, enemyFactory: enemies, returnSystem: returns, random, onDamage: (event) => damage.push(event) });
+  const battle = new BattleSystem(board, { controller, itemFactory: items, enemyFactory: enemies, returnSystem: returns, effects, random, onDamage: (event) => damage.push(event) });
   const settle = (entity) => {
     entity.chip.height = 0;
     entity.chip.verticalVelocity = 0;
