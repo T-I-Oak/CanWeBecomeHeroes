@@ -7,6 +7,7 @@ import GameClock from '../../src/game/GameClock.js';
 import EntityRegistry from '../../src/game/EntityRegistry.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
+import { ENEMY_CATALOG } from '../../src/game/EnemyCatalog.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 import GameTextRepository, { textPart } from '../../src/game/GameTextRepository.js';
 import { readGameText } from '../../src/game/readGameText.js';
@@ -158,6 +159,44 @@ test('05: definitions identify Hero, Enemy, Item and unique skill without instan
     assert.equal(ui.window(entry).findAll('.InformationWindow__EntityStatus').length, 0);
     assert.equal(ui.window(entry).findAll('.InformationWindow__Equipment').length, 0);
     assert.equal(ui.window(entry).findAll('.InformationWindow__ItemWeight').length, 0);
+    assert.equal(ui.window(entry).findAll('.InformationWindow__UniqueSkill').length, 0);
+  }
+});
+
+test('05: every static boss definition opens its catalog Ex skill while keeping its parent', async t => {
+  const ui = await setup(t);
+  for (const enemy of Object.values(ENEMY_CATALOG).filter(enemy => enemy.uniqueSkill)) {
+    ui.manager.clear({ includePinned: true });
+    const parent = ui.definition('enemy', enemy.id);
+    const button = ui.window(parent).querySelector('.InformationWindow__UniqueSkill');
+    const level = enemy.size === 'medium' ? 1 : 2;
+    assert.ok(button, enemy.id);
+    assert.equal(button.textContent, `Ex${level}`);
+    assert.ok(button.className.includes(`level-${level}`));
+    assert.equal(ui.window(parent).findAll('.InformationWindow__EntityStatus').length, 0);
+    const child = ui.click(parent, '.InformationWindow__UniqueSkill');
+    assert.equal(child.parentId, parent.id);
+    assert.deepEqual(child.data.target, createDefinitionInformationTarget('unique-skill', enemy.uniqueSkill.id));
+    assert.deepEqual(ui.names(), [ui.repository.getName('enemy', enemy.id),
+      ui.repository.getInformationDetail('unique-skill', enemy.uniqueSkill.id).name]);
+    ui.click(parent, '.InformationWindow__UniqueSkill');
+    assert.equal(ui.manager.entries.length, 2, 'opening again replaces the unpinned child');
+    ui.click(parent, '.InformationWindow__Close');
+    assert.equal(ui.manager.entries.length, 0);
+  }
+});
+
+test('05: live bosses retain their Ex skill links', async t => {
+  const ui = await setup(t);
+  for (const size of ['medium', 'large']) {
+    ui.manager.clear({ includePinned: true });
+    const enemy = new EnemyFactory().create({ size, tagAffinity: 'valor', slotPosition: 1,
+      maximumHp: 3, totalTagCount: 5, random: () => 0 });
+    const parent = ui.instance(enemy);
+    assert.equal(ui.window(parent).querySelector('.InformationWindow__UniqueSkill').textContent,
+      `Ex${size === 'medium' ? 1 : 2}`);
+    const child = ui.click(parent, '.InformationWindow__UniqueSkill');
+    assert.deepEqual(child.data.target, createDefinitionInformationTarget('unique-skill', enemy.uniqueSkill.id));
   }
 });
 

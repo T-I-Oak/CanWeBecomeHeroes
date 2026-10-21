@@ -2,11 +2,10 @@ import { STATUS_KEYS } from '../game/TagCatalog.js';
 import { TAG_DISPLAY_GRID } from '../game/TagDisplayLayout.js';
 import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
-import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
+import { createInformationWindowUniqueSkillButton } from './InformationWindowUniqueSkillButton.js';
 import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js';
 import { createInformationElement } from './InformationWindowElementFactory.js';
 import { applyTagSkillVisual, createEquipmentImage, createStatusIcon, createTagIcon } from './InformationWindowVisualFactory.js';
-import { createDefinitionInformationTarget } from './InformationTarget.js';
 import { createInformationWindowChipPreview } from './InformationWindowChipPreview.js';
 
 export default class EntityInformationRenderer {
@@ -54,7 +53,9 @@ export default class EntityInformationRenderer {
     statusGrid.append(this.#createEntityWeightGauge(entity, entry));
     const tagList = createInformationElement('div', 'InformationWindow__EntityTagList');
     TAG_DISPLAY_GRID.flat().forEach((tag) => tagList.append(this.#createEntityTagButton(entity, entry.id, tag)));
-    if (isEnemy && entity.uniqueSkill) tagList.append(this.#createUniqueSkillButton(entity.uniqueSkill, entry.id, entity));
+    if (isEnemy && entity.uniqueSkill) tagList.append(createInformationWindowUniqueSkillButton({
+      uniqueSkill: entity.uniqueSkill, parentId: entry.id, open: this.open, textRepository: this.textRepository,
+    }));
     information.append(statusGrid, tagList);
     return information;
   }
@@ -77,17 +78,6 @@ export default class EntityInformationRenderer {
       this.references.createLinkedDescription(detail.combatStyle, parentId, 'InformationWindow__EntityCombatStyle'),
     );
     return profile;
-  }
-
-  #createUniqueSkillButton(uniqueSkill, parentId) {
-    const detail = getUniqueSkillDetail(uniqueSkill.id);
-    const button = createInformationElement('button', `InformationWindow__UniqueSkill state-clickable level-${uniqueSkill.level}`);
-    button.type = 'button';
-    button.append(createTagIcon(detail.affinityTag), createInformationElement('span', 'InformationWindow__UniqueSkillMark', `Ex${uniqueSkill.level}`));
-    button.addEventListener('click', (event) => this.open({
-      type: 'definition', parentId, data: { target: createDefinitionInformationTarget('unique-skill', uniqueSkill.id) }, anchor: { x: event.clientX, y: event.clientY },
-    }));
-    return button;
   }
 
   #createEntityStatusGauge({ entry, status, current, maximum }) {

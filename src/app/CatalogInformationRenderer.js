@@ -1,6 +1,8 @@
 import { TAGS } from '../game/TagCatalog.js';
 import { TAG_SKILL_THRESHOLDS } from '../game/TagSkillVisualCatalog.js';
 import { getUniqueSkillDetail } from '../game/UniqueSkillCatalog.js';
+import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
+import { createInformationWindowUniqueSkillButton } from './InformationWindowUniqueSkillButton.js';
 import { createInformationElement } from './InformationWindowElementFactory.js';
 import { applyTagSkillVisual, createItemValueIcon, createLocationIcon, createStatusIcon, createTagIcon, createTermIcon } from './InformationWindowVisualFactory.js';
 import { createInformationDefinitionChip } from './InformationWindowDefinitionChipFactory.js';
@@ -139,6 +141,10 @@ export default class CatalogInformationRenderer {
       this.references.createLinkedDescription(detail.combatStyle ?? [], entry.id, 'InformationWindow__EntityCombatStyle'),
     );
     body.append(profile);
+    const uniqueSkill = kind === 'enemy' ? getEnemyDefinitionById(definitionId).uniqueSkill : null;
+    if (uniqueSkill) body.append(createInformationWindowUniqueSkillButton({
+      uniqueSkill, parentId: entry.id, open: this.open, textRepository: this.textRepository,
+    }));
     content.append(title, body);
     return content;
   }
