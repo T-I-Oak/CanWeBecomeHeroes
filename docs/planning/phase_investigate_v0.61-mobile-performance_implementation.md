@@ -169,6 +169,22 @@ node scripts/summarize-performance.js docs/analysis/mobile_performance_measureme
 追加したキャッシュ上限・再取得テストを含め、対象テストは5件成功。
 最終の全テストは649件成功・失敗0（`tmp_performance/image-level-tests-publish.log`）。実機での最終確認と公開結果は確定後に追記する。
 
+### 改善版の公開操作
+
+- 公開用コミット: `9f4ed83b3832769263807dda0382d44fd6698ce7`。開発ブランチへpush済み。
+- [アプリの公開ワークフロー](https://github.com/T-I-Oak/CanWeBecomeHeroes/actions/runs/39915422878)はsuccess。
+- 後続の[GitHub Pages配信](https://github.com/T-I-Oak/CanWeBecomeHeroes/actions/runs/39915572101)でdeployジョブのみfailureとなった。
+  Pagesのbuild・artifact uploadは成功し、注釈は `Deployment failed, try again later.`。
+  詳細ログ取得は503（Egress is over the account limit）となり、注釈APIで確認した。
+- 同じ成果物で失敗ジョブだけを再実行した。ソース変更・再pushはしていない。
+  再実行はrun_attempt 2でqueued→waiting→in_progress→completed / failureとなった。
+  通常URLの再確認もv0.61.1だったため、改善版が公開反映済みとは扱わない。
+  アプリの実装・ローカル検証・gh-pagesへの反映は完了し、Pagesの配信工程の失敗が残る。
+  根拠なしにソースや公開設定を変更して回避しない。以後の実機最終確認はv0.61.2の反映後に行う。
+- オーナーからPRとの関係を質問された。今回PR作成・masterへのマージは行っていない。
+  GitHub APIでopen PRを確認した結果は0件。公開は開発ブランチのworkflow_dispatchで、PRを経由していない。
+- push直前の共通側はmaster、HEADとremote masterは `e4974f86606374fb81dae4e57644f051085c2c45` で一致、src/lib変更なし。
+
 最終確認は `OV-MOBILE-PERF-02`（改善版で同じ手順の測定とJSON保存）、
 `OV-MOBILE-PERF-03`（全体表示・ピンチ拡大時の速度と画質）とする。確認バージョンは0.61.2。
 タイトルと倉庫左下のバージョン一致を確認して通常画面で試す。
