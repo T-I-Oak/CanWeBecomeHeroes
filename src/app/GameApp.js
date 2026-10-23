@@ -1,11 +1,10 @@
 import AssetLoader from '../chips/AssetLoader.js';
-import { getImageLevelDiagnostics } from '../chips/ScaledImage.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, WORLD_SIZE } from '../game/GameAreas.js';
 import GameClock from '../game/GameClock.js';
 import { refreshLocalizedUI } from './LocalizedUI.js';
 import InformationWindowLayer from './InformationWindowLayer.js';
-import { APP_COPYRIGHT, APP_VERSION } from '../game/AppMetadata.js';
+import { APP_COPYRIGHT } from '../game/AppMetadata.js';
 import { DataManager } from '../../../GameWorksOAK/src/lib/core/dataManager.js';
 import TimeSettingsController from './TimeSettingsController.js';
 import SettingsModalController from './SettingsModalController.js';
@@ -178,20 +177,16 @@ export async function startGame() {
   }
 
   let previousTime = performance.now();
-  const { installMobilePerformance } = await import('./diagnostics/MobilePerformance.js');
-  trial.diagnostics = installMobilePerformance({ trial, clock, camera, assets, canvases: [canvas, directionCanvas], version: APP_VERSION, getImageLevelDiagnostics });
   function render(time) {
-    trial.diagnostics?.begin(time);
     syncHudScale();
     const deltaSeconds = (time - previousTime) / 1000;
     previousTime = time;
-    if (!trial.diagnostics?.frozen) canvasInput.update(deltaSeconds);
-    if (trial.update) trial.update(deltaSeconds, trial.diagnostics?.frozenTime ?? time);
+    canvasInput.update(deltaSeconds);
+    if (trial.update) trial.update(deltaSeconds, time);
     else {
       context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
       directionContext.clearRect(0, 0, directionCanvas.clientWidth, directionCanvas.clientHeight);
     }
-    trial.diagnostics?.end();
     requestAnimationFrame(render);
   }
 

@@ -27,19 +27,20 @@ test('production base path loads bundled common library, text and image assets',
   expect(assets.some(url => url.includes('/CanWeBecomeHeroes/data/text/ui.json'))).toBe(true);
   expect(assets.some(url => url.includes('/CanWeBecomeHeroes/assets/logo.png'))).toBe(true);
   expect(assets.some(url => url.includes('/GameWorksOAK/src/'))).toBe(false);
-  expect(assets.some(url => url.includes('MobilePerformance'))).toBe(true);
+  expect(assets.some(url => url.includes('MobilePerformance'))).toBe(false);
   expect(failures).toEqual([]);
 });
 
-test('measurement build opens its panel at the normal URL without blocking startup', async ({ page }) => {
+test('normal mobile build starts without measurement UI or instrumentation', async ({ page }) => {
   const failures = [];
   page.on('pageerror', error => failures.push(error.message));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('http://127.0.0.1:4175/CanWeBecomeHeroes/');
   await expect(page.locator('.TitleMenu__Command.state-primary')).toBeVisible();
-  await expect(page.locator('.PerformancePanel summary')).toHaveText(`性能測定 v${version}`);
-  await page.locator('[data-action="start"]').click();
-  await expect(page.locator('[data-status]')).toContainText('通常画面');
-  await expect(page.locator('[data-action="save"]')).toBeDisabled();
+  await expect(page.locator('.TitleMenu__Version')).toHaveText(`v${version}`);
+  await expect(page.locator('.PerformancePanel')).toHaveCount(0);
+  await page.locator('.TitleMenu__Command.state-primary').click();
+  await expect(page.locator('.StartPartySelection__StartButton')).toBeVisible();
+  await expect(page.locator('.PerformancePanel')).toHaveCount(0);
   expect(failures).toEqual([]);
 });
