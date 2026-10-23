@@ -117,10 +117,21 @@ node scripts/summarize-performance.js docs/analysis/mobile_performance_measureme
 
 ## オーナー検証
 
-今回の成果はPC上の調査結果と改善計画であり、恒久的なUI・ゲーム動作の変更を含まない。
-調査途中の実機確認は依頼しない。
-実機での最終確認は恒久修正・PC検証・公開後に行う。
-未回答の実機検証を今回の完了条件として新設せず、既存の保留項目も確認済みとは扱わない。
+追加合意に基づき `OV-MOBILE-PERF-01` を提示する。確認バージョンは `0.61.1`。
+通常URLでタイトルと倉庫左下のバージョンを確認し、情報ウィンドウを開かない通常画面で測定開始する。
+約80秒、zoom・向き・アプリを切り替えずに待ち、結果JSONを保存する。
+期待結果は11区間の採取完了、条件比較後の通常表示・操作への復帰、JSON保存である。
+オーナーからJSONと端末名・OS・ブラウザーを受け取り、測定結果を分析する。現時点では判断待ち。
+途中中止・失敗の場合も保存したJSONで状況を確認する。自動検証成功を実機確認済みとは扱わない。
+既存の保留項目を確認済みとは扱わない。実機採取後も同じブランチで方針合意・修正を続ける。
+
+## 計測版の公開
+
+- 公開用スナップショット: `738bcf3695ecafe1fe2be10392ad5b19cad47388`。
+- 開発ブランチをpushし、既存の `Deploy to GitHub Pages` をworkflow_dispatchで起動した。
+- [公開ワークフロー](https://github.com/T-I-Oak/CanWeBecomeHeroes/actions/runs/39906571480): completed / success。
+- 公開先は通常URL `https://t-i-oak.github.io/CanWeBecomeHeroes/`。masterへのマージ・フェーズ終了は行っていない。
+- 参照専用の共通側はmaster、HEADとremote masterが `e4974f86606374fb81dae4e57644f051085c2c45` で一致し、src/lib変更なし。
 
 ## 制限と次の判断
 
