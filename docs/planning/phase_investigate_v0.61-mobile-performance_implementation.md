@@ -185,6 +185,21 @@ node scripts/summarize-performance.js docs/analysis/mobile_performance_measureme
   GitHub APIでopen PRを確認した結果は0件。公開は開発ブランチのworkflow_dispatchで、PRを経由していない。
 - push直前の共通側はmaster、HEADとremote masterは `e4974f86606374fb81dae4e57644f051085c2c45` で一致、src/lib変更なし。
 
+### Pages配信の復旧確認
+
+- 通常URL未反映の指摘を受け、アプリ側ワークフローと後段のPages配信を再確認した。
+  同じファイルの配置だけでは新しいPages配信が始まっていなかったため、設定・ソース・公開用ブランチを変更せず、
+  GitHubのPagesビルドAPI（`POST /repos/{owner}/{repo}/pages/builds`）で配置済み成果物の新規ビルドを起動した。
+- 配信対象コミットは `64b49730d7404af9acf6d0ae81812f0a3fe7850d`。
+  新規ビルドは2026-10-23 07:48:08 UTC開始、07:48:53 UTCに `built`、error.messageはnullになった。
+- 通常URL `https://t-i-oak.github.io/CanWeBecomeHeroes/` をChromeの新規コンテキストで確認し、
+  HTTP 200、タイトル `v0.61.2`、測定パネル `性能測定 v0.61.2`、ゲーム開始・測定・中止後の復帰を確認した。
+- 初期読み込み途中の画像を完了と取り違えないよう、公開確認スクリプトで実際の通信完了を待機した。
+  最終確認では段階画像78枚、loading 0、failures 0、HTTP/実行時エラー0。
+  根拠: `node tmp_performance/verify-mobile-publication.mjs` 成功、`tmp_performance/mobile-diagnostics/published.png`。
+- 先の配信失敗記録は履歴として残す。現在は改善版の通常URL反映を確認済み。
+  実機での速度・画質の最終判断は引き続きオーナー確認待ちである。
+
 最終確認は `OV-MOBILE-PERF-02`（改善版で同じ手順の測定とJSON保存）、
 `OV-MOBILE-PERF-03`（全体表示・ピンチ拡大時の速度と画質）とする。確認バージョンは0.61.2。
 タイトルと倉庫左下のバージョン一致を確認して通常画面で試す。
