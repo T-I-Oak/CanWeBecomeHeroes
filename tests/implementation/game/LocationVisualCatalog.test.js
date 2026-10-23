@@ -18,10 +18,11 @@ test('every game location has one visual asset and a shared nameplate size', () 
   });
 });
 
-test('location icon assets use the shared square source canvas', async () => {
+test('location icon masters retain the shared square design canvas', async () => {
   await Promise.all(LOCATION_NAMES.map(async (location) => {
     const { iconPath } = getLocationVisual(location);
-    const file = await readFile(new URL(`../../../public${iconPath}`, import.meta.url));
+    const relative = iconPath.slice('/assets/'.length);
+    const file = await readFile(new URL(`../../../assets/images/source/${relative}`, import.meta.url));
     assert.equal(file.toString('ascii', 1, 4), 'PNG');
     assert.equal(file.readUInt32BE(16), LOCATION_ICON_SOURCE_SIZE);
     assert.equal(file.readUInt32BE(20), LOCATION_ICON_SOURCE_SIZE);

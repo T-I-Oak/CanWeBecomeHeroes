@@ -4,6 +4,7 @@ import { getEnemyChipScale } from '../game/HeroSlotLayout.js';
 import ModalLayer from './ModalLayer.js';
 import { createModalDialog } from './ModalDialog.js';
 import { createStaticChipPreview, drawStaticChipPreview } from './ChipPreview.js';
+import { setImageLevelRedraw } from '../chips/ScaledImage.js';
 
 const SLOT_COUNT = 6;
 // 課題選択では実戦と同じ小:中:大 = 1:1.5:3 の比率を維持する。
@@ -186,6 +187,7 @@ export default class StageSelectionModal {
         TREND_TAG_SIZE,
       );
     };
+    setImageLevelRedraw(context, draw);
     draw();
     const image = this.assets.load(path);
     if (!image.complete) image.addEventListener('load', draw, { once: true });

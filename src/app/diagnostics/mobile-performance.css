@@ -1,6 +1,0 @@
-.PerformancePanel { position: fixed; z-index: 10010; top: max(8px, env(safe-area-inset-top)); left: 8px; right: 8px; max-width: 560px; max-height: 45dvh; overflow: auto; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: #101824; color: #fff; font: 14px/1.5 sans-serif; }
-.PerformancePanel summary { cursor: pointer; }
-.PerformancePanel p { margin: 6px 0; }
-.PerformancePanel button { margin: 4px; padding: 8px; min-height: 44px; color: #111; background: #eee; border: 1px solid #aaa; border-radius: 4px; font: inherit; }
-.PerformancePanel button:disabled { opacity: .5; }
-.PerformancePanel textarea { width: 100%; min-height: 120px; box-sizing: border-box; }

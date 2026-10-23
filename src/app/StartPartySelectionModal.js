@@ -4,6 +4,7 @@ import { getHeroSwingPoseTilt } from '../game/FacilitySwingSystem.js';
 import ModalLayer from './ModalLayer.js';
 import { createModalDialog } from './ModalDialog.js';
 import { createStaticChipPreviewDrawer } from './ChipPreview.js';
+import { beginImageLevelFrame } from '../chips/ScaledImage.js';
 
 const HERO_PREVIEW_SIZE = 256;
 const PARTY_SELECTION_SWING_ANGULAR_FREQUENCY = 1.2;
@@ -98,6 +99,7 @@ export default class StartPartySelectionModal {
   startPreviewAnimation() {
     if (this.selectedPreviewDrawers.length === 0) return;
     const renderFrame = (timestamp) => {
+      beginImageLevelFrame(timestamp);
       const timeSeconds = timestamp / 1000;
       const poseTilt = getHeroSwingPoseTilt(timeSeconds, PARTY_SELECTION_SWING_ANGULAR_FREQUENCY);
       this.selectedPreviewDrawers.forEach((drawPreview) => drawPreview({ poseTilt }));

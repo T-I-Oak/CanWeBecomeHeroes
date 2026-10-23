@@ -6,7 +6,8 @@ import { ENEMY_ART_TARGET_SILHOUETTE_RADIUS_RATIO, getEnemyArtRankFromFilename }
 import { forEachVisiblePixel, readRgbaPng } from './lib/PngRgba.js';
 
 const SOURCE_DIRECTORY = resolve('assets/enemies/source');
-const OUTPUT_DIRECTORY = resolve('public/assets/enemies');
+// Normalized masters feed generate:images, never overwrite delivery assets here.
+const OUTPUT_DIRECTORY = resolve('assets/images/source/enemies');
 const CANVAS_SIZE = 1024;
 const CHIP_RADIUS = 100;
 const ALPHA_THRESHOLD = 16;

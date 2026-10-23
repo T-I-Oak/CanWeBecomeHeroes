@@ -41,8 +41,8 @@ export function performanceBuildPlugin() {
               y: GAME_AREAS.warehouse.y + 50 + Math.random() * (GAME_AREAS.warehouse.height - 100) }) };
           openStageSelection(1);`);
         const sections = [
-          ['simulation', "    trial.diagnostics?.mark('simulation');", "    trial.diagnostics?.mark('visualUpdate');"],
-          ['visualUpdate', "    trial.diagnostics?.mark('visualUpdate');", "    trial.diagnostics?.mark('surfacesAndPanels');"],
+          ['simulation', '    achievementToast.update(', '    if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();\n    tutorial.update(time);'],
+          ['visualUpdate', '    if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();\n    tutorial.update(time);', '    context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);'],
           ['surfaces', '    drawWorldSurfaces(context, assets, preparationHeroes.length);', '    const staminaPauseTargets = new Set('],
           ['chipDraw', '    renderChips.forEach((chip) => renderer.drawBody', '    drawOverheadStatuses('],
           ['overhead', '    drawOverheadStatuses(', '    combatEffects.draw(context, assets);'],

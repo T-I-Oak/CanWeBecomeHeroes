@@ -1,5 +1,6 @@
 import Chip from '../chips/Chip.js';
 import ChipRenderer from '../chips/ChipRenderer.js';
+import { beginImageLevelFrame } from '../chips/ScaledImage.js';
 import { getEnemyDefinitionById } from '../game/EnemyCatalog.js';
 import { getHeroProfessionDefinition, HERO_PROFESSION_IDS, default as HeroFactory } from '../game/HeroFactory.js';
 import { getItemDefinitionAssetPath } from '../game/ItemFactory.js';
@@ -67,6 +68,7 @@ export default class VignetteModal {
       let last = performance.now();
       const frame = (now) => {
         if (this.completed) return;
+        beginImageLevelFrame(now);
         const deltaSeconds = Math.min(0.05, (now - last) / 1000);
         last = now;
         updateVignettePlayback(this.playback, deltaSeconds);

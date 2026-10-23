@@ -1,4 +1,5 @@
 import ChipRenderer from '../chips/ChipRenderer.js';
+import { setImageLevelRedraw } from '../chips/ScaledImage.js';
 
 /** Creates a settled, effect-free chip for non-gameplay UI previews. */
 export function createStaticChipPreview(chip, previewSize) {
@@ -32,6 +33,7 @@ export function createStaticChipPreviewDrawer(canvas, chip, previewSize, assets,
     context.clearRect(0, 0, previewSize, previewSize);
     new ChipRenderer(context, assets).draw(preview, 0);
   };
+  setImageLevelRedraw(context, () => draw({ poseTilt: preview.poseTilt }));
   draw();
   [chip.centerPath, ...chip.tagPaths].forEach((path) => {
     const image = assets.load(path);

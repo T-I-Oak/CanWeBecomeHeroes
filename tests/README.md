@@ -70,7 +70,7 @@ GitHub Pagesの公開ワークフローは`npm ci`→`npm test`→Chromium準備
 
 このスクリプトだけがViteの計測用変換を読み込み、`tmp_performance_dist/` へローカル専用ビルドを作る。
 通常の `npm.cmd run build` はローカル用の `__perf`・`__session` を含まない。
-今回の計測用バージョンは通常URLで実機用の計測画面を読み込む。パラメータや専用起動ボタンは不要。
+公開アプリの実機用計測画面は撤去済みで、通常URLには表示しない。
 `*-normal-build` 条件は通常ビルド、`*-no-probe` は変換あり・詳細計測なしであり、両者を区別する。
 ビルドと配信サーバーの起動・終了はスクリプトが行い、push・公開は行わない。
 
@@ -100,37 +100,26 @@ CPU負荷制限や小画面設定をモバイル実機の再現とは扱わな�
 
 ## 手動確認
 
-### 開発者ツールを使わない性能測定
-
-通常URLを開くと計測画面が出る。通常画面へ進み、情報ウィンドウ・設定・説明を閉じて
-「測定開始」を押す。約80秒、向き・zoomを変えず他アプリへ切り替えない。
-通常動作2区間と、ゲーム進行・表示時刻を止めた画面9区間を自動測定する。
-測定中は入力を遮断し、終了・中止・画面変更時は元の描画と停止状態へ戻す。
-「結果を保存」でJSONを保存する。保存が使えない端末は「結果をコピー」を使う。
-結果は自動送信しない。閉じる前に保存する。
-
-画像改善版の基準区間は事前生成済み画像を使う。JSONの `before/after.imageLevels.policy` とバージョンで旧版と区別する。
-既に適切な画像サイズを使っている場合、診断の `small-images` は追加の縮小を行わないことがある。
-キャッシュ上限は24MiB（画像寸法のRGBA換算）。実際のGPUメモリを計測した値ではない。
+実機での速度・画質・画像欠落の確認を終えたため、公開アプリの測定機能は削除した。
+以前の採取結果と分析は `docs/analysis/` に保存している。
 
 ### 段階画像の再生成
 
-`npm.cmd run generate:image-levels` はPlaywrightとインストール済みChromeを使い、
-areas/heroes/tags/status/enemies/itemsと戦闘枠の地面画像から縮小PNGを生成する。
+`npm.cmd run generate:images`（旧名 `generate:image-levels` も利用可）はPlaywrightとインストール済みChromeを使い、
+`assets/images/source/` と `assets/image-sizes.json` から配信用PNG・縮小段階・マニフェストを一括生成する。
+areas/heroes/tags/status/enemies/itemsと戦闘枠の地面画像が対象。
 `IMAGE_LEVELS_CHANNEL=chromium` でPlaywright付属ブラウザーを使える。
-生成した `public/assets/image-levels/` と `src/chips/image-levels.json` を追跡する。
-通常のbuild・実機では生成しない。生成前後で元画像を上書きしない。
-元画像を更新・追加したら再生成し、`ScaledImage.test.js` のハッシュ・寸法・カタログ整合性を確認する。
+制作元・サイズ定義・生成した配信用PNG・`public/assets/image-levels/`・`src/chips/image-levels.json` を追跡する。
+通常のbuild・実機では生成しない。制作元は上書きせず、公開成果物に含めない。
+制作元の更新・追加時はサイズとSHA-256の定義を確認し直して再生成する。
+`ImageConversion.test.js` と `ScaledImage.test.js` で制作元・定義・配信用画像・段階画像の整合性を確認する。
 画面のCSS寸法、DPR、zoom、回転を反映した変換行列から必要サイズを求め、足りる最小段階を選ぶ。
 元画像も含めて十分な大きさがなければ元画像を使う。縮小画像を引き伸ばして代用しない。
-未ロードの段階画像は読み込み完了まで描画を待つ。読み込み失敗時は元画像を使い、失敗パスを測定結果へ記録する。
-
-`live-minimal` と `live-sections` は区間計測の影響を含む参考比較で、ゲーム状態は時間とともに変わる。
-`frozen-unwrapped` と `baseline-1` はCanvasラッパーと区間計測の影響を比較する。
-`baseline-1/2/3` の変動を踏まえ、`small-images`、`no-images`、`no-stroke`、`no-clip`、`no-paint` を解釈する。
-画像・線・クリップ等の省略は原因切り分け専用で、恒久修正や画質の採用判断ではない。
-`small-images` はその画面の物理画素数に足りる段階サイズを事前生成する。元画像も保持するためメモリ削減の検証にはならない。
-`no-images` は `drawImage` のみを省略し、模様背景の `createPattern` は残す。
-JS時間はGPU完了時間ではない。CanvasのGPU利用状況はブラウザAPIから確定できないためunknownと記録する。
+未ロードの段階画像は読み込み完了まで描画を待つ。読み込み失敗時は元画像を使う。
+静止プレビューは読み込み完了・失敗時に描き直す。
+24MiBの容量不足時は元画像へ戻さず取得・描画を省略する。
+前回・今回のフレームで要求した画像を保護し、それより古い完了済み画像だけを破棄する。
+`ImageLevelCache.test.js` で容量超過の固定集合、フレーム境界、ズーム切り替え、
+読み込み中の保護、容量不足からの静止Canvas再描画を確認する。
 
 [画面確認用入口](manual/README.md)と[操作・モバイル表示の確認](manual/controls.md)を参照する。実機・見た目について未確認の項目とオーナーの保留判断は[バックログ](../docs/planning/backlog.md)を正本とする。自動テスト成功を実機確認済みとは扱わない。

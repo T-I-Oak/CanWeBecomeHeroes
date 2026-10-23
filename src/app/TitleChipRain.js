@@ -1,5 +1,6 @@
 import { CHIP_RADIUS } from '../chips/Chip.js';
 import ChipRenderer from '../chips/ChipRenderer.js';
+import { beginImageLevelFrame } from '../chips/ScaledImage.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
 import { ENEMY_CATALOG } from '../game/EnemyCatalog.js';
 import { HERO_PROFESSION_IDS, getHeroProfessionDefinition } from '../game/HeroFactory.js';
@@ -217,6 +218,7 @@ export default class TitleChipRain {
     this.observer.observe(this.canvas);
     let previous = performance.now();
     const frame = (time) => {
+      beginImageLevelFrame(time);
       const deltaSeconds = Math.min(0.05, (time - previous) / 1000);
       previous = time;
       this.update(deltaSeconds);
