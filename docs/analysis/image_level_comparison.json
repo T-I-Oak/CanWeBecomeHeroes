@@ -1,0 +1,3749 @@
+{
+  "reports": [
+    {
+      "source": "tmp_performance/image-level-comparison.json",
+      "environment": {
+        "date": "2026-10-23T06:38:50.071Z",
+        "commit": "b2183fc7f765e76dcb11b5a54c25c7fea9f59365",
+        "diff": "...investigate_v0.61-mobile-performance_implementation.md | 10 ++++++++++\n package-lock.json                                         |  4 ++--\n package.json                                              |  3 ++-\n scripts/measure-performance.js                            | 15 ++++++++++++++-\n src/app/EquipmentSlotRenderer.js                          |  5 +++--\n src/app/GameApp.js                                        |  3 ++-\n src/app/HeroDirectionIndicatorRenderer.js                 |  3 ++-\n src/app/HeroStatusPanelRenderer.js                        |  7 ++++---\n src/app/LocationNameplateRenderer.js                      |  3 ++-\n src/app/ShopPanelPresenter.js                             |  3 ++-\n src/app/WorldSurfaceRenderer.js                           |  3 ++-\n src/app/diagnostics/MobilePerformance.js                  |  5 ++++-\n src/chips/AssetLoader.js                                  |  2 ++\n src/chips/ChipRenderer.js                                 |  5 +++--\n 14 files changed, 54 insertions(+), 17 deletions(-)",
+        "commonCommit": "e4974f86606374fb81dae4e57644f051085c2c45",
+        "commonDiff": "",
+        "version": "0.61.2",
+        "os": "Windows_NT 10.0.26300",
+        "cpu": "12th Gen Intel(R) Core(TM) i7-12700H",
+        "logicalCPUs": 20,
+        "memoryGiB": 31.71141815185547,
+        "duration": 15,
+        "repeats": 3,
+        "warmup": 5,
+        "headless": true,
+        "channel": "chrome",
+        "browser": "155.0.8059.86"
+      },
+      "excludedConditions": [],
+      "cases": [
+        {
+          "name": "idle-dpr3",
+          "scene": "idle",
+          "dpr": 3,
+          "width": 390,
+          "height": 844,
+          "runs": [
+            {
+              "repeat": 0,
+              "titleReadyMs": 226,
+              "metadata": {
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+                "visibility": "visible",
+                "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+                "images": {
+                  "count": 62,
+                  "incomplete": 0,
+                  "rgbaBytesEstimate": 169300624,
+                  "resources": [
+                    {
+                      "path": "/assets/heroes/guard.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/iron.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-holy-symbol.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/large-valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-3.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/thief.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/dexterity.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-bow.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/swoardfighter.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/vignette/village.png",
+                      "width": 1120,
+                      "height": 400,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/gem.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/warehouse.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/battle.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/shop.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/guild.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/training.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/preparation.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/trampled-ground.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/shop.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/guild.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/training.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/preparation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/warehouse.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/battle.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/cloth.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/vitality.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shopping-bag.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/power.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/magic.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/speed.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/negotiation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/luck.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/stamina.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/weight.png",
+                      "width": 1254,
+                      "height": 1254,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/arcane.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/lightning.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/area.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-sword.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-hero-license.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-renewal-form.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shield.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    }
+                  ]
+                },
+                "canvases": [
+                  {
+                    "id": "chip-canvas",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "hero-direction-indicators",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "tutorial-mask-canvas",
+                    "width": 300,
+                    "height": 150
+                  }
+                ],
+                "session": {
+                  "chips": 29,
+                  "heroes": 2,
+                  "enemies": 4,
+                  "speed": 1,
+                  "paused": false,
+                  "stage": "battle"
+                }
+              },
+              "errors": [],
+              "intervals": {
+                "n": 900,
+                "mean": 16.664666666666704,
+                "p50": 16.69999999999891,
+                "p95": 16.80000000000109,
+                "p99": 16.900000000001455,
+                "max": 17.200000000000728
+              },
+              "over33": 0,
+              "over50": 0,
+              "stageStates": [
+                "battle"
+              ],
+              "metrics": {
+                "ChipBoard.resolveGroundOverlaps": {
+                  "mean": 0.027081020267372257,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.resolveGroundOverlaps:calls": {
+                  "mean": 1.579356270810211,
+                  "p95": 2
+                },
+                "ChipBoard.update": {
+                  "mean": 0.04195338441317407,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.update:calls": {
+                  "mean": 1.579356270810211,
+                  "p95": 2
+                },
+                "InformationWindowManager.refreshDynamicEntries": {
+                  "mean": 0.0011098779134295228,
+                  "p95": 0
+                },
+                "InformationWindowManager.refreshDynamicEntries:calls": {
+                  "mean": 1.579356270810211,
+                  "p95": 2
+                },
+                "simulation": {
+                  "mean": 0.25338512692149817,
+                  "p95": 0.40000009536743164
+                },
+                "TimeSettingsController.updateStatus": {
+                  "mean": 0.025860154800753748,
+                  "p95": 0.10000002384185791
+                },
+                "TimeSettingsController.updateStatus:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "visualUpdate": {
+                  "mean": 0.03451720339873522,
+                  "p95": 0.10000002384185791
+                },
+                "background": {
+                  "mean": 0.12164261775064415,
+                  "p95": 0.20000004768371582
+                },
+                "drawFacilityNameplates": {
+                  "mean": 0.11365149910256812,
+                  "p95": 0.2999999523162842
+                },
+                "drawAreaNameplates": {
+                  "mean": 0.044284129777838466,
+                  "p95": 0.10000002384185791
+                },
+                "drawWarehouseMetadata": {
+                  "mean": 0.06082130999993802,
+                  "p95": 0.19999992847442627
+                },
+                "drawFacilitySlots": {
+                  "mean": 0.01576026615900681,
+                  "p95": 0.10000002384185791
+                },
+                "drawShopPanel": {
+                  "mean": 0.10122086562538782,
+                  "p95": 0.20000004768371582
+                },
+                "drawGuildPanel": {
+                  "mean": 0.2304106553836615,
+                  "p95": 0.3999999761581421
+                },
+                "drawTrainingStatusPanel": {
+                  "mean": 0.12563818038237612,
+                  "p95": 0.2999999523162842
+                },
+                "drawPreparationHeroPanel": {
+                  "mean": 0.7001109866799577,
+                  "p95": 1
+                },
+                "surfaces": {
+                  "mean": 1.564372918052758,
+                  "p95": 2.1999999284744263
+                },
+                "ChipBoard.getRenderChips": {
+                  "mean": 0.07735849075126859,
+                  "p95": 0.20000004768371582
+                },
+                "ChipBoard.getRenderChips:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "ChipRenderer.drawBody": {
+                  "mean": 0.5521642614019565,
+                  "p95": 0.8999999761581421
+                },
+                "ChipRenderer.drawBody:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "ChipRenderer.drawEffects": {
+                  "mean": 0.022974473125529738,
+                  "p95": 0.10000002384185791
+                },
+                "ChipRenderer.drawEffects:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "chipDraw": {
+                  "mean": 0.602330741554201,
+                  "p95": 0.8999999761581421
+                },
+                "overhead": {
+                  "mean": 0.04772475226208584,
+                  "p95": 0.10000002384185791
+                },
+                "effects": {
+                  "mean": 0.0034406215580930722,
+                  "p95": 0
+                },
+                "directions": {
+                  "mean": 0.00499445021350958,
+                  "p95": 0
+                },
+                "main": {
+                  "mean": 2.960821310767323,
+                  "p95": 3.700000047683716
+                },
+                "chips": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "tick": {
+                  "mean": 759.9031698113215,
+                  "p95": 1164.851999999993
+                },
+                "speed": {
+                  "mean": 1,
+                  "p95": 1
+                }
+              },
+              "browserMetrics": {
+                "Timestamp": {
+                  "end": 563030.393619,
+                  "delta": 15.01066799997352
+                },
+                "JSEventListeners": {
+                  "end": 164,
+                  "delta": 0
+                },
+                "Nodes": {
+                  "end": 578,
+                  "delta": -11
+                },
+                "LayoutCount": {
+                  "end": 2210,
+                  "delta": 901
+                },
+                "RecalcStyleCount": {
+                  "end": 2234,
+                  "delta": 901
+                },
+                "LayoutDuration": {
+                  "end": 0.373747,
+                  "delta": 0.162731
+                },
+                "RecalcStyleDuration": {
+                  "end": 0.162522,
+                  "delta": 0.097122
+                },
+                "ScriptDuration": {
+                  "end": 3.4548,
+                  "delta": 2.440325
+                },
+                "TaskDuration": {
+                  "end": 14.50605,
+                  "delta": 10.459066
+                },
+                "JSHeapUsedSize": {
+                  "end": 7483112,
+                  "delta": 1412184
+                }
+              },
+              "gameSecondsPerWallSecond": 0.9991693907310648,
+              "measuredTotals": {
+                "ChipBoard.resolveGroundOverlaps": 24.399999260902405,
+                "ChipBoard.update": 37.799999356269836,
+                "InformationWindowManager.refreshDynamicEntries": 1,
+                "TimeSettingsController.updateStatus": 23.299999475479126,
+                "ChipBoard.getRenderChips": 69.700000166893,
+                "ChipRenderer.drawBody": 497.49999952316284,
+                "ChipRenderer.drawEffects": 20.700000286102295
+              }
+            },
+            {
+              "repeat": 1,
+              "titleReadyMs": 156,
+              "metadata": {
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+                "visibility": "visible",
+                "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+                "images": {
+                  "count": 62,
+                  "incomplete": 0,
+                  "rgbaBytesEstimate": 169300624,
+                  "resources": [
+                    {
+                      "path": "/assets/heroes/guard.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/iron.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-holy-symbol.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/large-valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-3.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/thief.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/dexterity.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-bow.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/swoardfighter.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/vignette/village.png",
+                      "width": 1120,
+                      "height": 400,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/gem.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/warehouse.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/battle.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/shop.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/guild.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/training.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/preparation.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/trampled-ground.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/shop.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/guild.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/training.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/preparation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/warehouse.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/battle.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/cloth.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/vitality.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shopping-bag.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/power.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/magic.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/speed.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/negotiation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/luck.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/stamina.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/weight.png",
+                      "width": 1254,
+                      "height": 1254,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/arcane.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/lightning.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/area.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-sword.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-hero-license.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-renewal-form.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shield.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    }
+                  ]
+                },
+                "canvases": [
+                  {
+                    "id": "chip-canvas",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "hero-direction-indicators",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "tutorial-mask-canvas",
+                    "width": 300,
+                    "height": 150
+                  }
+                ],
+                "session": {
+                  "chips": 29,
+                  "heroes": 2,
+                  "enemies": 4,
+                  "speed": 1,
+                  "paused": false,
+                  "stage": "battle"
+                }
+              },
+              "errors": [],
+              "intervals": {
+                "n": 901,
+                "mean": 16.664483906770304,
+                "p50": 16.69999999999891,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000109,
+                "max": 16.900000000001455
+              },
+              "over33": 0,
+              "over50": 0,
+              "stageStates": [
+                "battle"
+              ],
+              "metrics": {
+                "ChipBoard.resolveGroundOverlaps": {
+                  "mean": 0.026164079849048623,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.resolveGroundOverlaps:calls": {
+                  "mean": 1.5864745011086474,
+                  "p95": 2
+                },
+                "ChipBoard.update": {
+                  "mean": 0.03968957839678238,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.update:calls": {
+                  "mean": 1.5864745011086474,
+                  "p95": 2
+                },
+                "InformationWindowManager.refreshDynamicEntries": {
+                  "mean": 0.0009977825465064885,
+                  "p95": 0
+                },
+                "InformationWindowManager.refreshDynamicEntries:calls": {
+                  "mean": 1.5864745011086474,
+                  "p95": 2
+                },
+                "simulation": {
+                  "mean": 0.23968957797386695,
+                  "p95": 0.40000009536743164
+                },
+                "TimeSettingsController.updateStatus": {
+                  "mean": 0.03314855886404371,
+                  "p95": 0.10000002384185791
+                },
+                "TimeSettingsController.updateStatus:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "visualUpdate": {
+                  "mean": 0.04079822677202077,
+                  "p95": 0.10000002384185791
+                },
+                "background": {
+                  "mean": 0.2043237261920176,
+                  "p95": 0.3999999761581421
+                },
+                "drawFacilityNameplates": {
+                  "mean": 0.1430155204034962,
+                  "p95": 0.2999999523162842
+                },
+                "drawAreaNameplates": {
+                  "mean": 0.052660753219460704,
+                  "p95": 0.10000002384185791
+                },
+                "drawWarehouseMetadata": {
+                  "mean": 0.06219512237413495,
+                  "p95": 0.19999992847442627
+                },
+                "drawFacilitySlots": {
+                  "mean": 0.01940133024477906,
+                  "p95": 0.10000002384185791
+                },
+                "drawShopPanel": {
+                  "mean": 0.09700665201686175,
+                  "p95": 0.20000004768371582
+                },
+                "drawGuildPanel": {
+                  "mean": 0.21175166297117518,
+                  "p95": 0.40000009536743164
+                },
+                "drawTrainingStatusPanel": {
+                  "mean": 0.10587583214639296,
+                  "p95": 0.20000004768371582
+                },
+                "drawPreparationHeroPanel": {
+                  "mean": 0.6082039898356418,
+                  "p95": 1
+                },
+                "surfaces": {
+                  "mean": 1.553991129948136,
+                  "p95": 2.200000047683716
+                },
+                "ChipBoard.getRenderChips": {
+                  "mean": 0.05986696270246992,
+                  "p95": 0.19999992847442627
+                },
+                "ChipBoard.getRenderChips:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "ChipRenderer.drawBody": {
+                  "mean": 0.5198447877446194,
+                  "p95": 0.8999999761581421
+                },
+                "ChipRenderer.drawBody:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "ChipRenderer.drawEffects": {
+                  "mean": 0.02028824841632547,
+                  "p95": 0.10000002384185791
+                },
+                "ChipRenderer.drawEffects:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "chipDraw": {
+                  "mean": 0.5711751660856598,
+                  "p95": 1
+                },
+                "overhead": {
+                  "mean": 0.04345897996504925,
+                  "p95": 0.10000002384185791
+                },
+                "effects": {
+                  "mean": 0.0031042125431238418,
+                  "p95": 0
+                },
+                "directions": {
+                  "mean": 0.0032150775788892926,
+                  "p95": 0
+                },
+                "main": {
+                  "mean": 3.060199556091672,
+                  "p95": 4.200000047683716
+                },
+                "chips": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "tick": {
+                  "mean": 755.3998669623073,
+                  "p95": 1159.8479999999954
+                },
+                "speed": {
+                  "mean": 1,
+                  "p95": 1
+                }
+              },
+              "browserMetrics": {
+                "Timestamp": {
+                  "end": 563051.444636,
+                  "delta": 15.013885000022128
+                },
+                "JSEventListeners": {
+                  "end": 164,
+                  "delta": 0
+                },
+                "Nodes": {
+                  "end": 677,
+                  "delta": 22
+                },
+                "LayoutCount": {
+                  "end": 2223,
+                  "delta": 901
+                },
+                "RecalcStyleCount": {
+                  "end": 2248,
+                  "delta": 901
+                },
+                "LayoutDuration": {
+                  "end": 0.430087,
+                  "delta": 0.273049
+                },
+                "RecalcStyleDuration": {
+                  "end": 0.173426,
+                  "delta": 0.130769
+                },
+                "ScriptDuration": {
+                  "end": 3.178102,
+                  "delta": 2.387523
+                },
+                "TaskDuration": {
+                  "end": 14.558539,
+                  "delta": 10.707863
+                },
+                "JSHeapUsedSize": {
+                  "end": 7667952,
+                  "delta": 2044328
+                }
+              },
+              "gameSecondsPerWallSecond": 1.0000542830838102,
+              "measuredTotals": {
+                "ChipBoard.resolveGroundOverlaps": 23.600000023841858,
+                "ChipBoard.update": 35.799999713897705,
+                "InformationWindowManager.refreshDynamicEntries": 0.8999998569488525,
+                "TimeSettingsController.updateStatus": 29.90000009536743,
+                "ChipBoard.getRenderChips": 54.00000035762787,
+                "ChipRenderer.drawBody": 468.89999854564667,
+                "ChipRenderer.drawEffects": 18.300000071525574
+              }
+            },
+            {
+              "repeat": 2,
+              "titleReadyMs": 216,
+              "metadata": {
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+                "visibility": "visible",
+                "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+                "images": {
+                  "count": 62,
+                  "incomplete": 0,
+                  "rgbaBytesEstimate": 169300624,
+                  "resources": [
+                    {
+                      "path": "/assets/heroes/guard.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/iron.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-holy-symbol.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/large-valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-3.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/thief.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/dexterity.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-bow.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/swoardfighter.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/vignette/village.png",
+                      "width": 1120,
+                      "height": 400,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/gem.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/warehouse.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/battle.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/shop.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/guild.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/training.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/preparation.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/trampled-ground.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/shop.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/guild.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/training.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/preparation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/warehouse.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/battle.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/cloth.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/vitality.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shopping-bag.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/power.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/magic.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/speed.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/negotiation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/luck.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/stamina.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/weight.png",
+                      "width": 1254,
+                      "height": 1254,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/arcane.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/lightning.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/area.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-sword.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-hero-license.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-renewal-form.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shield.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    }
+                  ]
+                },
+                "canvases": [
+                  {
+                    "id": "chip-canvas",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "hero-direction-indicators",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "tutorial-mask-canvas",
+                    "width": 300,
+                    "height": 150
+                  }
+                ],
+                "session": {
+                  "chips": 29,
+                  "heroes": 2,
+                  "enemies": 4,
+                  "speed": 1,
+                  "paused": false,
+                  "stage": "battle"
+                }
+              },
+              "errors": [],
+              "intervals": {
+                "n": 852,
+                "mean": 17.623122065727692,
+                "p50": 16.69999999999891,
+                "p95": 33.29999999999927,
+                "p99": 33.399999999999636,
+                "max": 50.099999999999454
+              },
+              "over33": 0.02699530516431925,
+              "over50": 0.0011737089201877935,
+              "stageStates": [
+                "battle"
+              ],
+              "metrics": {
+                "ChipBoard.resolveGroundOverlaps": {
+                  "mean": 0.026025792358908256,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.resolveGroundOverlaps:calls": {
+                  "mean": 1.6318874560375147,
+                  "p95": 2
+                },
+                "ChipBoard.update": {
+                  "mean": 0.04454865335439881,
+                  "p95": 0.19999992847442627
+                },
+                "ChipBoard.update:calls": {
+                  "mean": 1.6318874560375147,
+                  "p95": 2
+                },
+                "InformationWindowManager.refreshDynamicEntries": {
+                  "mean": 0.000703399793484007,
+                  "p95": 0
+                },
+                "InformationWindowManager.refreshDynamicEntries:calls": {
+                  "mean": 1.6318874560375147,
+                  "p95": 2
+                },
+                "simulation": {
+                  "mean": 0.2596717463568255,
+                  "p95": 0.5
+                },
+                "TimeSettingsController.updateStatus": {
+                  "mean": 0.031535756126797355,
+                  "p95": 0.10000002384185791
+                },
+                "TimeSettingsController.updateStatus:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "visualUpdate": {
+                  "mean": 0.040328254174235835,
+                  "p95": 0.10000002384185791
+                },
+                "background": {
+                  "mean": 0.13845251970525924,
+                  "p95": 0.30000007152557373
+                },
+                "drawFacilityNameplates": {
+                  "mean": 0.10257913163510464,
+                  "p95": 0.20000004768371582
+                },
+                "drawAreaNameplates": {
+                  "mean": 0.043259086810131006,
+                  "p95": 0.10000002384185791
+                },
+                "drawWarehouseMetadata": {
+                  "mean": 0.04560375213623047,
+                  "p95": 0.10000002384185791
+                },
+                "drawFacilitySlots": {
+                  "mean": 0.017233295149987636,
+                  "p95": 0.10000002384185791
+                },
+                "drawShopPanel": {
+                  "mean": 0.0807737388756183,
+                  "p95": 0.20000004768371582
+                },
+                "drawGuildPanel": {
+                  "mean": 0.19214536646186678,
+                  "p95": 0.3999999761581421
+                },
+                "drawTrainingStatusPanel": {
+                  "mean": 0.09519343541068181,
+                  "p95": 0.20000004768371582
+                },
+                "drawPreparationHeroPanel": {
+                  "mean": 0.6762016419089832,
+                  "p95": 1.3000000715255737
+                },
+                "surfaces": {
+                  "mean": 1.4311840557968212,
+                  "p95": 2.600000023841858
+                },
+                "ChipBoard.getRenderChips": {
+                  "mean": 0.06060961220775931,
+                  "p95": 0.19999992847442627
+                },
+                "ChipBoard.getRenderChips:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "ChipRenderer.drawBody": {
+                  "mean": 0.6440797205686849,
+                  "p95": 1.2999999523162842
+                },
+                "ChipRenderer.drawBody:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "ChipRenderer.drawEffects": {
+                  "mean": 0.026846423937315678,
+                  "p95": 0.10000002384185791
+                },
+                "ChipRenderer.drawEffects:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "chipDraw": {
+                  "mean": 0.7055099660318873,
+                  "p95": 1.399999976158142
+                },
+                "overhead": {
+                  "mean": 0.05615474833972569,
+                  "p95": 0.10000002384185791
+                },
+                "effects": {
+                  "mean": 0.0035169988276670576,
+                  "p95": 0
+                },
+                "directions": {
+                  "mean": 0.004572098448016579,
+                  "p95": 0
+                },
+                "main": {
+                  "mean": 2.9579132487877313,
+                  "p95": 4.899999976158142
+                },
+                "chips": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "tick": {
+                  "mean": 754.178905041031,
+                  "p95": 1164.8579999999918
+                },
+                "speed": {
+                  "mean": 1,
+                  "p95": 1
+                }
+              },
+              "browserMetrics": {
+                "Timestamp": {
+                  "end": 563072.636498,
+                  "delta": 15.019686999963596
+                },
+                "JSEventListeners": {
+                  "end": 164,
+                  "delta": 0
+                },
+                "Nodes": {
+                  "end": 695,
+                  "delta": 86
+                },
+                "LayoutCount": {
+                  "end": 2080,
+                  "delta": 852
+                },
+                "RecalcStyleCount": {
+                  "end": 2105,
+                  "delta": 852
+                },
+                "LayoutDuration": {
+                  "end": 0.378144,
+                  "delta": 0.172171
+                },
+                "RecalcStyleDuration": {
+                  "end": 0.153466,
+                  "delta": 0.09742499999999998
+                },
+                "ScriptDuration": {
+                  "end": 3.261315,
+                  "delta": 2.285403
+                },
+                "TaskDuration": {
+                  "end": 15.957425,
+                  "delta": 11.317389
+                },
+                "JSHeapUsedSize": {
+                  "end": 7198148,
+                  "delta": 1370112
+                }
+              },
+              "gameSecondsPerWallSecond": 0.9996746270435745,
+              "measuredTotals": {
+                "ChipBoard.resolveGroundOverlaps": 22.200000882148743,
+                "ChipBoard.update": 38.000001311302185,
+                "InformationWindowManager.refreshDynamicEntries": 0.6000000238418579,
+                "TimeSettingsController.updateStatus": 26.899999976158142,
+                "ChipBoard.getRenderChips": 51.69999921321869,
+                "ChipRenderer.drawBody": 549.4000016450882,
+                "ChipRenderer.drawEffects": 22.899999618530273
+              }
+            }
+          ]
+        },
+        {
+          "name": "idle-original-images",
+          "scene": "idle",
+          "originalImages": true,
+          "dpr": 3,
+          "width": 390,
+          "height": 844,
+          "runs": [
+            {
+              "repeat": 0,
+              "titleReadyMs": 168,
+              "metadata": {
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+                "visibility": "visible",
+                "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+                "images": {
+                  "count": 62,
+                  "incomplete": 0,
+                  "rgbaBytesEstimate": 169300624,
+                  "resources": [
+                    {
+                      "path": "/assets/heroes/guard.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/iron.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-holy-symbol.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/large-valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-3.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/thief.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/dexterity.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-bow.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/swoardfighter.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/vignette/village.png",
+                      "width": 1120,
+                      "height": 400,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/gem.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/warehouse.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/battle.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/shop.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/guild.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/training.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/preparation.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/trampled-ground.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/shop.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/guild.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/training.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/preparation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/warehouse.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/battle.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/cloth.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/vitality.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shopping-bag.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/power.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/magic.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/speed.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/negotiation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/luck.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/stamina.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/weight.png",
+                      "width": 1254,
+                      "height": 1254,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/arcane.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/lightning.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/area.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-sword.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-hero-license.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-renewal-form.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shield.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    }
+                  ]
+                },
+                "canvases": [
+                  {
+                    "id": "chip-canvas",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "hero-direction-indicators",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "tutorial-mask-canvas",
+                    "width": 300,
+                    "height": 150
+                  }
+                ],
+                "session": {
+                  "chips": 29,
+                  "heroes": 2,
+                  "enemies": 4,
+                  "speed": 1,
+                  "paused": false,
+                  "stage": "battle"
+                }
+              },
+              "errors": [],
+              "intervals": {
+                "n": 815,
+                "mean": 18.402576687116543,
+                "p50": 16.69999999999891,
+                "p95": 33.30000000000018,
+                "p99": 33.400000000001455,
+                "max": 50.099999999998545
+              },
+              "over33": 0.033128834355828224,
+              "over50": 0.001226993865030675,
+              "stageStates": [
+                "battle"
+              ],
+              "metrics": {
+                "ChipBoard.resolveGroundOverlaps": {
+                  "mean": 0.033333330469972944,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.resolveGroundOverlaps:calls": {
+                  "mean": 1.670343137254902,
+                  "p95": 2
+                },
+                "ChipBoard.update": {
+                  "mean": 0.04852940960257661,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.update:calls": {
+                  "mean": 1.670343137254902,
+                  "p95": 2
+                },
+                "InformationWindowManager.refreshDynamicEntries": {
+                  "mean": 0.0009803922445166344,
+                  "p95": 0
+                },
+                "InformationWindowManager.refreshDynamicEntries:calls": {
+                  "mean": 1.670343137254902,
+                  "p95": 2
+                },
+                "simulation": {
+                  "mean": 0.29338235159715015,
+                  "p95": 0.6000000238418579
+                },
+                "TimeSettingsController.updateStatus": {
+                  "mean": 0.03566176561163921,
+                  "p95": 0.10000002384185791
+                },
+                "TimeSettingsController.updateStatus:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "visualUpdate": {
+                  "mean": 0.045955883521659704,
+                  "p95": 0.10000002384185791
+                },
+                "background": {
+                  "mean": 0.11776961137851079,
+                  "p95": 0.2999999523162842
+                },
+                "drawFacilityNameplates": {
+                  "mean": 0.10232843020383049,
+                  "p95": 0.20000004768371582
+                },
+                "drawAreaNameplates": {
+                  "mean": 0.041911764618228466,
+                  "p95": 0.10000002384185791
+                },
+                "drawWarehouseMetadata": {
+                  "mean": 0.0481617643552668,
+                  "p95": 0.10000002384185791
+                },
+                "drawFacilitySlots": {
+                  "mean": 0.015196078109974955,
+                  "p95": 0.10000002384185791
+                },
+                "drawShopPanel": {
+                  "mean": 6.877696076152372,
+                  "p95": 9.799999952316284
+                },
+                "drawGuildPanel": {
+                  "mean": 0.22500000061357722,
+                  "p95": 0.3999999761581421
+                },
+                "drawTrainingStatusPanel": {
+                  "mean": 0.07769607796388514,
+                  "p95": 0.20000004768371582
+                },
+                "drawPreparationHeroPanel": {
+                  "mean": 1.7827205872711014,
+                  "p95": 3.200000047683716
+                },
+                "surfaces": {
+                  "mean": 9.338970588556691,
+                  "p95": 13.600000023841858
+                },
+                "ChipBoard.getRenderChips": {
+                  "mean": 0.05465686248213637,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.getRenderChips:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "ChipRenderer.drawBody": {
+                  "mean": 1.31213235489878,
+                  "p95": 2.399999976158142
+                },
+                "ChipRenderer.drawBody:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "ChipRenderer.drawEffects": {
+                  "mean": 0.024142156190731946,
+                  "p95": 0.10000002384185791
+                },
+                "ChipRenderer.drawEffects:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "chipDraw": {
+                  "mean": 1.374632354168331,
+                  "p95": 2.5
+                },
+                "overhead": {
+                  "mean": 0.055269609041073746,
+                  "p95": 0.19999992847442627
+                },
+                "effects": {
+                  "mean": 0.005024509248780269,
+                  "p95": 0
+                },
+                "directions": {
+                  "mean": 0.004656862394482482,
+                  "p95": 0
+                },
+                "main": {
+                  "mean": 11.597181371029686,
+                  "p95": 17.100000023841858
+                },
+                "chips": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "tick": {
+                  "mean": 756.3011544117652,
+                  "p95": 1157.8439999999935
+                },
+                "speed": {
+                  "mean": 1,
+                  "p95": 1
+                }
+              },
+              "browserMetrics": {
+                "Timestamp": {
+                  "end": 563093.845973,
+                  "delta": 15.003872000030242
+                },
+                "JSEventListeners": {
+                  "end": 85,
+                  "delta": 0
+                },
+                "Nodes": {
+                  "end": 598,
+                  "delta": 71
+                },
+                "LayoutCount": {
+                  "end": 2109,
+                  "delta": 814
+                },
+                "RecalcStyleCount": {
+                  "end": 2134,
+                  "delta": 814
+                },
+                "LayoutDuration": {
+                  "end": 0.368148,
+                  "delta": 0.17136499999999996
+                },
+                "RecalcStyleDuration": {
+                  "end": 0.157466,
+                  "delta": 0.104057
+                },
+                "ScriptDuration": {
+                  "end": 12.830054,
+                  "delta": 9.206111
+                },
+                "TaskDuration": {
+                  "end": 16.56642,
+                  "delta": 12.006862000000002
+                },
+                "JSHeapUsedSize": {
+                  "end": 6830068,
+                  "delta": 250252
+                }
+              },
+              "gameSecondsPerWallSecond": 0.9996086343558259,
+              "measuredTotals": {
+                "ChipBoard.resolveGroundOverlaps": 27.199997663497925,
+                "ChipBoard.update": 39.599998235702515,
+                "InformationWindowManager.refreshDynamicEntries": 0.8000000715255737,
+                "TimeSettingsController.updateStatus": 29.100000739097595,
+                "ChipBoard.getRenderChips": 44.59999978542328,
+                "ChipRenderer.drawBody": 1070.7000015974045,
+                "ChipRenderer.drawEffects": 19.699999451637268
+              }
+            },
+            {
+              "repeat": 1,
+              "titleReadyMs": 181,
+              "metadata": {
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+                "visibility": "visible",
+                "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+                "images": {
+                  "count": 62,
+                  "incomplete": 0,
+                  "rgbaBytesEstimate": 169300624,
+                  "resources": [
+                    {
+                      "path": "/assets/heroes/guard.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/iron.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-holy-symbol.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/large-valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-3.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/thief.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/dexterity.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-bow.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/swoardfighter.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/vignette/village.png",
+                      "width": 1120,
+                      "height": 400,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/gem.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/warehouse.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/battle.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/shop.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/guild.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/training.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/preparation.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/trampled-ground.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/shop.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/guild.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/training.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/preparation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/warehouse.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/battle.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/cloth.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/vitality.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shopping-bag.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/power.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/magic.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/speed.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/negotiation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/luck.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/stamina.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/weight.png",
+                      "width": 1254,
+                      "height": 1254,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/arcane.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/lightning.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/area.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-sword.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-hero-license.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-renewal-form.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shield.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    }
+                  ]
+                },
+                "canvases": [
+                  {
+                    "id": "chip-canvas",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "hero-direction-indicators",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "tutorial-mask-canvas",
+                    "width": 300,
+                    "height": 150
+                  }
+                ],
+                "session": {
+                  "chips": 29,
+                  "heroes": 2,
+                  "enemies": 4,
+                  "speed": 1,
+                  "paused": false,
+                  "stage": "battle"
+                }
+              },
+              "errors": [],
+              "intervals": {
+                "n": 898,
+                "mean": 16.701781737193798,
+                "p50": 16.69999999999891,
+                "p95": 16.800000000000182,
+                "p99": 16.899999999999636,
+                "max": 33.29999999999927
+              },
+              "over33": 0,
+              "over50": 0,
+              "stageStates": [
+                "battle"
+              ],
+              "metrics": {
+                "ChipBoard.resolveGroundOverlaps": {
+                  "mean": 0.02347052269703289,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.resolveGroundOverlaps:calls": {
+                  "mean": 1.5728587319243603,
+                  "p95": 2
+                },
+                "ChipBoard.update": {
+                  "mean": 0.035150167011180365,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.update:calls": {
+                  "mean": 1.5728587319243603,
+                  "p95": 2
+                },
+                "InformationWindowManager.refreshDynamicEntries": {
+                  "mean": 0.0007786429896370588,
+                  "p95": 0
+                },
+                "InformationWindowManager.refreshDynamicEntries:calls": {
+                  "mean": 1.5728587319243603,
+                  "p95": 2
+                },
+                "simulation": {
+                  "mean": 0.2150166875395812,
+                  "p95": 0.3999999761581421
+                },
+                "TimeSettingsController.updateStatus": {
+                  "mean": 0.021134593065111205,
+                  "p95": 0.10000002384185791
+                },
+                "TimeSettingsController.updateStatus:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "visualUpdate": {
+                  "mean": 0.028476083106273274,
+                  "p95": 0.10000002384185791
+                },
+                "background": {
+                  "mean": 0.0872080087396539,
+                  "p95": 0.20000004768371582
+                },
+                "drawFacilityNameplates": {
+                  "mean": 0.07385984477530066,
+                  "p95": 0.20000004768371582
+                },
+                "drawAreaNameplates": {
+                  "mean": 0.026918798983428582,
+                  "p95": 0.10000002384185791
+                },
+                "drawWarehouseMetadata": {
+                  "mean": 0.041156841332177826,
+                  "p95": 0.10000002384185791
+                },
+                "drawFacilitySlots": {
+                  "mean": 0.012347052174229775,
+                  "p95": 0.10000002384185791
+                },
+                "drawShopPanel": {
+                  "mean": 5.74927697324912,
+                  "p95": 7.100000023841858
+                },
+                "drawGuildPanel": {
+                  "mean": 0.2055617353409628,
+                  "p95": 0.30000007152557373
+                },
+                "drawTrainingStatusPanel": {
+                  "mean": 0.06473859650672344,
+                  "p95": 0.19999992847442627
+                },
+                "drawPreparationHeroPanel": {
+                  "mean": 1.3938820919019892,
+                  "p95": 1.8000000715255737
+                },
+                "surfaces": {
+                  "mean": 7.696996663250568,
+                  "p95": 9.5
+                },
+                "ChipBoard.getRenderChips": {
+                  "mean": 0.04538376060821058,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.getRenderChips:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "ChipRenderer.drawBody": {
+                  "mean": 0.9496106768609154,
+                  "p95": 1.3000000715255737
+                },
+                "ChipRenderer.drawBody:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "ChipRenderer.drawEffects": {
+                  "mean": 0.020022246012830893,
+                  "p95": 0.10000002384185791
+                },
+                "ChipRenderer.drawEffects:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "chipDraw": {
+                  "mean": 0.9932146809655381,
+                  "p95": 1.3000000715255737
+                },
+                "overhead": {
+                  "mean": 0.04182424972266854,
+                  "p95": 0.10000002384185791
+                },
+                "effects": {
+                  "mean": 0.00289210236244923,
+                  "p95": 0
+                },
+                "directions": {
+                  "mean": 0.0045606229408696975,
+                  "p95": 0
+                },
+                "main": {
+                  "mean": 9.361846495921142,
+                  "p95": 11.600000023841858
+                },
+                "chips": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "tick": {
+                  "mean": 754.88209121246,
+                  "p95": 1159.8479999999936
+                },
+                "speed": {
+                  "mean": 1,
+                  "p95": 1
+                }
+              },
+              "browserMetrics": {
+                "Timestamp": {
+                  "end": 563115.227523,
+                  "delta": 15.008654000004753
+                },
+                "JSEventListeners": {
+                  "end": 85,
+                  "delta": 0
+                },
+                "Nodes": {
+                  "end": 553,
+                  "delta": -55
+                },
+                "LayoutCount": {
+                  "end": 2212,
+                  "delta": 899
+                },
+                "RecalcStyleCount": {
+                  "end": 2237,
+                  "delta": 899
+                },
+                "LayoutDuration": {
+                  "end": 0.324845,
+                  "delta": 0.153451
+                },
+                "RecalcStyleDuration": {
+                  "end": 0.135551,
+                  "delta": 0.08893100000000001
+                },
+                "ScriptDuration": {
+                  "end": 11.525504,
+                  "delta": 8.198491
+                },
+                "TaskDuration": {
+                  "end": 14.819279,
+                  "delta": 10.582685999999999
+                },
+                "JSHeapUsedSize": {
+                  "end": 6698152,
+                  "delta": 209488
+                }
+              },
+              "gameSecondsPerWallSecond": 0.9993034685185693,
+              "measuredTotals": {
+                "ChipBoard.resolveGroundOverlaps": 21.09999990463257,
+                "ChipBoard.update": 31.600000143051147,
+                "InformationWindowManager.refreshDynamicEntries": 0.7000000476837158,
+                "TimeSettingsController.updateStatus": 18.999999165534973,
+                "ChipBoard.getRenderChips": 40.80000078678131,
+                "ChipRenderer.drawBody": 853.699998497963,
+                "ChipRenderer.drawEffects": 17.999999165534973
+              }
+            },
+            {
+              "repeat": 2,
+              "titleReadyMs": 161,
+              "metadata": {
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+                "visibility": "visible",
+                "renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+                "images": {
+                  "count": 62,
+                  "incomplete": 0,
+                  "rgbaBytesEstimate": 169300624,
+                  "resources": [
+                    {
+                      "path": "/assets/heroes/guard.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/iron.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-holy-symbol.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/large-valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/valor.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-3.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/thief.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/dexterity.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fortune.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-bow.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/heroes/swoardfighter.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/vignette/village.png",
+                      "width": 1120,
+                      "height": 400,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/water.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/reputation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/fire.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/gem.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/feather.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/enemies/small-blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/blessing.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/warehouse.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/battle.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/shop.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/guild.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/training.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/preparation.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/background/trampled-ground.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/shop.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/guild.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/training.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/preparation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/warehouse.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/areas/battle.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/cloth.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/vitality.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shopping-bag.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/power.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/magic.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/speed.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/negotiation.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/luck.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/stamina.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/status/weight.png",
+                      "width": 1254,
+                      "height": 1254,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/arcane.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/lightning.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/tags/area.png",
+                      "width": 1024,
+                      "height": 1024,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/feet-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-1.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-sword.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-hero-license.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-renewal-form.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/hand-shield.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/head-5.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    },
+                    {
+                      "path": "/assets/items/torso-4.png",
+                      "width": 256,
+                      "height": 256,
+                      "ready": true
+                    }
+                  ]
+                },
+                "canvases": [
+                  {
+                    "id": "chip-canvas",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "hero-direction-indicators",
+                    "width": 1170,
+                    "height": 2532
+                  },
+                  {
+                    "id": "tutorial-mask-canvas",
+                    "width": 300,
+                    "height": 150
+                  }
+                ],
+                "session": {
+                  "chips": 29,
+                  "heroes": 2,
+                  "enemies": 4,
+                  "speed": 1,
+                  "paused": false,
+                  "stage": "battle"
+                }
+              },
+              "errors": [],
+              "intervals": {
+                "n": 869,
+                "mean": 17.239815880322222,
+                "p50": 16.69999999999891,
+                "p95": 16.899999999999636,
+                "p99": 33.30000000000291,
+                "max": 33.5
+              },
+              "over33": 0.009205983889528193,
+              "over50": 0,
+              "stageStates": [
+                "battle"
+              ],
+              "metrics": {
+                "ChipBoard.resolveGroundOverlaps": {
+                  "mean": 0.026781609688682116,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.resolveGroundOverlaps:calls": {
+                  "mean": 1.6045977011494252,
+                  "p95": 2
+                },
+                "ChipBoard.update": {
+                  "mean": 0.04459770040950556,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.update:calls": {
+                  "mean": 1.6045977011494252,
+                  "p95": 2
+                },
+                "InformationWindowManager.refreshDynamicEntries": {
+                  "mean": 0.0009195401750761887,
+                  "p95": 0
+                },
+                "InformationWindowManager.refreshDynamicEntries:calls": {
+                  "mean": 1.6045977011494252,
+                  "p95": 2
+                },
+                "simulation": {
+                  "mean": 0.23977011455886665,
+                  "p95": 0.40000009536743164
+                },
+                "TimeSettingsController.updateStatus": {
+                  "mean": 0.028620690312878838,
+                  "p95": 0.10000002384185791
+                },
+                "TimeSettingsController.updateStatus:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "visualUpdate": {
+                  "mean": 0.03666666705032875,
+                  "p95": 0.10000002384185791
+                },
+                "background": {
+                  "mean": 0.08988505752607323,
+                  "p95": 0.20000004768371582
+                },
+                "drawFacilityNameplates": {
+                  "mean": 0.07724137909110936,
+                  "p95": 0.20000004768371582
+                },
+                "drawAreaNameplates": {
+                  "mean": 0.03149425407935833,
+                  "p95": 0.10000002384185791
+                },
+                "drawWarehouseMetadata": {
+                  "mean": 0.04218390741567502,
+                  "p95": 0.10000002384185791
+                },
+                "drawFacilitySlots": {
+                  "mean": 0.013448274683678287,
+                  "p95": 0.10000002384185791
+                },
+                "drawShopPanel": {
+                  "mean": 6.19126437107722,
+                  "p95": 8.800000071525574
+                },
+                "drawGuildPanel": {
+                  "mean": 0.2162068949348625,
+                  "p95": 0.3999999761581421
+                },
+                "drawTrainingStatusPanel": {
+                  "mean": 0.07402298573789926,
+                  "p95": 0.20000004768371582
+                },
+                "drawPreparationHeroPanel": {
+                  "mean": 1.5594252906996628,
+                  "p95": 2.799999952316284
+                },
+                "surfaces": {
+                  "mean": 8.340229886975782,
+                  "p95": 12.199999928474426
+                },
+                "ChipBoard.getRenderChips": {
+                  "mean": 0.04758620604701426,
+                  "p95": 0.10000002384185791
+                },
+                "ChipBoard.getRenderChips:calls": {
+                  "mean": 1,
+                  "p95": 1
+                },
+                "ChipRenderer.drawBody": {
+                  "mean": 1.1009195433265861,
+                  "p95": 2.100000023841858
+                },
+                "ChipRenderer.drawBody:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "ChipRenderer.drawEffects": {
+                  "mean": 0.024482757743747755,
+                  "p95": 0.10000002384185791
+                },
+                "ChipRenderer.drawEffects:calls": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "chipDraw": {
+                  "mean": 1.1544827598264849,
+                  "p95": 2.100000023841858
+                },
+                "overhead": {
+                  "mean": 0.045862068664068466,
+                  "p95": 0.10000002384185791
+                },
+                "effects": {
+                  "mean": 0.003908045675562716,
+                  "p95": 0
+                },
+                "directions": {
+                  "mean": 0.0036781608373269267,
+                  "p95": 0
+                },
+                "main": {
+                  "mean": 10.227011495623096,
+                  "p95": 14.899999976158142
+                },
+                "chips": {
+                  "mean": 29,
+                  "p95": 29
+                },
+                "tick": {
+                  "mean": 751.3686689655173,
+                  "p95": 1151.855999999993
+                },
+                "speed": {
+                  "mean": 1,
+                  "p95": 1
+                }
+              },
+              "browserMetrics": {
+                "Timestamp": {
+                  "end": 563136.53154,
+                  "delta": 15.002393999951892
+                },
+                "JSEventListeners": {
+                  "end": 85,
+                  "delta": 0
+                },
+                "Nodes": {
+                  "end": 478,
+                  "delta": -37
+                },
+                "LayoutCount": {
+                  "end": 2156,
+                  "delta": 870
+                },
+                "RecalcStyleCount": {
+                  "end": 2181,
+                  "delta": 870
+                },
+                "LayoutDuration": {
+                  "end": 0.332667,
+                  "delta": 0.15136999999999998
+                },
+                "RecalcStyleDuration": {
+                  "end": 0.144228,
+                  "delta": 0.09407299999999999
+                },
+                "ScriptDuration": {
+                  "end": 12.328187,
+                  "delta": 8.675989
+                },
+                "TaskDuration": {
+                  "end": 15.83284,
+                  "delta": 11.244537999999999
+                },
+                "JSHeapUsedSize": {
+                  "end": 5701928,
+                  "delta": -406496
+                }
+              },
+              "gameSecondsPerWallSecond": 0.9986006233437082,
+              "measuredTotals": {
+                "ChipBoard.resolveGroundOverlaps": 23.300000429153442,
+                "ChipBoard.update": 38.799999356269836,
+                "InformationWindowManager.refreshDynamicEntries": 0.7999999523162842,
+                "TimeSettingsController.updateStatus": 24.90000057220459,
+                "ChipBoard.getRenderChips": 41.399999260902405,
+                "ChipRenderer.drawBody": 957.80000269413,
+                "ChipRenderer.drawEffects": 21.299999237060547
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

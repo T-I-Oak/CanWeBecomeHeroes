@@ -1,3 +1,4 @@
+import { drawScaledImage } from '../chips/ScaledImage.js';
 function drawPointer(context, indicator) {
   const { x, y, angle, radius, color } = indicator;
   const length = 12;
@@ -24,7 +25,7 @@ function drawPortrait(context, assets, indicator) {
   context.arc(x, y, radius - 3, 0, Math.PI * 2);
   context.clip();
   const size = diameter * 1.9;
-  context.drawImage(image, x - size / 2, y - size * 0.36, size, size);
+  drawScaledImage(context, image, x - size / 2, y - size * 0.36, size, size);
   context.restore();
 }
 

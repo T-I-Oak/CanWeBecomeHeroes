@@ -60,6 +60,77 @@
 
 GitHub Pagesの公開ワークフローは`npm ci`→`npm test`→Chromium準備→`npm run test:browser`→`npm run build`→配信の順とする。ブラウザー検証自身もpreview用の本番ビルドを作る。失敗時に後続の配信は実行しない。ローカルでの本番preview確認はGitHub Pagesへ配信済みであることの確認とは区別する。
 
+## PCでの性能調査
+
+`node scripts/measure-performance.js --list` で条件一覧を確認する。
+`node scripts/measure-performance.js idle-dpr3 idle-cpu4 idle-cpu4-dpr1` のように条件名を指定する。
+条件名を省略すると全条件を実行する。
+ゲームルートで実行し、4186・4187ポートを空ける。既定はインストール済みChromeのheadless実行。
+`PERF_CHANNEL=chromium` でPlaywright付属ブラウザーに切り替えられるが、描画デバイスを結果で確認する。
+
+このスクリプトだけがViteの計測用変換を読み込み、`tmp_performance_dist/` へローカル専用ビルドを作る。
+通常の `npm.cmd run build` はローカル用の `__perf`・`__session` を含まない。
+今回の計測用バージョンは通常URLで実機用の計測画面を読み込む。パラメータや専用起動ボタンは不要。
+`*-normal-build` 条件は通常ビルド、`*-no-probe` は変換あり・詳細計測なしであり、両者を区別する。
+ビルドと配信サーバーの起動・終了はスクリプトが行い、push・公開は行わない。
+
+既定は各条件5秒のウォームアップ後、30秒を3回測定する。
+PowerShellでは `$env:PERF_SECONDS='8'`、`$env:PERF_REPEATS='1'` のように予備測定へ変更できる。
+`PERF_WARMUP` はウォームアップ秒数、`PERF_OUTPUT` は出力先を変更する。
+既定の生データは `tmp_performance/results.json`。条件ごとの各反復終了時に保存する。
+Playwrightが清掃する `test-results/` は性能データの保存先に使わない。
+`PERF_PROFILE=1` は追加調査用のCPUプロファイルを保存する。主要比較では無効にする。
+`node scripts/summarize-performance.js 出力.json 入力.json [...]` で毎フレームの生データを除いた結果を保存できる。
+
+画面は既定390×844 CSS px、画素密度3、時間設定1倍、固定乱数、チュートリアル完了状態で開始する。
+情報ウィンドウの比較は「情報を開いても停止しない」設定であり、既定の停止設定とは区別する。
+満杯条件は実際の倉庫容量まで同一種の武器を追加した負荷試験。
+戦闘条件は1人のスタミナを3にして、実際の選択・出発処理を呼ぶ初期化を行う。
+`drag-zoom` はPCマウスのドラッグ・ホイール操作で、実機のタッチ・ピンチ検証ではない。
+`small-icons` は読み込み済みのタグ・ステータス画像を128pxのPNGへ一度変換した比較実験で、画質の採用判断を含まない。
+`idle-original-images` は同じソースで画像の段階選択だけを無効化した比較ビルドを使う（4190ポート）。
+`idle-dpr3` と同じCanvas寸法・zoom・乱数・シーンで比較する。通常ビルドの設定は変更しない。
+`information-paired` は同一画面で情報更新あり→省略→ありを切り替える。
+1反復の計測時間を3分割するため、既定は各10秒を3反復とし、各区間の結果を `phaseMetrics` に保存する。
+画像の `rgbaBytesEstimate` は寸法から計算した32bit RGBAの概算で、実測メモリー使用量ではない。
+
+描画呼出時間には後続処理での待ちが現れる場合があるため、関数別時間だけで原因を断定しない。
+処理省略前後の全体時間・フレーム間隔・ブラウザーのTaskDurationも比較する。
+CPU負荷制限や小画面設定をモバイル実機の再現とは扱わない。
+
 ## 手動確認
+
+### 開発者ツールを使わない性能測定
+
+通常URLを開くと計測画面が出る。通常画面へ進み、情報ウィンドウ・設定・説明を閉じて
+「測定開始」を押す。約80秒、向き・zoomを変えず他アプリへ切り替えない。
+通常動作2区間と、ゲーム進行・表示時刻を止めた画面9区間を自動測定する。
+測定中は入力を遮断し、終了・中止・画面変更時は元の描画と停止状態へ戻す。
+「結果を保存」でJSONを保存する。保存が使えない端末は「結果をコピー」を使う。
+結果は自動送信しない。閉じる前に保存する。
+
+画像改善版の基準区間は事前生成済み画像を使う。JSONの `before/after.imageLevels.policy` とバージョンで旧版と区別する。
+既に適切な画像サイズを使っている場合、診断の `small-images` は追加の縮小を行わないことがある。
+キャッシュ上限は24MiB（画像寸法のRGBA換算）。実際のGPUメモリを計測した値ではない。
+
+### 段階画像の再生成
+
+`npm.cmd run generate:image-levels` はPlaywrightとインストール済みChromeを使い、
+areas/heroes/tags/status/enemies/itemsと戦闘枠の地面画像から縮小PNGを生成する。
+`IMAGE_LEVELS_CHANNEL=chromium` でPlaywright付属ブラウザーを使える。
+生成した `public/assets/image-levels/` と `src/chips/image-levels.json` を追跡する。
+通常のbuild・実機では生成しない。生成前後で元画像を上書きしない。
+元画像を更新・追加したら再生成し、`ScaledImage.test.js` のハッシュ・寸法・カタログ整合性を確認する。
+画面のCSS寸法、DPR、zoom、回転を反映した変換行列から必要サイズを求め、足りる最小段階を選ぶ。
+元画像も含めて十分な大きさがなければ元画像を使う。縮小画像を引き伸ばして代用しない。
+未ロードの段階画像は読み込み完了まで描画を待つ。読み込み失敗時は元画像を使い、失敗パスを測定結果へ記録する。
+
+`live-minimal` と `live-sections` は区間計測の影響を含む参考比較で、ゲーム状態は時間とともに変わる。
+`frozen-unwrapped` と `baseline-1` はCanvasラッパーと区間計測の影響を比較する。
+`baseline-1/2/3` の変動を踏まえ、`small-images`、`no-images`、`no-stroke`、`no-clip`、`no-paint` を解釈する。
+画像・線・クリップ等の省略は原因切り分け専用で、恒久修正や画質の採用判断ではない。
+`small-images` はその画面の物理画素数に足りる段階サイズを事前生成する。元画像も保持するためメモリ削減の検証にはならない。
+`no-images` は `drawImage` のみを省略し、模様背景の `createPattern` は残す。
+JS時間はGPU完了時間ではない。CanvasのGPU利用状況はブラウザAPIから確定できないためunknownと記録する。
 
 [画面確認用入口](manual/README.md)と[操作・モバイル表示の確認](manual/controls.md)を参照する。実機・見た目について未確認の項目とオーナーの保留判断は[バックログ](../docs/planning/backlog.md)を正本とする。自動テスト成功を実機確認済みとは扱わない。

@@ -1,3 +1,4 @@
+import { drawScaledImage } from '../chips/ScaledImage.js';
 import { GAME_AREAS, getPreparationSubareaBounds } from '../game/GameAreas.js';
 import { getFacilitySlotOrigin } from '../game/FacilityLayout.js';
 import { HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
@@ -38,7 +39,7 @@ export function drawStatusGauge(context, assets, visual, x, y, value, maximum, a
   context.fill();
   const icon = assets.load(visual.iconPath);
   if (icon.complete && icon.naturalWidth > 0) {
-    context.drawImage(icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
+    drawScaledImage(context, icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
   }
   for (let index = 0; index < 7; index += 1) {
     const segmentY = y + height - statusGaugeBottomPadding - statusSegmentHeight - index * (statusSegmentHeight + gap);
@@ -76,7 +77,7 @@ export function drawWeightGauge(context, assets, x, y, weight) {
   context.fill();
   const icon = assets.load(visual.iconPath);
   if (icon.complete && icon.naturalWidth > 0) {
-    context.drawImage(icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
+    drawScaledImage(context, icon, x + (width - statusIconSize) / 2, y + statusIconTopPadding, statusIconSize, statusIconSize);
   }
   context.save();
   context.beginPath();
@@ -197,7 +198,7 @@ export function drawPreparationHeroPanel({ context, assets, hero, index, textRep
     const placement = getCenterImagePlacement(hero.chip.radius);
     const centerX = characterX + PREPARATION_LAYOUT.characterAreaWidth / 2;
     const centerY = y + PREPARATION_LAYOUT.topPadding + PREPARATION_LAYOUT.headerHeight + PREPARATION_LAYOUT.sectionGap + HERO_PREPARATION_IMAGE_SIZE / 2;
-    context.drawImage(image, centerX + placement.x - placement.size / 2, centerY + placement.y - placement.size / 2, placement.size, placement.size);
+    drawScaledImage(context, image, centerX + placement.x - placement.size / 2, centerY + placement.y - placement.size / 2, placement.size, placement.size);
   }
   context.fillStyle = '#24334d';
   context.font = '16px system-ui';

@@ -1,11 +1,12 @@
 {
   "name": "can-we-become-heroes",
-  "version": "0.60.0",
+  "version": "0.61.2",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "generate:image-levels": "node scripts/generate-image-levels.js",
     "test": "node --test",
     "test:browser": "playwright test",
     "simulate:battle": "node scripts/simulate-battle.js",

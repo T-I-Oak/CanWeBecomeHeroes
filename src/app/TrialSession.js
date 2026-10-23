@@ -260,35 +260,42 @@ export async function startTrial({
     };
 
   trial.update = (deltaSeconds, time) => {
-    achievementToast.update(deltaSeconds * 1000, Boolean(document.querySelector('.ModalLayer.state-open, #tutorial-layer:not([hidden])')));
-    clock.advance(deltaSeconds, (simulationDeltaSeconds, tickDelta) => {
-      enemySpawn.update(clock.tick);
-      board.update(simulationDeltaSeconds);
-      combatEffects.update(simulationDeltaSeconds);
-      controller.update(simulationDeltaSeconds);
-      staminaRecovery.update(controller.getHeroes(), simulationDeltaSeconds);
+    trial.diagnostics?.mark('simulation');
+    if (!trial.diagnostics?.frozen) {
+      achievementToast.update(deltaSeconds * 1000, Boolean(document.querySelector('.ModalLayer.state-open, #tutorial-layer:not([hidden])')));
+      clock.advance(deltaSeconds, (simulationDeltaSeconds, tickDelta) => {
+        enemySpawn.update(clock.tick);
+        board.update(simulationDeltaSeconds);
+        combatEffects.update(simulationDeltaSeconds);
+        controller.update(simulationDeltaSeconds);
+        staminaRecovery.update(controller.getHeroes(), simulationDeltaSeconds);
+        timeSettingsController.updateStaminaPause();
+        timeSettingsController.updateClockSpeed();
+        training.update(controller.getHeroes(), simulationDeltaSeconds);
+        // 同じtickで期限延長が成立する場合も、時間経過による境界通過を先に通知する。
+        deadlineWarning.update(getRemainingTrialHours());
+        guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
+        deadlineWarning.update(getRemainingTrialHours());
+        shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
+        battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
+        informationWindows.closeInvalidEntries();
+        informationWindows.refreshDynamicEntries();
+        stageController.update();
+        trialRunFlow.update(controller.getHeroes());
+        facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
+        if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();
+      });
+    }
+    trial.diagnostics?.mark('visualUpdate');
+    if (!trial.diagnostics?.frozen) {
+      if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();
+      tutorial.update(time);
+      controller.updateVisuals();
       timeSettingsController.updateStaminaPause();
       timeSettingsController.updateClockSpeed();
-      training.update(controller.getHeroes(), simulationDeltaSeconds);
-      // 同じtickで期限延長が成立する場合も、時間経過による境界通過を先に通知する。
-      deadlineWarning.update(getRemainingTrialHours());
-      guildSystem.update(controller.getHeroes(), simulationDeltaSeconds);
-      deadlineWarning.update(getRemainingTrialHours());
-      shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
-      battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
-      informationWindows.closeInvalidEntries();
-      informationWindows.refreshDynamicEntries();
-      stageController.update();
-      trialRunFlow.update(controller.getHeroes());
-      facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
-      if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();
-    });
-    if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();
-    tutorial.update(time);
-    controller.updateVisuals();
-    timeSettingsController.updateStaminaPause();
-    timeSettingsController.updateClockSpeed();
-    timeSettingsController.updateStatus();
+      timeSettingsController.updateStatus();
+    }
+    trial.diagnostics?.mark('surfacesAndPanels');
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     context.save();
     context.scale(camera.zoom, camera.zoom);
@@ -303,7 +310,7 @@ export async function startTrial({
       mode,
       textRepository,
       stageNumber: stageController.stageNumber,
-      animationTime: performance.now() / 1000,
+      animationTime: (trial.diagnostics?.frozenTime ?? performance.now()) / 1000,
       tick: clock.tick,
       contributionPoints: battleSystem.contributionPoints,
       extensionHours: guildSystem.getExtensionHours(),
@@ -324,10 +331,13 @@ export async function startTrial({
     const staminaPauseTargets = new Set(controller.getHeroes()
       .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
       .map((hero) => hero.chip));
+    trial.diagnostics?.mark('renderOrder');
     const renderChips = board.getRenderChips();
     const timeSeconds = time / 1000;
+    trial.diagnostics?.mark('chips');
     renderChips.forEach((chip) => renderer.drawBody(chip, timeSeconds));
     renderChips.forEach((chip) => renderer.drawEffects(chip, timeSeconds, { staminaPauseTarget: staminaPauseTargets.has(chip) }));
+    trial.diagnostics?.mark('overheadAndEffects');
     drawOverheadStatuses(
       context,
       [...controller.getHeroes(), ...controller.getEnemies()],
@@ -338,6 +348,7 @@ export async function startTrial({
     combatEffects.draw(context, assets);
     drawSelectionGuide(context, controller.getSelectionGuide());
     context.restore();
+    trial.diagnostics?.mark('directions');
     directionContext.clearRect(0, 0, directionCanvas.clientWidth, directionCanvas.clientHeight);
     heroDirectionIndicatorRenderer.draw(trial.getDirectionIndicators(), time / 1000);
   };
