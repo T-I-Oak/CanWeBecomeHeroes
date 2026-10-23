@@ -1,0 +1,458 @@
+{
+  "schema": 1,
+  "sourceRoot": "assets/images/source",
+  "images": {
+    "/assets/areas/battle.png": {
+      "size": 512,
+      "sourceSha256": "dbf44d3c8b254a663bafb5227417aa4b17ebfc989256d69bed36fedb3bca7fea"
+    },
+    "/assets/areas/guild.png": {
+      "size": 512,
+      "sourceSha256": "51e718a1f0020f5390ce1554185c027e8388fc927d1fd5fa1dc26578ad8852f1"
+    },
+    "/assets/areas/preparation.png": {
+      "size": 512,
+      "sourceSha256": "0a7f6554a5293593ff5cd73c68bce869b59259476c632ccb475062e2e0c41346"
+    },
+    "/assets/areas/shop.png": {
+      "size": 512,
+      "sourceSha256": "d9b74c4477efa5d1f6e2d60524de591aa6afd48d8b6bdc9d04d10e9c4876b56e"
+    },
+    "/assets/areas/training.png": {
+      "size": 512,
+      "sourceSha256": "432548e4e5bd70fc53d45439b5ac45ba952285dcc481c974828f0edb57778b14"
+    },
+    "/assets/areas/warehouse.png": {
+      "size": 512,
+      "sourceSha256": "c52214d5eaa30758e235a6534cdaf5e1b3578f203ad94daa607bb259209153a7"
+    },
+    "/assets/heroes/cleric.png": {
+      "size": 1024,
+      "sourceSha256": "a71b843f76151d848f9438f113e844c5f8cb91a8d10d7fae1ea5d41609d1c661"
+    },
+    "/assets/heroes/guard.png": {
+      "size": 1024,
+      "sourceSha256": "d613b811eaebdc73bf3a4b8de6381de5aaf7907a041783c47c92132ba520d867"
+    },
+    "/assets/heroes/hunter.png": {
+      "size": 1024,
+      "sourceSha256": "f8bcd86f38a7a4a445cdc1179d3c17367b6c95806f1f3d97600c2ac902824887"
+    },
+    "/assets/heroes/mage.png": {
+      "size": 1024,
+      "sourceSha256": "3828ac623fe86537015ac13e10fb0d170213718bc37bcbde3ab61471db4f40c5"
+    },
+    "/assets/heroes/merchant.png": {
+      "size": 1024,
+      "sourceSha256": "f9337738a3a303ec7f767528a3797ef817114f219785ceb83d14fb43b831037b"
+    },
+    "/assets/heroes/negotiator.png": {
+      "size": 1024,
+      "sourceSha256": "497619fa225058e85d17aca200baa11b2b123d43c941d6aaad03f360a600609f"
+    },
+    "/assets/heroes/swoardfighter.png": {
+      "size": 1024,
+      "sourceSha256": "ee518578129ee4f0b2889c74bcd43baf35ff913192dbd4d6d8e99f2b265c64d6"
+    },
+    "/assets/heroes/thief.png": {
+      "size": 1024,
+      "sourceSha256": "9a115b97421f85a1e09736dff4a2031bb244b31949cae7358ca1eaf030fb36be"
+    },
+    "/assets/tags/arcane.png": {
+      "size": 512,
+      "sourceSha256": "adfa2e1cba0dd09bfa9fdabcd0fee0a322803ff20d1ed7fed9ba0811f61438a4"
+    },
+    "/assets/tags/area.png": {
+      "size": 512,
+      "sourceSha256": "c50bf0ea7165bdd27d9c34fd2d6c27c4cb91ced8163805ca6f13a5d304d02c33"
+    },
+    "/assets/tags/blessing.png": {
+      "size": 512,
+      "sourceSha256": "f4ef7062dd29e693428524f31887e8f433173a75095831a0337ea09e1817b93c"
+    },
+    "/assets/tags/cloth.png": {
+      "size": 512,
+      "sourceSha256": "d5249e1ec53a972d0194a37ce73df68935a99300e2cf1a54930006c8d2fde410"
+    },
+    "/assets/tags/dexterity.png": {
+      "size": 512,
+      "sourceSha256": "0896236d166db4c3548b2ffc4ff540872c670561da36e6ec7338855554c408f6"
+    },
+    "/assets/tags/feather.png": {
+      "size": 512,
+      "sourceSha256": "937d8cf6fa037ad7387b844d13cb39f0fb9098002cc1ecd3c366aeb32454c677"
+    },
+    "/assets/tags/fire.png": {
+      "size": 512,
+      "sourceSha256": "0673300dbf2aaf3848e0100adfee6817edc7a42c3387ce941296d7ce53b69d79"
+    },
+    "/assets/tags/fortune.png": {
+      "size": 512,
+      "sourceSha256": "fd07ab8c570cd3efef0ea152a5668aa84d44d26edf7a0d5c94bdcb070c0e5964"
+    },
+    "/assets/tags/gem.png": {
+      "size": 512,
+      "sourceSha256": "d4725d09e8e6dee2801389128e972db1b74f7b8b3a171f0021b6fa8c2a3d4656"
+    },
+    "/assets/tags/iron.png": {
+      "size": 512,
+      "sourceSha256": "33b5a754ec3f5e0b8537e97ad1501c448379c3b8a30c9067c2fa7ce3e3bb5762"
+    },
+    "/assets/tags/lightning.png": {
+      "size": 512,
+      "sourceSha256": "4dd924c1cbd05ebd59d1c521b2f2c283dc179f0b2e24534ec1973dbdfa912298"
+    },
+    "/assets/tags/reputation.png": {
+      "size": 512,
+      "sourceSha256": "b863bd2899bfcdc132b1393ab54e76077e83e2b78bc0dd962bab95278df271c6"
+    },
+    "/assets/tags/valor.png": {
+      "size": 512,
+      "sourceSha256": "92e95740da0cf7c6e80fc1fb13c41c12e115051ce5e103d94fe3343a773aa53c"
+    },
+    "/assets/tags/vitality.png": {
+      "size": 512,
+      "sourceSha256": "fa23985e23fa0d8fd787e18b071a639ef9d1fa9eabb7d3b84d5c859a7ee111c4"
+    },
+    "/assets/tags/water.png": {
+      "size": 512,
+      "sourceSha256": "998361d693ce780383912f4639d31a8b8987be7d74ba502d3d581ae77bc44327"
+    },
+    "/assets/status/durability.png": {
+      "size": 512,
+      "sourceSha256": "755636264f22a5a41e58d029fbb415d5be53693709ce38555c989f3c45c59a2d"
+    },
+    "/assets/status/hp.png": {
+      "size": 512,
+      "sourceSha256": "d6c7402802aaedfe05bb5fe4c7de29a25417df47d812ae93d7bcc2f7ecb375ff"
+    },
+    "/assets/status/luck.png": {
+      "size": 512,
+      "sourceSha256": "4f216c1ab3768695633feeca458eb1b97088166adc714a333e6762883fbc710e"
+    },
+    "/assets/status/magic.png": {
+      "size": 512,
+      "sourceSha256": "ae9f6ce0adf921a5c0fdbd256765f6334b9272391aff595bfbff36346307b3a0"
+    },
+    "/assets/status/negotiation.png": {
+      "size": 512,
+      "sourceSha256": "00b04b0e25d3e07e165c1f429680044b25b7c114a8be33e797f5f9fc779bd4b9"
+    },
+    "/assets/status/power.png": {
+      "size": 512,
+      "sourceSha256": "f015cf7366685415a7ac2c8e23c1ad3fce06d744fc21f5e44a63e4acab70f6ed"
+    },
+    "/assets/status/speed.png": {
+      "size": 512,
+      "sourceSha256": "2dfef83d33a6e82801d1a085e649fb20054dc465d7c90ef601f49981c794a803"
+    },
+    "/assets/status/stamina.png": {
+      "size": 512,
+      "sourceSha256": "60a38951229698710c5058159eb924ce59437aeb1fc0ee57de768a6dceb8ee7a"
+    },
+    "/assets/status/weight.png": {
+      "size": 512,
+      "sourceSha256": "835f5137cfe4e921a39ee3bbcb25a539ebd902e06dbf65101b791848c1629a91"
+    },
+    "/assets/enemies/large-arcane.png": {
+      "size": 1024,
+      "sourceSha256": "f41c1fea08a1aacab8fc9e2497d21149c440daf1dc20eb0e2e53792521909c9b"
+    },
+    "/assets/enemies/large-area.png": {
+      "size": 1024,
+      "sourceSha256": "41377778bcd171808613ea28518df971b9b77c87771dd29acc36420c9e0aaec5"
+    },
+    "/assets/enemies/large-blessing.png": {
+      "size": 1024,
+      "sourceSha256": "4c65672d2ef0a080dc5dcc2dfdd13f2c8d72142371d2040416974f61385bfe34"
+    },
+    "/assets/enemies/large-cloth.png": {
+      "size": 1024,
+      "sourceSha256": "b9fe8388b04e4527be1c4b9ece62b5acff9933154ebb7daccb821dc0f37cbc94"
+    },
+    "/assets/enemies/large-dexterity.png": {
+      "size": 1024,
+      "sourceSha256": "baeb2c082cfe6a89e9914b96e339a56d84d38a3161fe8653fcc1b3ac0ef6a07e"
+    },
+    "/assets/enemies/large-feather.png": {
+      "size": 1024,
+      "sourceSha256": "d05dc4d160ade59e2cc8eb43819cb8649a90f4365d34398561c561b67ca97f97"
+    },
+    "/assets/enemies/large-fire.png": {
+      "size": 1024,
+      "sourceSha256": "caabf4fab7bba4681b88f7113c643146e9f211d11b8368bea486f10fcdad242f"
+    },
+    "/assets/enemies/large-fortune.png": {
+      "size": 1024,
+      "sourceSha256": "e31a1b412c2028ef46aaa9f4944b58ccb7f363ab87347d9aba4ba503337085b9"
+    },
+    "/assets/enemies/large-gem.png": {
+      "size": 1024,
+      "sourceSha256": "9c96d57413982124994d4ec8c98eb602b92cb263dcfc8bb6f2c6c917a019f7c7"
+    },
+    "/assets/enemies/large-iron.png": {
+      "size": 1024,
+      "sourceSha256": "ef5807c7d3aeb93ac7bbf7e8e23c4ff94ed087f9de1515497519ab3bc883841b"
+    },
+    "/assets/enemies/large-lightning.png": {
+      "size": 1024,
+      "sourceSha256": "c6032bace9eb6d1c243d1dc655e941cb259f66d51545fae3bf0b02f357376fce"
+    },
+    "/assets/enemies/large-reputation.png": {
+      "size": 1024,
+      "sourceSha256": "c132a9eb78be93fb0902586bea6488260bfb0d55d9db79074421d9fcb2760027"
+    },
+    "/assets/enemies/large-valor.png": {
+      "size": 1024,
+      "sourceSha256": "5457e5db43fea703510496e44b1062c78302dad089df3842489624aa0df2e5c9"
+    },
+    "/assets/enemies/large-vitality.png": {
+      "size": 1024,
+      "sourceSha256": "99ea37b9475355e115588c9c63595755a78c5cac37a739dda4c1bd1f2f92a9b4"
+    },
+    "/assets/enemies/large-water.png": {
+      "size": 1024,
+      "sourceSha256": "ef8152d5292ff77571ca79e5f5c8d4ba66a80dd01c111928376e1e4f6accfd14"
+    },
+    "/assets/enemies/medium-arcane.png": {
+      "size": 1024,
+      "sourceSha256": "4229c1fd8d55135a1f4f227c41f5374267afd100ba597911aa05f0a39ec98315"
+    },
+    "/assets/enemies/medium-area.png": {
+      "size": 1024,
+      "sourceSha256": "58f01ddaddee89be99544570cd2841c895157503542208792064286b687a1eec"
+    },
+    "/assets/enemies/medium-blessing.png": {
+      "size": 1024,
+      "sourceSha256": "aa47c483b59c4a52da444ebefb56e8c92a0cd311da7276122ec0860573cd7262"
+    },
+    "/assets/enemies/medium-cloth.png": {
+      "size": 1024,
+      "sourceSha256": "eaecfca05e2648316e2dc72f970e5b01c92395ed251efe2962245a9c17f6b698"
+    },
+    "/assets/enemies/medium-dexterity.png": {
+      "size": 1024,
+      "sourceSha256": "72b07f0e1192abb5d438ad5d91daac9a8c2d1bcd5aeb11c93514b86413cbc8e7"
+    },
+    "/assets/enemies/medium-feather.png": {
+      "size": 1024,
+      "sourceSha256": "f21925d6ba2620f82d91846a88c5c910126cde81761c530316c1569dfd9f416a"
+    },
+    "/assets/enemies/medium-fire.png": {
+      "size": 1024,
+      "sourceSha256": "2952162144906ee1a12a167e84c5efd53bb7937c5debd8a2d83d5348bdb79100"
+    },
+    "/assets/enemies/medium-fortune.png": {
+      "size": 1024,
+      "sourceSha256": "4e132177fb240f6e61ae1668e3f762ed264d62f63b2ef7a0f69d019b8e33516d"
+    },
+    "/assets/enemies/medium-gem.png": {
+      "size": 1024,
+      "sourceSha256": "f70f3a0344441bbf5c677193ceec244be5f3d0f26d896ac5d896076f07776dd7"
+    },
+    "/assets/enemies/medium-iron.png": {
+      "size": 1024,
+      "sourceSha256": "e435af9ff376b1985994393d9c22a5b61e981039313f1d7fec6405e2476e320c"
+    },
+    "/assets/enemies/medium-lightning.png": {
+      "size": 1024,
+      "sourceSha256": "9be2ad4acd7202264789d572aab5f25a10a73758c2a09627476916ce505c966a"
+    },
+    "/assets/enemies/medium-reputation.png": {
+      "size": 1024,
+      "sourceSha256": "0335080f53950f86a9c83c742736d719c06fc84c62ed274ae9cec8c4b0668ddd"
+    },
+    "/assets/enemies/medium-valor.png": {
+      "size": 1024,
+      "sourceSha256": "67d8dba6a37665d561dc89e1619acff7895195be289c0bebe9dc4636f147e738"
+    },
+    "/assets/enemies/medium-vitality.png": {
+      "size": 1024,
+      "sourceSha256": "84862bd5bfcf89aee571e79c6156a0b35a6375ac2a12af40593c0845e730172c"
+    },
+    "/assets/enemies/medium-water.png": {
+      "size": 1024,
+      "sourceSha256": "b26e9adfe29c78c4b50364197212b47b5bb4618fd6ea4d679b1f885e06404eb0"
+    },
+    "/assets/enemies/small-arcane.png": {
+      "size": 512,
+      "sourceSha256": "93d49d6c78135cb5a3d9f962aa707c20d2cd38a1c995058f57042ef095fe2974"
+    },
+    "/assets/enemies/small-area-head.png": {
+      "size": 512,
+      "sourceSha256": "c7624cdfa3aba221acff86bdcc3209c5abd64c71fd58f8dbff043a4e4230df93"
+    },
+    "/assets/enemies/small-area.png": {
+      "size": 512,
+      "sourceSha256": "d7d79890ce914242acdcdd5437f9514e1b5202bfde7945602af4765c9e6cffe8"
+    },
+    "/assets/enemies/small-blessing.png": {
+      "size": 512,
+      "sourceSha256": "9d3e5cd0652eab0320ca17219b8fadbd10fbf285e0a1816da6023535842492b3"
+    },
+    "/assets/enemies/small-cloth.png": {
+      "size": 512,
+      "sourceSha256": "8d4c8618edefe2981a4cb5d3b4f0e72f31dc33f5390808ed8ab6b7f9235069a0"
+    },
+    "/assets/enemies/small-dexterity.png": {
+      "size": 512,
+      "sourceSha256": "bdfa70abd7958d5e784b038494465d5ec7ae3d271f498f95ecdff9966d456fc4"
+    },
+    "/assets/enemies/small-feather.png": {
+      "size": 512,
+      "sourceSha256": "e0cf0a5401d03fa41b1ce114e047ed4ab12357521f97ffb94887d73929b6bd65"
+    },
+    "/assets/enemies/small-fire.png": {
+      "size": 512,
+      "sourceSha256": "f8e501993ef7accb8d9a21423ec104dd7e87022608ded86a174bc3b8d7893a1c"
+    },
+    "/assets/enemies/small-fortune.png": {
+      "size": 512,
+      "sourceSha256": "c38269534783427791bfa1a001cf11bdeb6597c6f62fc20739e6e4d19b7759af"
+    },
+    "/assets/enemies/small-gem.png": {
+      "size": 512,
+      "sourceSha256": "b46c8c3a63836adb6a11ee8bcdb345a9027d53eba849fbbffd91af6f041ee084"
+    },
+    "/assets/enemies/small-iron.png": {
+      "size": 512,
+      "sourceSha256": "e7c94ee3fe36ba2a70ca0c3f937b1d1dbef8f3b3e95dfa04f6f018da06dba2c4"
+    },
+    "/assets/enemies/small-lightning.png": {
+      "size": 512,
+      "sourceSha256": "3583983e22c7a597f75728974a100e1fbc173ab658b0fa686179c3c567e07659"
+    },
+    "/assets/enemies/small-reputation.png": {
+      "size": 512,
+      "sourceSha256": "d3a343b12760a934852094326f5f047b297927962625c0b956a49b96841f8927"
+    },
+    "/assets/enemies/small-valor.png": {
+      "size": 512,
+      "sourceSha256": "1fbdcce270f01b6d3329ef32a8e9f6b9c18b54a5d70d625bbfdfdcc11272afdc"
+    },
+    "/assets/enemies/small-vitality.png": {
+      "size": 512,
+      "sourceSha256": "1892b69745137b734ec7a01725a0510a1f503f125eabb7f5ff05324131a3ac7a"
+    },
+    "/assets/enemies/small-water.png": {
+      "size": 512,
+      "sourceSha256": "d750d2b8008e71d39162dc1450adac2e99b4b4c08725c3641444dedd5795bf71"
+    },
+    "/assets/items/feet-1.png": {
+      "size": 256,
+      "sourceSha256": "9c52315c1bce2bea4f03b07e946423bd789b2d744ad11dad2246afde4527cc8a"
+    },
+    "/assets/items/feet-2.png": {
+      "size": 256,
+      "sourceSha256": "3e05c40a2fbd83248fa3433fe406613f11fc54d18889a67082bb6bbb5625b47d"
+    },
+    "/assets/items/feet-3.png": {
+      "size": 256,
+      "sourceSha256": "4ac5b308c116cb26c32e6d5783395ec8adbc133664bb26a0ed58a14fef90669b"
+    },
+    "/assets/items/feet-4.png": {
+      "size": 256,
+      "sourceSha256": "eddea4a52ab28f3908e726a6dd7cbb67afc8c4a26669677931afe00046e6b3fb"
+    },
+    "/assets/items/feet-5.png": {
+      "size": 256,
+      "sourceSha256": "d89202d4db3f1712156a2b706361018f616b0d46fd765bd91e62467dfde6b3e5"
+    },
+    "/assets/items/hand-banner.png": {
+      "size": 256,
+      "sourceSha256": "1a2bb39e1b56b911a7c8a0c9bc501d0629ff026ba67f0884fed7835e14e783e5"
+    },
+    "/assets/items/hand-bow.png": {
+      "size": 256,
+      "sourceSha256": "3c9f793cf40de80cef2897839a77a9a25eb812e6e4dee3fe4f6782befe3df271"
+    },
+    "/assets/items/hand-claw.png": {
+      "size": 256,
+      "sourceSha256": "0fd3f28eb635ae77ff89d0c913c6dd56ba0a5fd06d045b5ccd82977a521ed67c"
+    },
+    "/assets/items/hand-hero-license.png": {
+      "size": 256,
+      "sourceSha256": "e44df1493129822a5f26e93703f5a53709928a4c41ee4071d39f58f6c080a8db"
+    },
+    "/assets/items/hand-holy-book.png": {
+      "size": 256,
+      "sourceSha256": "acedb423c6133855f09410274922992712c41fd61e731a9197c2948b54fa03c8"
+    },
+    "/assets/items/hand-holy-symbol.png": {
+      "size": 256,
+      "sourceSha256": "5ae6f996bc6aa4cb64cdf42b33bf1185971b46353b65bf41a7a980bfe9892194"
+    },
+    "/assets/items/hand-orb.png": {
+      "size": 256,
+      "sourceSha256": "26389203b8f44a0dac8b8779682f8c1213c00f515cacb56da42248bde892fed4"
+    },
+    "/assets/items/hand-renewal-form.png": {
+      "size": 256,
+      "sourceSha256": "f47dc7311e9633b424714bf75da43f35cf31c11be1cd62d4546f724e7d5db358"
+    },
+    "/assets/items/hand-shield.png": {
+      "size": 256,
+      "sourceSha256": "fd22caa5f263ff9ba615e1374679f594ddb2b686046cd3faceff08b7aa614764"
+    },
+    "/assets/items/hand-shopping-bag.png": {
+      "size": 256,
+      "sourceSha256": "bdef42820de7e283ec7aa648ec08019d85522dc8e86be9d5dba0a8da22d82bba"
+    },
+    "/assets/items/hand-staff.png": {
+      "size": 256,
+      "sourceSha256": "63ba888963a0443a8eb4cdc4ad88c6c794e80455a31164dbe0401d58a318637a"
+    },
+    "/assets/items/hand-sword.png": {
+      "size": 256,
+      "sourceSha256": "2b7a4157cb5296497072b8c921b0c637dec30892ff1395210881677b2599909f"
+    },
+    "/assets/items/hand-tarot-cards.png": {
+      "size": 256,
+      "sourceSha256": "77a3bb5fce70ea5b161bd6e36c738413b0541b4884445aaf043c04ad7ff2ebc3"
+    },
+    "/assets/items/head-1.png": {
+      "size": 256,
+      "sourceSha256": "b158838704d7ea1103a6f3e085c16cc4381ed66fef7c58e000ee3d9d81b7baeb"
+    },
+    "/assets/items/head-2.png": {
+      "size": 256,
+      "sourceSha256": "85e9cdddd7a7d8a5ff1deb2678416327689d7a5f8826c264e7a44d0d1a46b6c3"
+    },
+    "/assets/items/head-3.png": {
+      "size": 256,
+      "sourceSha256": "709cb4b83e02e9563e7dbd3bbbf54ac4b656892debbc5c27822ec37a54d70cac"
+    },
+    "/assets/items/head-4.png": {
+      "size": 256,
+      "sourceSha256": "422c639c826bd90fa8854407b904d8190937f923f57d2a7ad753aecfb6a4b1ea"
+    },
+    "/assets/items/head-5.png": {
+      "size": 256,
+      "sourceSha256": "bf1c33e672dd7e34e8e805d0ff0800508f83aaf5eb13fcbefcd28d820d9b4e85"
+    },
+    "/assets/items/torso-1.png": {
+      "size": 256,
+      "sourceSha256": "fbabfe99e7dc09c41e2c15770937aa269f4572d0258fc27969814b7c98ad59b6"
+    },
+    "/assets/items/torso-2.png": {
+      "size": 256,
+      "sourceSha256": "47f428f4fa57e4ceecb76713e793f56258c08e56616ff8ad007459177ec72f03"
+    },
+    "/assets/items/torso-3.png": {
+      "size": 256,
+      "sourceSha256": "60fbfdfb8761f5dc8a7ad5a2c8cb1a4fbeebd332ca651727d66a6b7f0328b372"
+    },
+    "/assets/items/torso-4.png": {
+      "size": 256,
+      "sourceSha256": "e50d4b49867a84459b017767144cff969e93cae73c60f8437244b5e7b0a62d8b"
+    },
+    "/assets/items/torso-5.png": {
+      "size": 256,
+      "sourceSha256": "bd8d9662323deff06bb8f1c087b9245b0da0e1baadcaecea650a2c0a65ffb6a8"
+    },
+    "/assets/background/trampled-ground.png": {
+      "size": 256,
+      "sourceSha256": "18e4fe8b38e2138c0d738479541b002ca541009335fa5b0934cf742cde6cd837"
+    }
+  }
+}

@@ -105,21 +105,3 @@ test('failed level is reported and original remains available without retrying e
   assert.equal(getImageLevelDiagnostics().requests, before);
   assert.equal(getImageLevelDiagnostics().failures.length, initialFailures + 1);
 });
-
-test('loaded level cache stays within its byte budget and evicted levels can be requested again', t => {
-  const previous = globalThis.Image;
-  globalThis.Image = class { constructor() { this.complete = true; this.naturalWidth = 512; } };
-  t.after(() => { if (previous) globalThis.Image = previous; else delete globalThis.Image; });
-  const paths = Object.entries(manifest).filter(([, entry]) => entry.levels.some(level => level.width === 512 && level.height === 512)).map(([path]) => path).slice(0, 40);
-  assert.equal(paths.length, 40);
-  const context = { getTransform: () => ({ a: 1, b: 0, c: 0, d: 1 }), drawImage() {} };
-  const images = paths.map(path => { const image = {}; registerScaledImage(image, path); return image; });
-  for (const image of images) {
-    drawScaledImage(context, image, 0, 0, 500, 500);
-    const stats = getImageLevelDiagnostics();
-    assert.ok(stats.reservedBytes <= stats.byteLimit);
-  }
-  const before = getImageLevelDiagnostics().requests;
-  drawScaledImage(context, images[0], 0, 0, 500, 500);
-  assert.equal(getImageLevelDiagnostics().requests, before + 1);
-});

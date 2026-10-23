@@ -105,15 +105,21 @@ CPU負荷制限や小画面設定をモバイル実機の再現とは扱わな�
 
 ### 段階画像の再生成
 
-`npm.cmd run generate:image-levels` はPlaywrightとインストール済みChromeを使い、
-areas/heroes/tags/status/enemies/itemsと戦闘枠の地面画像から縮小PNGを生成する。
+`npm.cmd run generate:images`（旧名 `generate:image-levels` も利用可）はPlaywrightとインストール済みChromeを使い、
+`assets/images/source/` と `assets/image-sizes.json` から配信用PNG・縮小段階・マニフェストを一括生成する。
+areas/heroes/tags/status/enemies/itemsと戦闘枠の地面画像が対象。
 `IMAGE_LEVELS_CHANNEL=chromium` でPlaywright付属ブラウザーを使える。
-生成した `public/assets/image-levels/` と `src/chips/image-levels.json` を追跡する。
-通常のbuild・実機では生成しない。生成前後で元画像を上書きしない。
-元画像を更新・追加したら再生成し、`ScaledImage.test.js` のハッシュ・寸法・カタログ整合性を確認する。
+制作元・サイズ定義・生成した配信用PNG・`public/assets/image-levels/`・`src/chips/image-levels.json` を追跡する。
+通常のbuild・実機では生成しない。制作元は上書きせず、公開成果物に含めない。
+制作元の更新・追加時はサイズとSHA-256の定義を確認し直して再生成する。
+`ImageConversion.test.js` と `ScaledImage.test.js` で制作元・定義・配信用画像・段階画像の整合性を確認する。
 画面のCSS寸法、DPR、zoom、回転を反映した変換行列から必要サイズを求め、足りる最小段階を選ぶ。
 元画像も含めて十分な大きさがなければ元画像を使う。縮小画像を引き伸ばして代用しない。
 未ロードの段階画像は読み込み完了まで描画を待つ。読み込み失敗時は元画像を使う。
 静止プレビューは読み込み完了・失敗時に描き直す。
+24MiBの容量不足時は元画像へ戻さず取得・描画を省略する。
+前回・今回のフレームで要求した画像を保護し、それより古い完了済み画像だけを破棄する。
+`ImageLevelCache.test.js` で容量超過の固定集合、フレーム境界、ズーム切り替え、
+読み込み中の保護、容量不足からの静止Canvas再描画を確認する。
 
 [画面確認用入口](manual/README.md)と[操作・モバイル表示の確認](manual/controls.md)を参照する。実機・見た目について未確認の項目とオーナーの保留判断は[バックログ](../docs/planning/backlog.md)を正本とする。自動テスト成功を実機確認済みとは扱わない。

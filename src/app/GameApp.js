@@ -1,4 +1,5 @@
 import AssetLoader from '../chips/AssetLoader.js';
+import { beginImageLevelFrame } from '../chips/ScaledImage.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, WORLD_SIZE } from '../game/GameAreas.js';
 import GameClock from '../game/GameClock.js';
@@ -178,6 +179,7 @@ export async function startGame() {
 
   let previousTime = performance.now();
   function render(time) {
+    beginImageLevelFrame(time);
     syncHudScale();
     const deltaSeconds = (time - previousTime) / 1000;
     previousTime = time;
