@@ -1,3 +1,4 @@
+import { drawScaledImage } from '../chips/ScaledImage.js';
 import { GAME_AREAS, getPreparationSubareaBounds } from '../game/GameAreas.js';
 import { BATTLE_ENEMY_AREA_HEIGHT, BATTLE_ENEMY_SLOT_TOP, HERO_SLOT_SIZE } from '../game/HeroSlotLayout.js';
 
@@ -26,7 +27,7 @@ function drawBattleSlotGround(context, assets) {
     { columns: [0, 1, 2, 3, 4, 5], y: battle.y + BATTLE_ENEMY_SLOT_TOP },
     { columns: [1, 2, 3, 4], y: battle.y + BATTLE_ENEMY_AREA_HEIGHT },
   ];
-  rows.forEach(({ columns, y }) => columns.forEach((column) => context.drawImage(image, startX + column * HERO_SLOT_SIZE, y, HERO_SLOT_SIZE, HERO_SLOT_SIZE)));
+  rows.forEach(({ columns, y }) => columns.forEach((column) => drawScaledImage(context, image, startX + column * HERO_SLOT_SIZE, y, HERO_SLOT_SIZE, HERO_SLOT_SIZE)));
 }
 
 export function drawWorldSurfaces(context, assets, preparationHeroCount) {

@@ -33,7 +33,7 @@ function createPanel(version) {
   return root;
 }
 
-export function installMobilePerformance({ trial, clock, camera, assets, canvases, version }) {
+export function installMobilePerformance({ trial, clock, camera, assets, canvases, version, getImageLevelDiagnostics }) {
   const panel = createPanel(version);
   const status = panel.querySelector('[data-status]');
   const buttons = Object.fromEntries([...panel.querySelectorAll('button')].map(button => [button.dataset.action, button]));
@@ -93,6 +93,7 @@ export function installMobilePerformance({ trial, clock, camera, assets, canvase
     if (!trial.controller) return { sessionEnded: true };
     const chips = trial.controller.board.chips;
     return { tick: clock.tick, paused: clock.isPaused, speed: clock.speed, chips: chips.length,
+      imageLevels: getImageLevelDiagnostics(),
       heroes: trial.controller.getHeroes().length, enemies: trial.controller.getEnemies().length,
       informationWindows: document.querySelectorAll('.InformationWindow').length,
       camera: { x: camera.x, y: camera.y, zoom: camera.zoom },
@@ -160,6 +161,8 @@ export function installMobilePerformance({ trial, clock, camera, assets, canvase
         canvasGPUAcceleration: 'unknown: not exposed by browser',
         jsHeap: performance.memory ? { used: performance.memory.usedJSHeapSize, limit: performance.memory.jsHeapSizeLimit } : null },
       notes: ['Times are milliseconds. Main/sections measure JS call duration, not GPU completion.',
+        'Baseline uses the current image rendering policy; compare policy and version before comparing reports.',
+        'small-images may make no replacements when the baseline already uses appropriately sized levels.',
         'Frozen phases skip simulation and visual updates; compare only within frozen phases.',
         'Image replacement adds cached images while retaining originals; this does not test memory savings.',
         'noImages leaves createPattern backgrounds. noPaint leaves DOM and Canvas path construction.',

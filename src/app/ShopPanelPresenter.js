@@ -1,3 +1,4 @@
+import { drawScaledImage } from '../chips/ScaledImage.js';
 export const SHOP_PURCHASE_SLOT_GRID = Object.freeze([[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]]);
 
 export function getShopPurchasePresentation(transaction) {
@@ -41,7 +42,7 @@ export function drawShopPanel({ context, assets, snapshot, texts, layout, drawIt
   drawTrend(texts.getLabel('shopNext'), snapshot.nextTag, layout.saleBoards.next);
   const { slotSize, gap, top, sellItemsTop, bagX, bagY, sellX, arrowX, purchaseX } = layout.transaction;
   const bagImage = assets.load('/assets/items/hand-shopping-bag.png');
-  if (bagImage.complete && bagImage.naturalWidth > 0) context.drawImage(bagImage, bagX, bagY, 48, 48);
+  if (bagImage.complete && bagImage.naturalWidth > 0) drawScaledImage(context, bagImage, bagX, bagY, 48, 48);
   snapshot.soldItems.forEach((item, index) => drawItemSlot(context, assets, item, sellX + index * (slotSize + gap), sellItemsTop));
   SHOP_PURCHASE_SLOT_GRID.forEach(([column, row], index) => drawItemSlot(context, assets, index < snapshot.purchases.length ? snapshot.purchases[index].item : null, purchaseX + (column - 1) * (slotSize + gap), top + row * (slotSize + gap)));
   const arrowY = sellItemsTop + slotSize / 2;

@@ -1,0 +1,4350 @@
+{
+  "/assets/areas/battle.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/areas/battle.dbf44d3c8b25.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/areas/battle.dbf44d3c8b25.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/areas/battle.dbf44d3c8b25.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/areas/battle.dbf44d3c8b25.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/areas/battle.dbf44d3c8b25.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/areas/battle.dbf44d3c8b25.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/areas/battle.dbf44d3c8b25.512.png"
+      }
+    ]
+  },
+  "/assets/areas/guild.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/areas/guild.51e718a1f002.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/areas/guild.51e718a1f002.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/areas/guild.51e718a1f002.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/areas/guild.51e718a1f002.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/areas/guild.51e718a1f002.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/areas/guild.51e718a1f002.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/areas/guild.51e718a1f002.512.png"
+      }
+    ]
+  },
+  "/assets/areas/preparation.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/areas/preparation.0a7f6554a529.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/areas/preparation.0a7f6554a529.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/areas/preparation.0a7f6554a529.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/areas/preparation.0a7f6554a529.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/areas/preparation.0a7f6554a529.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/areas/preparation.0a7f6554a529.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/areas/preparation.0a7f6554a529.512.png"
+      }
+    ]
+  },
+  "/assets/areas/shop.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/areas/shop.d9b74c4477ef.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/areas/shop.d9b74c4477ef.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/areas/shop.d9b74c4477ef.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/areas/shop.d9b74c4477ef.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/areas/shop.d9b74c4477ef.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/areas/shop.d9b74c4477ef.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/areas/shop.d9b74c4477ef.512.png"
+      }
+    ]
+  },
+  "/assets/areas/training.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/areas/training.432548e4e5bd.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/areas/training.432548e4e5bd.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/areas/training.432548e4e5bd.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/areas/training.432548e4e5bd.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/areas/training.432548e4e5bd.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/areas/training.432548e4e5bd.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/areas/training.432548e4e5bd.512.png"
+      }
+    ]
+  },
+  "/assets/areas/warehouse.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/areas/warehouse.c52214d5eaa3.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/areas/warehouse.c52214d5eaa3.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/areas/warehouse.c52214d5eaa3.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/areas/warehouse.c52214d5eaa3.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/areas/warehouse.c52214d5eaa3.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/areas/warehouse.c52214d5eaa3.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/areas/warehouse.c52214d5eaa3.512.png"
+      }
+    ]
+  },
+  "/assets/heroes/cleric.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/heroes/cleric.a71b843f7615.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/heroes/cleric.a71b843f7615.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/heroes/cleric.a71b843f7615.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/heroes/cleric.a71b843f7615.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/heroes/cleric.a71b843f7615.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/heroes/cleric.a71b843f7615.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/heroes/cleric.a71b843f7615.512.png"
+      }
+    ]
+  },
+  "/assets/heroes/guard.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/heroes/guard.d613b811eaeb.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/heroes/guard.d613b811eaeb.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/heroes/guard.d613b811eaeb.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/heroes/guard.d613b811eaeb.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/heroes/guard.d613b811eaeb.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/heroes/guard.d613b811eaeb.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/heroes/guard.d613b811eaeb.512.png"
+      }
+    ]
+  },
+  "/assets/heroes/hunter.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/heroes/hunter.f8bcd86f38a7.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/heroes/hunter.f8bcd86f38a7.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/heroes/hunter.f8bcd86f38a7.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/heroes/hunter.f8bcd86f38a7.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/heroes/hunter.f8bcd86f38a7.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/heroes/hunter.f8bcd86f38a7.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/heroes/hunter.f8bcd86f38a7.512.png"
+      }
+    ]
+  },
+  "/assets/heroes/mage.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/heroes/mage.3828ac623fe8.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/heroes/mage.3828ac623fe8.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/heroes/mage.3828ac623fe8.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/heroes/mage.3828ac623fe8.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/heroes/mage.3828ac623fe8.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/heroes/mage.3828ac623fe8.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/heroes/mage.3828ac623fe8.512.png"
+      }
+    ]
+  },
+  "/assets/heroes/merchant.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/heroes/merchant.f9337738a3a3.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/heroes/merchant.f9337738a3a3.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/heroes/merchant.f9337738a3a3.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/heroes/merchant.f9337738a3a3.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/heroes/merchant.f9337738a3a3.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/heroes/merchant.f9337738a3a3.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/heroes/merchant.f9337738a3a3.512.png"
+      }
+    ]
+  },
+  "/assets/heroes/negotiator.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/heroes/negotiator.497619fa2250.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/heroes/negotiator.497619fa2250.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/heroes/negotiator.497619fa2250.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/heroes/negotiator.497619fa2250.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/heroes/negotiator.497619fa2250.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/heroes/negotiator.497619fa2250.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/heroes/negotiator.497619fa2250.512.png"
+      }
+    ]
+  },
+  "/assets/heroes/swoardfighter.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/heroes/swoardfighter.ee518578129e.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/heroes/swoardfighter.ee518578129e.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/heroes/swoardfighter.ee518578129e.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/heroes/swoardfighter.ee518578129e.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/heroes/swoardfighter.ee518578129e.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/heroes/swoardfighter.ee518578129e.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/heroes/swoardfighter.ee518578129e.512.png"
+      }
+    ]
+  },
+  "/assets/heroes/thief.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/heroes/thief.9a115b97421f.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/heroes/thief.9a115b97421f.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/heroes/thief.9a115b97421f.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/heroes/thief.9a115b97421f.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/heroes/thief.9a115b97421f.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/heroes/thief.9a115b97421f.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/heroes/thief.9a115b97421f.512.png"
+      }
+    ]
+  },
+  "/assets/tags/arcane.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/arcane.adfa2e1cba0d.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/arcane.adfa2e1cba0d.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/arcane.adfa2e1cba0d.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/arcane.adfa2e1cba0d.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/arcane.adfa2e1cba0d.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/arcane.adfa2e1cba0d.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/arcane.adfa2e1cba0d.512.png"
+      }
+    ]
+  },
+  "/assets/tags/area.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/area.c50bf0ea7165.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/area.c50bf0ea7165.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/area.c50bf0ea7165.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/area.c50bf0ea7165.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/area.c50bf0ea7165.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/area.c50bf0ea7165.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/area.c50bf0ea7165.512.png"
+      }
+    ]
+  },
+  "/assets/tags/blessing.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/blessing.f4ef7062dd29.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/blessing.f4ef7062dd29.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/blessing.f4ef7062dd29.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/blessing.f4ef7062dd29.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/blessing.f4ef7062dd29.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/blessing.f4ef7062dd29.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/blessing.f4ef7062dd29.512.png"
+      }
+    ]
+  },
+  "/assets/tags/cloth.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/cloth.d5249e1ec53a.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/cloth.d5249e1ec53a.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/cloth.d5249e1ec53a.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/cloth.d5249e1ec53a.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/cloth.d5249e1ec53a.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/cloth.d5249e1ec53a.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/cloth.d5249e1ec53a.512.png"
+      }
+    ]
+  },
+  "/assets/tags/dexterity.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/dexterity.0896236d166d.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/dexterity.0896236d166d.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/dexterity.0896236d166d.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/dexterity.0896236d166d.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/dexterity.0896236d166d.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/dexterity.0896236d166d.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/dexterity.0896236d166d.512.png"
+      }
+    ]
+  },
+  "/assets/tags/feather.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/feather.937d8cf6fa03.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/feather.937d8cf6fa03.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/feather.937d8cf6fa03.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/feather.937d8cf6fa03.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/feather.937d8cf6fa03.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/feather.937d8cf6fa03.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/feather.937d8cf6fa03.512.png"
+      }
+    ]
+  },
+  "/assets/tags/fire.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/fire.0673300dbf2a.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/fire.0673300dbf2a.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/fire.0673300dbf2a.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/fire.0673300dbf2a.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/fire.0673300dbf2a.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/fire.0673300dbf2a.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/fire.0673300dbf2a.512.png"
+      }
+    ]
+  },
+  "/assets/tags/fortune.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/fortune.fd07ab8c570c.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/fortune.fd07ab8c570c.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/fortune.fd07ab8c570c.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/fortune.fd07ab8c570c.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/fortune.fd07ab8c570c.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/fortune.fd07ab8c570c.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/fortune.fd07ab8c570c.512.png"
+      }
+    ]
+  },
+  "/assets/tags/gem.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/gem.d4725d09e8e6.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/gem.d4725d09e8e6.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/gem.d4725d09e8e6.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/gem.d4725d09e8e6.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/gem.d4725d09e8e6.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/gem.d4725d09e8e6.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/gem.d4725d09e8e6.512.png"
+      }
+    ]
+  },
+  "/assets/tags/iron.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/iron.33b5a754ec3f.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/iron.33b5a754ec3f.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/iron.33b5a754ec3f.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/iron.33b5a754ec3f.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/iron.33b5a754ec3f.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/iron.33b5a754ec3f.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/iron.33b5a754ec3f.512.png"
+      }
+    ]
+  },
+  "/assets/tags/lightning.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/lightning.4dd924c1cbd0.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/lightning.4dd924c1cbd0.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/lightning.4dd924c1cbd0.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/lightning.4dd924c1cbd0.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/lightning.4dd924c1cbd0.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/lightning.4dd924c1cbd0.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/lightning.4dd924c1cbd0.512.png"
+      }
+    ]
+  },
+  "/assets/tags/reputation.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/reputation.b863bd2899bf.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/reputation.b863bd2899bf.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/reputation.b863bd2899bf.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/reputation.b863bd2899bf.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/reputation.b863bd2899bf.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/reputation.b863bd2899bf.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/reputation.b863bd2899bf.512.png"
+      }
+    ]
+  },
+  "/assets/tags/valor.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/valor.92e95740da0c.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/valor.92e95740da0c.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/valor.92e95740da0c.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/valor.92e95740da0c.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/valor.92e95740da0c.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/valor.92e95740da0c.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/valor.92e95740da0c.512.png"
+      }
+    ]
+  },
+  "/assets/tags/vitality.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/vitality.fa23985e23fa.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/vitality.fa23985e23fa.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/vitality.fa23985e23fa.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/vitality.fa23985e23fa.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/vitality.fa23985e23fa.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/vitality.fa23985e23fa.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/vitality.fa23985e23fa.512.png"
+      }
+    ]
+  },
+  "/assets/tags/water.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/tags/water.998361d693ce.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/tags/water.998361d693ce.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/tags/water.998361d693ce.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/tags/water.998361d693ce.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/tags/water.998361d693ce.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/tags/water.998361d693ce.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/tags/water.998361d693ce.512.png"
+      }
+    ]
+  },
+  "/assets/status/durability.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/durability.755636264f22.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/durability.755636264f22.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/durability.755636264f22.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/durability.755636264f22.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/durability.755636264f22.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/durability.755636264f22.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/durability.755636264f22.512.png"
+      }
+    ]
+  },
+  "/assets/status/hp.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/hp.d6c7402802aa.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/hp.d6c7402802aa.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/hp.d6c7402802aa.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/hp.d6c7402802aa.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/hp.d6c7402802aa.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/hp.d6c7402802aa.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/hp.d6c7402802aa.512.png"
+      }
+    ]
+  },
+  "/assets/status/luck.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/luck.4f216c1ab376.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/luck.4f216c1ab376.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/luck.4f216c1ab376.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/luck.4f216c1ab376.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/luck.4f216c1ab376.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/luck.4f216c1ab376.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/luck.4f216c1ab376.512.png"
+      }
+    ]
+  },
+  "/assets/status/magic.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/magic.ae9f6ce0adf9.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/magic.ae9f6ce0adf9.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/magic.ae9f6ce0adf9.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/magic.ae9f6ce0adf9.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/magic.ae9f6ce0adf9.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/magic.ae9f6ce0adf9.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/magic.ae9f6ce0adf9.512.png"
+      }
+    ]
+  },
+  "/assets/status/negotiation.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/negotiation.00b04b0e25d3.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/negotiation.00b04b0e25d3.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/negotiation.00b04b0e25d3.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/negotiation.00b04b0e25d3.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/negotiation.00b04b0e25d3.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/negotiation.00b04b0e25d3.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/negotiation.00b04b0e25d3.512.png"
+      }
+    ]
+  },
+  "/assets/status/power.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/power.f015cf736668.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/power.f015cf736668.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/power.f015cf736668.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/power.f015cf736668.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/power.f015cf736668.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/power.f015cf736668.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/power.f015cf736668.512.png"
+      }
+    ]
+  },
+  "/assets/status/speed.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/speed.2dfef83d33a6.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/speed.2dfef83d33a6.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/speed.2dfef83d33a6.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/speed.2dfef83d33a6.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/speed.2dfef83d33a6.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/speed.2dfef83d33a6.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/speed.2dfef83d33a6.512.png"
+      }
+    ]
+  },
+  "/assets/status/stamina.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/stamina.60a389512296.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/stamina.60a389512296.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/stamina.60a389512296.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/stamina.60a389512296.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/stamina.60a389512296.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/stamina.60a389512296.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/stamina.60a389512296.512.png"
+      }
+    ]
+  },
+  "/assets/status/weight.png": {
+    "width": 1254,
+    "height": 1254,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/status/weight.835f5137cfe4.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/status/weight.835f5137cfe4.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/status/weight.835f5137cfe4.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/status/weight.835f5137cfe4.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/status/weight.835f5137cfe4.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/status/weight.835f5137cfe4.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/status/weight.835f5137cfe4.512.png"
+      },
+      {
+        "width": 1024,
+        "height": 1024,
+        "path": "/assets/image-levels/status/weight.835f5137cfe4.1024.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-arcane.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-arcane.f41c1fea08a1.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-arcane.f41c1fea08a1.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-arcane.f41c1fea08a1.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-arcane.f41c1fea08a1.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-arcane.f41c1fea08a1.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-arcane.f41c1fea08a1.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-arcane.f41c1fea08a1.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-area.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-area.41377778bcd1.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-area.41377778bcd1.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-area.41377778bcd1.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-area.41377778bcd1.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-area.41377778bcd1.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-area.41377778bcd1.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-area.41377778bcd1.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-blessing.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-blessing.4c65672d2ef0.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-blessing.4c65672d2ef0.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-blessing.4c65672d2ef0.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-blessing.4c65672d2ef0.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-blessing.4c65672d2ef0.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-blessing.4c65672d2ef0.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-blessing.4c65672d2ef0.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-cloth.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-cloth.b9fe8388b04e.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-cloth.b9fe8388b04e.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-cloth.b9fe8388b04e.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-cloth.b9fe8388b04e.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-cloth.b9fe8388b04e.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-cloth.b9fe8388b04e.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-cloth.b9fe8388b04e.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-dexterity.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-dexterity.baeb2c082cfe.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-dexterity.baeb2c082cfe.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-dexterity.baeb2c082cfe.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-dexterity.baeb2c082cfe.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-dexterity.baeb2c082cfe.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-dexterity.baeb2c082cfe.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-dexterity.baeb2c082cfe.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-feather.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-feather.d05dc4d160ad.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-feather.d05dc4d160ad.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-feather.d05dc4d160ad.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-feather.d05dc4d160ad.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-feather.d05dc4d160ad.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-feather.d05dc4d160ad.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-feather.d05dc4d160ad.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-fire.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-fire.caabf4fab7bb.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-fire.caabf4fab7bb.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-fire.caabf4fab7bb.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-fire.caabf4fab7bb.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-fire.caabf4fab7bb.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-fire.caabf4fab7bb.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-fire.caabf4fab7bb.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-fortune.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-fortune.e31a1b412c20.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-fortune.e31a1b412c20.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-fortune.e31a1b412c20.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-fortune.e31a1b412c20.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-fortune.e31a1b412c20.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-fortune.e31a1b412c20.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-fortune.e31a1b412c20.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-gem.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-gem.9c96d5741398.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-gem.9c96d5741398.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-gem.9c96d5741398.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-gem.9c96d5741398.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-gem.9c96d5741398.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-gem.9c96d5741398.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-gem.9c96d5741398.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-iron.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-iron.ef5807c7d3ae.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-iron.ef5807c7d3ae.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-iron.ef5807c7d3ae.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-iron.ef5807c7d3ae.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-iron.ef5807c7d3ae.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-iron.ef5807c7d3ae.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-iron.ef5807c7d3ae.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-lightning.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-lightning.c6032bace9eb.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-lightning.c6032bace9eb.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-lightning.c6032bace9eb.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-lightning.c6032bace9eb.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-lightning.c6032bace9eb.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-lightning.c6032bace9eb.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-lightning.c6032bace9eb.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-reputation.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-reputation.c132a9eb78be.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-reputation.c132a9eb78be.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-reputation.c132a9eb78be.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-reputation.c132a9eb78be.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-reputation.c132a9eb78be.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-reputation.c132a9eb78be.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-reputation.c132a9eb78be.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-valor.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-valor.5457e5db43fe.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-valor.5457e5db43fe.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-valor.5457e5db43fe.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-valor.5457e5db43fe.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-valor.5457e5db43fe.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-valor.5457e5db43fe.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-valor.5457e5db43fe.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-vitality.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-vitality.99ea37b94753.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-vitality.99ea37b94753.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-vitality.99ea37b94753.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-vitality.99ea37b94753.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-vitality.99ea37b94753.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-vitality.99ea37b94753.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-vitality.99ea37b94753.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/large-water.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/large-water.ef8152d5292f.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/large-water.ef8152d5292f.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/large-water.ef8152d5292f.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/large-water.ef8152d5292f.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/large-water.ef8152d5292f.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/large-water.ef8152d5292f.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/large-water.ef8152d5292f.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-arcane.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-arcane.4229c1fd8d55.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-arcane.4229c1fd8d55.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-arcane.4229c1fd8d55.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-arcane.4229c1fd8d55.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-arcane.4229c1fd8d55.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-arcane.4229c1fd8d55.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-arcane.4229c1fd8d55.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-area.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-area.58f01ddaddee.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-area.58f01ddaddee.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-area.58f01ddaddee.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-area.58f01ddaddee.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-area.58f01ddaddee.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-area.58f01ddaddee.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-area.58f01ddaddee.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-blessing.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-blessing.aa47c483b59c.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-blessing.aa47c483b59c.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-blessing.aa47c483b59c.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-blessing.aa47c483b59c.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-blessing.aa47c483b59c.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-blessing.aa47c483b59c.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-blessing.aa47c483b59c.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-cloth.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-cloth.eaecfca05e26.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-cloth.eaecfca05e26.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-cloth.eaecfca05e26.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-cloth.eaecfca05e26.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-cloth.eaecfca05e26.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-cloth.eaecfca05e26.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-cloth.eaecfca05e26.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-dexterity.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-dexterity.72b07f0e1192.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-dexterity.72b07f0e1192.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-dexterity.72b07f0e1192.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-dexterity.72b07f0e1192.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-dexterity.72b07f0e1192.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-dexterity.72b07f0e1192.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-dexterity.72b07f0e1192.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-feather.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-feather.f21925d6ba26.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-feather.f21925d6ba26.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-feather.f21925d6ba26.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-feather.f21925d6ba26.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-feather.f21925d6ba26.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-feather.f21925d6ba26.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-feather.f21925d6ba26.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-fire.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-fire.295216214490.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-fire.295216214490.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-fire.295216214490.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-fire.295216214490.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-fire.295216214490.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-fire.295216214490.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-fire.295216214490.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-fortune.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-fortune.4e132177fb24.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-fortune.4e132177fb24.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-fortune.4e132177fb24.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-fortune.4e132177fb24.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-fortune.4e132177fb24.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-fortune.4e132177fb24.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-fortune.4e132177fb24.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-gem.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-gem.f70f3a034444.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-gem.f70f3a034444.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-gem.f70f3a034444.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-gem.f70f3a034444.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-gem.f70f3a034444.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-gem.f70f3a034444.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-gem.f70f3a034444.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-iron.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-iron.e435af9ff376.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-iron.e435af9ff376.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-iron.e435af9ff376.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-iron.e435af9ff376.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-iron.e435af9ff376.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-iron.e435af9ff376.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-iron.e435af9ff376.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-lightning.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-lightning.9be2ad4acd72.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-lightning.9be2ad4acd72.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-lightning.9be2ad4acd72.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-lightning.9be2ad4acd72.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-lightning.9be2ad4acd72.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-lightning.9be2ad4acd72.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-lightning.9be2ad4acd72.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-reputation.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-reputation.0335080f5395.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-reputation.0335080f5395.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-reputation.0335080f5395.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-reputation.0335080f5395.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-reputation.0335080f5395.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-reputation.0335080f5395.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-reputation.0335080f5395.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-valor.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-valor.67d8dba6a376.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-valor.67d8dba6a376.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-valor.67d8dba6a376.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-valor.67d8dba6a376.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-valor.67d8dba6a376.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-valor.67d8dba6a376.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-valor.67d8dba6a376.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-vitality.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-vitality.84862bd5bfcf.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-vitality.84862bd5bfcf.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-vitality.84862bd5bfcf.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-vitality.84862bd5bfcf.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-vitality.84862bd5bfcf.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-vitality.84862bd5bfcf.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-vitality.84862bd5bfcf.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/medium-water.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/medium-water.b26e9adfe29c.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/medium-water.b26e9adfe29c.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/medium-water.b26e9adfe29c.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/medium-water.b26e9adfe29c.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/medium-water.b26e9adfe29c.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/medium-water.b26e9adfe29c.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/medium-water.b26e9adfe29c.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-arcane.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-arcane.93d49d6c7813.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-arcane.93d49d6c7813.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-arcane.93d49d6c7813.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-arcane.93d49d6c7813.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-arcane.93d49d6c7813.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-arcane.93d49d6c7813.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-arcane.93d49d6c7813.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-area-head.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-area-head.c7624cdfa3ab.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-area-head.c7624cdfa3ab.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-area-head.c7624cdfa3ab.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-area-head.c7624cdfa3ab.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-area-head.c7624cdfa3ab.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-area-head.c7624cdfa3ab.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-area-head.c7624cdfa3ab.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-area.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-area.d7d79890ce91.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-area.d7d79890ce91.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-area.d7d79890ce91.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-area.d7d79890ce91.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-area.d7d79890ce91.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-area.d7d79890ce91.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-area.d7d79890ce91.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-blessing.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-blessing.9d3e5cd0652e.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-blessing.9d3e5cd0652e.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-blessing.9d3e5cd0652e.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-blessing.9d3e5cd0652e.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-blessing.9d3e5cd0652e.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-blessing.9d3e5cd0652e.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-blessing.9d3e5cd0652e.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-cloth.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-cloth.8d4c8618edef.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-cloth.8d4c8618edef.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-cloth.8d4c8618edef.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-cloth.8d4c8618edef.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-cloth.8d4c8618edef.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-cloth.8d4c8618edef.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-cloth.8d4c8618edef.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-dexterity.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-dexterity.bdfa70abd795.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-dexterity.bdfa70abd795.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-dexterity.bdfa70abd795.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-dexterity.bdfa70abd795.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-dexterity.bdfa70abd795.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-dexterity.bdfa70abd795.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-dexterity.bdfa70abd795.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-feather.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-feather.e0cf0a5401d0.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-feather.e0cf0a5401d0.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-feather.e0cf0a5401d0.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-feather.e0cf0a5401d0.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-feather.e0cf0a5401d0.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-feather.e0cf0a5401d0.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-feather.e0cf0a5401d0.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-fire.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-fire.f8e501993ef7.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-fire.f8e501993ef7.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-fire.f8e501993ef7.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-fire.f8e501993ef7.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-fire.f8e501993ef7.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-fire.f8e501993ef7.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-fire.f8e501993ef7.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-fortune.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-fortune.c38269534783.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-fortune.c38269534783.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-fortune.c38269534783.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-fortune.c38269534783.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-fortune.c38269534783.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-fortune.c38269534783.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-fortune.c38269534783.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-gem.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-gem.b46c8c3a6383.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-gem.b46c8c3a6383.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-gem.b46c8c3a6383.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-gem.b46c8c3a6383.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-gem.b46c8c3a6383.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-gem.b46c8c3a6383.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-gem.b46c8c3a6383.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-iron.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-iron.e7c94ee3fe36.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-iron.e7c94ee3fe36.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-iron.e7c94ee3fe36.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-iron.e7c94ee3fe36.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-iron.e7c94ee3fe36.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-iron.e7c94ee3fe36.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-iron.e7c94ee3fe36.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-lightning.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-lightning.3583983e22c7.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-lightning.3583983e22c7.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-lightning.3583983e22c7.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-lightning.3583983e22c7.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-lightning.3583983e22c7.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-lightning.3583983e22c7.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-lightning.3583983e22c7.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-reputation.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-reputation.d3a343b12760.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-reputation.d3a343b12760.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-reputation.d3a343b12760.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-reputation.d3a343b12760.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-reputation.d3a343b12760.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-reputation.d3a343b12760.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-reputation.d3a343b12760.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-valor.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-valor.1fbdcce270f0.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-valor.1fbdcce270f0.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-valor.1fbdcce270f0.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-valor.1fbdcce270f0.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-valor.1fbdcce270f0.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-valor.1fbdcce270f0.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-valor.1fbdcce270f0.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-vitality.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-vitality.1892b6974513.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-vitality.1892b6974513.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-vitality.1892b6974513.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-vitality.1892b6974513.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-vitality.1892b6974513.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-vitality.1892b6974513.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-vitality.1892b6974513.512.png"
+      }
+    ]
+  },
+  "/assets/enemies/small-water.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/enemies/small-water.d750d2b8008e.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/enemies/small-water.d750d2b8008e.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/enemies/small-water.d750d2b8008e.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/enemies/small-water.d750d2b8008e.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/enemies/small-water.d750d2b8008e.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/enemies/small-water.d750d2b8008e.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/enemies/small-water.d750d2b8008e.512.png"
+      }
+    ]
+  },
+  "/assets/items/feet-1.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/feet-1.9c52315c1bce.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/feet-1.9c52315c1bce.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/feet-1.9c52315c1bce.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/feet-1.9c52315c1bce.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/feet-1.9c52315c1bce.128.png"
+      }
+    ]
+  },
+  "/assets/items/feet-2.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/feet-2.3e05c40a2fbd.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/feet-2.3e05c40a2fbd.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/feet-2.3e05c40a2fbd.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/feet-2.3e05c40a2fbd.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/feet-2.3e05c40a2fbd.128.png"
+      }
+    ]
+  },
+  "/assets/items/feet-3.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/feet-3.4ac5b308c116.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/feet-3.4ac5b308c116.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/feet-3.4ac5b308c116.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/feet-3.4ac5b308c116.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/feet-3.4ac5b308c116.128.png"
+      }
+    ]
+  },
+  "/assets/items/feet-4.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/feet-4.eddea4a52ab2.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/feet-4.eddea4a52ab2.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/feet-4.eddea4a52ab2.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/feet-4.eddea4a52ab2.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/feet-4.eddea4a52ab2.128.png"
+      }
+    ]
+  },
+  "/assets/items/feet-5.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/feet-5.d89202d4db3f.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/feet-5.d89202d4db3f.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/feet-5.d89202d4db3f.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/feet-5.d89202d4db3f.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/feet-5.d89202d4db3f.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-banner.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-banner.1a2bb39e1b56.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-banner.1a2bb39e1b56.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-banner.1a2bb39e1b56.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-banner.1a2bb39e1b56.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-banner.1a2bb39e1b56.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-bow.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-bow.3c9f793cf40d.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-bow.3c9f793cf40d.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-bow.3c9f793cf40d.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-bow.3c9f793cf40d.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-bow.3c9f793cf40d.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-claw.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-claw.0fd3f28eb635.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-claw.0fd3f28eb635.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-claw.0fd3f28eb635.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-claw.0fd3f28eb635.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-claw.0fd3f28eb635.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-hero-license.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-hero-license.e44df1493129.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-hero-license.e44df1493129.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-hero-license.e44df1493129.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-hero-license.e44df1493129.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-hero-license.e44df1493129.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-holy-book.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-holy-book.acedb423c613.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-holy-book.acedb423c613.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-holy-book.acedb423c613.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-holy-book.acedb423c613.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-holy-book.acedb423c613.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-holy-symbol.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-holy-symbol.5ae6f996bc6a.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-holy-symbol.5ae6f996bc6a.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-holy-symbol.5ae6f996bc6a.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-holy-symbol.5ae6f996bc6a.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-holy-symbol.5ae6f996bc6a.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-orb.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-orb.26389203b8f4.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-orb.26389203b8f4.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-orb.26389203b8f4.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-orb.26389203b8f4.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-orb.26389203b8f4.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-renewal-form.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-renewal-form.f47dc7311e96.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-renewal-form.f47dc7311e96.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-renewal-form.f47dc7311e96.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-renewal-form.f47dc7311e96.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-renewal-form.f47dc7311e96.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-shield.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-shield.fd22caa5f263.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-shield.fd22caa5f263.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-shield.fd22caa5f263.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-shield.fd22caa5f263.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-shield.fd22caa5f263.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-shopping-bag.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-shopping-bag.bdef42820de7.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-shopping-bag.bdef42820de7.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-shopping-bag.bdef42820de7.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-shopping-bag.bdef42820de7.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-shopping-bag.bdef42820de7.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-staff.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-staff.63ba888963a0.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-staff.63ba888963a0.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-staff.63ba888963a0.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-staff.63ba888963a0.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-staff.63ba888963a0.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-sword.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-sword.2b7a4157cb52.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-sword.2b7a4157cb52.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-sword.2b7a4157cb52.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-sword.2b7a4157cb52.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-sword.2b7a4157cb52.128.png"
+      }
+    ]
+  },
+  "/assets/items/hand-tarot-cards.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/hand-tarot-cards.77a3bb5fce70.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/hand-tarot-cards.77a3bb5fce70.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/hand-tarot-cards.77a3bb5fce70.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/hand-tarot-cards.77a3bb5fce70.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/hand-tarot-cards.77a3bb5fce70.128.png"
+      }
+    ]
+  },
+  "/assets/items/head-1.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/head-1.b158838704d7.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/head-1.b158838704d7.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/head-1.b158838704d7.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/head-1.b158838704d7.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/head-1.b158838704d7.128.png"
+      }
+    ]
+  },
+  "/assets/items/head-2.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/head-2.85e9cdddd7a7.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/head-2.85e9cdddd7a7.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/head-2.85e9cdddd7a7.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/head-2.85e9cdddd7a7.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/head-2.85e9cdddd7a7.128.png"
+      }
+    ]
+  },
+  "/assets/items/head-3.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/head-3.709cb4b83e02.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/head-3.709cb4b83e02.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/head-3.709cb4b83e02.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/head-3.709cb4b83e02.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/head-3.709cb4b83e02.128.png"
+      }
+    ]
+  },
+  "/assets/items/head-4.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/head-4.422c639c826b.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/head-4.422c639c826b.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/head-4.422c639c826b.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/head-4.422c639c826b.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/head-4.422c639c826b.128.png"
+      }
+    ]
+  },
+  "/assets/items/head-5.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/head-5.bf1c33e672dd.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/head-5.bf1c33e672dd.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/head-5.bf1c33e672dd.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/head-5.bf1c33e672dd.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/head-5.bf1c33e672dd.128.png"
+      }
+    ]
+  },
+  "/assets/items/torso-1.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/torso-1.fbabfe99e7dc.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/torso-1.fbabfe99e7dc.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/torso-1.fbabfe99e7dc.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/torso-1.fbabfe99e7dc.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/torso-1.fbabfe99e7dc.128.png"
+      }
+    ]
+  },
+  "/assets/items/torso-2.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/torso-2.47f428f4fa57.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/torso-2.47f428f4fa57.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/torso-2.47f428f4fa57.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/torso-2.47f428f4fa57.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/torso-2.47f428f4fa57.128.png"
+      }
+    ]
+  },
+  "/assets/items/torso-3.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/torso-3.60fbfdfb8761.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/torso-3.60fbfdfb8761.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/torso-3.60fbfdfb8761.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/torso-3.60fbfdfb8761.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/torso-3.60fbfdfb8761.128.png"
+      }
+    ]
+  },
+  "/assets/items/torso-4.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/torso-4.e50d4b49867a.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/torso-4.e50d4b49867a.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/torso-4.e50d4b49867a.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/torso-4.e50d4b49867a.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/torso-4.e50d4b49867a.128.png"
+      }
+    ]
+  },
+  "/assets/items/torso-5.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/items/torso-5.bd8d9662323d.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/items/torso-5.bd8d9662323d.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/items/torso-5.bd8d9662323d.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/items/torso-5.bd8d9662323d.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/items/torso-5.bd8d9662323d.128.png"
+      }
+    ]
+  },
+  "/assets/background/trampled-ground.png": {
+    "width": 256,
+    "height": 256,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/background/trampled-ground.18e4fe8b38e2.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/background/trampled-ground.18e4fe8b38e2.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/background/trampled-ground.18e4fe8b38e2.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/background/trampled-ground.18e4fe8b38e2.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/background/trampled-ground.18e4fe8b38e2.128.png"
+      }
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 import AssetLoader from '../chips/AssetLoader.js';
+import { getImageLevelDiagnostics } from '../chips/ScaledImage.js';
 import Camera from '../game/Camera.js';
 import { GAME_AREAS, WORLD_SIZE } from '../game/GameAreas.js';
 import GameClock from '../game/GameClock.js';
@@ -178,7 +179,7 @@ export async function startGame() {
 
   let previousTime = performance.now();
   const { installMobilePerformance } = await import('./diagnostics/MobilePerformance.js');
-  trial.diagnostics = installMobilePerformance({ trial, clock, camera, assets, canvases: [canvas, directionCanvas], version: APP_VERSION });
+  trial.diagnostics = installMobilePerformance({ trial, clock, camera, assets, canvases: [canvas, directionCanvas], version: APP_VERSION, getImageLevelDiagnostics });
   function render(time) {
     trial.diagnostics?.begin(time);
     syncHudScale();

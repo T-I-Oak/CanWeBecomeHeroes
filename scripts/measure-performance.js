@@ -14,6 +14,7 @@ const cases = [
   { name: 'title-dpr3', scene: 'title' },
   { name: 'selection-dpr3', scene: 'selection' },
   { name: 'idle-dpr3', scene: 'idle' },
+  { name: 'idle-original-images', scene: 'idle', originalImages: true },
   { name: 'idle-dpr1', scene: 'idle', dpr: 1 },
   { name: 'idle-desktop', scene: 'idle', dpr: 1, width: 1280, height: 900 },
   { name: 'idle-no-background', scene: 'idle', skip: ['background'] },
@@ -75,6 +76,18 @@ async function save() {
 try {
   await build({ build: { outDir: 'tmp_performance_dist' }, plugins: [performanceBuildPlugin()] });
   servers.push(await preview({ build: { outDir: 'tmp_performance_dist' }, preview: { host: '127.0.0.1', port: 4186, strictPort: true, open: false } }));
+  if (selected.some(c => c.originalImages)) {
+    await build({ build: { outDir: 'tmp_performance_original_dist' }, plugins: [performanceBuildPlugin(), {
+      name: 'local-original-image-comparison', enforce: 'pre',
+      transform(code, id) {
+        if (!id.replaceAll('\\', '/').endsWith('/src/chips/ScaledImage.js')) return;
+        const marker = 'export const IMAGE_LEVELS_ENABLED = true;';
+        if (code.split(marker).length !== 2) throw new Error('Original image comparison marker changed');
+        return code.replace(marker, 'export const IMAGE_LEVELS_ENABLED = false;');
+      },
+    }] });
+    servers.push(await preview({ build: { outDir: 'tmp_performance_original_dist' }, preview: { host: '127.0.0.1', port: 4190, strictPort: true, open: false } }));
+  }
   if (selected.some(c => c.normal)) {
     await build();
     servers.push(await preview({ preview: { host: '127.0.0.1', port: 4187, strictPort: true, open: false } }));
@@ -103,7 +116,7 @@ try {
       await cdp.send('Emulation.setCPUThrottlingRate', { rate: config.cpu ?? 1 });
       await cdp.send('Performance.enable');
       const start = Date.now();
-      await page.goto(`http://127.0.0.1:${config.normal ? 4187 : 4186}/CanWeBecomeHeroes/`);
+      await page.goto(`http://127.0.0.1:${config.originalImages ? 4190 : config.normal ? 4187 : 4186}/CanWeBecomeHeroes/`);
       await page.locator('.TitleMenu__Command.state-primary').waitFor();
       const titleReadyMs = Date.now() - start;
       if (config.scene !== 'title') {

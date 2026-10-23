@@ -1,3 +1,4 @@
+import { drawScaledImage } from '../chips/ScaledImage.js';
 import { LOCATION_NAMEPLATE_LAYOUT } from '../game/LocationNameplateLayout.js';
 import { getLocationVisual, LOCATION_ICON_SAFE_SIZE, LOCATION_ICON_SOURCE_SIZE } from '../game/LocationVisualCatalog.js';
 
@@ -17,7 +18,7 @@ function drawLocationIcon(context, assets, location, x, y) {
   const icon = assets.load(getLocationVisual(location).iconPath);
   if (!icon.complete || icon.naturalWidth <= 0) return;
   const size = LOCATION_NAMEPLATE_LAYOUT.iconSize;
-  context.drawImage(icon, x, y, size, size);
+  drawScaledImage(context, icon, x, y, size, size);
 }
 
 function getIconVisualInset() {

@@ -1,4 +1,5 @@
 import { CHIP_CENTER_ART_MASK_RADIUS_RATIO, getCenterImagePlacement } from './ChipArtLayout.js';
+import { drawScaledImage } from './ScaledImage.js';
 import {
   CONDITION_GLYPH_SCALE,
   CONDITION_ICON_CORNER_RATIO,
@@ -24,7 +25,7 @@ export function getContainedImageSize(imageWidth, imageHeight, boxSize) {
 function drawImageContain(context, image, x, y, size) {
   if (!image.complete || image.naturalWidth === 0) return;
   const { width, height } = getContainedImageSize(image.naturalWidth, image.naturalHeight, size);
-  context.drawImage(image, x - width / 2, y - height / 2, width, height);
+  drawScaledImage(context, image, x - width / 2, y - height / 2, width, height);
 }
 
 export function drawFramedTag(context, assets, path, baseColor, glyphScale = 1, x, y, size) {
@@ -185,7 +186,7 @@ export default class ChipRenderer {
     const glyph = CONDITION_ICON_SIZE * CONDITION_GLYPH_SCALE;
     const inset = (CONDITION_ICON_SIZE - glyph) / 2;
     const image = this.assets.load(`/assets/conditions/${icon.ellipsis ? 'ellipsis' : icon.id}.png`);
-    if (image.complete && image.naturalWidth > 0) context.drawImage(image, x + inset, y + inset, glyph, glyph);
+    if (image.complete && image.naturalWidth > 0) drawScaledImage(context, image, x + inset, y + inset, glyph, glyph);
     context.restore();
   }
 

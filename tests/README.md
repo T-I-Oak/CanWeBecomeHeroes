@@ -88,6 +88,8 @@ Playwrightが清掃する `test-results/` は性能データの保存先に使�
 戦闘条件は1人のスタミナを3にして、実際の選択・出発処理を呼ぶ初期化を行う。
 `drag-zoom` はPCマウスのドラッグ・ホイール操作で、実機のタッチ・ピンチ検証ではない。
 `small-icons` は読み込み済みのタグ・ステータス画像を128pxのPNGへ一度変換した比較実験で、画質の採用判断を含まない。
+`idle-original-images` は同じソースで画像の段階選択だけを無効化した比較ビルドを使う（4190ポート）。
+`idle-dpr3` と同じCanvas寸法・zoom・乱数・シーンで比較する。通常ビルドの設定は変更しない。
 `information-paired` は同一画面で情報更新あり→省略→ありを切り替える。
 1反復の計測時間を3分割するため、既定は各10秒を3反復とし、各区間の結果を `phaseMetrics` に保存する。
 画像の `rgbaBytesEstimate` は寸法から計算した32bit RGBAの概算で、実測メモリー使用量ではない。
@@ -106,6 +108,22 @@ CPU負荷制限や小画面設定をモバイル実機の再現とは扱わな�
 測定中は入力を遮断し、終了・中止・画面変更時は元の描画と停止状態へ戻す。
 「結果を保存」でJSONを保存する。保存が使えない端末は「結果をコピー」を使う。
 結果は自動送信しない。閉じる前に保存する。
+
+画像改善版の基準区間は事前生成済み画像を使う。JSONの `before/after.imageLevels.policy` とバージョンで旧版と区別する。
+既に適切な画像サイズを使っている場合、診断の `small-images` は追加の縮小を行わないことがある。
+キャッシュ上限は24MiB（画像寸法のRGBA換算）。実際のGPUメモリを計測した値ではない。
+
+### 段階画像の再生成
+
+`npm.cmd run generate:image-levels` はPlaywrightとインストール済みChromeを使い、
+areas/heroes/tags/status/enemies/itemsと戦闘枠の地面画像から縮小PNGを生成する。
+`IMAGE_LEVELS_CHANNEL=chromium` でPlaywright付属ブラウザーを使える。
+生成した `public/assets/image-levels/` と `src/chips/image-levels.json` を追跡する。
+通常のbuild・実機では生成しない。生成前後で元画像を上書きしない。
+元画像を更新・追加したら再生成し、`ScaledImage.test.js` のハッシュ・寸法・カタログ整合性を確認する。
+画面のCSS寸法、DPR、zoom、回転を反映した変換行列から必要サイズを求め、足りる最小段階を選ぶ。
+元画像も含めて十分な大きさがなければ元画像を使う。縮小画像を引き伸ばして代用しない。
+未ロードの段階画像は読み込み完了まで描画を待つ。読み込み失敗時は元画像を使い、失敗パスを測定結果へ記録する。
 
 `live-minimal` と `live-sections` は区間計測の影響を含む参考比較で、ゲーム状態は時間とともに変わる。
 `frozen-unwrapped` と `baseline-1` はCanvasラッパーと区間計測の影響を比較する。
