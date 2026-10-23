@@ -4,10 +4,16 @@ import { resolvePublicAssetPath } from './PublicAssetPath.js';
 const CACHE_BYTE_LIMIT = 24 * 1024 * 1024;
 export const IMAGE_LEVELS_ENABLED = true;
 const sources = new WeakMap();
+const redraws = new WeakMap();
 const cache = new Map();
 let reservedBytes = 0;
 let requests = 0;
 const failures = new Set();
+
+/** Static canvases need one redraw after their pending image levels settle. */
+export function setImageLevelRedraw(context, redraw) {
+  redraws.set(context, redraw);
+}
 
 export function registerScaledImage(image, path) {
   const entry = manifest[path];
@@ -20,10 +26,11 @@ export function selectImageLevel(entry, width, height, transform) {
   return entry.levels.find(level => level.width >= requiredWidth && level.height >= requiredHeight) ?? null;
 }
 
-function loadLevel(level) {
+function loadLevel(level, redraw) {
   let entry = cache.get(level.path);
   if (entry) {
     cache.delete(level.path); cache.set(level.path, entry);
+    if (!entry.image.complete && redraw) entry.redraws.add(redraw);
     return entry.image;
   }
   const bytes = level.width * level.height * 4;
@@ -35,9 +42,15 @@ function loadLevel(level) {
   // Do not repeatedly fetch levels when the visible working set exceeds the cache.
   if (reservedBytes + bytes > CACHE_BYTE_LIMIT) return null;
   const image = new Image();
-  entry = { image, bytes };
+  entry = { image, bytes, redraws: new Set(redraw ? [redraw] : []) };
   cache.set(level.path, entry); reservedBytes += bytes; requests++;
-  image.onerror = () => { failures.add(level.path); };
+  const settled = () => {
+    const callbacks = [...entry.redraws];
+    entry.redraws.clear();
+    callbacks.forEach(callback => callback());
+  };
+  image.onload = settled;
+  image.onerror = () => { failures.add(level.path); settled(); };
   image.src = resolvePublicAssetPath(level.path);
   return image;
 }
@@ -47,7 +60,7 @@ export function drawScaledImage(context, image, x, y, width, height) {
   if (!entry) return context.drawImage(image, x, y, width, height);
   const level = selectImageLevel(entry, width, height, context.getTransform());
   if (!level || failures.has(level.path)) return context.drawImage(image, x, y, width, height);
-  const scaled = loadLevel(level);
+  const scaled = loadLevel(level, redraws.get(context));
   if (!scaled) return context.drawImage(image, x, y, width, height);
   // Avoid the expensive original-image path while a requested level is loading.
   // Geometry stays unchanged; no undersized image is stretched during zoom.

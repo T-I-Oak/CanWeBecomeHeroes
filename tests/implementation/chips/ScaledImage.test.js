@@ -3,7 +3,29 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import manifest from '../../../src/chips/image-levels.json' with { type: 'json' };
-import { selectImageLevel, registerScaledImage, drawScaledImage, getImageLevelDiagnostics } from '../../../src/chips/ScaledImage.js';
+import { selectImageLevel, registerScaledImage, drawScaledImage, getImageLevelDiagnostics, setImageLevelRedraw } from '../../../src/chips/ScaledImage.js';
+
+test('static canvases redraw after a shared pending level loads or fails', t => {
+  const previous = globalThis.Image;
+  const created = [];
+  globalThis.Image = class { constructor() { this.complete = false; created.push(this); } };
+  t.after(() => { if (previous) globalThis.Image = previous; else delete globalThis.Image; });
+  const source = {};
+  registerScaledImage(source, '/assets/heroes/guard.png');
+  let redrawCount = 0;
+  const contexts = [0, 1].map(() => ({ getTransform: () => ({ a: 1, b: 0, c: 0, d: 1 }), drawImage() {} }));
+  for (const context of contexts) {
+    setImageLevelRedraw(context, () => { redrawCount++; drawScaledImage(context, source, 0, 0, 60, 60); });
+    drawScaledImage(context, source, 0, 0, 60, 60);
+    drawScaledImage(context, source, 0, 0, 60, 60);
+  }
+  assert.equal(created.length, 1);
+  created[0].complete = true; created[0].naturalWidth = 64; created[0].onload();
+  assert.equal(redrawCount, 2);
+  drawScaledImage(contexts[0], source, 0, 0, 240, 240);
+  created[1].complete = true; created[1].onerror();
+  assert.equal(redrawCount, 3);
+});
 
 test('generated levels match source hashes, PNG dimensions and the complete source catalog', () => {
   const root = new URL('../../../', import.meta.url);
@@ -65,6 +87,7 @@ test('pending levels do not draw originals; cached and larger zoom levels preser
 });
 
 test('failed level is reported and original remains available without retrying each frame', t => {
+  const initialFailures = getImageLevelDiagnostics().failures.length;
   const previous = globalThis.Image;
   let requested;
   globalThis.Image = class { constructor() { requested = this; this.complete = false; } };
@@ -80,7 +103,7 @@ test('failed level is reported and original remains available without retrying e
   drawScaledImage(context, source, 0, 0, 30, 30);
   assert.equal(calls[0][0], source);
   assert.equal(getImageLevelDiagnostics().requests, before);
-  assert.equal(getImageLevelDiagnostics().failures.length, 1);
+  assert.equal(getImageLevelDiagnostics().failures.length, initialFailures + 1);
 });
 
 test('loaded level cache stays within its byte budget and evicted levels can be requested again', t => {
