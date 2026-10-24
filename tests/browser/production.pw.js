@@ -82,5 +82,30 @@ test('normal mobile build keeps records above the animated title across viewport
   await page.locator('.TitleMenu__Command.state-primary').click();
   await expect(page.locator('.StartPartySelection__StartButton')).toBeVisible();
   await expect(page.locator('.PerformancePanel')).toHaveCount(0);
+  const savedRecords = await page.evaluate(() => localStorage.getItem('can-we-become-heroes'));
+  await page.goto('http://127.0.0.1:4175/CanWeBecomeHeroes/tests/manual/record-rotation.html');
+  await expect(page.locator('#diagnostic-summary')).toContainText(`v${version}`);
+  for (const mode of ['baseline', 'no-scale', 'fixed-canvas', 'no-scroll']) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#mode').selectOption(mode);
+    await page.getByRole('button', { name: 'この条件で最初から試す' }).click();
+    await expect(page.locator('.RecordScreen__Table tbody tr')).toHaveCount(10);
+    const initialCanvas = await page.locator('.TitleMenu__Chips').evaluate(element => [element.width, element.height]);
+    await page.locator('.RotationDiagnostics summary').click();
+    for (const viewport of [{ width: 844, height: 390 }, { width: 390, height: 844 }]) {
+      await page.setViewportSize(viewport);
+      await expect.poll(() => page.locator('.TitleMenu__Chips').evaluate(element => [element.width, element.height]))
+        .toEqual(mode === 'fixed-canvas' ? initialCanvas : [viewport.width, viewport.height]);
+      if (mode === 'no-scale') await expect(page.locator('.RecordScreen__Content')).toHaveCSS('transform', 'none');
+      if (mode === 'no-scroll') await expect(page.locator('.RecordScreen__ScrollViewport')).toHaveCSS('overflow', 'visible');
+    }
+    await page.locator('.RotationDiagnostics summary').click();
+    await page.locator('#record-broken').click();
+    await expect(page.locator('#diagnostic-log')).toHaveValue(/異常あり/);
+    const log = JSON.parse(await page.locator('#diagnostic-log').inputValue());
+    expect(log.events.at(-1).mode).toBe(mode);
+    if (mode === 'fixed-canvas') expect(log.events.at(-1).canvasResizes).toBe(1);
+    expect(await page.evaluate(() => localStorage.getItem('can-we-become-heroes'))).toBe(savedRecords);
+  }
   expect(failures).toEqual([]);
 });
