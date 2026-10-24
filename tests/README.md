@@ -80,6 +80,7 @@ node scripts/verify-browser-tests.js
 Windows専用のこのコマンドは、次の処理を自動で実行する。
 
 1. 専用ポート4174・4175の待受を照会する。使用中や照会失敗ならテストを開始せず失敗にする。
+   事前照会中に中断された場合もテストを起動しない。
 2. `npm.cmd run test:browser -- --reporter=line,json`を起動し、開始時刻・ルートPIDを記録する。
    標準の全テストを実行し、表示用と結果取得用のレポーターを指定する。
    `DEBUG=pw:webserver`と`PLAYWRIGHT_JSON_OUTPUT_FILE`を実行プロセスに設定する。
@@ -96,6 +97,8 @@ Windows専用のこのコマンドは、次の処理を自動で実行する。
 記録したPIDと作成時刻を照合してそのプロセスだけを終了し、後処理後の状態も記録する。
 後処理で解放できても失敗を成功に変えない。照会や後処理の失敗も報告する。
 別用途のプロセスは停止しない。
+最初の起動後照会が失敗した場合は、後処理時の照会でルートPID・親PID・作成時刻を
+今回のspawnの記録と照合して識別を回復する。確認できなければ終了対象を推測せず、後処理失敗を記録する。
 
 結果は実行時に表示される`tmp_browser_verification/<実行日時>/`に保存する。
 終了後、表示された実際のディレクトリ名で`<実行日時>`を置き換えて次を実行する。
@@ -115,8 +118,15 @@ Get-Content -Raw -Encoding UTF8 tmp_browser_verification/<実行日時>/run-2.js
 実装報告には実行条件、開始・終了時刻、テスト件数・成否、終了コード、上限到達・中断、
 待受・プロセス残存、再実行結果、結果ディレクトリを記録する。
 
-実行補助自体を変更した場合は、対象テスト`node --test tests/implementation/scripts/BrowserTestVerification.test.js`に加えて、
-次の上限到達の検証もサンドボックス外で行う。環境変数はこのコマンド内だけで変更し、元へ戻す。
+実行補助自体を変更した場合は、まず次の対象テストを通常の実行環境で実行し、全7件の成功を確認する。
+
+```powershell
+node --test tests/implementation/scripts/BrowserTestVerification.test.js tests/implementation/scripts/BrowserTestRun.test.js
+```
+
+BrowserTestRunは実際の実行フローへ照会・起動・終了処理を注入し、最初の起動後照会失敗からの後処理、
+事前照会中のSIGINT/SIGTERM、所有者・作成時刻の異なるPIDを終了しないことを制御して確認する。
+続いて次の上限到達の検証をサンドボックス外で行う。環境変数はこのコマンド内だけで変更し、元へ戻す。
 期待結果は検証コマンドの終了コード1、`timedOut: true`・`passed: false`、
 `afterCleanup.remaining: []`・`afterCleanup.listeners: []`であり、2回目は実行されない。
 結果ファイルの読み方は上記と同じ。90秒はテストプロセスの待機上限で、観測・後処理時間は別にかかる。
