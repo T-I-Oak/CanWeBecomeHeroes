@@ -1,5 +1,4 @@
 {
-  "recordRotationDiagnostics": {"lang-store":{"ja":"Safari回転検証","en":"Safari rotation diagnostics"}},
   "trialResultCopied": {"lang-store":{"ja":"画像をクリップボードにコピーしました。\nXの投稿画面を開き、画像を貼り付けてください。","en":"The image has been copied to the clipboard.\nOpen X and paste the image into your post."}},
   "trialResultOpenX": {"lang-store":{"ja":"Xを開く","en":"Open X"}},
   "trialResultShare": {"lang-store":{"ja":"結果をシェアする","en":"Share results"}},
