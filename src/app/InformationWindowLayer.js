@@ -44,6 +44,7 @@ export default class InformationWindowLayer {
     this.manager = manager;
     this.allowPin = allowPin;
     this.textRepository = textRepository;
+    this.windows = new Map();
     const open = (entry) => this.manager.open(entry);
     this.references = new InformationWindowReferenceRenderer({ textRepository, open });
     this.catalogRenderer = new CatalogInformationRenderer({ textRepository, references: this.references, open, assets });
@@ -70,9 +71,15 @@ export default class InformationWindowLayer {
     this.references.setTextRepository(textRepository);
     this.catalogRenderer.setTextRepository(textRepository);
     this.entityRenderer.setTextRepository(textRepository);
+    if (this.logHistory) this.logHistory.textRepository = textRepository;
+    this.language = null;
   }
 
   setManager(manager) {
+    this.windows.clear();
+    this.element.replaceChildren();
+    this.logHistory?.dispose();
+    this.logHistory = null;
     this.manager = manager;
     this.dragController.setManager(manager);
     this.resizeController.manager = manager;
@@ -81,6 +88,10 @@ export default class InformationWindowLayer {
   setLogHistory(gameLog, dataManager) {
     this.logHistory?.dispose();
     this.logHistory = null;
+    for (const [id, view] of this.windows) if (view.entry.type === 'log-history') {
+      view.window.remove();
+      this.windows.delete(id);
+    }
     this.gameLog = gameLog;
     this.logHistoryDataManager = dataManager;
   }
@@ -88,22 +99,76 @@ export default class InformationWindowLayer {
   render(entries) {
     const logScroll = this.logHistory?.captureScroll();
     if (!entries.some(entry => entry.type === 'log-history')) this.logHistory?.close();
-    const windows = entries.map((entry) => this.#renderWindow(entry));
-    this.element.replaceChildren(...windows);
-    windows.forEach((window, index) => {
-      this.#positionWindow(window, entries[index]);
+    const language = this.textRepository.getLabel('documentLanguage');
+    const viewport = `${globalThis.innerWidth}:${globalThis.innerHeight}:${globalThis.devicePixelRatio}`;
+    const retained = new Set(entries.map(entry => entry.id));
+    for (const [id] of this.windows) if (!retained.has(id)) this.windows.delete(id);
+    const layout = [];
+    entries.forEach((entry, index) => {
+      let view = this.windows.get(entry.id);
+      const rebuild = !view || language !== this.language;
+      const previous = view?.entry;
+      if (rebuild) {
+        const scroll = view?.window.querySelector('.InformationWindow__Content');
+        const window = this.#renderWindow(entry);
+        view = { window, entry, scroll: scroll ? { top: scroll.scrollTop, left: scroll.scrollLeft } : null };
+        this.windows.set(entry.id, view);
+      }
+      const dimensionsChanged = !rebuild && entry.type === 'instance'
+        ? this.entityRenderer.update(view.window, entry) : false;
+      view.entry = entry;
+      if (!rebuild && (previous.pinned !== entry.pinned || previous.scale !== entry.scale)) {
+        view.window.className = `InformationWindow${entry.scale === COMPACT_WINDOW_SCALE ? ' is-compact' : ''}`;
+        view.window.style.scale = String(entry.scale);
+        this.#updateControls(view.window, entry);
+      }
+      if (this.element.children[index] !== view.window) this.element.insertBefore(view.window, this.element.children[index] ?? null);
+      if (rebuild || dimensionsChanged || viewport !== this.viewport || previous.scale !== entry.scale
+        || previous.position !== entry.position || previous.anchor !== entry.anchor) layout.push(view);
+    });
+    // Remove closed/replaced windows after ordering the retained nodes, without detaching them.
+    const windows = entries.map(entry => this.windows.get(entry.id).window);
+    for (const child of [...this.element.children]) if (!windows.includes(child)) child.remove();
+    for (const view of layout) {
+      const { window, entry } = view;
       const title = window.querySelector('.InformationWindow__Title');
       if (title) fitInformationWindowTitle(title, window);
-    });
-    this.logHistory?.restoreScroll(logScroll);
+      this.#positionWindow(window, entry);
+      if (view.scroll) {
+        const content = window.querySelector('.InformationWindow__Content');
+        content.scrollTop = view.scroll.top;
+        content.scrollLeft = view.scroll.left;
+        view.scroll = null;
+      }
+    }
+    this.language = language;
+    this.viewport = viewport;
+    if (layout.length) this.logHistory?.restoreScroll(logScroll);
+  }
+
+  #updateControls(windowElement, entry) {
+    const compact = windowElement.querySelector('.InformationWindow__Compact');
+    const restoresDefault = !isDefaultWindowScale(entry.scale);
+    compact.className = `InformationWindow__Compact${restoresDefault ? ' is-compact' : ''}`;
+    compact.setAttribute('aria-label', this.textRepository.getLabel(restoresDefault ? 'normalSize' : 'compactSize'));
+    compact.setAttribute('aria-pressed', String(restoresDefault));
+    compact.replaceChildren(createCompactIcon(restoresDefault));
+    const pin = windowElement.querySelector('.InformationWindow__Pin');
+    if (pin) {
+      pin.className = `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`;
+      pin.setAttribute('aria-label', this.textRepository.getLabel(entry.pinned ? 'unpin' : 'pin'));
+      pin.setAttribute('aria-pressed', String(entry.pinned));
+    }
   }
 
   #renderWindow(entry) {
     const window = createElement('section', `InformationWindow${entry.scale === COMPACT_WINDOW_SCALE ? ' is-compact' : ''}`);
     window.dataset.informationWindowId = entry.id;
     window.style.scale = String(entry.scale);
-    const content = createElement('div', 'InformationWindow__Content');
-    content.append(this.#renderContent(entry));
+    const content = createElement('div', 'InformationWindow__Content PaperScroll');
+    const rendered = this.#renderContent(entry);
+    window.append(rendered.querySelector('.InformationWindow__Title'));
+    content.append(rendered);
     window.append(content);
     this.#addWindowControls(window, entry);
     this.#addResizeHandles(window, entry);
@@ -149,7 +214,7 @@ export default class InformationWindowLayer {
     if (this.allowPin) actions.append(pin);
     actions.append(close);
     title.append(actions);
-    title.addEventListener('pointerdown', (event) => this.dragController.begin(event, windowElement, entry));
+    title.addEventListener('pointerdown', (event) => this.dragController.begin(event, windowElement, this.windows.get(entry.id).entry));
   }
 
   #addResizeHandles(windowElement, entry) {
@@ -157,7 +222,7 @@ export default class InformationWindowLayer {
       const handle = createElement('button', `InformationWindow__Resize InformationWindow__Resize--${corner}`);
       handle.type = 'button';
       handle.setAttribute('aria-label', this.textRepository.getLabel('resize'));
-      handle.addEventListener('pointerdown', (event) => this.resizeController.begin(event, windowElement, entry, corner));
+      handle.addEventListener('pointerdown', (event) => this.resizeController.begin(event, windowElement, this.windows.get(entry.id).entry, corner));
       windowElement.append(handle);
     });
   }

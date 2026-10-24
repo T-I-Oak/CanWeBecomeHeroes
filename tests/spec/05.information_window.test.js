@@ -14,30 +14,7 @@ import { readGameText } from '../../src/game/readGameText.js';
 import { clearL10nCache } from '../../../GameWorksOAK/src/lib/core/i18n.js';
 
 // Only DOM storage and event delivery are substituted; content and handlers use production code.
-class Element {
-  constructor(tag) {
-    this.tag = tag;
-    this.children = [];
-    this.dataset = {};
-    this.attributes = {};
-    this.listeners = {};
-    this.style = { setProperty(key, value) { this[key] = value; } };
-    this.classList = { add: name => { this.className = `${this.className ?? ''} ${name}`; } };
-  }
-  append(...children) { this.children.push(...children.flatMap(child => child.tag === 'fragment' ? child.children : [child])); }
-  replaceChildren(...children) { this.children = []; this.append(...children); }
-  set textContent(value) { this.children = [value]; }
-  get textContent() { return this.children.map(child => child instanceof Element ? child.textContent : child).join(''); }
-  setAttribute(key, value) { this.attributes[key] = value; }
-  addEventListener(type, handler) { this.listeners[type] = handler; }
-  findAll(selector) {
-    return this.children.filter(child => child instanceof Element).flatMap(child => [
-      ...(child.className?.split(' ').includes(selector.slice(1)) ? [child] : []), ...child.findAll(selector),
-    ]);
-  }
-  querySelector(selector) { return this.findAll(selector)[0] ?? null; }
-  getBoundingClientRect() { return { x: 0, y: 0, width: 300, height: 240 }; }
-}
+import Element from '../helpers/InformationDOM.js';
 
 async function setup(t) {
   const raw = readGameText();
@@ -75,8 +52,115 @@ async function setup(t) {
   const definition = (kind, id) => open('definition', { target: createDefinitionInformationTarget(kind, id) });
   const instance = entity => { registry.registerTree(entity); return open('instance', { target: manager.createInstanceTarget(entity) }); };
   const names = () => root.findAll('.InformationWindow__Name').map(element => element.textContent);
-  return { root, registry, clock, manager, window, click, open, definition, instance, names, repository };
+  return { root, registry, clock, layer, manager, window, click, open, definition, instance, names, repository };
 }
+
+test('05: dynamic updates retain windows, static content and scroll without measuring unchanged dimensions', async t => {
+  const ui = await setup(t);
+  const staticEntry = ui.definition('hero', 'Avery');
+  ui.manager.togglePin(staticEntry.id);
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 3 });
+  const entry = ui.instance(hero);
+  const window = ui.window(entry);
+  const profile = window.querySelector('.InformationWindow__EntityProfile');
+  const title = window.querySelector('.InformationWindow__Title');
+  const staticWindow = ui.window(staticEntry);
+  const content = window.querySelector('.InformationWindow__Content');
+  assert.ok(!content.querySelector('.InformationWindow__Title'), 'the header is outside the scrollable body');
+  assert.equal(title.parentElement, window, 'header controls remain attached to the window');
+  content.scrollTop = 47;
+  const gauge = window.findAll('.InformationWindow__EntityStatus')[5];
+  const segment = gauge.querySelector('.InformationWindow__EntityStatusSegment');
+  let measurements = 0;
+  let created = 0;
+  const create = document.createElement;
+  t.mock.method(document, 'createElement', (...args) => { created++; return create(...args); });
+  window.getBoundingClientRect = () => { measurements++; return { width: 300, height: 240 }; };
+  ui.manager.refreshDynamicEntries();
+  hero.stamina = 1.5;
+  ui.manager.refreshDynamicEntries();
+  assert.equal(ui.window(entry), window);
+  assert.equal(ui.window(staticEntry), staticWindow);
+  assert.equal(window.querySelector('.InformationWindow__EntityProfile'), profile);
+  assert.equal(window.querySelector('.InformationWindow__Title'), title);
+  assert.equal(content.scrollTop, 47);
+  assert.equal(window.findAll('.InformationWindow__EntityStatus')[5], gauge);
+  assert.equal(gauge.querySelector('.InformationWindow__EntityStatusSegment'), segment);
+  assert.equal(created, 0);
+  assert.equal(measurements, 0);
+  ui.manager.setPosition(entry.id, { x: 30, y: 40 });
+  assert.equal(measurements, 1);
+  ui.manager.toggleCompact(entry.id);
+  assert.equal(measurements, 2);
+  let resizedEntry;
+  ui.layer.resizeController.begin = (_event, _window, current) => { resizedEntry = current; };
+  window.querySelector('.InformationWindow__Resize').listeners.pointerdown({});
+  assert.equal(resizedEntry.scale, ui.manager.entries.at(-1).scale);
+  assert.deepEqual(resizedEntry.position, { x: 30, y: 40 });
+});
+
+test('05: changed maximums, item values and tags update without rebuilding the title or profile', async t => {
+  const ui = await setup(t);
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 1 });
+  const entry = ui.instance(hero);
+  hero.maximums.stamina = 5;
+  hero.tags.push('valor');
+  ui.manager.refreshDynamicEntries();
+  const segments = ui.window(entry).findAll('.InformationWindow__EntityStatus')[5].findAll('.InformationWindow__EntityStatusSegment');
+  assert.ok(segments[4].className.includes('is-available'));
+  assert.ok(!segments[5].className.includes('is-available'));
+  assert.equal(ui.window(entry).querySelector('.InformationWindow__EntityTag').textContent, String(hero.getTagCount('valor')));
+  const preview = ui.window(entry).querySelector('.InformationWindow__ChipPreview');
+  hero.chip.flipped = !hero.chip.flipped;
+  ui.manager.refreshDynamicEntries();
+  assert.notEqual(ui.window(entry).querySelector('.InformationWindow__ChipPreview'), preview);
+  const item = new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  const itemEntry = ui.instance(item);
+  const title = ui.window(itemEntry).querySelector('.InformationWindow__Title');
+  const profile = ui.window(itemEntry).querySelector('.InformationWindow__EntityProfile');
+  item.value = 17;
+  item.chip.weight = 8;
+  item.tags.push('fire', 'fire');
+  ui.manager.refreshDynamicEntries();
+  assert.equal(ui.window(itemEntry).querySelector('.InformationWindow__ItemValueAmount').textContent, '17');
+  assert.equal(ui.window(itemEntry).querySelector('.InformationWindow__ItemWeightAmount').textContent, '8');
+  assert.deepEqual(ui.window(itemEntry).findAll('.InformationWindow__ItemTag').map(node => node.textContent), ['1', '2']);
+  assert.equal(ui.window(itemEntry).querySelector('.InformationWindow__Title'), title);
+  assert.equal(ui.window(itemEntry).querySelector('.InformationWindow__EntityProfile'), profile);
+});
+
+test('05: viewport invalidation and manager replacement do not retain an old window with a reused id', async t => {
+  const ui = await setup(t);
+  const entry = ui.definition('hero', 'Avery');
+  const window = ui.window(entry);
+  let measurements = 0;
+  window.getBoundingClientRect = () => { measurements++; return { width: 300, height: 240 }; };
+  Object.defineProperty(globalThis, 'innerWidth', { configurable: true, value: 390 });
+  ui.manager.refreshEntries();
+  assert.equal(measurements, 1);
+  const manager = new InformationWindowManager({ onChange: entries => ui.layer.render(entries) });
+  ui.layer.setManager(manager);
+  const replacement = manager.open({ type: 'status', data: { status: 'stamina' } });
+  assert.equal(replacement.id, entry.id);
+  assert.notEqual(ui.root.children[0], window);
+  assert.equal(ui.root.querySelector('.InformationWindow__Name').textContent, ui.repository.getName('status', 'stamina'));
+});
+
+test('05: equipment replacement updates links while unchanged gauges survive', async t => {
+  const ui = await setup(t);
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0, stamina: 3 });
+  const first = new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  hero.equip(first);
+  const entry = ui.instance(hero);
+  const vital = ui.window(entry).findAll('.InformationWindow__EntityStatus')[5];
+  const second = new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor'], x: 0, y: 0 });
+  hero.equipment.rightHand = second;
+  ui.registry.registerTree(hero);
+  ui.manager.refreshDynamicEntries();
+  assert.equal(ui.window(entry).findAll('.InformationWindow__EntityStatus')[5], vital);
+  const child = ui.click(entry, '.InformationWindow__Equipment', 2);
+  assert.equal(child.data.target.instanceId, ui.manager.createInstanceTarget(second).instanceId);
+});
 
 test('05: equipment → tag → status keeps ancestors; another equipment property replaces the unpinned branch', async t => {
   const ui = await setup(t);

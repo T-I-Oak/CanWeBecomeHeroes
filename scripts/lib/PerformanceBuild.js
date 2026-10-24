@@ -1,4 +1,12 @@
+import { execFileSync } from 'node:child_process';
+
 // Local investigation build only. Never loaded by the application's Vite config.
+export const INCREMENTAL_BASELINE = 'cb55fad55e49045630aa0456c2858dcf9c5bf274';
+
+function baselineClass(file, name) {
+  const source = execFileSync('git', ['show', `${INCREMENTAL_BASELINE}:src/app/${file}.js`], { encoding: 'utf8' });
+  return source.slice(source.indexOf('export default class ')).replace(`export default class ${file}`, `class ${name}`);
+}
 export function replaceOnce(source, from, to) {
   if (source.split(from).length !== 2) throw new Error(`Performance marker must occur once: ${from}`);
   return source.replace(from, to);
@@ -33,6 +41,38 @@ export function performanceBuildPlugin() {
       if (path.endsWith('/src/app/GameApp.js')) {
         code = replaceOnce(code, 'function render(time) {', 'function render(time) { globalThis.__perf.begin(time);');
         code = replaceOnce(code, '    requestAnimationFrame(render);', '    globalThis.__perf.endFrame(); requestAnimationFrame(render);');
+      }
+      if (path.endsWith('/src/app/InformationWindowLayer.js') && process.env.PERF_COMPARE_INCREMENTAL === '1') {
+        const entity = baselineClass('EntityInformationRenderer', 'LegacyEntityInformationRenderer');
+        let layer = baselineClass('InformationWindowLayer', 'LegacyInformationWindowLayer')
+          .replace('new EntityInformationRenderer(', 'new LegacyEntityInformationRenderer(');
+        layer = replaceOnce(layer, '    window.dataset.informationWindowId = entry.id;',
+          "    window.classList.add('is-performance-legacy');\n    window.dataset.informationWindowId = entry.id;");
+        code = `import { STATUS_KEYS } from '../game/TagCatalog.js';
+          import { TAG_DISPLAY_GRID } from '../game/TagDisplayLayout.js';
+          import { getVitalGaugeColor, STATUS_VISUALS } from '../game/StatusVisualCatalog.js';
+          import { AREA_THEME } from '../game/AreaTheme.js';
+          import { createInformationWindowUniqueSkillButton } from './InformationWindowUniqueSkillButton.js';
+          import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js';
+          import { createInformationElement } from './InformationWindowElementFactory.js';
+          import { applyTagSkillVisual, createEquipmentImage, createStatusIcon, createTagIcon } from './InformationWindowVisualFactory.js';
+          import { createInformationWindowChipPreview } from './InformationWindowChipPreview.js';
+          ${code}\n${entity}\n${layer}
+          const legacyStyle = document.createElement('style');
+          legacyStyle.textContent = '.InformationWindow.is-performance-legacy { display: block; max-height: none; }'
+            + '.InformationWindow.is-performance-legacy > .InformationWindow__Content { max-height: calc(100dvh - 24px); border-radius: 11px; }';
+          document.head.append(legacyStyle);
+          const incrementalRender = InformationWindowLayer.prototype.render;
+          const legacyViews = new WeakMap();
+          InformationWindowLayer.prototype.render = function(entries) {
+            if (!globalThis.__perf.compareIncremental || globalThis.__perf.incrementalInformation) return incrementalRender.call(this, entries);
+            let legacy = legacyViews.get(this);
+            if (!legacy) {
+              legacy = new LegacyInformationWindowLayer(this.element, this.manager, this.textRepository, this.entityRenderer.assets);
+              legacyViews.set(this, legacy);
+            }
+            return legacy.render(entries);
+          };`;
       }
       if (path.endsWith('/src/app/TrialSession.js')) {
         code = replaceOnce(code, '      informationWindows.closeInvalidEntries();\n      stageController.update();',
@@ -87,7 +127,7 @@ export function installPerformanceProbe() {
   let seed = 54;
   Math.random = () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   const probe = globalThis.__perf = {
-    compareBatching: false, batchInformation: true,
+    compareBatching: false, batchInformation: true, compareIncremental: false, incrementalInformation: true,
     reseed() { seed = 54; },
     enabled: false, recording: false, skip: new Set(), rows: [], intervals: [], current: {}, starts: {}, totals: {},
     begin(time) {
@@ -116,7 +156,11 @@ export function installPerformanceProbe() {
           if (probe.skip.has(key)) return;
           if (!probe.enabled || !probe.recording) return original.apply(this, args);
           const start = performance.now();
-          const result = original.apply(this, args);
+          const rendering = className === 'InformationWindowLayer';
+          if (rendering) probe.renderingInformation = true;
+          let result;
+          try { result = original.apply(this, args); }
+          finally { if (rendering) probe.renderingInformation = false; }
           const elapsed = performance.now() - start;
           probe.current[key] = (probe.current[key] ?? 0) + elapsed;
           probe.totals[key] = (probe.totals[key] ?? 0) + elapsed;
@@ -135,4 +179,33 @@ export function installPerformanceProbe() {
     },
     reset(enabled) { this.rows = []; this.intervals = []; this.totals = {}; this.previous = undefined; this.enabled = enabled; this.recording = true; },
   };
+  if (globalThis.document && globalThis.Element) {
+    for (const [object, names] of [[document, ['createElement', 'createElementNS', 'createDocumentFragment']],
+      [Element.prototype, ['getBoundingClientRect', 'replaceChildren', 'replaceWith', 'insertBefore']]]) {
+      for (const name of names) {
+        const original = object[name];
+        object[name] = function(...args) {
+          if (probe.renderingInformation && probe.recording && probe.enabled) {
+            const key = `informationDOM.${name}`;
+            probe.current[key] = (probe.current[key] ?? 0) + 1;
+          }
+          return original.apply(this, args);
+        };
+      }
+    }
+    const textContent = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent');
+    Object.defineProperty(Node.prototype, 'textContent', { ...textContent, set(value) {
+      if (probe.renderingInformation && probe.recording && probe.enabled) {
+        probe.current['informationDOM.textContent'] = (probe.current['informationDOM.textContent'] ?? 0) + 1;
+      }
+      return textContent.set.call(this, value);
+    } });
+    const setProperty = CSSStyleDeclaration.prototype.setProperty;
+    CSSStyleDeclaration.prototype.setProperty = function(...args) {
+      if (probe.renderingInformation && probe.recording && probe.enabled) {
+        probe.current['informationDOM.setProperty'] = (probe.current['informationDOM.setProperty'] ?? 0) + 1;
+      }
+      return setProperty.apply(this, args);
+    };
+  }
 }
