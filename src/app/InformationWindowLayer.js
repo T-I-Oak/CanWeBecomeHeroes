@@ -166,7 +166,9 @@ export default class InformationWindowLayer {
     window.dataset.informationWindowId = entry.id;
     window.style.scale = String(entry.scale);
     const content = createElement('div', 'InformationWindow__Content');
-    content.append(this.#renderContent(entry));
+    const rendered = this.#renderContent(entry);
+    window.append(rendered.querySelector('.InformationWindow__Title'));
+    content.append(rendered);
     window.append(content);
     this.#addWindowControls(window, entry);
     this.#addResizeHandles(window, entry);

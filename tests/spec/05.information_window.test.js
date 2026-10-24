@@ -66,6 +66,8 @@ test('05: dynamic updates retain windows, static content and scroll without meas
   const title = window.querySelector('.InformationWindow__Title');
   const staticWindow = ui.window(staticEntry);
   const content = window.querySelector('.InformationWindow__Content');
+  assert.ok(!content.querySelector('.InformationWindow__Title'), 'the header is outside the scrollable body');
+  assert.equal(title.parentElement, window, 'header controls remain attached to the window');
   content.scrollTop = 47;
   const gauge = window.findAll('.InformationWindow__EntityStatus')[5];
   const segment = gauge.querySelector('.InformationWindow__EntityStatusSegment');

@@ -1,5 +1,8 @@
 .InformationWindow {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 24px);
   top: 50%;
   left: 50%;
   width: min(360px, calc(100vw - 32px));
@@ -14,9 +17,9 @@
 }
 
 .InformationWindow__Content {
-  max-height: calc(100dvh - 24px);
+  min-height: 0;
   overflow: auto;
-  border-radius: 11px;
+  border-radius: 0 0 11px 11px;
 }
 
 .InformationWindow:has(.InformationWindow__EntityPanel) {
@@ -37,6 +40,7 @@
 
 .InformationWindow__Title {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 12px;
   position: relative;
