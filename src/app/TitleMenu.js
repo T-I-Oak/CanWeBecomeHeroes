@@ -38,6 +38,7 @@ export default class TitleMenu {
     this.commands.forEach((command) => {
       command.element.textContent = this.textRepository.getLabel(command.label);
     });
+    this.diagnosticLink.textContent = this.textRepository.getLabel('recordRotationDiagnostics');
     this.recordScreen.refreshLanguage();
   }
 
@@ -86,6 +87,9 @@ export default class TitleMenu {
       return { label, element };
     });
     this.menu.replaceChildren(...this.commands.map((command) => command.element));
+    this.diagnosticLink = createElement('a', 'TitleMenu__DiagnosticLink', this.textRepository.getLabel('recordRotationDiagnostics'));
+    this.diagnosticLink.href = resolvePublicAssetPath('/tests/manual/record-rotation.html');
+    this.menu.append(this.diagnosticLink);
   }
 
   renderPanel() {

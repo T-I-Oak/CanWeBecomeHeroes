@@ -1,5 +1,15 @@
 # Safariの画面回転時のレコード表示：実装報告
 
+## 実機から検証ページへ進む入口
+
+チャットのURLをクリックしても実機側で開けるわけではないとの指摘を受け、v0.64.2で通常ゲームのタイトルに「Safari回転検証」へのリンクを追加した。実機でいつものゲームを再読込し、同じ画面から専用ページへ進める。日英の文言と配信ベースパスを反映し、解放済みモードの有無にかかわらず表示する。ゲームの状態を変更するボタンではなく、専用ページへ通常遷移するリンクである。レコード閲覧中は既存メニューと一緒に隠れる。調査完了時に検証入口とともに撤去する。以前の「ゲーム本体のクラスは変更していない」という記述はv0.64.1時点の内容であり、この版ではTitleMenuのリンクとスタイル・ラベルを追加した。
+
+本番ブラウザーテストも、専用ページへの直アクセスから、通常タイトルのリンクをクリックして移動する確認へ変更した。比較条件の内容はv0.64.1から変更していない。
+
+初回の全テストは、既存のTitleMenuテスト用DOMがappendを提供していなかったため1件失敗した。テスト用DOMに実際のDOM APIに対応するappendを補い、対象のSettingsModalController・TranslationIntegrity計5件成功、全テスト662件成功へ再検証した。ブラウザー上の実際のリンク遷移は成功している。検証補助は変更していない。
+
+v0.64.2のnode scripts/verify-browser-tests.jsはtmp_browser_verification/2026-10-24T05-13-15-775Z/に結果を保存した。2026-10-24 JSTで1回目14:13:19.858〜14:14:07.684、2回目14:14:17.770〜14:15:10.184。両回4件成功、失敗・skip・flaky 0、終了コード0、上限到達・中断・照会エラーなし、remaining: []、listeners: []。総合passed: true、検証コマンドも終了コード0。本番ビルドは両回の検証内のnpm run buildで成功した。
+
 ## 実機用の比較ページ
 
 オーナー提供画像では、紙面と上部操作部の前に落下チップがあり、表の見出し帯・罫線はチップより前にある。ウィンドウ全体が同じ順序で背面へ移る状態と断定できない。本文だけのtransform: scale、canvasリサイズ、overflowの組合せを別々に比較するため、一度の公開で条件を切り替えられる検証ページの作成・配信が承認された。
@@ -11,6 +21,8 @@ v0.64.1のtests/manual/record-rotation.htmlに本番TitleMenu・RecordScreen・T
 自動テストでは本番preview上で全条件の選択・再読込・縦横往復、設定されたtransform・overflow・canvas描画寸法、判定ログ、ゲーム保存キーが不変であることを確認する。実機Safariの描画異常の解消を確認したものではない。最新のnpm.cmd testは662件成功、終了コード0。公開ビルドは成功し、追加エントリーによる共通チャンク分割後は500kBの警告は出なかった。
 
 最新のブラウザー検証はnode scripts/verify-browser-tests.jsをREADMEどおりサンドボックス外で実行し、tmp_browser_verification/2026-10-24T04-52-09-659Z/に保存した。2026-10-24 JSTの1回目13:52:13.325〜13:52:46.066、2回目13:52:54.700〜13:53:32.276。両回4件成功、失敗・skip・flaky 0、exitCode: 0、timedOut: false、interrupted: false、observationError: null、remaining: []、listeners: []、passed: true。検証コマンド自体も終了コード0で正常終了した。
+
+公開コミットはc17c2ae4b4b3d9883b4e45c1769330ce99c54859。共通部の公開状態を再確認したうえで開発ブランチへpushし、同ブランチを指定してDeploy to GitHub Pages #38を手動実行した。https://github.com/T-I-Oak/CanWeBecomeHeroes/actions/runs/40064401237 はSuccess、1分25秒。続くPages側の反映処理 https://github.com/T-I-Oak/CanWeBecomeHeroes/actions/runs/40064480659 の開始を確認し、公開URL https://t-i-oak.github.io/CanWeBecomeHeroes/tests/manual/record-rotation.html でv0.64.1・サンプル表10行・A〜Dの選択肢が表示されることを確認した。Edgeでの読込みエラーは0件、表示記録はtmp_deployment/v0.64.1-comparison.png。A〜Dの実機Safariでの異常有無はオーナーの確認待ち。実装フェーズの終了・レビュー・masterへのマージは行っていない。
 
 ## 最新の対応：修正候補の撤回
 

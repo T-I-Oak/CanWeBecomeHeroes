@@ -83,7 +83,9 @@ test('normal mobile build keeps records above the animated title across viewport
   await expect(page.locator('.StartPartySelection__StartButton')).toBeVisible();
   await expect(page.locator('.PerformancePanel')).toHaveCount(0);
   const savedRecords = await page.evaluate(() => localStorage.getItem('can-we-become-heroes'));
-  await page.goto('http://127.0.0.1:4175/CanWeBecomeHeroes/tests/manual/record-rotation.html');
+  await page.goto('http://127.0.0.1:4175/CanWeBecomeHeroes/');
+  await page.locator('.TitleMenu__DiagnosticLink').click();
+  await expect(page).toHaveURL(/\/tests\/manual\/record-rotation\.html$/);
   await expect(page.locator('#diagnostic-summary')).toContainText(`v${version}`);
   for (const mode of ['baseline', 'no-scale', 'fixed-canvas', 'no-scroll']) {
     await page.setViewportSize({ width: 390, height: 844 });

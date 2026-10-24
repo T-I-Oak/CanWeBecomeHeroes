@@ -190,6 +190,17 @@
   pointer-events: auto;
 }
 .TitleMenu__Menu.state-hidden { display: none; }
+.TitleMenu__DiagnosticLink {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 6px 12px;
+  color: #d5ebff;
+  background: #241c14;
+  border: 1px solid #bc8d3c;
+  border-radius: 8px;
+  font-size: 14px;
+}
 .TitleMenu__Panel {
   display: none;
   flex-direction: column;
