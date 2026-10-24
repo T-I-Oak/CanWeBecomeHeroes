@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 const { version } = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
 
@@ -16,6 +16,8 @@ test('production base path loads bundled common library, text and image assets',
   await page.goto('http://127.0.0.1:4175/CanWeBecomeHeroes/');
   await expect(page.locator('.TitleMenu__Command.state-primary')).toBeVisible();
   await expect(page.locator('.TitleMenu__Version')).toHaveText(`v${version}`);
+  await expect(page.locator('.TitleMenu__DiagnosticLink')).toHaveCount(0);
+  expect(existsSync(new URL('../../dist/tests/manual/record-rotation.html', import.meta.url))).toBe(false);
   await page.locator('.TitleMenu__Command.state-primary').click();
   await page.locator('.StartPartySelection__StartButton').click();
   await expect(page.locator('#vignette')).toBeVisible();
@@ -82,52 +84,5 @@ test('normal mobile build keeps records above the animated title across viewport
   await page.locator('.TitleMenu__Command.state-primary').click();
   await expect(page.locator('.StartPartySelection__StartButton')).toBeVisible();
   await expect(page.locator('.PerformancePanel')).toHaveCount(0);
-  const savedRecords = await page.evaluate(() => localStorage.getItem('can-we-become-heroes'));
-  await page.goto('http://127.0.0.1:4175/CanWeBecomeHeroes/');
-  await page.locator('.TitleMenu__DiagnosticLink').click();
-  await expect(page).toHaveURL(/\/tests\/manual\/record-rotation\.html$/);
-  await expect(page.locator('#diagnostic-summary')).toContainText(`v${version}`);
-  for (const mode of ['baseline', 'no-scale', 'fixed-canvas', 'no-scroll', 'grouped-record']) {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.locator('#mode').selectOption(mode);
-    await page.getByRole('button', { name: 'この条件で最初から試す' }).click();
-    await expect(page.locator('.RecordScreen__Table tbody tr')).toHaveCount(10);
-    const initialCanvas = await page.locator('.TitleMenu__Chips').evaluate(element => [element.width, element.height]);
-    await page.locator('.RotationDiagnostics summary').click();
-    for (const viewport of [{ width: 844, height: 390 }, { width: 390, height: 844 }]) {
-      await page.setViewportSize(viewport);
-      await expect.poll(() => page.locator('.TitleMenu__Chips').evaluate(element => [element.width, element.height]))
-        .toEqual(mode === 'fixed-canvas' ? initialCanvas : [viewport.width, viewport.height]);
-      if (mode === 'no-scale') await expect(page.locator('.RecordScreen__Content')).toHaveCSS('transform', 'none');
-      if (mode === 'no-scroll') await expect(page.locator('.RecordScreen__ScrollViewport')).toHaveCSS('overflow', 'visible');
-      if (mode === 'grouped-record') {
-        await expect(page.locator('.RecordScreenViewport')).not.toHaveCSS('transform', 'none');
-        await expect(page.locator('.RecordScreen__ScrollViewport')).toHaveCSS('overflow', 'auto');
-      } else await expect(page.locator('.RecordScreenViewport')).toHaveCSS('transform', 'none');
-    }
-    if (mode === 'grouped-record') {
-      await page.locator('.RecordScreen').getByRole('tab').nth(1).click();
-      const scroll = page.locator('.RecordScreen__ScrollViewport');
-      await scroll.evaluate(element => element.scrollTo(element.scrollWidth, element.scrollHeight));
-      await expect.poll(() => scroll.evaluate(element => element.scrollLeft > 0 && element.scrollTop > 0)).toBe(true);
-      await page.locator('.RecordScreen').getByRole('tab').nth(0).click();
-      await page.locator('.RecordScreen__Portrait').first().click();
-      const information = page.locator('.RecordInformation .InformationWindow');
-      await expect(information).toBeVisible();
-      await expect.poll(() => information.evaluate(element => {
-        const rect = element.getBoundingClientRect();
-        return rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth + 1 && rect.bottom <= innerHeight + 1;
-      })).toBe(true);
-      await page.locator('.RecordScreen__Header button').click();
-      await expect(information).toHaveCount(0);
-    }
-    await page.locator('.RotationDiagnostics summary').click();
-    await page.locator('#record-broken').click();
-    await expect(page.locator('#diagnostic-log')).toHaveValue(/異常あり/);
-    const log = JSON.parse(await page.locator('#diagnostic-log').inputValue());
-    expect(log.events.at(-1).mode).toBe(mode);
-    if (mode === 'fixed-canvas') expect(log.events.at(-1).canvasResizes).toBe(1);
-    expect(await page.evaluate(() => localStorage.getItem('can-we-become-heroes'))).toBe(savedRecords);
-  }
   expect(failures).toEqual([]);
 });

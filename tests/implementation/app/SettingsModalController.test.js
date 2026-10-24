@@ -239,7 +239,6 @@ test('title commands omit settings, which is provided by the shared corner butto
         addEventListener(type, callback) { listeners.set(type, callback); },
         click() { listeners.get('click')?.({ currentTarget: this }); },
         replaceChildren() {},
-        append() {},
       };
       return element;
     },

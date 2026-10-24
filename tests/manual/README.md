@@ -4,7 +4,7 @@
 
 ## Safariのレコード画面回転の切り分け（実機確認用）
 
-例外として`/CanWeBecomeHeroes/tests/manual/record-rotation.html`は、実機Safariの原因調査のため本番ビルドにも含める。実機では通常のゲームを更新し、タイトル画面の「Safari回転検証」から開く。一度の配信で全条件を比較する専用入口であり、通常のゲームには切替機能を追加しない。調査が完了した時点でタイトルのリンク・公開入口・Viteの追加エントリーを撤去する。
+`/CanWeBecomeHeroes/tests/manual/record-rotation.html`はVite開発サーバーから開く。一度の公開で比較する実機調査に使用したが、確認完了後にタイトルのリンクと本番ビルドの追加エントリーを撤去した。現在は開発用入口としてのみ残す。
 
 本番のTitleMenu・RecordScreen・TitleChipRain・CSSを使い、サンプルランキング10件と同じ乱数seedを使用する。ゲームの保存データは読取・変更しない。検証記録だけを専用sessionStorageキーに保持し、条件を切り替えても同じタブ内に残す。「検証記録を消す」で削除できる。
 
