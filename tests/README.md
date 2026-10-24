@@ -208,6 +208,13 @@ idle画面で敵の初期出現完了（stage=battleかつ出現待ち0件）を
 区間別に更新・描画回数、LayoutCount・LayoutDuration等の差分、開始・終了時のtick・チップ数・対象実体を記録する。
 CDPとゲーム状態の取得は逐次実行のため、区間境界には取得中のフレームが含まれる。短い予備測定の区間値は主要比較に使わない。
 情報更新時間は描画層の時間を内包するため、両者を加算しない。
+`information-incremental-paired`・`information-cpu4-incremental-paired` は、通知集約済みの全再生成方式と
+差分描画方式を同一ページでA1→B→A2の順に切り替える。各区間10秒×3反復を既定とする。
+旧Layer・旧EntityRendererは計測専用ビルドで`cb55fad55e49045630aa0456c2858dcf9c5bf274`から取得し、
+通常ビルドに旧方式の復元処理を含めない。`phaseMetrics`にはDOM生成・置換・数値書込・境界取得の回数と、
+境界時点のゲージ・重量が実体と一致するかも記録する。DOM計数はLayer.renderの同期実行内が対象であり、
+それ以外のゲームDOMや後続のブラウザーレイアウトを表さない。Layout全体はCDPの指標で照合する。
+ヘッダーを含めてスクロールする旧配置の高さ制約も、計測専用の`is-performance-legacy`へ限定したCSSで復元する。
 `information-no-probe`・`information-cpu4-no-probe` は同じ情報表示条件で詳細計測だけを無効にする。
 フレーム採取とローカル変換は残るため、通常ビルドそのものの計測とは区別する。
 画像の `rgbaBytesEstimate` は寸法から計算した32bit RGBAの概算で、実測メモリー使用量ではない。

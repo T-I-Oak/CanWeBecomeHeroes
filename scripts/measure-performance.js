@@ -4,7 +4,7 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import os from 'node:os';
 import { dirname } from 'node:path';
-import { performanceBuildPlugin, installPerformanceProbe } from './lib/PerformanceBuild.js';
+import { performanceBuildPlugin, installPerformanceProbe, INCREMENTAL_BASELINE } from './lib/PerformanceBuild.js';
 
 const duration = Number(process.env.PERF_SECONDS ?? 30);
 const repeats = Number(process.env.PERF_REPEATS ?? 3);
@@ -43,6 +43,8 @@ const cases = [
   { name: 'information-paired', scene: 'idle', information: true, cpu: 4, paired: true },
   { name: 'information-batching-paired', scene: 'idle', information: true, batchingPaired: true },
   { name: 'information-cpu4-batching-paired', scene: 'idle', information: true, cpu: 4, batchingPaired: true },
+  { name: 'information-incremental-paired', scene: 'idle', information: true, incrementalPaired: true },
+  { name: 'information-cpu4-incremental-paired', scene: 'idle', information: true, cpu: 4, incrementalPaired: true },
   { name: 'idle-no-labels', scene: 'idle', skip: ['drawFacilityNameplates', 'drawAreaNameplates'] },
   { name: 'idle-no-shop', scene: 'idle', skip: ['drawShopPanel'] },
   { name: 'idle-small-icons', scene: 'idle', smallIcons: true },
@@ -55,12 +57,14 @@ const cases = [
 const requested = process.argv.slice(2);
 if (requested.includes('--list')) { console.log(cases.map(c => c.name).join('\n')); process.exit(0); }
 const selected = requested.length ? cases.filter(c => requested.includes(c.name)) : cases;
+if (selected.some(c => c.incrementalPaired)) process.env.PERF_COMPARE_INCREMENTAL = '1';
 if (!selected.length || requested.some(name => !cases.some(c => c.name === name))) throw new Error('Unknown performance case');
 if (![duration, warmup].every(n => Number.isFinite(n) && n > 0) || !Number.isInteger(repeats) || repeats < 1) throw new Error('Invalid measurement duration/repeats/warmup');
 const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
 const report = {
   environment: { date: new Date().toISOString(), commit: git('rev-parse', 'HEAD'), diff: git('diff', '--stat'),
     commonCommit: git('-C', '../GameWorksOAK', 'rev-parse', 'HEAD'), commonDiff: git('-C', '../GameWorksOAK', 'diff', '--stat'),
+    incrementalBaseline: selected.some(c => c.incrementalPaired) ? INCREMENTAL_BASELINE : null,
     version: JSON.parse(await readFile('package.json', 'utf8')).version, os: `${os.type()} ${os.release()}`, cpu: os.cpus()[0].model,
     logicalCPUs: os.cpus().length, memoryGiB: os.totalmem() / 1024 ** 3, duration, repeats, warmup, settledInformationScene, headless: true }, cases: [],
 };
@@ -144,6 +148,8 @@ try {
           const s = __session;
           __perf.compareBatching = Boolean(config.batchingPaired);
           __perf.batchInformation = !config.batchingPaired;
+          __perf.compareIncremental = Boolean(config.incrementalPaired);
+          __perf.incrementalInformation = !config.incrementalPaired;
           if (config.full) {
             while (s.controller.addToWarehouse(s.makeItem())) { /* respect real capacity */ }
           }
@@ -190,17 +196,30 @@ try {
       const snapshot = async () => ({ metrics: (await cdp.send('Performance.getMetrics')).metrics,
         state: await page.evaluate(() => ({ tick: __session.clock.tick, chips: __session.board.chips.length,
           enemies: __session.controller.getEnemies().length, speed: __session.clock.speed, paused: __session.clock.isPaused,
-          stage: __session.stageController.state, information: __session.informationWindows.entries.map(e => e.data.target) })) });
+          stage: __session.stageController.state, information: __session.informationWindows.entries.map(e => e.data.target),
+          displayMatchesInstance: __session.informationWindows.entries.filter(e => e.type === 'instance').every(entry => {
+            const entity = __session.informationWindows.getInstance(entry.data.target);
+            const window = document.querySelector(`[data-information-window-id="${entry.id}"]`);
+            const gauges = window.querySelectorAll('.InformationWindow__EntityStatusSegments');
+            if (!gauges.length) return false;
+            const values = ['power', 'magic', 'speed', 'negotiation', 'luck'].map(status => entity.getStatus(status));
+            values.push(entity.chip.type === 'enemy' ? entity.hp : entity.stamina);
+            return [...gauges].every((gauge, index) => [...gauge.children].every((segment, offset) =>
+              Math.abs(Number.parseFloat(segment.style.getPropertyValue('--status-segment-fill') || '0')
+                - Math.max(0, Math.min(1, values[index] - offset)) * 100) < 0.0001))
+              && window.querySelector('.InformationWindow__WeightValue').textContent === String(entity.getCarriedWeight());
+          }) })) });
       if (process.env.PERF_PROFILE === '1') {
         await cdp.send('Profiler.enable'); await cdp.send('Profiler.start');
       }
-      if (config.paired || config.batchingPaired) {
+      if (config.paired || config.batchingPaired || config.incrementalPaired) {
         for (const phase of ['A1', 'B', 'A2']) {
-          await page.evaluate(({ phase, batchingPaired }) => { __perf.phase = phase;
-            if (batchingPaired) __perf.batchInformation = phase === 'B';
+          await page.evaluate(({ phase, batchingPaired, incrementalPaired }) => { __perf.phase = phase;
+            if (incrementalPaired) __perf.incrementalInformation = phase === 'B';
+            else if (batchingPaired) __perf.batchInformation = phase === 'B';
             else if (phase === 'B') __perf.skip.add('InformationWindowManager.refreshDynamicEntries');
             else __perf.skip.delete('InformationWindowManager.refreshDynamicEntries');
-          }, { phase, batchingPaired: Boolean(config.batchingPaired) });
+          }, { phase, batchingPaired: Boolean(config.batchingPaired), incrementalPaired: Boolean(config.incrementalPaired) });
           const phaseBefore = await snapshot();
           await page.waitForTimeout(duration * 1000 / 3);
           phaseBoundaries[phase] = { before: phaseBefore, after: await snapshot() };
@@ -223,7 +242,7 @@ try {
       const samples = await page.evaluate(() => { __perf.recording = false; return { intervals: __perf.intervals, rows: __perf.rows, totals: __perf.totals }; });
       const metrics = Object.fromEntries([...new Set(samples.rows.flatMap(Object.keys))].filter(k => !['stage', 'paused', 'phase'].includes(k))
         .map(k => [k, stats(samples.rows.map(r => r[k] ?? 0))]));
-      const phaseMetrics = config.paired || config.batchingPaired ? Object.fromEntries(['A1', 'B', 'A2'].map(phase => {
+      const phaseMetrics = config.paired || config.batchingPaired || config.incrementalPaired ? Object.fromEntries(['A1', 'B', 'A2'].map(phase => {
         const indices = samples.rows.map((row, index) => row.phase === phase ? index : -1).filter(i => i >= 0);
         const rows = indices.map(i => samples.rows[i]);
         const intervals = indices.slice(2).map(i => samples.intervals[i - 1]).filter(Number.isFinite);
@@ -235,6 +254,8 @@ try {
           render: stats(rows.map(r => r['InformationWindowLayer.render'] ?? 0)),
           refreshCalls: rows.reduce((sum, r) => sum + (r['InformationWindowManager.refreshDynamicEntries:calls'] ?? 0), 0),
           renderCalls: rows.reduce((sum, r) => sum + (r['InformationWindowLayer.render:calls'] ?? 0), 0),
+          domCalls: Object.fromEntries(['createElement', 'createElementNS', 'createDocumentFragment', 'getBoundingClientRect', 'replaceChildren', 'replaceWith', 'insertBefore', 'textContent', 'setProperty']
+            .map(name => [name, rows.reduce((sum, r) => sum + (r[`informationDOM.${name}`] ?? 0), 0)])),
           over50: intervals.filter(x => x > 50).length / intervals.length,
           browserMetrics, state: { before: boundary.before.state, after: boundary.after.state },
           gameSecondsPerWallSecond: (boundary.after.state.tick - boundary.before.state.tick) / 60 / browserMetrics.Timestamp,
