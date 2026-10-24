@@ -10,6 +10,7 @@ const duration = Number(process.env.PERF_SECONDS ?? 30);
 const repeats = Number(process.env.PERF_REPEATS ?? 3);
 const warmup = Number(process.env.PERF_WARMUP ?? 5);
 const output = process.env.PERF_OUTPUT ?? 'tmp_performance/results.json';
+const settledInformationScene = process.env.PERF_SETTLED_INFORMATION === '1';
 const cases = [
   { name: 'title-dpr3', scene: 'title' },
   { name: 'selection-dpr3', scene: 'selection' },
@@ -35,9 +36,13 @@ const cases = [
   { name: 'warehouse-full-no-overlaps', scene: 'idle', full: true, skip: ['ChipBoard.resolveGroundOverlaps'] },
   { name: 'information', scene: 'idle', information: true },
   { name: 'information-cpu4', scene: 'idle', information: true, cpu: 4 },
+  { name: 'information-no-probe', scene: 'idle', information: true, measured: false },
+  { name: 'information-cpu4-no-probe', scene: 'idle', information: true, cpu: 4, measured: false },
   { name: 'information-no-refresh', scene: 'idle', information: true, cpu: 4, skip: ['InformationWindowManager.refreshDynamicEntries'] },
   { name: 'information-small-icons', scene: 'idle', information: true, cpu: 4, smallIcons: true },
   { name: 'information-paired', scene: 'idle', information: true, cpu: 4, paired: true },
+  { name: 'information-batching-paired', scene: 'idle', information: true, batchingPaired: true },
+  { name: 'information-cpu4-batching-paired', scene: 'idle', information: true, cpu: 4, batchingPaired: true },
   { name: 'idle-no-labels', scene: 'idle', skip: ['drawFacilityNameplates', 'drawAreaNameplates'] },
   { name: 'idle-no-shop', scene: 'idle', skip: ['drawShopPanel'] },
   { name: 'idle-small-icons', scene: 'idle', smallIcons: true },
@@ -57,7 +62,7 @@ const report = {
   environment: { date: new Date().toISOString(), commit: git('rev-parse', 'HEAD'), diff: git('diff', '--stat'),
     commonCommit: git('-C', '../GameWorksOAK', 'rev-parse', 'HEAD'), commonDiff: git('-C', '../GameWorksOAK', 'diff', '--stat'),
     version: JSON.parse(await readFile('package.json', 'utf8')).version, os: `${os.type()} ${os.release()}`, cpu: os.cpus()[0].model,
-    logicalCPUs: os.cpus().length, memoryGiB: os.totalmem() / 1024 ** 3, duration, repeats, warmup, headless: true }, cases: [],
+    logicalCPUs: os.cpus().length, memoryGiB: os.totalmem() / 1024 ** 3, duration, repeats, warmup, settledInformationScene, headless: true }, cases: [],
 };
 const tutorials = JSON.parse(await readFile('public/data/text/tutorial.json', 'utf8')).scenarios.map(s => s.id).filter(Boolean);
 const servers = [];
@@ -104,14 +109,15 @@ try {
       page.on('pageerror', e => errors.push(e.message));
       page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
       await page.addInitScript(installPerformanceProbe);
-      await page.addInitScript(({ tutorials, speedLog, normal }) => {
+      await page.addInitScript(({ tutorials, speedLog, normal, settledInformationScene }) => {
+        __perf.settledInformationScene = settledInformationScene;
         localStorage.setItem('can-we-become-heroes', JSON.stringify({ tutorialState: { completed: tutorials },
           timeSettings: { speedLog, acceleratedSpeedLog: 2, pauseOnInformation: false, pauseOnStaminaFull: false, accelerateWithoutPreparation: false } }));
         if (normal) {
           const sample = time => { __perf.begin(time); __perf.endFrame(); requestAnimationFrame(sample); };
           requestAnimationFrame(sample);
         }
-      }, { tutorials, speedLog: config.speedLog ?? 0, normal: Boolean(config.normal) });
+      }, { tutorials, speedLog: config.speedLog ?? 0, normal: Boolean(config.normal), settledInformationScene });
       const cdp = await context.newCDPSession(page);
       await cdp.send('Emulation.setCPUThrottlingRate', { rate: config.cpu ?? 1 });
       await cdp.send('Performance.enable');
@@ -130,8 +136,14 @@ try {
         }
       }
       if (!config.normal && config.scene !== 'title') {
+        if (settledInformationScene && config.scene === 'idle') {
+          await page.waitForFunction(() => __session.stageController.state === 'battle'
+            && __session.stageController.enemySpawn.pending.length === 0, null, { timeout: 60000 });
+        }
         await page.evaluate(config => {
           const s = __session;
+          __perf.compareBatching = Boolean(config.batchingPaired);
+          __perf.batchInformation = !config.batchingPaired;
           if (config.full) {
             while (s.controller.addToWarehouse(s.makeItem())) { /* respect real capacity */ }
           }
@@ -166,21 +178,32 @@ try {
           images: globalThis.__session ? { count: images.length, incomplete: images.filter(i => !i.ready).length,
             rgbaBytesEstimate: images.reduce((sum, i) => sum + i.width * i.height * 4, 0), resources: images } : null,
           canvases: [...document.querySelectorAll('canvas')].map(c => ({ id: c.id, width: c.width, height: c.height })),
-          session: globalThis.__session ? { chips: __session.board.chips.length, heroes: __session.controller.getHeroes().length,
+          session: globalThis.__session ? { tick: __session.clock.tick, pendingEnemies: __session.stageController.enemySpawn.pending.length,
+            encounter: { kind: __session.stageController.currentStage?.kind, patternIndex: __session.stageController.currentStage?.patternIndex,
+              level: __session.stageController.currentStage?.level, enemies: __session.controller.getEnemies().map(e => e.nameKey) },
+            information: __session.informationWindows.entries.map(e => ({ id: e.id, type: e.type, target: e.data.target })), chips: __session.board.chips.length, heroes: __session.controller.getHeroes().length,
             enemies: __session.controller.getEnemies().length, speed: __session.clock.speed, paused: __session.clock.isPaused, stage: __session.stageController.state } : null };
       });
       await page.evaluate(enabled => __perf.reset(enabled), config.measured !== false);
       const before = await cdp.send('Performance.getMetrics');
+      const phaseBoundaries = {};
+      const snapshot = async () => ({ metrics: (await cdp.send('Performance.getMetrics')).metrics,
+        state: await page.evaluate(() => ({ tick: __session.clock.tick, chips: __session.board.chips.length,
+          enemies: __session.controller.getEnemies().length, speed: __session.clock.speed, paused: __session.clock.isPaused,
+          stage: __session.stageController.state, information: __session.informationWindows.entries.map(e => e.data.target) })) });
       if (process.env.PERF_PROFILE === '1') {
         await cdp.send('Profiler.enable'); await cdp.send('Profiler.start');
       }
-      if (config.paired) {
+      if (config.paired || config.batchingPaired) {
         for (const phase of ['A1', 'B', 'A2']) {
-          await page.evaluate(phase => { __perf.phase = phase;
-            if (phase === 'B') __perf.skip.add('InformationWindowManager.refreshDynamicEntries');
+          await page.evaluate(({ phase, batchingPaired }) => { __perf.phase = phase;
+            if (batchingPaired) __perf.batchInformation = phase === 'B';
+            else if (phase === 'B') __perf.skip.add('InformationWindowManager.refreshDynamicEntries');
             else __perf.skip.delete('InformationWindowManager.refreshDynamicEntries');
-          }, phase);
+          }, { phase, batchingPaired: Boolean(config.batchingPaired) });
+          const phaseBefore = await snapshot();
           await page.waitForTimeout(duration * 1000 / 3);
+          phaseBoundaries[phase] = { before: phaseBefore, after: await snapshot() };
         }
       } else if (config.interactions) {
         const finish = Date.now() + duration * 1000;
@@ -200,12 +223,22 @@ try {
       const samples = await page.evaluate(() => { __perf.recording = false; return { intervals: __perf.intervals, rows: __perf.rows, totals: __perf.totals }; });
       const metrics = Object.fromEntries([...new Set(samples.rows.flatMap(Object.keys))].filter(k => !['stage', 'paused', 'phase'].includes(k))
         .map(k => [k, stats(samples.rows.map(r => r[k] ?? 0))]));
-      const phaseMetrics = config.paired ? Object.fromEntries(['A1', 'B', 'A2'].map(phase => {
+      const phaseMetrics = config.paired || config.batchingPaired ? Object.fromEntries(['A1', 'B', 'A2'].map(phase => {
         const indices = samples.rows.map((row, index) => row.phase === phase ? index : -1).filter(i => i >= 0);
         const rows = indices.map(i => samples.rows[i]);
         const intervals = indices.slice(2).map(i => samples.intervals[i - 1]).filter(Number.isFinite);
+        const boundary = phaseBoundaries[phase];
+        const browserMetrics = Object.fromEntries(boundary.after.metrics.map(({ name, value }) =>
+          [name, value - boundary.before.metrics.find(m => m.name === name).value]));
         return [phase, { main: stats(rows.map(r => r.main)),
-          information: stats(rows.map(r => r['InformationWindowManager.refreshDynamicEntries'] ?? 0)), intervals: stats(intervals) }];
+          information: stats(rows.map(r => r['InformationWindowManager.refreshDynamicEntries'] ?? 0)),
+          render: stats(rows.map(r => r['InformationWindowLayer.render'] ?? 0)),
+          refreshCalls: rows.reduce((sum, r) => sum + (r['InformationWindowManager.refreshDynamicEntries:calls'] ?? 0), 0),
+          renderCalls: rows.reduce((sum, r) => sum + (r['InformationWindowLayer.render:calls'] ?? 0), 0),
+          over50: intervals.filter(x => x > 50).length / intervals.length,
+          browserMetrics, state: { before: boundary.before.state, after: boundary.after.state },
+          gameSecondsPerWallSecond: (boundary.after.state.tick - boundary.before.state.tick) / 60 / browserMetrics.Timestamp,
+          intervals: stats(intervals) }];
       })) : undefined;
       const run = { repeat, titleReadyMs, metadata, errors, browserMetrics, intervals: stats(samples.intervals),
         over33: samples.intervals.filter(x => x > 33.333).length / samples.intervals.length,

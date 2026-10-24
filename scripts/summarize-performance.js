@@ -8,7 +8,7 @@ for (const input of inputs) {
   reports.push({ source: input, environment: report.environment, excludedConditions: report.excludedConditions ?? [], cases: report.cases.map(({ runs, ...condition }) => ({
     ...condition, runs: runs.map(({ samples, metrics, browserMetrics, ...run }) => ({
       ...run,
-      metrics: Object.fromEntries(Object.entries(metrics).map(([key, value]) => [key, { mean: value.mean, p95: value.p95 }])),
+      metrics: Object.fromEntries(Object.entries(metrics).map(([key, value]) => [key, { n: value.n, mean: value.mean, p95: value.p95, max: value.max }])),
       browserMetrics: Object.fromEntries(Object.entries(browserMetrics).filter(([key]) => [
         'Timestamp', 'TaskDuration', 'ScriptDuration', 'LayoutDuration', 'RecalcStyleDuration', 'LayoutCount',
         'RecalcStyleCount', 'Nodes', 'JSEventListeners', 'JSHeapUsedSize',

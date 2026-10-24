@@ -8,6 +8,7 @@ const wrappers = {
   'chips/ChipBoard.js': ['ChipBoard', ['update', 'getRenderChips', 'resolveGroundOverlaps']],
   'chips/ChipRenderer.js': ['ChipRenderer', ['drawBody', 'drawEffects']],
   'app/InformationWindowManager.js': ['InformationWindowManager', ['refreshDynamicEntries']],
+  'app/InformationWindowLayer.js': ['InformationWindowLayer', ['render']],
   'app/TimeSettingsController.js': ['TimeSettingsController', ['updateStatus']],
   'app/TitleChipRain.js': ['TitleChipRain', ['update', 'draw']],
 };
@@ -34,6 +35,14 @@ export function performanceBuildPlugin() {
         code = replaceOnce(code, '    requestAnimationFrame(render);', '    globalThis.__perf.endFrame(); requestAnimationFrame(render);');
       }
       if (path.endsWith('/src/app/TrialSession.js')) {
+        code = replaceOnce(code, '      informationWindows.closeInvalidEntries();\n      stageController.update();',
+          '      informationWindows.closeInvalidEntries(); if (globalThis.__perf.compareBatching && !globalThis.__perf.batchInformation) informationWindows.refreshDynamicEntries();\n      stageController.update();');
+        code = replaceOnce(code, '    if (simulationUpdated) informationWindows.refreshDynamicEntries();',
+          '    if (simulationUpdated && (!globalThis.__perf.compareBatching || globalThis.__perf.batchInformation)) informationWindows.refreshDynamicEntries();');
+        for (const marker of ['  const scenario = createRunScenario({ professionIds: selectedProfessionIds });',
+          '    const choices = stageController.createStageChoices({ stageNumber });']) {
+          code = replaceOnce(code, marker, `    if (globalThis.__perf.settledInformationScene) globalThis.__perf.reseed();\n${marker}`);
+        }
         code = replaceOnce(code, '  openStageSelection(1);', `
           globalThis.__session = { board, controller, clock, camera, assets, informationWindows, stageController, tutorial,
             makeItem: () => new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor', 'fire'],
@@ -78,6 +87,8 @@ export function installPerformanceProbe() {
   let seed = 54;
   Math.random = () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   const probe = globalThis.__perf = {
+    compareBatching: false, batchInformation: true,
+    reseed() { seed = 54; },
     enabled: false, recording: false, skip: new Set(), rows: [], intervals: [], current: {}, starts: {}, totals: {},
     begin(time) {
       if (this.recording && this.previous !== undefined && this.intervals.length < 20000) this.intervals.push(time - this.previous);

@@ -261,7 +261,9 @@ export async function startTrial({
 
   trial.update = (deltaSeconds, time) => {
     achievementToast.update(deltaSeconds * 1000, Boolean(document.querySelector('.ModalLayer.state-open, #tutorial-layer:not([hidden])')));
+    let simulationUpdated = false;
     clock.advance(deltaSeconds, (simulationDeltaSeconds, tickDelta) => {
+      simulationUpdated = true;
       enemySpawn.update(clock.tick);
       board.update(simulationDeltaSeconds);
       combatEffects.update(simulationDeltaSeconds);
@@ -277,12 +279,12 @@ export async function startTrial({
       shopSystem.update(controller.getHeroes(), simulationDeltaSeconds);
       battleSystem.update({ heroes: controller.getHeroes(), enemies: controller.getEnemies(), tick: clock.tick, tickDelta });
       informationWindows.closeInvalidEntries();
-      informationWindows.refreshDynamicEntries();
       stageController.update();
       trialRunFlow.update(controller.getHeroes());
       facilitySwing.update(controller.getHeroes(), simulationDeltaSeconds, controller.activeHero);
       if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();
     });
+    if (simulationUpdated) informationWindows.refreshDynamicEntries();
     if (!trialRunFlow.recruitmentPlaybackPending) tutorial.check();
     tutorial.update(time);
     controller.updateVisuals();
