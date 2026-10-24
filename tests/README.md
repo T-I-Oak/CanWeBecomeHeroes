@@ -107,9 +107,9 @@ Windows専用のこのコマンドは、次の処理を自動で実行する。
 ```powershell
 Get-Content -Raw -Encoding UTF8 tmp_browser_verification/<実行日時>/summary.json
 Get-Content -Raw -Encoding UTF8 tmp_browser_verification/<実行日時>/run-1.json | ConvertFrom-Json |
-  Select-Object run,started,ended,exitCode,timedOut,interrupted,observationError,stats,errors,remaining,listeners,afterCleanup,passed | ConvertTo-Json -Depth 6
+  Select-Object run,started,ended,exitCode,timedOut,interrupted,observationError,observationFailure,stats,errors,remaining,listeners,afterCleanup,passed | ConvertTo-Json -Depth 6
 Get-Content -Raw -Encoding UTF8 tmp_browser_verification/<実行日時>/run-2.json | ConvertFrom-Json |
-  Select-Object run,started,ended,exitCode,timedOut,interrupted,observationError,stats,errors,remaining,listeners,afterCleanup,passed | ConvertTo-Json -Depth 6
+  Select-Object run,started,ended,exitCode,timedOut,interrupted,observationError,observationFailure,stats,errors,remaining,listeners,afterCleanup,passed | ConvertTo-Json -Depth 6
 ```
 
 1回目失敗時は2回目のファイルは作られない。詳細ログは`run-N.log`、Playwright結果は
@@ -118,10 +118,10 @@ Get-Content -Raw -Encoding UTF8 tmp_browser_verification/<実行日時>/run-2.js
 実装報告には実行条件、開始・終了時刻、テスト件数・成否、終了コード、上限到達・中断、
 待受・プロセス残存、再実行結果、結果ディレクトリを記録する。
 
-実行補助自体を変更した場合は、まず次の対象テストを通常の実行環境で実行し、全7件の成功を確認する。
+実行補助自体を変更した場合は、まず次の対象テストを通常の実行環境で実行し、全10件の成功を確認する。
 
 ```powershell
-node --test tests/implementation/scripts/BrowserTestVerification.test.js tests/implementation/scripts/BrowserTestRun.test.js
+node --test tests/implementation/scripts/BrowserTestVerification.test.js tests/implementation/scripts/BrowserTestRun.test.js tests/implementation/scripts/WindowsBrowserInventory.test.js
 ```
 
 BrowserTestRunは実際の実行フローへ照会・起動・終了処理を注入し、最初の起動後照会失敗からの後処理、
@@ -131,6 +131,18 @@ BrowserTestRunは実際の実行フローへ照会・起動・終了処理を注
 `afterCleanup.remaining: []`・`afterCleanup.listeners: []`であり、2回目は実行されない。
 結果ファイルの読み方は上記と同じ。90秒はテストプロセスの待機上限で、観測・後処理時間は別にかかる。
 各プロセス照会の上限は15秒、各終了コマンドは5秒である。
+
+事前照会で失敗した場合は、テスト未起動とテスト自体の失敗を区別する。
+`run-N.json`と`summary.json`の`observationError`・`observationFailure`を読む。
+`rootPid: null`ならテスト用プロセスはまだ起動しておらず、テスト結果は未取得である。
+この場合の`remaining: []`・`listeners: []`だけで解放確認済みとは判断しない。
+`observationFailure`には照会の所要時間・上限・終了コード・シグナル・強制終了の有無・
+標準出力・標準エラーを保存する。`stage`は最後に開始した処理で、
+`startup`（PowerShell起動）、`processes`（プロセス照会）、`listeners`（ポート照会）、
+`serialize`（JSON生成・読取）のいずれか。`killed`・`signal`と所要時間を照合し、
+エラー文だけから権限不足やタイムアウトと断定しない。
+原因調査後に同じ`node scripts/verify-browser-tests.js`をサンドボックス外で再実行する。
+失敗した実行の記録も保持し、後続の成功で上書きしない。
 
 ```powershell
 $previousBrowserVerifyTimeout = $env:BROWSER_VERIFY_TIMEOUT_MS
@@ -149,6 +161,7 @@ exit $browserVerificationExitCode
 - `browser/01.game_settings.pw.js`: 要求01の開始から終了までの接続。タイトルで開始し、選択順を変更した2名、開始劇、課題選択、戦闘開始、勝利後の次課題、最終課題の合格と期限切れ、結果を閉じた後のタイトル復帰・再開始を検証する。結果の見出し・保存内容と、終了後に更新を繰り返しても結果表示・記録が1件であることを確認する。
 - 時間と乱数、チュートリアル完了状態はブラウザー内で制御する。戦闘開始までは実際の出現・物理更新を使い、勝利はテスト側から実際の敵撃破処理・戦闘終了境界を操作する。戦闘計算は既存の要求04・実装テストに任せる。合否判定、課題番号、結果生成・保存、モーダルとアプリのループは本番実装を通す。本番コードにテスト用フックは設けない。
 - `browser/production.pw.js`: 本番ベースパス`/CanWeBecomeHeroes/`で、ビルド済みのタイトル・バージョン、メンバー選択、開始劇、課題選択を操作する。共通ライブラリを含むbundle、文言、ロゴを読み込み、HTTPエラー・通信失敗・コンソールエラー・実行時例外がないことを確認する。開発用モジュールの差し替えは行わない。
+  レコード表示中に390×844→844×390→390×844、768×1024→1024×768→768×1024へ変更し、canvas寸法の追従、前面のヒット判定、タブ切替、成績表の縦横スクロール、閉じる・再表示、タイトル演出の継続を確認する。スクリーンショットは`tmp_record_rotation/`へ保存する。viewport変更とヒット判定は実機Safariの回転や合成後の画素の正しさを保証しないため、実機確認を別途行う。
 
 GitHub Pagesの公開ワークフローは`npm ci`→`npm test`→Chromium準備→`npm run test:browser`→`npm run build`→配信の順とする。ブラウザー検証自身もpreview用の本番ビルドを作る。失敗時に後続の配信は実行しない。ローカルでの本番preview確認はGitHub Pagesへ配信済みであることの確認とは区別する。
 

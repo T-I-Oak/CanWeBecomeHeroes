@@ -8,7 +8,7 @@ export async function runBrowserVerification(number, options) {
     command: 'npm.cmd run test:browser -- --reporter=line,json',
     channel: process.env.PLAYWRIGHT_CHANNEL ?? null, ci: process.env.CI ?? null,
     node: process.version, rootPid: null, exitCode: null, timedOut: false, interrupted: false,
-    observationError: null, stats: null, errors: [], remaining: [], listeners: [], snapshots: [], cleanup: [],
+    observationError: null, observationFailure: null, stats: null, errors: [], remaining: [], listeners: [], snapshots: [], cleanup: [],
   };
   const prefix = path.join(output, `run-${number}`);
   let child;
@@ -77,7 +77,9 @@ export async function runBrowserVerification(number, options) {
     }
   } catch (error) {
     result.observationError = error.message;
+    result.observationFailure = error.diagnostics ?? null;
     log(error.message);
+    if (result.observationFailure) log(JSON.stringify(result.observationFailure));
   } finally {
     clearTimeout(timer);
     signals.off('SIGINT', interrupt);
@@ -111,7 +113,7 @@ export async function runBrowserVerification(number, options) {
         const cleaned = await inventory();
         result.afterCleanup = { remaining: descendants(cleaned.processes, known), listeners: cleaned.listeners };
       } catch (error) {
-        result.cleanup.push({ error: error.message });
+        result.cleanup.push({ error: error.message, diagnostics: error.diagnostics ?? null });
       }
       child.stdout.destroy();
       child.stderr.destroy();
