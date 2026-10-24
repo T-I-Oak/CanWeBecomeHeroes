@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Safari レコード回転検証</title>
-  <script type="module" crossorigin src="/CanWeBecomeHeroes/assets/record-rotation-Bg0BWp2Z.js"></script>
-  <link rel="modulepreload" crossorigin href="/CanWeBecomeHeroes/assets/TitleMenu-CdluSs1e.js">
-  <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/TitleMenu-Bvorup0i.css">
-  <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/record-rotation-4EwvG5s_.css">
+  <script type="module" crossorigin src="/CanWeBecomeHeroes/assets/record-rotation-LP3lUsdt.js"></script>
+  <link rel="modulepreload" crossorigin href="/CanWeBecomeHeroes/assets/TitleMenu-C6RlSVQq.js">
+  <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/TitleMenu-DHyZrpB-.css">
+  <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/record-rotation-D8w_HpQu.css">
 </head>
 <body>
   <main class="AppShell state-title">
@@ -20,10 +20,11 @@
       <form method="get">
         <label for="mode">比較条件（一度に1つ）</label>
         <select id="mode" name="mode">
-          <option value="baseline">A：通常（比較基準）</option>
+          <option value="baseline">A：変更前（比較基準）</option>
           <option value="no-scale">B：表の拡縮なし</option>
           <option value="fixed-canvas">C：canvasのサイズ更新停止</option>
           <option value="no-scroll">D：表の内部スクロールなし</option>
+          <option value="grouped-record">E：紙・操作部・表をまとめて描画（修正候補）</option>
         </select>
         <button type="submit">この条件で最初から試す</button>
       </form>
