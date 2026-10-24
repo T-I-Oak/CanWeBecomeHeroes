@@ -22,3 +22,5 @@
 .RotationDiagnostics a { color: #b9e2ff; }
 .RotationDiagnostics__Actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .RotationFixture.state-no-scroll .RecordScreen__ScrollViewport { overflow: visible; }
+.RotationFixture .RecordScreenViewport { transform: none; }
+.RotationFixture.state-grouped-record .RecordScreenViewport { transform: translateZ(0); }

@@ -16,10 +16,11 @@
       <form method="get">
         <label for="mode">比較条件（一度に1つ）</label>
         <select id="mode" name="mode">
-          <option value="baseline">A：通常（比較基準）</option>
+          <option value="baseline">A：変更前（比較基準）</option>
           <option value="no-scale">B：表の拡縮なし</option>
           <option value="fixed-canvas">C：canvasのサイズ更新停止</option>
           <option value="no-scroll">D：表の内部スクロールなし</option>
+          <option value="grouped-record">E：紙・操作部・表をまとめて描画（修正候補）</option>
         </select>
         <button type="submit">この条件で最初から試す</button>
       </form>

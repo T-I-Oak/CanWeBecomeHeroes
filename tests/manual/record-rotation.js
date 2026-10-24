@@ -7,12 +7,13 @@ import AssetLoader from '../../src/chips/AssetLoader.js';
 import { APP_VERSION } from '../../src/game/AppMetadata.js';
 
 const descriptions = {
-  baseline: 'A：撤回後の通常実装と同じ拡縮・canvas更新・内部スクロール。',
+  baseline: 'A：修正前の比較基準。v0.64.2と同じ拡縮・canvas更新・内部スクロール。',
   'no-scale': 'B：表のtransformだけを外します。表は論理幅のまま、スクロール用の寸法も等倍にします。',
   'fixed-canvas': 'C：開始時のcanvas描画サイズを維持します。CSSサイズは画面に追従し、チップの動きは継続します。',
   'no-scroll': 'D：表のスクロール領域だけoverflowをvisibleにします。外側の画面枠・拡縮は維持します。',
+  'grouped-record': 'E：紙・操作部・表の親にtranslateZ(0)を指定します。canvasのサイズ更新・内部スクロール・本文の拡縮を残した修正候補です。',
 };
-const mode = new URLSearchParams(location.search).get('mode') ?? 'baseline';
+const mode = new URLSearchParams(location.search).get('mode') ?? 'grouped-record';
 if (!(mode in descriptions)) throw new RangeError(`Unknown diagnostic mode: ${mode}`);
 document.querySelector('#mode').value = mode;
 document.querySelector('#condition-description').textContent = descriptions[mode];
@@ -58,6 +59,7 @@ record.resize = () => {
   record.contentFrame.style.height = `${record.content.scrollHeight}px`;
 };
 if (mode === 'no-scroll') root.classList.add('state-no-scroll');
+if (mode === 'grouped-record') root.classList.add('state-grouped-record');
 menu.rain.start();
 menu.openPanel('records');
 
@@ -72,6 +74,7 @@ function capture(event) {
     canvasCss: [canvas.clientWidth, canvas.clientHeight], canvasPixels: [canvas.width, canvas.height], canvasResizes,
   };
   if (record.isOpen) {
+    entry.viewportTransform = getComputedStyle(record.screen.parentElement).transform;
     entry.contentTransform = getComputedStyle(record.content).transform;
     entry.scrollOverflow = getComputedStyle(record.scroll).overflow;
     entry.scrollSize = [record.scroll.clientWidth, record.scroll.clientHeight, record.scroll.scrollWidth, record.scroll.scrollHeight];

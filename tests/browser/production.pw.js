@@ -87,7 +87,7 @@ test('normal mobile build keeps records above the animated title across viewport
   await page.locator('.TitleMenu__DiagnosticLink').click();
   await expect(page).toHaveURL(/\/tests\/manual\/record-rotation\.html$/);
   await expect(page.locator('#diagnostic-summary')).toContainText(`v${version}`);
-  for (const mode of ['baseline', 'no-scale', 'fixed-canvas', 'no-scroll']) {
+  for (const mode of ['baseline', 'no-scale', 'fixed-canvas', 'no-scroll', 'grouped-record']) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('#mode').selectOption(mode);
     await page.getByRole('button', { name: 'この条件で最初から試す' }).click();
@@ -100,6 +100,26 @@ test('normal mobile build keeps records above the animated title across viewport
         .toEqual(mode === 'fixed-canvas' ? initialCanvas : [viewport.width, viewport.height]);
       if (mode === 'no-scale') await expect(page.locator('.RecordScreen__Content')).toHaveCSS('transform', 'none');
       if (mode === 'no-scroll') await expect(page.locator('.RecordScreen__ScrollViewport')).toHaveCSS('overflow', 'visible');
+      if (mode === 'grouped-record') {
+        await expect(page.locator('.RecordScreenViewport')).not.toHaveCSS('transform', 'none');
+        await expect(page.locator('.RecordScreen__ScrollViewport')).toHaveCSS('overflow', 'auto');
+      } else await expect(page.locator('.RecordScreenViewport')).toHaveCSS('transform', 'none');
+    }
+    if (mode === 'grouped-record') {
+      await page.locator('.RecordScreen').getByRole('tab').nth(1).click();
+      const scroll = page.locator('.RecordScreen__ScrollViewport');
+      await scroll.evaluate(element => element.scrollTo(element.scrollWidth, element.scrollHeight));
+      await expect.poll(() => scroll.evaluate(element => element.scrollLeft > 0 && element.scrollTop > 0)).toBe(true);
+      await page.locator('.RecordScreen').getByRole('tab').nth(0).click();
+      await page.locator('.RecordScreen__Portrait').first().click();
+      const information = page.locator('.RecordInformation .InformationWindow');
+      await expect(information).toBeVisible();
+      await expect.poll(() => information.evaluate(element => {
+        const rect = element.getBoundingClientRect();
+        return rect.left >= 0 && rect.top >= 0 && rect.right <= innerWidth + 1 && rect.bottom <= innerHeight + 1;
+      })).toBe(true);
+      await page.locator('.RecordScreen__Header button').click();
+      await expect(information).toHaveCount(0);
     }
     await page.locator('.RotationDiagnostics summary').click();
     await page.locator('#record-broken').click();
