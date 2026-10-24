@@ -165,7 +165,7 @@ export default class InformationWindowLayer {
     const window = createElement('section', `InformationWindow${entry.scale === COMPACT_WINDOW_SCALE ? ' is-compact' : ''}`);
     window.dataset.informationWindowId = entry.id;
     window.style.scale = String(entry.scale);
-    const content = createElement('div', 'InformationWindow__Content');
+    const content = createElement('div', 'InformationWindow__Content PaperScroll');
     const rendered = this.#renderContent(entry);
     window.append(rendered.querySelector('.InformationWindow__Title'));
     content.append(rendered);
