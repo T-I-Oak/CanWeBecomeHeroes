@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Safari レコード回転検証</title>
+</head>
+<body>
+  <main class="AppShell state-title">
+    <aside class="ModalLayer TitleMenu" id="rotation-title" hidden></aside>
+  </main>
+  <details class="RotationDiagnostics" open>
+    <summary id="diagnostic-summary">回転検証を準備中</summary>
+    <div class="RotationDiagnostics__Body">
+      <p>検証用のサンプル記録です。ゲームの保存データは使用・変更しません。</p>
+      <form method="get">
+        <label for="mode">比較条件（一度に1つ）</label>
+        <select id="mode" name="mode">
+          <option value="baseline">A：変更前（比較基準）</option>
+          <option value="no-scale">B：表の拡縮なし</option>
+          <option value="fixed-canvas">C：canvasのサイズ更新停止</option>
+          <option value="no-scroll">D：表の内部スクロールなし</option>
+          <option value="grouped-record">E：紙・操作部・表をまとめて描画（修正候補）</option>
+        </select>
+        <button type="submit">この条件で最初から試す</button>
+      </form>
+      <p id="condition-description"></p>
+      <p>縦向きで条件を選択→上のボタン→このパネルを畳む→横→縦に回転。紙・操作ボタン・表と落下チップの前後関係を比較してください。各条件でページを読み直し、前の描画状態を引き継ぎません。</p>
+      <p>Aで症状が出ない場合、このページでは原因の比較ができません。Bは表が大きく、Cはチップが伸縮・変形し、Dは表の下端が切れる場合があります。各条件の意図した違いです。</p>
+      <div class="RotationDiagnostics__Actions">
+        <button type="button" id="record-broken">異常ありを記録</button>
+        <button type="button" id="record-normal">異常なしを記録</button>
+        <button type="button" id="show-log">記録を表示</button>
+        <button type="button" id="clear-log">検証記録を消す</button>
+      </div>
+      <p id="result-status" role="status"></p>
+      <textarea id="diagnostic-log" aria-label="検証記録" rows="8" readonly hidden></textarea>
+      <a href="../../">通常のゲームへ戻る</a>
+    </div>
+  </details>
+  <script type="module" src="./record-rotation.js"></script>
+</body>
+</html>

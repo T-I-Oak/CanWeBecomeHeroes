@@ -35,7 +35,9 @@ function fixture({ interruptBeforeSpawn = false, wrongOwner = false, wrongTime =
         if (interruptBeforeSpawn) signals.emit(signal);
         return { processes: [other], listeners: [] };
       }
-      if (calls === 2) throw new Error('first post-spawn inventory failed');
+      if (calls === 2) throw Object.assign(new Error('first post-spawn inventory failed'), {
+        diagnostics: { stage: 'listeners', code: 1, stderr: 'Access denied' },
+      });
       return { processes: active ? [root, { pid: 102, parent: 101, created: root.created }, other] : [other],
         listeners: active ? [{ port: 4174, pid: 102 }] : [] };
     },
@@ -58,6 +60,8 @@ test('first post-spawn inventory failure recovers owned root and cleans only its
   assert.deepEqual(result.afterCleanup, { remaining: [], listeners: [] });
   assert.equal(f.saved.length, 2);
   assert.equal(f.saved[0].data.toString(), 'fixture output\n');
+  assert.deepEqual(JSON.parse(f.saved[1].data).observationFailure,
+    { stage: 'listeners', code: 1, stderr: 'Access denied' });
 });
 
 for (const signal of ['SIGINT', 'SIGTERM']) test(`${signal} during preflight does not spawn a test process`, async () => {
