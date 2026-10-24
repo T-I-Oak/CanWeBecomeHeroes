@@ -190,10 +190,16 @@ export async function startTrial({
     }).remainingHours;
   }
 
+  const initialHeroes = [...initialPreparationHeroes];
+  let initialHeroesLanded = false;
   const tutorial = new TutorialController({ mode, camera, clock, canvas, canvasInput, dataManager, textRepository,
     getHeroes: () => controller.getHeroes(), getPreparationHeroes: () => preparationHeroes,
     getItems: () => [...controller.entities.values()].filter(entity => entity.chip.type === 'item'),
     isStageSelecting: () => stageController.state === 'selecting', isActive: () => runController.isActive,
+    isGameScreenReady: () => {
+      initialHeroesLanded ||= initialHeroes.every(hero => hero.chip.isSettled);
+      return initialHeroesLanded;
+    },
   });
   trial.tutorial = tutorial;
   openStageSelection(1);

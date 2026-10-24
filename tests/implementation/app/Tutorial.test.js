@@ -6,8 +6,36 @@ import { readGameText } from '../../../src/game/readGameText.js';
 import { calculateTutorialFocus, calculateRestoredCamera, getTutorialTimings, selectTutorialScenarios } from '../../../src/app/TutorialController.js';
 import Camera from '../../../src/game/Camera.js';
 import GameClock from '../../../src/game/GameClock.js';
+import ChipBoard from '../../../src/chips/ChipBoard.js';
 
 function scenarios() { setLanguage('ja'); return expandLanguageResource(readGameText()).tutorial.scenarios; }
+
+test('game screen waits for every initial hero to finish falling and bouncing', () => {
+  const board = new ChipBoard({ width: 2000, height: 2000 });
+  const chips = [200, 800].map(x => board.add({ type: 'hero', x, y: 200, weight: 10, tagPaths: [] }));
+  const input = { stageSelecting: false, active: true, armed: true, heroes: [] };
+  const timings = () => getTutorialTimings({ ...input, gameScreenReady: chips.every(chip => chip.isSettled) });
+  const hasIntro = () => timings().some(timing => timing.trigger === 'game-screen');
+  assert.equal(hasIntro(), false);
+  chips[0].height = 0;
+  assert.equal(hasIntro(), false, 'one landed hero is insufficient');
+  let bounced = false;
+  for (let frame = 0; frame < 300 && !chips[1].isSettled; frame += 1) {
+    board.update(1 / 60);
+    if (chips[1].height === 0 && chips[1].verticalVelocity < 0) {
+      bounced = true;
+      assert.equal(hasIntro(), false, 'ground contact with an upcoming bounce is not settled');
+    }
+    if (!chips[1].isSettled) assert.equal(hasIntro(), false);
+  }
+  assert.equal(bounced, true);
+  assert.equal(chips.every(chip => chip.isSettled), true);
+  assert.equal(hasIntro(), true);
+  assert.deepEqual(getTutorialTimings({ ...input, gameScreenReady: false, stageSelecting: true }), [{ trigger: 'stage-selection' }]);
+  assert.deepEqual(getTutorialTimings({ ...input, gameScreenReady: true, armed: false }), []);
+  assert.deepEqual(getTutorialTimings({ ...input, gameScreenReady: true, active: false }), []);
+  assert.deepEqual(getTutorialTimings({ ...input, gameScreenReady: false }).map(t => t.trigger), ['gameplay']);
+});
 
 test('challenge intro has no prerequisites, remains separate from trial guidance, and can be reset', async t => {
   const previousDocument = globalThis.document;

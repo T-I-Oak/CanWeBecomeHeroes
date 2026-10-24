@@ -19,11 +19,11 @@ export function calculateRestoredCamera(saved, camera) {
   return { x: restored.x, y: restored.y, zoom: restored.zoom };
 }
 
-export function getTutorialTimings({ stageSelecting, active, heroes, armed, arrivals = new Map() }) {
+export function getTutorialTimings({ stageSelecting, active, heroes, armed, gameScreenReady = true, arrivals = new Map() }) {
   if (!armed) return [];
   if (stageSelecting) return [{ trigger: 'stage-selection' }];
   if (!active) return [];
-  const timings = [{ trigger: 'game-screen' }];
+  const timings = gameScreenReady ? [{ trigger: 'game-screen' }] : [];
   const hero = heroes.find(hero => hero.currentArea === 'preparation' && hero.stamina >= 3);
   if (hero) timings.push({ trigger: 'stamina-ready', hero });
   for (const [area, hero] of arrivals) timings.push({ trigger: `arrival:${area}`, hero });
@@ -45,9 +45,9 @@ export function calculateTutorialFocus(bounds, viewport, maximumZoom = 1.5) {
 }
 
 export default class TutorialController {
-  constructor({ mode = 'trial', camera, clock, canvas, canvasInput, dataManager, textRepository, getHeroes, getPreparationHeroes, getItems, isStageSelecting, isActive }) {
+  constructor({ mode = 'trial', camera, clock, canvas, canvasInput, dataManager, textRepository, getHeroes, getPreparationHeroes, getItems, isStageSelecting, isActive, isGameScreenReady }) {
     this.mode = mode;
-    Object.assign(this, { camera, clock, canvas, canvasInput, dataManager, textRepository, getHeroes, getPreparationHeroes, getItems, isStageSelecting, isActive });
+    Object.assign(this, { camera, clock, canvas, canvasInput, dataManager, textRepository, getHeroes, getPreparationHeroes, getItems, isStageSelecting, isActive, isGameScreenReady });
     this.armed = true;
     this.hero = null;
     this.savedCamera = null;
@@ -118,7 +118,7 @@ export default class TutorialController {
       this.previousAreas.set(hero, hero.currentArea);
     }
     if (this.scenarioActive || this.manager.isAdvancing) return;
-    for (const timing of getTutorialTimings({ stageSelecting: this.isStageSelecting(), active: this.isActive(), heroes, armed: this.armed, arrivals: this.arrivals })) {
+    for (const timing of getTutorialTimings({ stageSelecting: this.isStageSelecting(), active: this.isActive(), heroes, armed: this.armed, gameScreenReady: this.isGameScreenReady(), arrivals: this.arrivals })) {
       if (!this.manager.willTrigger(timing.trigger, timing)) continue;
       this.hero = timing.hero ?? null;
       this.manager.checkTrigger(timing.trigger, timing);

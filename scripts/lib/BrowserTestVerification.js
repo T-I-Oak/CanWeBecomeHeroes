@@ -19,7 +19,7 @@ export function descendants(processes, known) {
 
 export function verificationPassed(result) {
   return result.exitCode === 0 && !result.timedOut && !result.interrupted &&
-    !result.observationError && result.stats?.expected === 4 &&
+    !result.observationError && result.stats?.expected === 5 &&
     result.stats.unexpected === 0 && result.stats.skipped === 0 && result.stats.flaky === 0 &&
     result.errors.length === 0 && result.remaining.length === 0 && result.listeners.length === 0;
 }
