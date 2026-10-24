@@ -7,6 +7,7 @@ import { getWeightFillRatio, WEIGHT_GAUGE_COLORS } from '../game/WeightVisual.js
 import { createInformationElement } from './InformationWindowElementFactory.js';
 import { applyTagSkillVisual, createEquipmentImage, createStatusIcon, createTagIcon } from './InformationWindowVisualFactory.js';
 import { createInformationWindowChipPreview } from './InformationWindowChipPreview.js';
+import { readEntityInformationState, sameInformationValues } from './EntityInformationState.js';
 
 export default class EntityInformationRenderer {
   constructor({ textRepository, references, open, getInstance, createInstanceTarget, assets = null }) {
@@ -16,6 +17,7 @@ export default class EntityInformationRenderer {
     this.getInstance = getInstance;
     this.createInstanceTarget = createInstanceTarget;
     this.assets = assets;
+    this.states = new WeakMap();
   }
 
   setTextRepository(textRepository) { this.textRepository = textRepository; }
@@ -23,8 +25,69 @@ export default class EntityInformationRenderer {
   render(entry) {
     const entity = entry.type === 'instance' ? this.getInstance(entry.data.target) : null;
     if (!entity) throw new RangeError(`Unknown information instance: ${entry.data.target?.instanceId ?? 'legacy target'}`);
-    if (entity.chip.type === 'item') return this.#renderItemDetail(entry, entity);
-    return this.#renderEntityDetail(entry, entity);
+    const content = entity.chip.type === 'item' ? this.#renderItemDetail(entry, entity) : this.#renderEntityDetail(entry, entity);
+    this.states.set(content.querySelector('.InformationWindow__Title'), readEntityInformationState(entity, this.textRepository));
+    return content;
+  }
+
+  update(window, entry) {
+    const entity = this.getInstance(entry.data.target);
+    const title = window.querySelector('.InformationWindow__Title');
+    const previous = this.states.get(title);
+    const next = readEntityInformationState(entity, this.textRepository);
+    let dimensionsChanged = false;
+    if (previous.name !== next.name) {
+      title.querySelector('.InformationWindow__Name').textContent = next.name;
+      dimensionsChanged = true;
+    }
+    if (previous.preview !== next.preview) {
+      title.querySelector('.InformationWindow__ChipPreview').replaceWith(createInformationWindowChipPreview(entity.chip, this.assets));
+      dimensionsChanged ||= previous.previewRadius !== next.previewRadius;
+    }
+    if (next.item) {
+      if (previous.badges !== next.badges) {
+        window.querySelector('.InformationWindow__ItemBadgeList').replaceWith(this.#createItemBadgeList(entity, entry.id));
+        dimensionsChanged = true;
+      }
+    } else {
+      const gauges = window.querySelector('.InformationWindow__EntityStatusGrid').children;
+      next.statuses.forEach((value, index) => {
+        const old = previous.statuses[index];
+        if (value.current !== old.current || value.maximum !== old.maximum) {
+          this.#updateEntityStatusGauge(gauges[index], value.status, value.current, value.maximum);
+        }
+      });
+      if (previous.weight !== next.weight) {
+        const gauge = window.querySelector('.InformationWindow__EntityWeight');
+        gauge.style.setProperty('--weight-fill', `${getWeightFillRatio(next.weight) * 100}%`);
+        gauge.querySelector('.InformationWindow__WeightValue').textContent = String(next.weight);
+        dimensionsChanged ||= String(previous.weight).length !== String(next.weight).length;
+      }
+      const tags = window.querySelector('.InformationWindow__EntityTagList').children;
+      TAG_DISPLAY_GRID.flat().forEach((tag, index) => {
+        if (previous.tags[index] !== next.tags[index]) {
+          applyTagSkillVisual(tags[index], next.tags[index], tag);
+          tags[index].querySelector('.InformationWindow__SkillRequirement').textContent = String(next.tags[index]);
+          dimensionsChanged ||= String(previous.tags[index]).length !== String(next.tags[index]).length;
+        }
+      });
+      if (!sameInformationValues(previous.equipment, next.equipment)) {
+        window.querySelector('.InformationWindow__EquipmentList').replaceWith(this.#createEquipmentList(entity, entry.id, next.enemy));
+        dimensionsChanged = true;
+      }
+      if (previous.skill !== next.skill) {
+        window.querySelector('.InformationWindow__EntityInformation').replaceWith(this.#createEntityInformation(entity, entry, next.enemy));
+        dimensionsChanged = true;
+      }
+    }
+    if (previous.profile !== next.profile) {
+      const body = window.querySelector(next.item ? '.InformationWindow__Body' : '.InformationWindow__EntityPanel');
+      const rendered = next.item ? this.#renderItemDetail(entry, entity) : this.#renderEntityDetail(entry, entity);
+      body.replaceWith(rendered.querySelector(next.item ? '.InformationWindow__Body' : '.InformationWindow__EntityPanel'));
+      dimensionsChanged = true;
+    }
+    this.states.set(title, next);
+    return dimensionsChanged;
   }
 
   #renderEntityDetail(entry, entity) {
@@ -84,22 +147,29 @@ export default class EntityInformationRenderer {
     const gauge = createInformationElement('button', 'InformationWindow__EntityStatus state-clickable');
     gauge.type = 'button';
     gauge.style.setProperty('--status-frame-color', STATUS_VISUALS[status].gaugeFrameColor);
-    gauge.style.setProperty('--status-active-color', ['stamina', 'hp'].includes(status) ? getVitalGaugeColor(current) : '#54c96b');
     const segments = createInformationElement('span', 'InformationWindow__EntityStatusSegments');
     for (let index = 1; index <= 7; index += 1) {
       const segment = createInformationElement('span', 'InformationWindow__EntityStatusSegment');
-      const fillRatio = Math.max(0, Math.min(1, current - index + 1));
-      if (fillRatio > 0) {
-        segment.classList.add('is-active');
-        segment.style.setProperty('--status-segment-fill', `${fillRatio * 100}%`);
-      } else if (index <= maximum) segment.classList.add('is-available');
       segments.append(segment);
     }
     gauge.append(createStatusIcon(status), segments);
+    this.#updateEntityStatusGauge(gauge, status, current, maximum);
     gauge.addEventListener('click', (event) => this.open({
       type: 'status', parentId: entry.id, data: { status }, anchor: { x: event.clientX, y: event.clientY },
     }));
     return gauge;
+  }
+
+  #updateEntityStatusGauge(gauge, status, current, maximum) {
+    gauge.style.setProperty('--status-active-color', ['stamina', 'hp'].includes(status) ? getVitalGaugeColor(current) : '#54c96b');
+    [...gauge.querySelector('.InformationWindow__EntityStatusSegments').children].forEach((segment, index) => {
+      const fillRatio = Math.max(0, Math.min(1, current - index));
+      const state = fillRatio > 0 ? ' is-active' : index < maximum ? ' is-available' : '';
+      const className = `InformationWindow__EntityStatusSegment${state}`;
+      if (segment.className !== className) segment.className = className;
+      const fill = `${fillRatio * 100}%`;
+      if (segment.style.getPropertyValue('--status-segment-fill') !== fill) segment.style.setProperty('--status-segment-fill', fill);
+    });
   }
 
   #createEntityWeightGauge(entity, entry) {

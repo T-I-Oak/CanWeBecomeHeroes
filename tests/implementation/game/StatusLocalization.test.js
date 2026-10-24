@@ -16,32 +16,7 @@ import HeroFactory, { HERO_PROFESSION_IDS } from '../../../src/game/HeroFactory.
 import { clearL10nCache, setLanguage } from '../../../../GameWorksOAK/src/lib/core/i18n.js';
 
 // Minimal DOM supporting the production information-window renderer and click handlers.
-class Element {
-  constructor(tag) {
-    this.tag = tag;
-    this.children = [];
-    this.dataset = {};
-    this.style = {
-      values: {},
-      setProperty(key, value) { this.values[key] = value; },
-    };
-    this.classList = { add() {} };
-    this.listeners = {};
-    this.attributes = {};
-  }
-  append(...children) { this.children.push(...children.flatMap(c => c?.tag === 'fragment' ? c.children : [c])); }
-  replaceChildren(...children) { this.children = []; this.append(...children); }
-  set textContent(value) { this.children = [value]; }
-  get textContent() { return this.children.map(c => typeof c === 'object' ? c.textContent : c).join(''); }
-  setAttribute(key, value) { this.attributes[key] = value; }
-  addEventListener(type, fn) { this.listeners[type] = fn; }
-  querySelector(selector) { return this.findAll(selector)[0] ?? null; }
-  findAll(selector) {
-    return this.children.filter(c => c instanceof Element).flatMap(c =>
-      [...(c.className?.split(' ').includes(selector.slice(1)) ? [c] : []), ...c.findAll(selector)]);
-  }
-  getBoundingClientRect() { return { x: 0, y: 0, width: 300, height: 240 }; }
-}
+import Element from '../../helpers/InformationDOM.js';
 
 test('status resources render, switch language from cache, and preserve links and window state', async (t) => {
   const raw = readGameText();
