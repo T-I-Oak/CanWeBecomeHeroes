@@ -61,7 +61,7 @@ document.querySelector('#records').addEventListener('click', () => {
 document.querySelector('#tutorial').addEventListener('click', () => {
   tutorial?.dispose();
   values.set('tutorialState', { completed: [] });
-  tutorial = new TutorialController({ mode: 'challenge', camera: { viewport: { width: innerWidth, height: innerHeight } },
+  tutorial = new TutorialController({ mode: 'challenge', camera: { viewport: { width: innerWidth, height: innerHeight } }, isGameScreenReady: () => true,
     clock: { pause() {}, resume() {} }, canvas, dataManager, textRepository: texts, getHeroes: () => [],
     getPreparationHeroes: () => [], getItems: () => [], isStageSelecting: () => true, isActive: () => true });
   tutorial.onStageSelection();
