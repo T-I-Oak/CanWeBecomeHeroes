@@ -17,6 +17,10 @@ test('probe preserves results, separates disabled measurement and caps samples',
   t.mock.method(performance, 'now', () => time++);
   installPerformanceProbe();
   const probe = globalThis.__perf;
+  const firstRandom = Math.random();
+  Math.random();
+  probe.reseed();
+  assert.equal(Math.random(), firstRandom);
   const object = { value: 2, multiply(n) { return this.value * n; } };
   probe.wrap(object, 'Example', ['multiply']);
   assert.equal(object.multiply(3), 6);
@@ -44,7 +48,7 @@ test('probe preserves results, separates disabled measurement and caps samples',
 test('local instrumentation matches current application boundaries', async () => {
   const plugin = performanceBuildPlugin();
   for (const file of ['app/GameApp.js', 'app/TrialSession.js', 'chips/ChipBoard.js', 'chips/ChipRenderer.js',
-    'app/InformationWindowManager.js', 'app/TimeSettingsController.js', 'app/TitleChipRain.js',
+    'app/InformationWindowManager.js', 'app/InformationWindowLayer.js', 'app/TimeSettingsController.js', 'app/TitleChipRain.js',
     'app/FacilityNameplateRenderer.js', 'app/AreaNameplateRenderer.js', 'app/WarehouseMetadataRenderer.js',
     'app/FacilitySlotRenderer.js', 'app/ShopPanelPresenter.js', 'app/GuildPanel.js', 'app/HeroStatusPanelRenderer.js']) {
     const code = await readFile(new URL(`../../../src/${file}`, import.meta.url), 'utf8');

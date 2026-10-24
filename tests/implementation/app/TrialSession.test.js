@@ -75,11 +75,13 @@ for (const mode of ['trial', 'challenge']) test(`${mode} session connects route 
   const trial = {};
   const canvasInput = { controller: null, activePointers: new Map() };
   let informationManager;
+  const informationRenders = [];
+  let pauseDuringUpdate = false;
   const session = startTrial({ mode, selectedProfessionIds: ['swordfighter', 'guard'], textRepository,
     assets: { load: () => ({ complete: true, naturalWidth: 100, naturalHeight: 100 }) },
     heroProgress: { unlock() {} }, canvas, context, directionCanvas: canvas, directionContext: createContext(),
-    camera, clock, trial, canvasInput, informationLayer: { render() {}, setLogHistory() {}, setManager: manager => { informationManager = manager; } },
-    timeSettingsController: { pauseOnInformation: false, updateStaminaPause() {}, updateClockSpeed() {}, updateStatus() {} },
+    camera, clock, trial, canvasInput, informationLayer: { render() { informationRenders.push({ tick: clock.tick, stamina: trial.controller?.getHeroes()[0]?.stamina }); }, setLogHistory() {}, setManager: manager => { informationManager = manager; } },
+    timeSettingsController: { pauseOnInformation: false, updateStaminaPause() { if (pauseDuringUpdate) clock.pause('split-test'); }, updateClockSpeed() {}, updateStatus() {} },
     overheadStatusSettingsController: { getSettings: () => ({ statuses: [], visibility: 'always' }) },
     dataManager, runRecords,
   });
@@ -113,13 +115,30 @@ for (const mode of ['trial', 'challenge']) test(`${mode} session connects route 
   const target = trial.getInformationTarget({ x: hero.chip.x, y: hero.chip.y - hero.chip.height });
   assert.equal(target.type, 'instance');
   assert.equal(trial.informationWindows.getInstance(target.data.target), hero);
+  trial.informationWindows.open(target);
+  informationRenders.length = 0;
+  const beforeSplitUpdate = clock.tick;
+  trial.update(0.05, 1000);
+  assert.ok(clock.tick > beforeSplitUpdate + 2, 'the frame runs several simulation steps');
+  assert.equal(informationRenders.length, 1, 'dynamic information renders once after all simulation steps');
+  assert.deepEqual(informationRenders[0], { tick: clock.tick, stamina: hero.stamina }, 'the notification uses final frame values');
+  informationRenders.length = 0;
+  const beforeAutomaticPause = clock.tick;
+  pauseDuringUpdate = true;
+  trial.update(0.05, 1000);
+  assert.equal(clock.tick, beforeAutomaticPause + 1, 'an automatic pause stops the remaining simulation steps');
+  assert.deepEqual(informationRenders, [{ tick: clock.tick, stamina: hero.stamina }], 'a step that pauses still publishes its final values');
+  pauseDuringUpdate = false;
+  clock.resume('split-test');
   const tickBefore = clock.tick;
   trial.update(1 / 60, 1000);
   assert.ok(clock.tick > tickBefore, 'route selection resumes the connected game clock');
   clock.pause('manual');
+  informationRenders.length = 0;
   const pausedTick = clock.tick;
   trial.update(1 / 60, 1017);
   assert.equal(clock.tick, pausedTick, 'rendering does not advance a paused game');
+  assert.equal(informationRenders.length, 0, 'a paused frame does not rebuild dynamic information');
   clock.resume('manual');
   clock.tick = GAME_TICKS_PER_HOUR * INITIAL_TRIAL_HOURS;
   trial.update(1 / 60, 1034);
