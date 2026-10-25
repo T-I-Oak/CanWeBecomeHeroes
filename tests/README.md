@@ -164,7 +164,7 @@ exit $browserVerificationExitCode
 - 時間と乱数、チュートリアル完了状態はブラウザー内で制御する。戦闘開始までは実際の出現・物理更新を使い、勝利はテスト側から実際の敵撃破処理・戦闘終了境界を操作する。戦闘計算は既存の要求04・実装テストに任せる。合否判定、課題番号、結果生成・保存、モーダルとアプリのループは本番実装を通す。本番コードにテスト用フックは設けない。
 - `browser/production.pw.js`: 本番ベースパス`/CanWeBecomeHeroes/`で、ビルド済みのタイトル・バージョン、メンバー選択、開始劇、課題選択を操作する。共通ライブラリを含むbundle、文言、ロゴを読み込み、HTTPエラー・通信失敗・コンソールエラー・実行時例外がないことを確認する。開発用モジュールの差し替えは行わない。
   レコード表示中に390×844→844×390→390×844、768×1024→1024×768→768×1024へ変更し、canvas寸法の追従、前面のヒット判定、タブ切替、成績表の縦横スクロール、閉じる・再表示、タイトル演出の継続を確認する。スクリーンショットは`tmp_record_rotation/`へ保存する。viewport変更とヒット判定は実機Safariの回転や合成後の画素の正しさを保証しないため、実機確認を別途行う。
-  実機比較用ページは確認完了後に公開対象から外した。通常の本番テストでは、タイトルの検証リンクとビルド成果物の検証ページが残らないことも確認する。比較ページのソースは[開発用の手動確認](manual/README.md#safariのレコード画面回転の切り分け実機確認用)に残す。A〜E・関連情報ウィンドウ・ゲーム保存キー維持の比較検証結果は実装報告に記録する。
+  実機比較用ページは開発用入口とし、公開対象に含めない。通常の本番テストでは、タイトルの検証リンクとビルド成果物の検証ページが残らないことも確認する。比較ページのソースは[開発用の手動確認](manual/README.md#safariのレコード画面回転の切り分け実機確認用)に残す。A〜E・関連情報ウィンドウ・ゲーム保存キー維持の比較検証結果は実装報告に記録する。
 
 GitHub Pagesの公開ワークフローは`npm ci`→`npm test`→Chromium準備→`npm run test:browser`→`npm run build`→配信の順とする。ブラウザー検証自身もpreview用の本番ビルドを作る。失敗時に後続の配信は実行しない。ローカルでの本番preview確認はGitHub Pagesへ配信済みであることの確認とは区別する。
 
@@ -232,27 +232,36 @@ CDPのTaskDuration・LayoutDurationはページ全体の区間差分で、実CPU
 採取JSON・CPUプロファイル・集計出力は`tmp_`配下へ置く。過去の測定結果を永続資料として保存しない。
 今回の検証結果・条件・限界とオーナー判断はフェーズ実装報告へ記録する。
 
+## 集計・評価の検証
+
+```powershell
+node --test tests/implementation/game/GameStatistics.test.js tests/implementation/game/Achievements.test.js tests/implementation/game/StatisticsHooks.test.js tests/implementation/game/TrialStatisticsSession.test.js tests/implementation/game/ResultAchievementSelection.test.js
+```
+
+[集計・評価のクラス設計](../docs/specifications/15.achievement_classes.md)に対し、以下を確認する。
+
+- 連続G値から整数達成グレードを求め、終了画面の候補選定と定義順表示を分ける。
+- 同じ事実でラン・累積が更新され、獲得ptが消費で減らない。
+- 課題の最高レベルは最大値で更新され、イベント履歴は増えない。
+- トースト用の直前比較と、結果画面用の開始前比較が独立する。
+- ラン・累積の集計が独立し、グレード評価が前回表とラン開始前の表を変更しない。
+- グレード判定だけを追加する場合、既存の収集情報で足りる限りゲーム処理の変更が不要。
+
+## 画像関連の検証
+
+生成手順は[配信用画像の生成](../docs/specifications/24.image_conversion.md)、選択・読み込み・キャッシュの動作仕様は[ランタイム仕様](../docs/specifications/02.runtime_systems.md#canvas画像の段階描画)を正本とする。
+
+```powershell
+node --test tests/implementation/scripts/ImageConversion.test.js tests/implementation/chips/ScaledImage.test.js tests/implementation/chips/ImageLevelCache.test.js tests/implementation/chips/EnemyChipArtContract.test.js
+```
+
+- `ImageConversion.test.js`: パス、縦横比、拡大拒否、制作元ハッシュ、全画像の寸法と段階。
+- `ScaledImage.test.js`: 配信用画像のハッシュ、段階PNGの実寸、描画時の段階選択。
+- `ImageLevelCache.test.js`: 容量超過の固定集合、フレーム境界、ズーム切替、読み込み中の保護、容量不足からの静止Canvas再描画。
+- `EnemyChipArtContract.test.js`: 敵画像のsafe-circle・輪郭サイズ契約。
+
+画像サイズ変更後は実ブラウザーで画質を確認する。自動検証だけを実機の画質確認とは扱わない。
+
 ## 手動確認
-
-現行の画像選択とキャッシュは[ランタイム仕様](../docs/specifications/02.runtime_systems.md)、生成手順とサイズ定義は[配信用画像の生成](../docs/specifications/24.image_conversion.md)を参照する。
-
-### 段階画像の再生成
-
-`npm.cmd run generate:images`（旧名 `generate:image-levels` も利用可）はPlaywrightとインストール済みChromeを使い、
-`assets/images/source/` と `assets/image-sizes.json` から配信用PNG・縮小段階・マニフェストを一括生成する。
-areas/heroes/tags/status/enemies/itemsと戦闘枠の地面画像が対象。
-`IMAGE_LEVELS_CHANNEL=chromium` でPlaywright付属ブラウザーを使える。
-制作元・サイズ定義・生成した配信用PNG・`public/assets/image-levels/`・`src/chips/image-levels.json` を追跡する。
-通常のbuild・実機では生成しない。制作元は上書きせず、公開成果物に含めない。
-制作元の更新・追加時はサイズとSHA-256の定義を確認し直して再生成する。
-`ImageConversion.test.js` と `ScaledImage.test.js` で制作元・定義・配信用画像・段階画像の整合性を確認する。
-画面のCSS寸法、DPR、zoom、回転を反映した変換行列から必要サイズを求め、足りる最小段階を選ぶ。
-元画像も含めて十分な大きさがなければ元画像を使う。縮小画像を引き伸ばして代用しない。
-未ロードの段階画像は読み込み完了まで描画を待つ。読み込み失敗時は元画像を使う。
-静止プレビューは読み込み完了・失敗時に描き直す。
-24MiBの容量不足時は元画像へ戻さず取得・描画を省略する。
-前回・今回のフレームで要求した画像を保護し、それより古い完了済み画像だけを破棄する。
-`ImageLevelCache.test.js` で容量超過の固定集合、フレーム境界、ズーム切り替え、
-読み込み中の保護、容量不足からの静止Canvas再描画を確認する。
 
 [画面確認用入口](manual/README.md)と[操作・モバイル表示の確認](manual/controls.md)を参照する。実機・見た目について未確認の項目とオーナーの保留判断は[バックログ](../docs/planning/backlog.md)を正本とする。自動テスト成功を実機確認済みとは扱わない。
