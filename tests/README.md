@@ -23,6 +23,7 @@
 | `implementation/chips/` | Chipの物理・描画・画像契約 |
 | `implementation/game/` | ゲームルール、状態、集計、言語リソース |
 | `implementation/simulation/` | 戦闘シミュレーション、タグ比較・分析 |
+| `implementation/scripts/` | 画像変換、計測用ビルド、ブラウザー検証の実行補助 |
 | `browser/` | 実ブラウザーでの主要画面遷移と本番ビルドの起動・アセット読込 |
 
 複数モジュールをつなぐ結合テストは、主な責務のディレクトリへ置き、対象を示す名前を使う。`Factories`・`StatisticsHooks`・`CombatConditionLifecycle`・`ShoppingBag`・`VignetteLineAction`は`game`、`DragControls`・`EntityDetailLayout`・`LogHistory`・`StageSelectionPreview`・`Tutorial`は`app`、画像契約2件は`chips`へ置く。`StatusLocalization`・`TranslationIntegrity`はゲーム側の言語リソース契約である。
@@ -52,121 +53,8 @@
 
 ## ブラウザー検証と公開前の実行順
 
-`playwright.config.js`が専用のVite開発サーバー（4174）と本番ビルドのpreview（4175）を起動・終了する。両ポートは事前に空ける。ブラウザーテストは`*.pw.js`とし、Nodeの`*.test.js`と別に実行する。ローカルのインストール済みChromeを使う場合はPowerShellで`$env:PLAYWRIGHT_CHANNEL = 'chrome'`を設定できる。CIの既定はPlaywright付属のChromium。
-
-### WindowsのCodex環境での実行方針
-
-このプロジェクトのWindowsのCodex環境では、AI担当が`npm.cmd run test:browser`を
-サンドボックス外で実行する権限を申請し、承認された範囲で実行する。
-オーナーによる通常のPowerShellでの手動実行を毎回の手順とはしない。
-`npm.cmd test`と`npm.cmd run build`は通常の実行環境で実行する。
-
-WindowsではPlaywrightが`taskkill /T /F`で起動用シェルとサーバーの子プロセスを終了する。
-この操作が制限される実行環境では、各テストが成功しても終了待ちになる場合がある。
-プロセス終了の権限を持つ環境で標準コマンドを実行し、テスト結果に加えてコマンドの終了コード0と、
-4174・4175の待受およびその実行が起動した子プロセスの解放を確認する。
-調査時は`DEBUG=pw:webserver`でサーバーの起動・終了ログを取得できる。
-待機を打ち切った実行は正常終了に数えず、残存する自分のテスト用プロセスだけを終了してから再実行する。
-
-#### 正常完了の確認手順
-
-ゲームルートで、AI担当が次のコマンド全体のサンドボックス外実行を申請し、承認範囲で実行する。
-ツールがセッションIDを返したら同じセッションの完了を待つ。待機は1回60秒以内とし、進捗を伝える。
-
-```powershell
-node scripts/verify-browser-tests.js
-```
-
-Windows専用のこのコマンドは、次の処理を自動で実行する。
-
-1. 専用ポート4174・4175の待受を照会する。使用中や照会失敗ならテストを開始せず失敗にする。
-   事前照会中に中断された場合もテストを起動しない。
-2. `npm.cmd run test:browser -- --reporter=line,json`を起動し、開始時刻・ルートPIDを記録する。
-   標準の全テストを実行し、表示用と結果取得用のレポーターを指定する。
-   `DEBUG=pw:webserver`と`PLAYWRIGHT_JSON_OUTPUT_FILE`を実行プロセスに設定する。
-3. 起動後90秒を上限とし、実行中にPID・親PID・作成時刻・コマンドラインを照会する。
-   ルートから子孫をたどって保存し、照会失敗を「残存なし」にしない。
-4. 終了コードと終了時刻、JSONレポートを取得する。全5件成功・失敗0・skip0・flaky0・
-   実行エラーなし・終了コード0・上限到達なし・中断なしを確認する。
-5. 専用ポートの待受と今回のルート・子孫プロセスが残っていないことを確認する。
-   PIDと作成時刻で識別し、TCPのTIME_WAITは待受に数えない。
-6. 1回目が正常完了した場合だけ、同じ条件で2回目を実行して同じ確認を行う。
-   両方正常完了した場合だけ検証コマンド自身も終了コード0で戻る。
-
-失敗・上限到達・中断時は観測結果を記録する。今回のプロセスが残る場合は、
-記録したPIDと作成時刻を照合してそのプロセスだけを終了し、後処理後の状態も記録する。
-後処理で解放できても失敗を成功に変えない。照会や後処理の失敗も報告する。
-別用途のプロセスは停止しない。
-最初の起動後照会が失敗した場合は、後処理時の照会でルートPID・親PID・作成時刻を
-今回のspawnの記録と照合して識別を回復する。確認できなければ終了対象を推測せず、後処理失敗を記録する。
-
-結果は実行時に表示される`tmp_browser_verification/<実行日時>/`に保存する。
-終了後、表示された実際のディレクトリ名で`<実行日時>`を置き換えて次を実行する。
-ファイル閲覧は通常の実行環境でよい。
-
-```powershell
-Get-Content -Raw -Encoding UTF8 tmp_browser_verification/<実行日時>/summary.json
-Get-Content -Raw -Encoding UTF8 tmp_browser_verification/<実行日時>/run-1.json | ConvertFrom-Json |
-  Select-Object run,started,ended,exitCode,timedOut,interrupted,observationError,observationFailure,stats,errors,remaining,listeners,afterCleanup,passed | ConvertTo-Json -Depth 6
-Get-Content -Raw -Encoding UTF8 tmp_browser_verification/<実行日時>/run-2.json | ConvertFrom-Json |
-  Select-Object run,started,ended,exitCode,timedOut,interrupted,observationError,observationFailure,stats,errors,remaining,listeners,afterCleanup,passed | ConvertTo-Json -Depth 6
-```
-
-1回目失敗時は2回目のファイルは作られない。詳細ログは`run-N.log`、Playwright結果は
-`run-N.playwright.json`。総合の`passed: true`、両実行の`passed: true`、
-各`exitCode: 0`、`remaining: []`、`listeners: []`と実行ツールの終了コード0を照合する。
-実装報告には実行条件、開始・終了時刻、テスト件数・成否、終了コード、上限到達・中断、
-待受・プロセス残存、再実行結果、結果ディレクトリを記録する。
-
-実行補助自体を変更した場合は、まず次の対象テストを通常の実行環境で実行し、全10件の成功を確認する。
-
-```powershell
-node --test tests/implementation/scripts/BrowserTestVerification.test.js tests/implementation/scripts/BrowserTestRun.test.js tests/implementation/scripts/WindowsBrowserInventory.test.js
-```
-
-BrowserTestRunは実際の実行フローへ照会・起動・終了処理を注入し、最初の起動後照会失敗からの後処理、
-事前照会中のSIGINT/SIGTERM、所有者・作成時刻の異なるPIDを終了しないことを制御して確認する。
-続いて次の上限到達の検証をサンドボックス外で行う。環境変数はこのコマンド内だけで変更し、元へ戻す。
-期待結果は検証コマンドの終了コード1、`timedOut: true`・`passed: false`、
-`afterCleanup.remaining: []`・`afterCleanup.listeners: []`であり、2回目は実行されない。
-結果ファイルの読み方は上記と同じ。90秒はテストプロセスの待機上限で、観測・後処理時間は別にかかる。
-各プロセス照会の上限は15秒、各終了コマンドは5秒である。
-
-事前照会で失敗した場合は、テスト未起動とテスト自体の失敗を区別する。
-`run-N.json`と`summary.json`の`observationError`・`observationFailure`を読む。
-`rootPid: null`ならテスト用プロセスはまだ起動しておらず、テスト結果は未取得である。
-この場合の`remaining: []`・`listeners: []`だけで解放確認済みとは判断しない。
-`observationFailure`には照会の所要時間・上限・終了コード・シグナル・強制終了の有無・
-標準出力・標準エラーを保存する。`stage`は最後に開始した処理で、
-`startup`（PowerShell起動）、`processes`（プロセス照会）、`listeners`（ポート照会）、
-`serialize`（JSON生成・読取）のいずれか。`killed`・`signal`と所要時間を照合し、
-エラー文だけから権限不足やタイムアウトと断定しない。
-原因調査後に同じ`node scripts/verify-browser-tests.js`をサンドボックス外で再実行する。
-失敗した実行の記録も保持し、後続の成功で上書きしない。
-
-```powershell
-$previousBrowserVerifyTimeout = $env:BROWSER_VERIFY_TIMEOUT_MS
-try {
-  $env:BROWSER_VERIFY_TIMEOUT_MS = '1000'
-  node scripts/verify-browser-tests.js
-  $browserVerificationExitCode = $LASTEXITCODE
-} finally {
-  $env:BROWSER_VERIFY_TIMEOUT_MS = $previousBrowserVerifyTimeout
-}
-exit $browserVerificationExitCode
-```
-
-### ブラウザー検証の対象と公開前の実行順
-
-- `browser/tutorial-landing.pw.js`: 初期Heroの実際の落下・跳ね返りと全員の着地後の導入開始、課題選択の説明、既読抑止、リセット、手動一時停止の維持を確認する。開発ブラウザーでTutorialControllerの呼出しと状態を観測し、物理更新・開始条件・シナリオ定義は本番実装を使用する。
-
-- `browser/01.game_settings.pw.js`: 要求01の開始から終了までの接続。タイトルで開始し、選択順を変更した2名、開始劇、課題選択、戦闘開始、勝利後の次課題、最終課題の合格と期限切れ、結果を閉じた後のタイトル復帰・再開始を検証する。結果の見出し・保存内容と、終了後に更新を繰り返しても結果表示・記録が1件であることを確認する。
-- 時間と乱数、チュートリアル完了状態はブラウザー内で制御する。戦闘開始までは実際の出現・物理更新を使い、勝利はテスト側から実際の敵撃破処理・戦闘終了境界を操作する。戦闘計算は既存の要求04・実装テストに任せる。合否判定、課題番号、結果生成・保存、モーダルとアプリのループは本番実装を通す。本番コードにテスト用フックは設けない。
-- `browser/production.pw.js`: 本番ベースパス`/CanWeBecomeHeroes/`で、ビルド済みのタイトル・バージョン、メンバー選択、開始劇、課題選択を操作する。共通ライブラリを含むbundle、文言、ロゴを読み込み、HTTPエラー・通信失敗・コンソールエラー・実行時例外がないことを確認する。開発用モジュールの差し替えは行わない。
-  レコード表示中に390×844→844×390→390×844、768×1024→1024×768→768×1024へ変更し、canvas寸法の追従、前面のヒット判定、タブ切替、成績表の縦横スクロール、閉じる・再表示、タイトル演出の継続を確認する。スクリーンショットは`tmp_record_rotation/`へ保存する。viewport変更とヒット判定は実機Safariの回転や合成後の画素の正しさを保証しないため、実機確認を別途行う。
-  実機比較用ページは開発用入口とし、公開対象に含めない。通常の本番テストでは、タイトルの検証リンクとビルド成果物の検証ページが残らないことも確認する。比較ページのソースは[開発用の手動確認](manual/README.md#safariのレコード画面回転の切り分け実機確認用)に残す。A〜E・関連情報ウィンドウ・ゲーム保存キー維持の比較検証結果は実装報告に記録する。
-
-GitHub Pagesの公開ワークフローは`npm ci`→`npm test`→Chromium準備→`npm run test:browser`→`npm run build`→配信の順とする。ブラウザー検証自身もpreview用の本番ビルドを作る。失敗時に後続の配信は実行しない。ローカルでの本番preview確認はGitHub Pagesへ配信済みであることの確認とは区別する。
+専用サーバー、Windowsでの権限申請・正常終了の確認、各テストの対象、公開前の実行順は
+[ブラウザー検証](02.browser_verification.md)を参照する。
 
 ## PCでの性能調査
 
