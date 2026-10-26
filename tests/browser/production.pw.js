@@ -17,6 +17,7 @@ test('production base path loads bundled common library, text and image assets',
   await expect(page.locator('.TitleMenu__Command.state-primary')).toBeVisible();
   await expect(page.locator('.TitleMenu__Version')).toHaveText(`v${version}`);
   await expect(page.locator('.TitleMenu__DiagnosticLink')).toHaveCount(0);
+  expect(assets.some(url => /\/assets\/image-levels-[^/]+\.js$/.test(url))).toBe(true);
   expect(existsSync(new URL('../../dist/tests/manual/record-rotation.html', import.meta.url))).toBe(false);
   await page.locator('.TitleMenu__Command.state-primary').click();
   await page.locator('.StartPartySelection__StartButton').click();
@@ -28,8 +29,21 @@ test('production base path loads bundled common library, text and image assets',
   expect(assets.some(url => /\/CanWeBecomeHeroes\/assets\/index-.*\.js/.test(url))).toBe(true);
   expect(assets.some(url => url.includes('/CanWeBecomeHeroes/data/text/ui.json'))).toBe(true);
   expect(assets.some(url => url.includes('/CanWeBecomeHeroes/assets/logo.png'))).toBe(true);
+  expect(assets.some(url => url.includes('/CanWeBecomeHeroes/assets/image-levels/'))).toBe(true);
   expect(assets.some(url => url.includes('/GameWorksOAK/src/'))).toBe(false);
   expect(assets.some(url => url.includes('MobilePerformance'))).toBe(false);
+  await page.evaluate(() => {
+    localStorage.setItem('can-we-become-heroes', JSON.stringify({
+      heroProgress: { unlockedProfessionIds: ['swordfighter', 'guard'], hasClearedTrial: true },
+    }));
+  });
+  await page.reload();
+  await expect(page.locator('.TitleMenu__Command')).toHaveCount(3);
+  await page.locator('.TitleMenu__Command').nth(1).click();
+  await page.locator('.StartPartySelection__StartButton').click();
+  await page.locator('.VignetteModal__Skip').click();
+  await expect(page.locator('#stage-selection')).toBeVisible();
+  await page.waitForLoadState('networkidle');
   expect(failures).toEqual([]);
 });
 
@@ -41,6 +55,16 @@ test('normal mobile build keeps records above the animated title across viewport
   await expect(page.locator('.TitleMenu__Command.state-primary')).toBeVisible();
   await expect(page.locator('.TitleMenu__Version')).toHaveText(`v${version}`);
   await expect(page.locator('.PerformancePanel')).toHaveCount(0);
+  const japaneseStart = await page.locator('.TitleMenu__Command.state-primary').textContent();
+  await page.locator('#time-settings-toggle').click();
+  const language = page.locator('#settings-section-language');
+  await language.locator('.ModalSelect__Trigger').click();
+  await language.getByRole('option').nth(1).click();
+  await expect(page.locator('.TitleMenu__Command.state-primary')).not.toHaveText(japaneseStart);
+  await language.locator('.ModalSelect__Trigger').click();
+  await language.getByRole('option').nth(0).click();
+  await expect(page.locator('.TitleMenu__Command.state-primary')).toHaveText(japaneseStart);
+  await page.locator('#time-settings-close').click();
   await page.locator('.TitleMenu__Command').last().click();
   const screen = page.locator('.RecordScreen');
   const tabs = screen.getByRole('tab');
