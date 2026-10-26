@@ -235,6 +235,11 @@ try {
         await cdp.send('Profiler.enable'); await cdp.send('Profiler.start');
       }
       if (config.chipPaired) {
+        const physicalBaseline = ['sparse', 'moving'].includes(config.chipMode) ? await page.evaluate(() => ({
+          chips: __session.board.chips.map(c => ({ x: c.x, y: c.y, height: c.height, verticalVelocity: c.verticalVelocity,
+            step: c.step, rise: c.rise, tilt: c.tilt, tiltVelocity: c.tiltVelocity, impact: c.impact, impactOnLanding: c.impactOnLanding })),
+          layers: [...__session.board.overlapLayers],
+        })) : null;
         const keys = config.chipPaired === 'implementation' ? [] : config.chipPaired === 'pairs' ? ['ChipBoard.updateOverlapLayers', 'ChipBoard.resolveGroundOverlaps']
           : ['ChipRenderer.drawBody', 'ChipRenderer.drawEffects'];
         for (const phase of ['A1', 'B', 'A2']) {
@@ -243,9 +248,17 @@ try {
             for (const key of keys) {
             if (phase === 'B') __perf.skip.add(key); else __perf.skip.delete(key);
           } }, { phase, keys, implementation: config.chipPaired === 'implementation' });
+          if (physicalBaseline) await page.evaluate(baseline => {
+            __session.board.chips.forEach((c, i) => Object.assign(c, baseline.chips[i]));
+            __session.board.overlapLayers = new Map(baseline.layers);
+            __session.board.groundContacts.states = [];
+            __session.board.renderContacts.states = [];
+          }, physicalBaseline);
           const before = await chipSnapshot(page);
           const metricsBefore = await cdp.send('Performance.getMetrics');
-          await page.waitForTimeout(duration * 1000 / 3);
+          if (['sparse', 'moving'].includes(config.chipMode)) {
+            await exerciseChipInput(page, duration / 3, config.chipMode);
+          } else await page.waitForTimeout(duration * 1000 / 3);
           const metricsAfter = await cdp.send('Performance.getMetrics');
           chipPhases.push({ phase, before, after: await chipSnapshot(page), browserMetrics: Object.fromEntries(
             metricsAfter.metrics.map(({ name, value }) => [name, value - metricsBefore.metrics.find(m => m.name === name).value])) });

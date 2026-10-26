@@ -56,6 +56,10 @@ for (const cpu of [1, 4]) for (const fraction of [null, 1]) chipCases.push({
   name: `chips-${fraction === null ? 'normal' : '100'}-implementation-cpu${cpu}`, scene: 'idle', chipFixture: true,
   fraction, cpu, dpr: 1, chipPaired: 'implementation',
 });
+for (const cpu of [1, 4]) for (const mode of ['sparse', 'moving']) chipCases.push({
+  name: `chips-100-${mode}-implementation-cpu${cpu}`, scene: 'idle', chipFixture: true,
+  fraction: 1, cpu, dpr: 1, chipPaired: 'implementation', chipMode: mode,
+});
 for (const option of ['no-probe', 'pairs', 'draw', 'moving', 'desktop']) {
   chipCases.push({ name: `chips-100-${option}-cpu4`, scene: 'idle', chipFixture: true, fraction: 1, cpu: 4, dpr: 1,
     measured: option !== 'no-probe', chipMode: option === 'moving' ? 'moving' : undefined,
@@ -110,6 +114,19 @@ export async function chipSnapshot(page) {
 }
 
 export async function exerciseChipInput(page, seconds, mode) {
+  if (mode === 'sparse') {
+    const end = Date.now() + seconds * 1000;
+    let step = 0;
+    while (Date.now() < end) {
+      await page.evaluate(direction => {
+        const s = __session;
+        const chip = s.board.chips.find(c => c.id === __perf.chipFixture.sourceId);
+        chip.x += direction * .25;
+      }, step++ % 2 ? -1 : 1);
+      await page.waitForTimeout(50);
+    }
+    return [];
+  }
   if (mode === 'moving') {
     const end = Date.now() + seconds * 1000;
     while (Date.now() < end) {

@@ -232,6 +232,16 @@ CDPのTaskDuration・LayoutDurationはページ全体の区間差分で、実CPU
 採取JSON・CPUプロファイル・集計出力は`tmp_`配下へ置く。過去の測定結果を永続資料として保存しない。
 今回の検証結果・条件・限界とオーナー判断はフェーズ実装報告へ記録する。
 
+## チップの接触候補の検証
+
+`node --test tests/implementation/chips/ChipContactPairs.test.js tests/implementation/chips/ChipBoardPerformance.test.js tests/implementation/chips/ChipBoard.test.js`で、静止組の省略、変化したチップの走査、残った重なり、次更新への伝播、追加・削除・入替え、描画順を確認する。
+
+性能比較は`chips-100-implementation-cpu1`・`chips-100-implementation-cpu4`、少数移動は`chips-100-sparse-implementation-cpu1`・`chips-100-sparse-implementation-cpu4`、密集移動は`chips-100-moving-implementation-cpu1`・`chips-100-moving-implementation-cpu4`を使う。
+旧処理は計測専用にGitコミット`7960292`から取得する。通常ビルドと通常のテストはこの履歴取得を必要としない。
+各反復は旧処理A1→現処理B→旧処理A2、既定では各10秒。移動条件では各区間の開始時に同じ物理状態・重なり順へ戻す。
+少数移動は1枚を50msおきに左右0.25座標単位動かす。密集移動は1枚に1秒おきの移動を指示し、周囲との接触を起こす。実機タッチ入力や全チップの一斉移動を再現する条件ではない。
+`contactChanged:ground`・`contactChanged:render`は各描画フレームに含まれる追跡器呼出しでの変化検出数の合計で、チップの実数や接触判定回数ではない。
+
 ## 集計・評価の検証
 
 ```powershell

@@ -2,10 +2,10 @@ import { execFileSync } from 'node:child_process';
 
 // Local investigation build only. Never loaded by the application's Vite config.
 export const INCREMENTAL_BASELINE = 'cb55fad55e49045630aa0456c2858dcf9c5bf274';
-export const CHIP_BASELINE = 'a6a4fa2cf0c0f438737e517f61726c533b95995f';
+export const CHIP_BASELINE = '7960292';
 
-function baselineChipClass(file, name) {
-  const source = execFileSync('git', ['show', `${CHIP_BASELINE}:src/chips/${file}.js`], { encoding: 'utf8' });
+function baselineChipClass(file, name, readSource) {
+  const source = readSource(`src/chips/${file}.js`);
   return source.slice(source.indexOf('export default class ')).replace(`export default class ${file}`, `class ${name}`);
 }
 
@@ -38,21 +38,30 @@ const drawFunctions = {
   'app/HeroStatusPanelRenderer.js': ['drawPreparationHeroPanel', 'drawTrainingStatusPanel'],
 };
 
-export function performanceBuildPlugin() {
+export function performanceBuildPlugin({ readChipBaseline = file => execFileSync('git', ['show', `${CHIP_BASELINE}:${file}`], { encoding: 'utf8' }) } = {}) {
   return {
     name: 'local-performance-investigation',
     enforce: 'pre',
     transform(code, id) {
       const path = id.replaceAll('\\', '/');
       code = code.replaceAll('\r\n', '\n');
+      if (path.endsWith('/src/chips/ChipContactPairs.js')) {
+        code = replaceOnce(code, '    this.nextContacts = new Set();', `
+          if (globalThis.__perf.enabled && globalThis.__perf.recording) {
+            const kind = this === globalThis.__session?.board.groundContacts ? 'ground' : 'render';
+            const key = 'contactChanged:' + kind;
+            globalThis.__perf.current[key] = (globalThis.__perf.current[key] ?? 0) + changed.length;
+          }
+          this.nextContacts = new Set();`);
+      }
       if (process.env.PERF_COMPARE_CHIPS === '1' && path.endsWith('/src/chips/ChipBoard.js')) {
-        code += `\n${baselineChipClass('ChipBoard', 'LegacyChipBoard').replaceAll('distanceBetween(', 'legacyDistanceBetween(')}
+        code += `\n${baselineChipClass('ChipBoard', 'LegacyChipBoard', readChipBaseline).replaceAll('distanceBetween(', 'legacyDistanceBetween(')}
           function legacyDistanceBetween(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
           globalThis.__perf.wrap(LegacyChipBoard.prototype, 'ChipBoard', ['updateOverlapLayers', 'resolveGroundOverlaps', 'pushOverlaps']);
           globalThis.__perf.legacyChipBoard = LegacyChipBoard.prototype;`;
       }
       if (process.env.PERF_COMPARE_CHIPS === '1' && path.endsWith('/src/chips/ChipRenderer.js')) {
-        code += `\n${baselineChipClass('ChipRenderer', 'LegacyChipRenderer')}
+        code += `\n${baselineChipClass('ChipRenderer', 'LegacyChipRenderer', readChipBaseline)}
           globalThis.__perf.wrap(LegacyChipRenderer.prototype, 'ChipRenderer', ['drawBody']);
           globalThis.__perf.legacyChipDrawBody = LegacyChipRenderer.prototype.drawBody;`;
       }

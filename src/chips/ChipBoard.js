@@ -1,8 +1,10 @@
 import Chip from './Chip.js';
+import ChipContactPairs from './ChipContactPairs.js';
 
 const GRAVITY = 1800;
 const SETTLE_HEIGHT = 0.2;
 const GROUND_SEPARATION_SPEED = 360;
+const GROUND_CONTACT_EPSILON = 1e-4;
 const MOVE_STEP_DURATION_SECONDS = 0.38;
 const COLLISION_HEIGHT_RATIO = 0.25;
 const IMPACT_LIFT_SCALE = 20;
@@ -26,6 +28,8 @@ export default class ChipBoard {
     this.chips = [];
     this.nextId = 1;
     this.overlapLayers = new Map();
+    this.renderContacts = new ChipContactPairs();
+    this.groundContacts = new ChipContactPairs();
   }
 
   resize(width, height) {
@@ -103,11 +107,15 @@ export default class ChipBoard {
 
   updateOverlapLayers() {
     const activePairs = new Set();
-
-    for (let firstIndex = 0; firstIndex < this.chips.length; firstIndex++) {
-      const first = this.chips[firstIndex];
-      for (let secondIndex = firstIndex + 1; secondIndex < this.chips.length; secondIndex++) {
-        const second = this.chips[secondIndex];
+    const rows = this.renderContacts.begin(this.chips);
+    const count = this.chips.length;
+    for (let i = 0; i < count; i++) {
+      const secondIndices = rows === null ? this.renderContacts.indices : rows.get(i);
+      if (!secondIndices) continue;
+      const first = this.chips[i];
+      for (let offset = rows === null ? i + 1 : 0; offset < secondIndices.length; offset++) {
+        const j = secondIndices[offset];
+        const second = this.chips[j];
         const dx = second.x - first.x, dy = second.y - first.y;
         const minimum = first.radius + second.radius;
         if (Math.abs(dx) >= minimum || Math.abs(dy) >= minimum || Math.hypot(dx, dy) >= minimum) continue;
@@ -117,8 +125,10 @@ export default class ChipBoard {
         if (!this.overlapLayers.has(pairKey)) {
           this.overlapLayers.set(pairKey, this.getNaturalTopChip(first, second).id);
         }
+        this.renderContacts.record(i, j);
       }
     }
+    this.renderContacts.finish();
 
     this.overlapLayers.forEach((_, pairKey) => {
       if (!activePairs.has(pairKey)) this.overlapLayers.delete(pairKey);
@@ -258,40 +268,36 @@ export default class ChipBoard {
 
   resolveGroundOverlaps(deltaSeconds) {
     const maximumSeparation = GROUND_SEPARATION_SPEED * deltaSeconds;
-
-    for (let firstIndex = 0; firstIndex < this.chips.length; firstIndex++) {
-      const first = this.chips[firstIndex];
-      for (let secondIndex = firstIndex + 1; secondIndex < this.chips.length; secondIndex++) {
-        const second = this.chips[secondIndex];
+    const rows = this.groundContacts.begin(this.chips);
+    const count = this.chips.length;
+    for (let i = 0; i < count; i++) {
+      const secondIndices = rows === null ? this.groundContacts.indices : rows.get(i);
+      if (!secondIndices) continue;
+      const first = this.chips[i];
+      for (let offset = rows === null ? i + 1 : 0; offset < secondIndices.length; offset++) {
+        const j = secondIndices[offset];
+        const second = this.chips[j];
         if (first.rise || second.rise || first.height > 1 || second.height > 1 || first.isPickupTarget || second.isPickupTarget || first.isTransferVisual || second.isTransferVisual) continue;
-
         const dx = second.x - first.x || 1;
         const dy = second.y - first.y || 1;
         const minimum = first.radius + second.radius;
         if (Math.abs(dx) >= minimum || Math.abs(dy) >= minimum) continue;
         const distance = Math.hypot(dx, dy);
-        if (distance >= minimum) continue;
-
+        if (minimum - distance <= GROUND_CONTACT_EPSILON) continue;
         const overlap = Math.min(minimum - distance, maximumSeparation);
         const totalWeight = first.weight + second.weight;
         const firstShare = totalWeight === 0 ? 0.5 : second.weight / totalWeight;
         const secondShare = totalWeight === 0 ? 0.5 : first.weight / totalWeight;
-        const firstPosition = this.constrainPosition(
-          first,
-          first.x - (dx / distance) * overlap * firstShare,
-          first.y - (dy / distance) * overlap * firstShare,
-        );
-        const secondPosition = this.constrainPosition(
-          second,
-          second.x + (dx / distance) * overlap * secondShare,
-          second.y + (dy / distance) * overlap * secondShare,
-        );
-        first.x = firstPosition.x;
-        first.y = firstPosition.y;
-        second.x = secondPosition.x;
-        second.y = secondPosition.y;
+        const firstPosition = this.constrainPosition(first,
+          first.x - (dx / distance) * overlap * firstShare, first.y - (dy / distance) * overlap * firstShare);
+        const secondPosition = this.constrainPosition(second,
+          second.x + (dx / distance) * overlap * secondShare, second.y + (dy / distance) * overlap * secondShare);
+        first.x = firstPosition.x; first.y = firstPosition.y;
+        second.x = secondPosition.x; second.y = secondPosition.y;
+        this.groundContacts.record(i, j);
       }
     }
+    this.groundContacts.finish();
   }
 
   constrainPosition(chip, x, y) {
