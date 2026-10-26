@@ -232,6 +232,10 @@ CDPのTaskDuration・LayoutDurationはページ全体の区間差分で、実CPU
 採取JSON・CPUプロファイル・集計出力は`tmp_`配下へ置く。過去の測定結果を永続資料として保存しない。
 今回の検証結果・条件・限界とオーナー判断はフェーズ実装報告へ記録する。
 
+## 起動時の読み込み負荷調査
+
+[調査用ビルド・警告確認・測定手順](01.startup_loading.md)を参照する。
+
 ## チップの接触候補の検証
 
 `node --test tests/implementation/chips/ChipContactPairs.test.js tests/implementation/chips/ChipBoardPerformance.test.js tests/implementation/chips/ChipBoard.test.js`で、静止組の省略、変化したチップの走査、残った重なり、次更新への伝播、追加・削除・入替え、描画順を確認する。
