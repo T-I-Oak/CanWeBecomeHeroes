@@ -4,7 +4,8 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import os from 'node:os';
 import { dirname } from 'node:path';
-import { performanceBuildPlugin, installPerformanceProbe, INCREMENTAL_BASELINE } from './lib/PerformanceBuild.js';
+import { performanceBuildPlugin, installPerformanceProbe, INCREMENTAL_BASELINE, CHIP_BASELINE } from './lib/PerformanceBuild.js';
+import { chipCases, prepareChipFixture, chipSnapshot, exerciseChipInput, summarizeFrames } from './lib/ChipPerformance.js';
 
 const duration = Number(process.env.PERF_SECONDS ?? 30);
 const repeats = Number(process.env.PERF_REPEATS ?? 3);
@@ -53,11 +54,13 @@ const cases = [
   { name: 'battle', scene: 'battle' },
   { name: 'battle-speed4', scene: 'battle', speedLog: 2 },
   { name: 'drag-zoom', scene: 'idle', interactions: true },
+  ...chipCases,
 ];
 const requested = process.argv.slice(2);
 if (requested.includes('--list')) { console.log(cases.map(c => c.name).join('\n')); process.exit(0); }
 const selected = requested.length ? cases.filter(c => requested.includes(c.name)) : cases;
 if (selected.some(c => c.incrementalPaired)) process.env.PERF_COMPARE_INCREMENTAL = '1';
+if (selected.some(c => c.chipPaired === 'implementation')) process.env.PERF_COMPARE_CHIPS = '1';
 if (!selected.length || requested.some(name => !cases.some(c => c.name === name))) throw new Error('Unknown performance case');
 if (![duration, warmup].every(n => Number.isFinite(n) && n > 0) || !Number.isInteger(repeats) || repeats < 1) throw new Error('Invalid measurement duration/repeats/warmup');
 const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
@@ -65,6 +68,7 @@ const report = {
   environment: { date: new Date().toISOString(), commit: git('rev-parse', 'HEAD'), diff: git('diff', '--stat'),
     commonCommit: git('-C', '../GameWorksOAK', 'rev-parse', 'HEAD'), commonDiff: git('-C', '../GameWorksOAK', 'diff', '--stat'),
     incrementalBaseline: selected.some(c => c.incrementalPaired) ? INCREMENTAL_BASELINE : null,
+    chipBaseline: selected.some(c => c.chipPaired === 'implementation') ? CHIP_BASELINE : null,
     version: JSON.parse(await readFile('package.json', 'utf8')).version, os: `${os.type()} ${os.release()}`, cpu: os.cpus()[0].model,
     logicalCPUs: os.cpus().length, memoryGiB: os.totalmem() / 1024 ** 3, duration, repeats, warmup, settledInformationScene, headless: true }, cases: [],
 };
@@ -121,7 +125,7 @@ try {
           const sample = time => { __perf.begin(time); __perf.endFrame(); requestAnimationFrame(sample); };
           requestAnimationFrame(sample);
         }
-      }, { tutorials, speedLog: config.speedLog ?? 0, normal: Boolean(config.normal), settledInformationScene });
+      }, { tutorials, speedLog: config.speedLog ?? 0, normal: Boolean(config.normal), settledInformationScene: settledInformationScene || Boolean(config.chipFixture) });
       const cdp = await context.newCDPSession(page);
       await cdp.send('Emulation.setCPUThrottlingRate', { rate: config.cpu ?? 1 });
       await cdp.send('Performance.enable');
@@ -135,12 +139,13 @@ try {
         await page.locator('.VignetteModal__Skip').click();
         await page.locator('.StageSelection__SelectButton').first().waitFor();
         if (config.scene !== 'selection') {
+          if (config.chipFixture) await page.evaluate(() => { __session.clock.paused = true; });
           await page.locator('.StageSelection__SelectButton').first().click();
           await page.locator('#stage-selection').waitFor({ state: 'hidden' });
         }
       }
       if (!config.normal && config.scene !== 'title') {
-        if (settledInformationScene && config.scene === 'idle') {
+        if (settledInformationScene && config.scene === 'idle' && !config.chipFixture) {
           await page.waitForFunction(() => __session.stageController.state === 'battle'
             && __session.stageController.enemySpawn.pending.length === 0, null, { timeout: 60000 });
         }
@@ -163,6 +168,19 @@ try {
           }
         }, config);
       }
+      let fixture;
+      if (config.chipFixture) {
+        fixture = await prepareChipFixture(page, config);
+        await page.evaluate(async () => {
+          await Promise.all([...__session.assets.images.values()].map(image => image.decode()));
+        });
+        await page.evaluate(config => { __session.clock.paused = config.chipMode === 'paused'; }, config);
+        if (config.chipPaired === 'implementation') {
+          await page.evaluate(() => __perf.useLegacyChips(__session, true));
+          await page.waitForTimeout(500);
+          await page.evaluate(() => __perf.useLegacyChips(__session, false));
+        }
+      }
       await page.waitForTimeout(warmup * 1000);
       if (config.smallIcons) await page.evaluate(async () => {
         for (const [path, image] of __session.assets.images) {
@@ -174,6 +192,8 @@ try {
         }
       });
       if (!config.normal) await page.evaluate(config => { __perf.skip = new Set(config.skip ?? []); if (globalThis.__session && config.paused) __session.clock.paused = true; }, config);
+      if (config.chipFixture) await page.evaluate(() => { __session.clock.tick = 600; });
+      const chipBefore = config.chipFixture ? await chipSnapshot(page) : undefined;
       const metadata = await page.evaluate(() => {
         const gl = document.createElement('canvas').getContext('webgl');
         const ext = gl?.getExtension('WEBGL_debug_renderer_info');
@@ -193,6 +213,8 @@ try {
       await page.evaluate(enabled => __perf.reset(enabled), config.measured !== false);
       const before = await cdp.send('Performance.getMetrics');
       const phaseBoundaries = {};
+      let inputObservations;
+      const chipPhases = [];
       const snapshot = async () => ({ metrics: (await cdp.send('Performance.getMetrics')).metrics,
         state: await page.evaluate(() => ({ tick: __session.clock.tick, chips: __session.board.chips.length,
           enemies: __session.controller.getEnemies().length, speed: __session.clock.speed, paused: __session.clock.isPaused,
@@ -212,7 +234,25 @@ try {
       if (process.env.PERF_PROFILE === '1') {
         await cdp.send('Profiler.enable'); await cdp.send('Profiler.start');
       }
-      if (config.paired || config.batchingPaired || config.incrementalPaired) {
+      if (config.chipPaired) {
+        const keys = config.chipPaired === 'implementation' ? [] : config.chipPaired === 'pairs' ? ['ChipBoard.updateOverlapLayers', 'ChipBoard.resolveGroundOverlaps']
+          : ['ChipRenderer.drawBody', 'ChipRenderer.drawEffects'];
+        for (const phase of ['A1', 'B', 'A2']) {
+          await page.evaluate(({ phase, keys, implementation }) => { __perf.phase = phase;
+            if (implementation) __perf.useLegacyChips(__session, phase !== 'B');
+            for (const key of keys) {
+            if (phase === 'B') __perf.skip.add(key); else __perf.skip.delete(key);
+          } }, { phase, keys, implementation: config.chipPaired === 'implementation' });
+          const before = await chipSnapshot(page);
+          const metricsBefore = await cdp.send('Performance.getMetrics');
+          await page.waitForTimeout(duration * 1000 / 3);
+          const metricsAfter = await cdp.send('Performance.getMetrics');
+          chipPhases.push({ phase, before, after: await chipSnapshot(page), browserMetrics: Object.fromEntries(
+            metricsAfter.metrics.map(({ name, value }) => [name, value - metricsBefore.metrics.find(m => m.name === name).value])) });
+        }
+      } else if (config.chipFixture && ['drag', 'moving'].includes(config.chipMode)) {
+        inputObservations = await exerciseChipInput(page, duration, config.chipMode);
+      } else if (config.paired || config.batchingPaired || config.incrementalPaired) {
         for (const phase of ['A1', 'B', 'A2']) {
           await page.evaluate(({ phase, batchingPaired, incrementalPaired }) => { __perf.phase = phase;
             if (incrementalPaired) __perf.incrementalInformation = phase === 'B';
@@ -232,6 +272,7 @@ try {
         }
       } else await page.waitForTimeout(duration * 1000);
       const after = await cdp.send('Performance.getMetrics');
+      const chipAfter = config.chipFixture ? await chipSnapshot(page) : undefined;
       if (process.env.PERF_PROFILE === '1') {
         const { profile } = await cdp.send('Profiler.stop');
         await mkdir('tmp_performance', { recursive: true });
@@ -261,7 +302,18 @@ try {
           gameSecondsPerWallSecond: (boundary.after.state.tick - boundary.before.state.tick) / 60 / browserMetrics.Timestamp,
           intervals: stats(intervals) }];
       })) : undefined;
+      const chipSummary = config.chipFixture ? summarizeFrames(samples.intervals, samples.rows, browserMetrics.Timestamp.delta) : undefined;
+      const validFixture = !config.chipFixture || (chipBefore.items === fixture.target && chipAfter.items === fixture.target
+        && chipBefore.chips === chipAfter.chips && chipBefore.pending === 0 && chipAfter.pending === 0
+        && chipBefore.stage === chipAfter.stage && JSON.stringify(chipBefore.enemies) === JSON.stringify(chipAfter.enemies)
+        && metadata.images.incomplete === 0 && chipBefore.unsettled === 0 && errors.length === 0
+        && chipBefore.imageLevels.loading === 0 && chipAfter.imageLevels.loading === 0
+        && chipBefore.imageLevels.failures.length === 0 && chipAfter.imageLevels.failures.length === 0
+        && chipBefore.imageLevels.requests === chipAfter.imageLevels.requests
+        && samples.rows.every(row => row.chips === chipBefore.chips && row.stage === chipBefore.stage && row.speed === 1
+          && row.paused === (config.chipMode === 'paused')));
       const run = { repeat, titleReadyMs, metadata, errors, browserMetrics, intervals: stats(samples.intervals),
+        fixture, chipBefore, chipAfter, chipSummary, chipPhases, inputObservations, validFixture,
         over33: samples.intervals.filter(x => x > 33.333).length / samples.intervals.length,
         over50: samples.intervals.filter(x => x > 50).length / samples.intervals.length,
         metrics, phaseMetrics, stageStates: [...new Set(samples.rows.map(r => r.stage))], samples };
@@ -271,6 +323,7 @@ try {
       // Save after each repetition, including an interrupted condition.
       report.cases = [...report.cases.filter(c => c.name !== config.name), condition];
       await save();
+      if (!validFixture) throw new Error(`Invalid chip fixture: ${config.name}; saved ${output}`);
     }
   }
 } finally {

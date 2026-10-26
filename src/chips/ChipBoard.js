@@ -8,10 +8,6 @@ const COLLISION_HEIGHT_RATIO = 0.25;
 const IMPACT_LIFT_SCALE = 20;
 const hasPhysicalTilt = (chip) => chip.type === 'item';
 
-function distanceBetween(first, second) {
-  return Math.hypot(first.x - second.x, first.y - second.y);
-}
-
 function canCollideAtHeight(first, second) {
   if (first.rise || second.rise) return false;
   const contactHeight = Math.min(first.radius, second.radius) * COLLISION_HEIGHT_RATIO;
@@ -108,17 +104,21 @@ export default class ChipBoard {
   updateOverlapLayers() {
     const activePairs = new Set();
 
-    this.chips.forEach((first, firstIndex) => {
-      this.chips.slice(firstIndex + 1).forEach((second) => {
-        if (distanceBetween(first, second) >= first.radius + second.radius) return;
+    for (let firstIndex = 0; firstIndex < this.chips.length; firstIndex++) {
+      const first = this.chips[firstIndex];
+      for (let secondIndex = firstIndex + 1; secondIndex < this.chips.length; secondIndex++) {
+        const second = this.chips[secondIndex];
+        const dx = second.x - first.x, dy = second.y - first.y;
+        const minimum = first.radius + second.radius;
+        if (Math.abs(dx) >= minimum || Math.abs(dy) >= minimum || Math.hypot(dx, dy) >= minimum) continue;
 
         const pairKey = this.getPairKey(first, second);
         activePairs.add(pairKey);
         if (!this.overlapLayers.has(pairKey)) {
           this.overlapLayers.set(pairKey, this.getNaturalTopChip(first, second).id);
         }
-      });
-    });
+      }
+    }
 
     this.overlapLayers.forEach((_, pairKey) => {
       if (!activePairs.has(pairKey)) this.overlapLayers.delete(pairKey);
@@ -139,7 +139,7 @@ export default class ChipBoard {
   }
 
   getPairKey(first, second) {
-    return [first.id, second.id].sort((left, right) => left - right).join(':');
+    return first.id < second.id ? `${first.id}:${second.id}` : `${second.id}:${first.id}`;
   }
 
   updateFall(chip, deltaSeconds) {
@@ -193,7 +193,7 @@ export default class ChipBoard {
     const strength = (velocity / 1000) * (source.weight / 15);
     this.chips.filter((chip) => chip !== source).forEach((chip) => {
       if (!canCollideAtHeight(source, chip)) return;
-      const distance = distanceBetween(source, chip);
+      const distance = Math.hypot(source.x - chip.x, source.y - chip.y);
       const reach = source.radius + chip.radius + 70;
       if (distance >= reach) return;
       const ratio = 1 - distance / reach;
@@ -219,16 +219,18 @@ export default class ChipBoard {
 
     while (pendingChips.length > 0) {
       const current = pendingChips.shift();
-      this.chips.filter((chip) => chip !== current.chip && !chip.isPickupTarget).forEach((chip) => {
-        const pairKey = [current.chip.id, chip.id].sort((first, second) => first - second).join(':');
-        if (resolvedPairs.has(pairKey)) return;
+      for (const chip of this.chips) {
+        if (chip === current.chip || chip.isPickupTarget) continue;
 
         const dx = chip.x - current.chip.x || 1;
         const dy = chip.y - current.chip.y || 1;
-        const distance = Math.hypot(dx, dy);
         const minimum = current.chip.radius + chip.radius;
-        if (distance >= minimum) return;
-        if (!canCollideAtHeight(current.chip, chip)) return;
+        if (Math.abs(dx) >= minimum || Math.abs(dy) >= minimum) continue;
+        const distance = Math.hypot(dx, dy);
+        if (distance >= minimum) continue;
+        if (!canCollideAtHeight(current.chip, chip)) continue;
+        const pairKey = this.getPairKey(current.chip, chip);
+        if (resolvedPairs.has(pairKey)) continue;
 
         resolvedPairs.add(pairKey);
         const overlap = minimum - distance;
@@ -245,7 +247,7 @@ export default class ChipBoard {
         collisionLifts.set(chip, lift);
         chip.impactOnLanding = false;
         pendingChips.push({ chip, force: current.force * 0.72 });
-      });
+      }
     }
 
     collisionLifts.forEach((lift, chip) => {
@@ -257,15 +259,18 @@ export default class ChipBoard {
   resolveGroundOverlaps(deltaSeconds) {
     const maximumSeparation = GROUND_SEPARATION_SPEED * deltaSeconds;
 
-    this.chips.forEach((first, firstIndex) => {
-      this.chips.slice(firstIndex + 1).forEach((second) => {
-        if (first.rise || second.rise || first.height > 1 || second.height > 1 || first.isPickupTarget || second.isPickupTarget || first.isTransferVisual || second.isTransferVisual) return;
+    for (let firstIndex = 0; firstIndex < this.chips.length; firstIndex++) {
+      const first = this.chips[firstIndex];
+      for (let secondIndex = firstIndex + 1; secondIndex < this.chips.length; secondIndex++) {
+        const second = this.chips[secondIndex];
+        if (first.rise || second.rise || first.height > 1 || second.height > 1 || first.isPickupTarget || second.isPickupTarget || first.isTransferVisual || second.isTransferVisual) continue;
 
         const dx = second.x - first.x || 1;
         const dy = second.y - first.y || 1;
-        const distance = Math.hypot(dx, dy);
         const minimum = first.radius + second.radius;
-        if (distance >= minimum) return;
+        if (Math.abs(dx) >= minimum || Math.abs(dy) >= minimum) continue;
+        const distance = Math.hypot(dx, dy);
+        if (distance >= minimum) continue;
 
         const overlap = Math.min(minimum - distance, maximumSeparation);
         const totalWeight = first.weight + second.weight;
@@ -285,8 +290,8 @@ export default class ChipBoard {
         first.y = firstPosition.y;
         second.x = secondPosition.x;
         second.y = secondPosition.y;
-      });
-    });
+      }
+    }
   }
 
   constrainPosition(chip, x, y) {

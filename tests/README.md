@@ -262,6 +262,26 @@ node --test tests/implementation/scripts/ImageConversion.test.js tests/implement
 
 画像サイズ変更後は実ブラウザーで画質を確認する。自動検証だけを実機の画質確認とは扱わない。
 
+## チップ数に伴う負荷調査
+
+`node scripts/measure-performance.js --list`で条件名を確認し、実行する条件を明示する。
+例えば`node scripts/measure-performance.js chips-normal-cpu1 chips-100-cpu1`で、通常個数と満杯を比較する。
+既定はウォームアップ5秒、30秒×3反復。`PERF_WARMUP`、`PERF_SECONDS`、`PERF_REPEATS`で変更できる。
+`PERF_OUTPUT`は`tmp_performance/`配下を指定する。生データ、一時ビルド、CPUプロファイルを永続資料へ含めない。
+
+`chips-`条件は固定seed・六角配置・同一課題を使用する人工的な比較条件であり、通常プレイの分布を再現するものではない。
+実容量と初期アイテムを含む目標数、画像と縮小画像キャッシュの読込完了、反復前後の個数・課題・敵構成を検査する。
+CPU4倍制限や小画面はモバイル実機の測定ではない。ドラッグ指標はDOMイベントからガイド描画命令の発行までで、画面への実表示を含まない。
+詳細計測なし条件でもフレームprobeの記録と関数ラッパーは残る。処理省略は診断用であり、実装可能な改善率として扱わない。
+計測は専用ビルドで行い、通常ビルドに`__perf`・`__session`や省略機能を含めない。測定中は別テストやビルドを並行実行しない。
+
+集計例: `node scripts/summarize-performance.js tmp_performance/summary.json tmp_performance/results.json`。
+反復別のフレーム間隔、同期処理、CDP TaskDuration、tick/実秒と、入力・処理省略区間を併記して判断する。
+
+`chips-100-implementation-cpu1`や`chips-100-implementation-cpu4`は、同じシーンを旧処理→修正処理→旧処理に切り替える。
+旧処理は`PerformanceBuild.js`に固定したコミットから診断ビルドへ読み込むため、その履歴がローカルに必要となる。
+両方の画像段階をウォームアップし、通常ビルドへ切替機能や旧クラスを含めない。
+
 ## 手動確認
 
 [画面確認用入口](manual/README.md)と[操作・モバイル表示の確認](manual/controls.md)を参照する。実機・見た目について未確認の項目とオーナーの保留判断は[バックログ](../docs/planning/backlog.md)を正本とする。自動テスト成功を実機確認済みとは扱わない。

@@ -47,11 +47,24 @@ test('probe preserves results, separates disabled measurement and caps samples',
 
 test('local instrumentation matches current application boundaries', async () => {
   const plugin = performanceBuildPlugin();
-  for (const file of ['app/GameApp.js', 'app/TrialSession.js', 'chips/ChipBoard.js', 'chips/ChipRenderer.js',
-    'app/InformationWindowManager.js', 'app/InformationWindowLayer.js', 'app/TimeSettingsController.js', 'app/TitleChipRain.js',
+  for (const file of ['app/GameApp.js', 'app/TrialSession.js', 'chips/ChipBoard.js', 'chips/ChipRenderer.js', 'chips/ScaledImage.js',
+    'app/InformationWindowManager.js', 'app/InformationWindowLayer.js', 'app/TimeSettingsController.js', 'app/TitleChipRain.js', 'game/HeroItemInteractionController.js',
     'app/FacilityNameplateRenderer.js', 'app/AreaNameplateRenderer.js', 'app/WarehouseMetadataRenderer.js',
     'app/FacilitySlotRenderer.js', 'app/ShopPanelPresenter.js', 'app/GuildPanel.js', 'app/HeroStatusPanelRenderer.js']) {
     const code = await readFile(new URL(`../../../src/${file}`, import.meta.url), 'utf8');
     assert.match(plugin.transform(code, `/project/src/${file}`).code, /globalThis\.__perf/);
+  }
+});
+
+test('paired chip build includes pinned legacy methods only on explicit request', async t => {
+  const previous = process.env.PERF_COMPARE_CHIPS;
+  t.after(() => { if (previous === undefined) delete process.env.PERF_COMPARE_CHIPS; else process.env.PERF_COMPARE_CHIPS = previous; });
+  process.env.PERF_COMPARE_CHIPS = '1';
+  for (const file of ['ChipBoard', 'ChipRenderer']) {
+    const code = await readFile(new URL(`../../../src/chips/${file}.js`, import.meta.url), 'utf8');
+    assert.match(performanceBuildPlugin().transform(code, `/project/src/chips/${file}.js`).code, new RegExp(`class Legacy${file}`));
+    delete process.env.PERF_COMPARE_CHIPS;
+    assert.doesNotMatch(performanceBuildPlugin().transform(code, `/project/src/chips/${file}.js`).code, new RegExp(`class Legacy${file}`));
+    process.env.PERF_COMPARE_CHIPS = '1';
   }
 });
