@@ -2,6 +2,12 @@ import { execFileSync } from 'node:child_process';
 
 // Local investigation build only. Never loaded by the application's Vite config.
 export const INCREMENTAL_BASELINE = 'cb55fad55e49045630aa0456c2858dcf9c5bf274';
+export const CHIP_BASELINE = '7960292';
+
+function baselineChipClass(file, name, readSource) {
+  const source = readSource(`src/chips/${file}.js`);
+  return source.slice(source.indexOf('export default class ')).replace(`export default class ${file}`, `class ${name}`);
+}
 
 function baselineClass(file, name) {
   const source = execFileSync('git', ['show', `${INCREMENTAL_BASELINE}:src/app/${file}.js`], { encoding: 'utf8' });
@@ -13,7 +19,8 @@ export function replaceOnce(source, from, to) {
 }
 
 const wrappers = {
-  'chips/ChipBoard.js': ['ChipBoard', ['update', 'getRenderChips', 'resolveGroundOverlaps']],
+  'chips/ChipBoard.js': ['ChipBoard', ['update', 'getRenderChips', 'updateOverlapLayers', 'resolveGroundOverlaps', 'pushOverlaps']],
+  'game/HeroItemInteractionController.js': ['HeroItemInteractionController', ['update', 'getEntityAt', 'updateSelectionHover']],
   'chips/ChipRenderer.js': ['ChipRenderer', ['drawBody', 'drawEffects']],
   'app/InformationWindowManager.js': ['InformationWindowManager', ['refreshDynamicEntries']],
   'app/InformationWindowLayer.js': ['InformationWindowLayer', ['render']],
@@ -31,13 +38,36 @@ const drawFunctions = {
   'app/HeroStatusPanelRenderer.js': ['drawPreparationHeroPanel', 'drawTrainingStatusPanel'],
 };
 
-export function performanceBuildPlugin() {
+export function performanceBuildPlugin({ readChipBaseline = file => execFileSync('git', ['show', `${CHIP_BASELINE}:${file}`], { encoding: 'utf8' }) } = {}) {
   return {
     name: 'local-performance-investigation',
     enforce: 'pre',
     transform(code, id) {
       const path = id.replaceAll('\\', '/');
       code = code.replaceAll('\r\n', '\n');
+      if (path.endsWith('/src/chips/ChipContactPairs.js')) {
+        code = replaceOnce(code, '    this.nextContacts = new Set();', `
+          if (globalThis.__perf.enabled && globalThis.__perf.recording) {
+            const kind = this === globalThis.__session?.board.groundContacts ? 'ground' : 'render';
+            const key = 'contactChanged:' + kind;
+            globalThis.__perf.current[key] = (globalThis.__perf.current[key] ?? 0) + changed.length;
+          }
+          this.nextContacts = new Set();`);
+      }
+      if (process.env.PERF_COMPARE_CHIPS === '1' && path.endsWith('/src/chips/ChipBoard.js')) {
+        code += `\n${baselineChipClass('ChipBoard', 'LegacyChipBoard', readChipBaseline).replaceAll('distanceBetween(', 'legacyDistanceBetween(')}
+          function legacyDistanceBetween(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+          globalThis.__perf.wrap(LegacyChipBoard.prototype, 'ChipBoard', ['updateOverlapLayers', 'resolveGroundOverlaps', 'pushOverlaps']);
+          globalThis.__perf.legacyChipBoard = LegacyChipBoard.prototype;`;
+      }
+      if (process.env.PERF_COMPARE_CHIPS === '1' && path.endsWith('/src/chips/ChipRenderer.js')) {
+        code += `\n${baselineChipClass('ChipRenderer', 'LegacyChipRenderer', readChipBaseline)}
+          globalThis.__perf.wrap(LegacyChipRenderer.prototype, 'ChipRenderer', ['drawBody']);
+          globalThis.__perf.legacyChipDrawBody = LegacyChipRenderer.prototype.drawBody;`;
+      }
+      if (path.endsWith('/src/chips/ScaledImage.js')) {
+        code += '\nglobalThis.__perf.imageLevels = getImageLevelDiagnostics;\n';
+      }
       if (path.endsWith('/src/app/GameApp.js')) {
         code = replaceOnce(code, 'function render(time) {', 'function render(time) { globalThis.__perf.begin(time);');
         code = replaceOnce(code, '    requestAnimationFrame(render);', '    globalThis.__perf.endFrame(); requestAnimationFrame(render);');
@@ -84,7 +114,7 @@ export function performanceBuildPlugin() {
           code = replaceOnce(code, marker, `    if (globalThis.__perf.settledInformationScene) globalThis.__perf.reseed();\n${marker}`);
         }
         code = replaceOnce(code, '  openStageSelection(1);', `
-          globalThis.__session = { board, controller, clock, camera, assets, informationWindows, stageController, tutorial,
+          globalThis.__session = { board, controller, clock, camera, assets, informationWindows, stageController, tutorial, enemySpawn, renderer,
             makeItem: () => new ItemFactory().createWeapon({ weapon: 'sword', tags: ['valor', 'fire'],
               x: GAME_AREAS.warehouse.x + 50 + Math.random() * (GAME_AREAS.warehouse.width - 100),
               y: GAME_AREAS.warehouse.y + 50 + Math.random() * (GAME_AREAS.warehouse.height - 100) }) };
@@ -129,6 +159,13 @@ export function installPerformanceProbe() {
   const probe = globalThis.__perf = {
     compareBatching: false, batchInformation: true, compareIncremental: false, incrementalInformation: true,
     reseed() { seed = 54; },
+    useLegacyChips(session, enabled) {
+      const names = ['updateOverlapLayers', 'resolveGroundOverlaps', 'pushOverlaps', 'getPairKey'];
+      this.modernChipMethods ??= Object.fromEntries(names.map(name => [name, session.board[name]]));
+      this.modernChipDrawBody ??= session.renderer.drawBody;
+      for (const name of names) session.board[name] = enabled ? this.legacyChipBoard[name] : this.modernChipMethods[name];
+      session.renderer.drawBody = enabled ? this.legacyChipDrawBody : this.modernChipDrawBody;
+    },
     enabled: false, recording: false, skip: new Set(), rows: [], intervals: [], current: {}, starts: {}, totals: {},
     begin(time) {
       if (this.recording && this.previous !== undefined && this.intervals.length < 20000) this.intervals.push(time - this.previous);
@@ -141,6 +178,17 @@ export function installPerformanceProbe() {
       if (this.enabled && this.recording) this.current[name] = (this.current[name] ?? 0) + performance.now() - this.starts[name];
     },
     endFrame() {
+      if (this.inputPending && this.inputPending.event !== null) {
+        const end = performance.now();
+        const s = globalThis.__session;
+        const bounds = document.querySelector('#chip-canvas').getBoundingClientRect();
+        const expected = s.camera.toWorld(this.inputPending.x - bounds.left, this.inputPending.y - bounds.top);
+        const hover = s.controller.selection.hover;
+        this.inputResult = { deliveryToDraw: end - this.inputPending.sent, eventToDraw: end - this.inputPending.event,
+          selected: s.controller.selection.source?.chip.id === this.chipFixture?.sourceId,
+          hoverMatches: Boolean(hover && Math.abs(hover.x - expected.x) < .001 && Math.abs(hover.y - expected.y) < .001) };
+        this.inputPending = null;
+      }
       if (!this.recording || this.rows.length >= 20000) return;
       const s = globalThis.__session;
       this.rows.push({ ...this.current, main: performance.now() - this.frameStart, phase: this.phase ?? 'whole',
@@ -179,6 +227,10 @@ export function installPerformanceProbe() {
     },
     reset(enabled) { this.rows = []; this.intervals = []; this.totals = {}; this.previous = undefined; this.enabled = enabled; this.recording = true; },
   };
+  probe.inputResult = null;
+  globalThis.document?.addEventListener('pointermove', event => {
+    if (probe.inputPending) Object.assign(probe.inputPending, { event: performance.now(), x: event.clientX, y: event.clientY });
+  }, { capture: true });
   if (globalThis.document && globalThis.Element) {
     for (const [object, names] of [[document, ['createElement', 'createElementNS', 'createDocumentFragment']],
       [Element.prototype, ['getBoundingClientRect', 'replaceChildren', 'replaceWith', 'insertBefore']]]) {

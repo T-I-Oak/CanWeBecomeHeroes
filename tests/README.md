@@ -232,6 +232,16 @@ CDPのTaskDuration・LayoutDurationはページ全体の区間差分で、実CPU
 採取JSON・CPUプロファイル・集計出力は`tmp_`配下へ置く。過去の測定結果を永続資料として保存しない。
 今回の検証結果・条件・限界とオーナー判断はフェーズ実装報告へ記録する。
 
+## チップの接触候補の検証
+
+`node --test tests/implementation/chips/ChipContactPairs.test.js tests/implementation/chips/ChipBoardPerformance.test.js tests/implementation/chips/ChipBoard.test.js`で、静止組の省略、変化したチップの走査、残った重なり、次更新への伝播、追加・削除・入替え、描画順を確認する。
+
+性能比較は`chips-100-implementation-cpu1`・`chips-100-implementation-cpu4`、少数移動は`chips-100-sparse-implementation-cpu1`・`chips-100-sparse-implementation-cpu4`、密集移動は`chips-100-moving-implementation-cpu1`・`chips-100-moving-implementation-cpu4`を使う。
+旧処理は計測専用にGitコミット`7960292`から取得する。通常ビルドと通常のテストはこの履歴取得を必要としない。
+各反復は旧処理A1→現処理B→旧処理A2、既定では各10秒。移動条件では各区間の開始時に同じ物理状態・重なり順へ戻す。
+少数移動は1枚を50msおきに左右0.25座標単位動かす。密集移動は1枚に1秒おきの移動を指示し、周囲との接触を起こす。実機タッチ入力や全チップの一斉移動を再現する条件ではない。
+`contactChanged:ground`・`contactChanged:render`は各描画フレームに含まれる追跡器呼出しでの変化検出数の合計で、チップの実数や接触判定回数ではない。
+
 ## 集計・評価の検証
 
 ```powershell
@@ -261,6 +271,26 @@ node --test tests/implementation/scripts/ImageConversion.test.js tests/implement
 - `EnemyChipArtContract.test.js`: 敵画像のsafe-circle・輪郭サイズ契約。
 
 画像サイズ変更後は実ブラウザーで画質を確認する。自動検証だけを実機の画質確認とは扱わない。
+
+## チップ数に伴う負荷調査
+
+`node scripts/measure-performance.js --list`で条件名を確認し、実行する条件を明示する。
+例えば`node scripts/measure-performance.js chips-normal-cpu1 chips-100-cpu1`で、通常個数と満杯を比較する。
+既定はウォームアップ5秒、30秒×3反復。`PERF_WARMUP`、`PERF_SECONDS`、`PERF_REPEATS`で変更できる。
+`PERF_OUTPUT`は`tmp_performance/`配下を指定する。生データ、一時ビルド、CPUプロファイルを永続資料へ含めない。
+
+`chips-`条件は固定seed・六角配置・同一課題を使用する人工的な比較条件であり、通常プレイの分布を再現するものではない。
+実容量と初期アイテムを含む目標数、画像と縮小画像キャッシュの読込完了、反復前後の個数・課題・敵構成を検査する。
+CPU4倍制限や小画面はモバイル実機の測定ではない。ドラッグ指標はDOMイベントからガイド描画命令の発行までで、画面への実表示を含まない。
+詳細計測なし条件でもフレームprobeの記録と関数ラッパーは残る。処理省略は診断用であり、実装可能な改善率として扱わない。
+計測は専用ビルドで行い、通常ビルドに`__perf`・`__session`や省略機能を含めない。測定中は別テストやビルドを並行実行しない。
+
+集計例: `node scripts/summarize-performance.js tmp_performance/summary.json tmp_performance/results.json`。
+反復別のフレーム間隔、同期処理、CDP TaskDuration、tick/実秒と、入力・処理省略区間を併記して判断する。
+
+`chips-100-implementation-cpu1`や`chips-100-implementation-cpu4`は、同じシーンを旧処理→修正処理→旧処理に切り替える。
+旧処理は`PerformanceBuild.js`に固定したコミットから診断ビルドへ読み込むため、その履歴がローカルに必要となる。
+両方の画像段階をウォームアップし、通常ビルドへ切替機能や旧クラスを含めない。
 
 ## 手動確認
 
