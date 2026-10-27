@@ -84,6 +84,7 @@ export default class GameCanvasInput {
     const entity = screenTarget ? screenTarget.hero : this.controller.getEntityAt(point.x, point.y);
     this.drag = {
       pointerId: event.pointerId,
+      pointerType: event.pointerType,
       startX: event.clientX,
       startY: event.clientY,
       lastX: event.clientX,
@@ -148,6 +149,12 @@ export default class GameCanvasInput {
     const point = this.getWorldPoint(event);
     const target = this.getScreenTarget(this.getScreenPoint(event));
     this.controller.updateSelectionHover(point.x, point.y, target?.hero);
+  }
+
+  getLoupePoint() {
+    if (!this.controller || this.pinchLockout || this.drag?.pointerType !== 'touch'
+      || !this.drag.startedSelection || !this.controller.hasSelectionSource()) return null;
+    return this.getScreenPoint({ clientX: this.drag.lastX, clientY: this.drag.lastY });
   }
 
   update(deltaSeconds) {

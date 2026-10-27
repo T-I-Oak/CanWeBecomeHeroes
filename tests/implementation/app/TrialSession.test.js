@@ -14,7 +14,7 @@ import { expandLanguageResource, setLanguage } from '../../../../GameWorksOAK/sr
 function createContext() {
   const context = { createPattern: () => ({}), measureText: text => ({ width: String(text).length * 8 }),
     createLinearGradient: () => ({ addColorStop() {} }), createRadialGradient: () => ({ addColorStop() {} }) };
-  for (const name of ['save', 'restore', 'setTransform', 'clearRect', 'translate', 'rotate', 'scale', 'beginPath', 'closePath', 'arc', 'ellipse', 'fill', 'stroke', 'fillRect', 'strokeRect', 'roundRect', 'rect', 'moveTo', 'lineTo', 'quadraticCurveTo', 'bezierCurveTo', 'clip', 'drawImage', 'fillText', 'strokeText', 'setLineDash']) context[name] = () => {};
+  for (const name of ['save', 'restore', 'setTransform', 'resetTransform', 'clearRect', 'translate', 'rotate', 'scale', 'beginPath', 'closePath', 'arc', 'ellipse', 'fill', 'stroke', 'fillRect', 'strokeRect', 'roundRect', 'rect', 'moveTo', 'lineTo', 'quadraticCurveTo', 'bezierCurveTo', 'clip', 'drawImage', 'fillText', 'strokeText', 'setLineDash']) context[name] = () => {};
   return context;
 }
 class Element {
@@ -73,7 +73,7 @@ for (const mode of ['trial', 'challenge']) test(`${mode} session connects route 
   const camera = new Camera(WORLD_SIZE); camera.setViewport(1280, 720);
   const clock = new GameClock();
   const trial = {};
-  const canvasInput = { controller: null, activePointers: new Map() };
+  const canvasInput = { controller: null, activePointers: new Map(), getLoupePoint: () => null };
   let informationManager;
   const informationRenders = [];
   let pauseDuringUpdate = false;
@@ -110,6 +110,13 @@ for (const mode of ['trial', 'challenge']) test(`${mode} session connects route 
   assert.equal(clock.pauseReasons.has('stage-selection'), false);
   assert.equal(trial.stageSelection.container.hidden, true);
   for (let frame = 0; frame < 300; frame += 1) trial.update(1 / 60, frame * 1000 / 60);
+  const beforeLoupe = heroes.map(hero => [hero.chip.x, hero.chip.y, hero.chip.height, hero.stamina]);
+  const tickBeforeLoupe = clock.tick;
+  canvasInput.getLoupePoint = () => ({ x: 200, y: 400 });
+  trial.update(0, 5000);
+  assert.equal(clock.tick, tickBeforeLoupe);
+  assert.deepEqual(heroes.map(hero => [hero.chip.x, hero.chip.y, hero.chip.height, hero.stamina]), beforeLoupe);
+  canvasInput.getLoupePoint = () => null;
   assert.ok(trial.controller.getEnemies().length > 0);
   const hero = heroes[0];
   const target = trial.getInformationTarget({ x: hero.chip.x, y: hero.chip.y - hero.chip.height });

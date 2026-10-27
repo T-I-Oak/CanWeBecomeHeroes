@@ -42,6 +42,7 @@ import TrialRunResultModal from './TrialRunResultModal.js';
 import { createTrialRunResult } from '../game/TrialRunResult.js';
 import { drawWorldSurfaces } from './WorldSurfaceRenderer.js';
 import { drawSelectionGuide } from './SelectionGuideRenderer.js';
+import TouchDragLoupe from './TouchDragLoupe.js';
 import { drawShopPanel as drawShopPanelPresentation, getShopPanelSnapshot } from './ShopPanelPresenter.js';
 import { drawPreparationHeroPanel, drawTrainingStatusPanel, getTrainingStatusAtPoint, PREPARATION_HERO_STATUS_DEFINITIONS } from './HeroStatusPanelRenderer.js';
 import { drawFramedTag, drawItemSlot } from './EquipmentSlotRenderer.js';
@@ -152,6 +153,10 @@ export async function startTrial({
   let guildTimelineHours = GUILD_TIMELINE_STANDARD_HOURS;
   const renderer = new ChipRenderer(context, assets);
   const heroDirectionIndicatorRenderer = new HeroDirectionIndicatorRenderer(directionContext, assets);
+  const touchDragLoupe = new TouchDragLoupe();
+  const loupeNameplateBounds = createLocationNameplateBoundsRegistry();
+  let loupeChipRenderer;
+  let loupeDirectionRenderer;
   const informationWindows = new InformationWindowManager({
     clock,
     entityRegistry,
@@ -265,6 +270,57 @@ export async function startTrial({
       return null;
     };
 
+  function drawWorld(context, renderer, nameplateBounds, time, renderChips) {
+    context.save();
+    context.scale(camera.zoom, camera.zoom);
+    context.translate(-camera.x, -camera.y);
+    drawWorldSurfaces(context, assets, preparationHeroes.length);
+    drawFacilityNameplates(context, assets, textRepository, nameplateBounds);
+    drawAreaNameplates(context, assets, textRepository, nameplateBounds);
+    drawWarehouseMetadata(context);
+    drawFacilitySlots(context);
+    drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction(), textRepository);
+    const nextGuildTimelineHours = drawGuildPanel(context, {
+      mode,
+      textRepository,
+      stageNumber: stageController.stageNumber,
+      animationTime: time / 1000,
+      tick: clock.tick,
+      contributionPoints: battleSystem.contributionPoints,
+      extensionHours: guildSystem.getExtensionHours(),
+      extensionRate: guildSystem.getEstimatedRate(controller.getHeroes().find((hero) => hero.currentArea === 'guild')),
+      timelineHours: guildTimelineHours,
+    }).timelineHours;
+    const trainingHero = controller.getHeroes().find((hero) => hero.currentArea === 'training');
+    drawTrainingStatusPanel(context, assets, trainingHero, trainingHero && training.getPresentation(trainingHero), time);
+    preparationHeroes.forEach((hero, index) => {
+      drawPreparationHeroPanel({
+        context,
+        assets,
+        hero,
+        index,
+        textRepository,
+      });
+    });
+    const staminaPauseTargets = new Set(controller.getHeroes()
+      .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
+      .map((hero) => hero.chip));
+    const timeSeconds = time / 1000;
+    renderChips.forEach((chip) => renderer.drawBody(chip, timeSeconds));
+    renderChips.forEach((chip) => renderer.drawEffects(chip, timeSeconds, { staminaPauseTarget: staminaPauseTargets.has(chip) }));
+    drawOverheadStatuses(
+      context,
+      [...controller.getHeroes(), ...controller.getEnemies()],
+      overheadStatusSettingsController.getSettings(),
+      textRepository,
+      time / 1000,
+    );
+    combatEffects.draw(context, assets);
+    drawSelectionGuide(context, controller.getSelectionGuide());
+    context.restore();
+    return nextGuildTimelineHours;
+  }
+
   trial.update = (deltaSeconds, time) => {
     achievementToast.update(deltaSeconds * 1000, Boolean(document.querySelector('.ModalLayer.state-open, #tutorial-layer:not([hidden])')));
     let simulationUpdated = false;
@@ -298,56 +354,16 @@ export async function startTrial({
     timeSettingsController.updateClockSpeed();
     timeSettingsController.updateStatus();
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-    context.save();
-    context.scale(camera.zoom, camera.zoom);
-    context.translate(-camera.x, -camera.y);
-    drawWorldSurfaces(context, assets, preparationHeroes.length);
-    drawFacilityNameplates(context, assets, textRepository, nameplateBounds);
-    drawAreaNameplates(context, assets, textRepository, nameplateBounds);
-    drawWarehouseMetadata(context);
-    drawFacilitySlots(context);
-    drawShopPanel(context, assets, shop, controller.getShoppingBag(), shopSystem.getTransaction(), textRepository);
-    guildTimelineHours = drawGuildPanel(context, {
-      mode,
-      textRepository,
-      stageNumber: stageController.stageNumber,
-      animationTime: time / 1000,
-      tick: clock.tick,
-      contributionPoints: battleSystem.contributionPoints,
-      extensionHours: guildSystem.getExtensionHours(),
-      extensionRate: guildSystem.getEstimatedRate(controller.getHeroes().find((hero) => hero.currentArea === 'guild')),
-      timelineHours: guildTimelineHours,
-    }).timelineHours;
-    const trainingHero = controller.getHeroes().find((hero) => hero.currentArea === 'training');
-    drawTrainingStatusPanel(context, assets, trainingHero, trainingHero && training.getPresentation(trainingHero), time);
-    preparationHeroes.forEach((hero, index) => {
-      drawPreparationHeroPanel({
-        context,
-        assets,
-        hero,
-        index,
-        textRepository,
-      });
-    });
-    const staminaPauseTargets = new Set(controller.getHeroes()
-      .filter((hero) => hero.currentArea === 'preparation' && hero.stamina >= hero.maximums.stamina)
-      .map((hero) => hero.chip));
     const renderChips = board.getRenderChips();
-    const timeSeconds = time / 1000;
-    renderChips.forEach((chip) => renderer.drawBody(chip, timeSeconds));
-    renderChips.forEach((chip) => renderer.drawEffects(chip, timeSeconds, { staminaPauseTarget: staminaPauseTargets.has(chip) }));
-    drawOverheadStatuses(
-      context,
-      [...controller.getHeroes(), ...controller.getEnemies()],
-      overheadStatusSettingsController.getSettings(),
-      textRepository,
-      time / 1000,
-    );
-    combatEffects.draw(context, assets);
-    drawSelectionGuide(context, controller.getSelectionGuide());
-    context.restore();
+    guildTimelineHours = drawWorld(context, renderer, nameplateBounds, time, renderChips);
     directionContext.clearRect(0, 0, directionCanvas.clientWidth, directionCanvas.clientHeight);
     heroDirectionIndicatorRenderer.draw(trial.getDirectionIndicators(), time / 1000);
+    touchDragLoupe.draw(directionContext, canvas, canvasInput.getLoupePoint(), (loupeContext) => {
+      loupeChipRenderer ??= new ChipRenderer(loupeContext, assets);
+      loupeDirectionRenderer ??= new HeroDirectionIndicatorRenderer(loupeContext, assets);
+      drawWorld(loupeContext, loupeChipRenderer, loupeNameplateBounds, time, renderChips);
+      loupeDirectionRenderer.draw(trial.getDirectionIndicators(), time / 1000);
+    });
   };
   return completed;
 }
