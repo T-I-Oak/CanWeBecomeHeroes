@@ -28,10 +28,13 @@ test('enemy previews allocate enough pixels for enemy size and device pixel rati
         assert.equal(canvas.height, canvas.width);
         assert.equal(canvas.style.width, undefined);
         assert.equal(drawn[2], logicalSize);
-        canvas.getBoundingClientRect = () => ({ left: 10, top: 20, width: logicalSize, height: logicalSize });
-        // One tag is at the top of the chip. Its hit area stays in CSS coordinates.
-        assert.equal(getPreviewTagAtPoint(enemy, canvas, 10 + logicalSize / 2, 20 + logicalSize * 0.15), 'valor');
-        assert.equal(getPreviewTagAtPoint(enemy, canvas, 10 + logicalSize / 2, 20 + logicalSize / 2), null);
+        for (const cssScale of [0.2, 0.5, 1]) {
+          const displayedSize = logicalSize * cssScale;
+          canvas.getBoundingClientRect = () => ({ left: 10, top: 20, width: displayedSize, height: displayedSize });
+          // Shrinking the CSS preview must preserve tag and enemy hit coordinates.
+          assert.equal(getPreviewTagAtPoint(enemy, canvas, 10 + displayedSize / 2, 20 + displayedSize * 0.15), 'valor');
+          assert.equal(getPreviewTagAtPoint(enemy, canvas, 10 + displayedSize / 2, 20 + displayedSize / 2), null);
+        }
       }
     }
   } finally {

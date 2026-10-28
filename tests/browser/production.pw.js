@@ -45,6 +45,28 @@ test('production base path loads bundled common library, text and image assets',
   await page.locator('.VignetteModal__Skip').click();
   await expect(page.locator('#stage-selection')).toBeVisible();
   await page.waitForLoadState('networkidle');
+  for (const viewport of [{ width: 320, height: 740 }, { width: 390, height: 844 }, { width: 844, height: 390 }, { width: 1280, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    const options = await page.locator('.StageSelection__Option').evaluateAll(elements => elements.map(option => {
+      const line = option.querySelector('.StageSelection__EnemyLine');
+      const trends = option.querySelector('.StageSelection__Trends').getBoundingClientRect();
+      const button = option.querySelector('.StageSelection__SelectButton').getBoundingClientRect();
+      return {
+        overflow: option.scrollWidth > option.clientWidth,
+        bases: [...line.querySelectorAll('canvas')].map(canvas => canvas.getBoundingClientRect().width / Number(canvas.style.getPropertyValue('--stage-selection-enemy-chip-scale'))),
+        namesVisible: [...line.querySelectorAll('.StageSelection__EnemyName')].every(name => getComputedStyle(name).display !== 'none'),
+        sameRow: Math.min(trends.bottom, button.bottom) > Math.max(trends.top, button.top),
+        buttonHeight: button.height,
+      };
+    }));
+    for (const option of options) {
+      expect(option.overflow).toBe(false);
+      expect(Math.max(...option.bases) - Math.min(...option.bases)).toBeLessThan(0.1);
+      expect(option.namesVisible).toBe(true);
+      expect(option.buttonHeight).toBeGreaterThanOrEqual(44);
+      if (viewport.width <= 960) expect(option.sameRow).toBe(true);
+    }
+  }
   expect(failures).toEqual([]);
 });
 

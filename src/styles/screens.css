@@ -229,6 +229,31 @@
   text-align: center;
 }
 
+.StageSelection__Dialog .ModalDialog__Body {
+  scrollbar-width: thin;
+  scrollbar-color: #b08a52 #172a20;
+}
+
+.StageSelection__Dialog .ModalDialog__Body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.StageSelection__Dialog .ModalDialog__Body::-webkit-scrollbar-track,
+.StageSelection__Dialog .ModalDialog__Body::-webkit-scrollbar-corner {
+  background: #172a20;
+}
+
+.StageSelection__Dialog .ModalDialog__Body::-webkit-scrollbar-thumb {
+  background: #b08a52;
+  border: 2px solid #172a20;
+  border-radius: 6px;
+}
+
+.StageSelection__Dialog .ModalDialog__Body::-webkit-scrollbar-thumb:hover {
+  background: #f0cb79;
+}
+
 .StageSelection__Options {
   display: grid;
   gap: 12px;
