@@ -18,7 +18,7 @@ test('tag skill epithet uses canonical name at 1/3/5/7 thresholds, capped above 
 });
 
 test('generation uses the selected hero maximum instead of another hero skill or a random level', () => {
-  const stats = { heroes: { Avery: { tags: { valor: 3 } }, Briar: { tags: { valor: 7 } } } };
+  const stats = { heroes: { Avery: { tags: { valor: 9 }, effectiveTags: { valor: 3 } }, Briar: { tags: { valor: 9 }, effectiveTags: { valor: 7 } } } };
   const choices = [.999, 0, .999, .999, .999];
   let index = 0;
   const names = createHeroEpithets(stats,[{heroId:'Avery'},{heroId:'Briar'}],{ random:()=>choices[index++ % choices.length] });

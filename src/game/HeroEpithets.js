@@ -2,10 +2,11 @@ import data from '../../public/data/epithet.json' with { type: 'json' };
 import enemyTexts from '../../public/data/text/information/enemy.json' with { type: 'json' };
 import { aggregate, generate } from './EpithetExpansion.js';
 import { getEpithetTagSkillWords } from './EpithetTagSkill.js';
+import { TAGS } from './TagCatalog.js';
 
 const facilityFields = ['battle', 'shop', 'guild', 'training', 'shopTags', 'guildHours', 'trainingLuck'];
 function valueFor(hero, target) {
-  if (target.group === 'tag') return hero.tags?.[target.id] ?? 0;
+  if (target.group === 'tag') return (TAGS[target.id].group === 'status' ? hero.effectiveTags : hero.tags)?.[target.id] ?? 0;
   if (target.group === 'weapon') return hero.weapons?.[target.id] ?? 0;
   if (target.group === 'enemy') return hero.defeats?.[target.id]?.count ?? 0;
   const field = facilityFields[Number(target.id.split('-')[1])];
@@ -47,7 +48,7 @@ export function createHeroEpithets(statistics, members, { random = Math.random, 
       } else {
         definitions.push({ source: target.id, words: english ? target.wordsEn : target.words });
         if (target.group === 'tag') {
-          const skillWords = getEpithetTagSkillWords(target.id, statistics.heroes[heroId].tags[target.id], language);
+          const skillWords = getEpithetTagSkillWords(target.id, valueFor(statistics.heroes[heroId], target), language);
           if (skillWords) definitions.push({ source: `${target.id}:skill`, words: skillWords });
         }
       }

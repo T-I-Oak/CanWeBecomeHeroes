@@ -3,6 +3,7 @@ import { getCarriedWeight } from './CarriedWeight.js';
 import { getCharacterStepDistance } from './MovementSettings.js';
 import { getLuckDegree } from './Luck.js';
 import { fromDurabilityUnits, toDurabilityUnits } from './Durability.js';
+import { getTagSkillLevelForCount } from './TagSkillVisualCatalog.js';
 
 export default class Hero {
   constructor({ profession, heroId = profession, tags, chip, stamina = 0, maximums = {}, onStatistics = () => {} }) {
@@ -88,7 +89,7 @@ export default class Hero {
 
   getTagSkillLevel(tag) {
     const count = this.getTagCount(tag);
-    return Math.floor((count + 1) / 2);
+    return getTagSkillLevelForCount(count);
   }
 
   getCarriedWeight() {

@@ -15,7 +15,7 @@ function fixture(definition, value) {
     const pair = id.slice('pair-start:'.length);
     data.runs = { trial: { [pair]: { started: value / 2 } }, challenge: { [pair]: { started: value / 2 } } };
   } else if (id === 'stage-clear') data.stages = { 'regular:0': { clears: value / 2 }, 'boss:0': { clears: value / 2 } };
-  else if (id.startsWith('tag:')) data.heroes = { Avery: { tags: { [id.slice(4)]: value } }, Briar: { tags: { [id.slice(4)]: value - 1 } } };
+  else if (id.startsWith('tag:')) data.heroes = { Avery: { effectiveTags: { [id.slice(4)]: value } }, Briar: { effectiveTags: { [id.slice(4)]: value - 1 } } };
   else if (id.startsWith('enemy-defeat:')) data.combat.enemies[id.slice('enemy-defeat:'.length)] = value;
   else if (id.startsWith('facility:')) data.facilities[id.slice('facility:'.length)] = value;
   else if (id === 'contribution') data.guildPoints = value;
@@ -110,10 +110,10 @@ test('all definitions have completed Japanese and English resources, including g
   assert.equal(ACHIEVEMENT_DEFINITIONS.filter(d => d.id.startsWith('tag:')).length, 10);
   for (const definition of ACHIEVEMENT_DEFINITIONS) for (const language of ['ja', 'en']) {
     const resource = definition.resources[language];
-    assert.ok(resource.label && resource.category && resource.condition && resource.unachieved);
+    assert.ok(resource.label && resource.category && resource.recordCondition && resource.unachieved);
     assert.equal(resource.comments.length, definition.category === 'tag' ? 4 : 3);
     assert.ok(resource.comments.every(comment => comment && !/\{|［/.test(comment)));
-    assert.ok(!/\{|［/.test(resource.condition));
+    assert.ok(!/\{|［/.test(resource.recordCondition));
   }
   const valor = ACHIEVEMENT_DEFINITIONS.find(d => d.id === 'tag:valor').resources.ja.comments;
   assert.deepEqual(valor, ['勘所が使えるようになりましたね。','急所見切りを身につけましたね。','一撃必殺を身につけるまでに成長しましたね。','ついに英雄の一閃を身につけるまでになりましたね。']);
@@ -201,7 +201,7 @@ test('collector only calls notification callback when notice stage rises', () =>
 
 test('collector retains starting cumulative G and measures growth instead of high run tag G', () => {
   const total = new GameStatistics();
-  total.record({ type: 'hero-tags', heroId: 'Avery', counts: { valor: 7 } });
+  total.record({ type: 'hero-tags', heroId: 'Avery', counts: { valor: 7 }, effectiveCounts: { valor: 7 } });
   total.data.combat.enemies['small-valor'] = 100;
   const collector = new StatisticsCollector({ run: new GameStatistics({ run: true }), total, achievements: new Achievements() });
   const start = structuredClone(collector.startG);

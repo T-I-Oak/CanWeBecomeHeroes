@@ -75,6 +75,7 @@ export default class TrainingSystem {
     }
     hero.stamina -= staminaCost;
     hero.maximums[selected.stat] = Math.min(MAXIMUM_STAT_VALUE, hero.maximums[selected.stat] + 1);
+    this.onStatistics({ type: 'hero-tags', hero });
     if (isLucky) this.onStatistics({ type: 'training-luck', heroId: hero.heroId });
     state.gainedCells.push(Object.freeze({ stat: selected.stat, value: hero.maximums[selected.stat] }));
     logText(this.gameLog, this.textRepository, 'logTraining', { hero: entityText(hero, false), stat: { kind: 'status', id: selected.stat } }, { subject: 'hero', level: isLucky ? 'luck' : 'info', channel: 'training' });

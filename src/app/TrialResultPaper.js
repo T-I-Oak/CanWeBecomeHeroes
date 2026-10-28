@@ -21,7 +21,7 @@ export function renderTrialResultPaper(paper, result, textRepository, language, 
     const entries = result.achievements.map(entry => {
       const r = ACHIEVEMENT_DEFINITIONS.find(item => item.id === entry.id).resources[language];
       return { categoryId: entry.category, category: r.category, label: r.label,
-        condition: r.condition, gradeLabel: entry.label, updated: entry.updated,
+        gradeLabel: entry.label, updated: entry.updated,
         comment: entry.grade ? r.comments[entry.comment - 1] : r.unachieved };
     });
     return createAchievementTable({ mode: 'result', entries, headings: {

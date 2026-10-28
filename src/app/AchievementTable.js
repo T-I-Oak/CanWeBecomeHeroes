@@ -9,8 +9,8 @@ function cell(tag, className, text) {
 
 /**
  * Presentation only: entries are already selected, ordered and localized.
- * Each entry has categoryId, category, label, condition, gradeLabel, comment, updated.
- * Record entries also supply progress (ratio) and a localized progressLabel.
+ * Entries share categoryId, category, label and gradeLabel. Result entries supply comment and updated.
+ * Record entries also supply condition, progress (ratio) and a localized progressLabel.
  * This component never selects entries, evaluates achievements or saves records.
  */
 export function createAchievementTable({ mode, entries, headings = {} }) {

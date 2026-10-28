@@ -1,8 +1,14 @@
+import { getEffectiveTagCount, TAGS } from './TagCatalog.js';
+
 function normalize(event) {
   if (event.type === 'hero-tags') {
     const counts = {};
-    event.hero.getTags().forEach(tag => { counts[tag] = (counts[tag] ?? 0) + 1; });
-    return { type: event.type, heroId: event.hero.heroId, counts };
+    const tags = event.hero.getTags();
+    tags.forEach(tag => { counts[tag] = (counts[tag] ?? 0) + 1; });
+    const effectiveCounts = Object.fromEntries(Object.keys(counts)
+      .filter(tag => TAGS[tag].group === 'status')
+      .map(tag => [tag, getEffectiveTagCount(tags, tag, event.hero.maximums)]));
+    return { type: event.type, heroId: event.hero.heroId, counts, effectiveCounts };
   }
   if (event.type === 'departure') {
     return {

@@ -70,7 +70,7 @@ test('startup and initial Hero notifications are captured without replaying save
   const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0 });
   hero.getTags = () => Array(7).fill('valor');
   first.attachHero(hero);
-  assert.deepEqual(changes.find(item => item.id === 'tag:valor'), { id: 'tag:valor', oldGrade: 0, newGrade: 7 });
+  assert.deepEqual(changes.find(item => item.id === 'tag:valor'), { id: 'tag:valor', oldGrade: 0, newGrade: 3 });
   first.checkpoint();
   const next = [];
   const second = new TrialStatisticsSession({ repository, professionIds: ['swordfighter', 'guard'],

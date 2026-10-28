@@ -4,8 +4,8 @@ import { selectEpithetTargets, createHeroEpithets } from '../../../src/game/Hero
 
 test('epithets use each category highest share among ending members, rather than highest raw count', () => {
   const statistics = { heroes: {
-    Avery: { tags: { valor: 6, fire: 2 }, weapons: { shield: 4 }, facilities: { shop: 3, guild: 6 }, defeats: { 'small-valor': { count: 2 } } },
-    Briar: { tags: { valor: 10, fire: 0 }, weapons: { shield: 1 }, facilities: { shop: 7, guild: 4 }, defeats: { 'small-valor': { count: 8 } } },
+    Avery: { tags: { valor: 6, fire: 2 }, effectiveTags: { valor: 6 }, weapons: { shield: 4 }, facilities: { shop: 3, guild: 6 }, defeats: { 'small-valor': { count: 2 } } },
+    Briar: { tags: { valor: 10, fire: 0 }, effectiveTags: { valor: 7 }, weapons: { shield: 1 }, facilities: { shop: 7, guild: 4 }, defeats: { 'small-valor': { count: 8 } } },
     Casey: { tags: { fire: 100 } },
   } };
   const targets = selectEpithetTargets(statistics, ['Avery', 'Briar'], 'Avery', { random: () => 0 });
@@ -14,7 +14,7 @@ test('epithets use each category highest share among ending members, rather than
 });
 
 test('missing and zero-valued categories are excluded; equal top shares can select either target', () => {
-  const statistics = { heroes: { Avery: { tags: { valor: 2, arcane: 2 } }, Briar: {} } };
+  const statistics = { heroes: { Avery: { effectiveTags: { valor: 2, arcane: 2 } }, Briar: {} } };
   assert.equal(selectEpithetTargets(statistics, ['Avery', 'Briar'], 'Avery', { random: () => 0 })[0].id, 'valor');
   assert.equal(selectEpithetTargets(statistics, ['Avery', 'Briar'], 'Avery', { random: () => .99 })[0].id, 'arcane');
   assert.deepEqual(selectEpithetTargets(statistics, ['Avery', 'Briar'], 'Briar'), []);
@@ -22,7 +22,7 @@ test('missing and zero-valued categories are excluded; equal top shares can sele
 
 test('default-only heroes and enemy titles expand to completed names in both languages', () => {
   const members = [{ heroId: 'Avery' }, { heroId: 'Briar' }];
-  const stats = { heroes: { Avery: { tags: { valor: 4 }, defeats: { 'small-valor': { count: 3 } } } } };
+  const stats = { heroes: { Avery: { tags: { valor: 4 }, effectiveTags: { valor: 4 }, defeats: { 'small-valor': { count: 3 } } } } };
   for (const language of ['ja', 'en']) for (let index = 0; index < 100; index++) {
     const names = createHeroEpithets(stats, members, { language });
     for (const name of Object.values(names)) {
