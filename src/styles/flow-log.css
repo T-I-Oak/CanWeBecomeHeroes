@@ -133,39 +133,58 @@
 
 @media (max-width: 960px) {
   .StageSelection__Option {
-    --stage-selection-slot-size: min(100px, calc((100cqw - 84px) / 6));
-    --stage-selection-trend-icon-size: clamp(24px, calc(var(--stage-selection-slot-size) * .38), 38px);
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
+    gap: 8px 12px;
     padding: 10px;
   }
 
   .StageSelection__EnemyLine {
+    grid-column: 1 / -1;
     grid-template-columns: repeat(6, minmax(0, 1fr));
+    container-type: inline-size;
+  }
+
+  .StageSelection__EnemySlot {
+    --stage-selection-slot-size: min(100px, calc((100cqw - 24px) / 6));
+    --stage-selection-enemy-visual-height: calc(var(--stage-selection-slot-size) * var(--stage-selection-largest-enemy-chip-scale));
+    min-width: 0;
+  }
+
+  .StageSelection__ChipPreview {
+    max-width: none;
   }
 
   .StageSelection__EnemyName {
-    display: none;
+    font-size: clamp(10px, 3cqw, 12px);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+    text-overflow: clip;
+    overflow: visible;
   }
 
   .StageSelection__Trends {
-    justify-content: center;
-    gap: 4px;
+    grid-template-columns: repeat(2, auto);
+    justify-content: start;
+    gap: 6px;
   }
 
   .StageSelection__Trend {
-    min-width: min(72px, 16vw);
-    padding: 5px 3px;
+    min-width: 60px;
+    padding: 5px 6px;
+    gap: 3px;
   }
 
   .StageSelection__TrendIcon {
-    width: var(--stage-selection-trend-icon-size);
-    height: var(--stage-selection-trend-icon-size);
+    width: 24px;
+    height: 24px;
   }
 
   .StageSelection__SelectButton {
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: min(220px, 100%);
+    grid-column: 2;
+    justify-self: end;
+    width: auto;
+    min-width: 104px;
+    padding: 8px 10px;
   }
 }
