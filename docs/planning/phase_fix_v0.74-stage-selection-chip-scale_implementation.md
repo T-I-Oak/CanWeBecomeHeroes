@@ -69,6 +69,16 @@ Chrome（Playwright、deviceScaleFactor=2）で390×844、844×390、1280×800�
 
 - オーナーの「いま公開してください」「マージしなくても公開できると思います」の指示により、実装フェーズを維持したまま開発ブランチをpushし、workflow_dispatchで当該ブランチから実機確認用に公開する。masterへはマージしない。CWBH-074-02は公開後の確認待ちとして維持し、確認済み・保留へ変更しない。
 
+## 実機確認用の公開結果
+
+- ソースを開発ブランチの14be3fdへコミット・pushした。ブラウザー接続がタイムアウトしworkflow_dispatchを実行できなかったため、検証済みdistを既存gh-pagesへ直接コミット・pushした。公開コミット：fc0ac8255888af4891befac42eda62d98d888a5f。
+- 公開直前のGameWorksOAKはmaster、HEADとremote masterはいずれもe4974f86606374fb81dae4e57644f051085c2c45。src/libの未コミット・未追跡変更なし。
+- GitHub Pagesの配信処理40681462969はcompleted/success。対象SHAが公開コミットと一致することを公開APIで確認。
+- https://t-i-oak.github.io/CanWeBecomeHeroes/ がHTTP 200、index-BkOkTru8.jsとindex-Dnrg8gEZ.cssを返すことを確認した。バージョン付きURLパラメーターは使用していない。
+- 公開サイトを新規Chromeコンテキストの390×844で開き、タイトルv0.74.0、実行時例外なし、課題選択の敵名block/10px、横はみ出しなしを確認。画像：tmp_stage_review/published-stage.png。
+- ゲームmasterは33e33ef46d9a0cdd01c02b00f90414c93205b1eeのまま。マージしていない。実装フェーズと引継ぎ書は維持し、CWBH-074-02の実機確認回答を待つ。
+- gh-pagesの差分確認はWindowsのCRLFによりindex.htmlの空白警告を報告した。HTML配信と画面動作は上記の通り確認できた。ソース側のgit diff --checkは成功。
+
 - CWBH-074-01：長い敵名と空スロットを含むC案の採用は合意済み。追加の採用承認は求めない。
 - CWBH-074-02：v0.74.0実機の課題選択表示・操作は未回答。スマホ縦横で、敵名・空スロット・店とボタン・内部スクロール・敵／タグの情報ウィンドウを確認する。タイトルと倉庫左下がv0.74.0であることも確認する。
 - 実機の見た目とタップ精度は自動テストだけで保証できないため確認が必要。未回答を保留扱いせず、引継ぎ書は更新していない。
