@@ -121,7 +121,7 @@ export default class RecordScreen {
 
   resize() {
     if (!this.isOpen) return;
-    const layout = getRecordScreenLayout(this.scroll.clientWidth);
+    const layout = getRecordScreenLayout(this.scroll.clientWidth, this.content.classList.contains('state-empty'));
     this.content.style.width = `${layout.width}px`;
     this.content.style.transform = `scale(${layout.scale})`;
     this.contentFrame.style.width = `${Math.max(layout.width, this.content.scrollWidth) * layout.scale}px`;
@@ -203,10 +203,15 @@ export default class RecordScreen {
 
   renderAchievements(content) {
     const language = document.documentElement.lang.startsWith('en') ? 'en' : 'ja';
-    const entries = getRecordAchievements(this.repository.data.statistics, language).map(entry => ({
+    const entries = getRecordAchievements(this.repository.data.statistics, language, this.repository.data.knownAchievements).map(entry => ({
       ...entry, progressLabel: entry.progress.target === null ? this.texts.getLabel('recordAchieved')
         : `${entry.progress.current.toLocaleString(language)} / ${entry.progress.target.toLocaleString(language)}`,
     }));
+    if (!entries.length) {
+      content.classList.add('state-empty');
+      content.append(node('p', 'RecordScreen__Empty', this.texts.getLabel('recordAchievementsEmpty')));
+      return;
+    }
     content.append(createAchievementTable({ mode: 'record', entries, headings: {
       category: this.texts.getLabel('trialResultCategory'), item: this.texts.getLabel('trialResultItem'),
       grade: this.texts.getLabel('trialResultGrade'), condition: this.texts.getLabel('recordCondition'),

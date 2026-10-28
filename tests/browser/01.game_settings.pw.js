@@ -25,6 +25,7 @@ async function controlSession(page) {
     const show = ResultModal.prototype.show;
     ResultModal.prototype.show = function (result) {
       window.acceptance.results.push(result.type);
+      window.acceptance.resultAchievements = result.achievements;
       return show.call(this, result);
     };
     const advance = Clock.prototype.advance;
@@ -113,9 +114,36 @@ for (const outcome of ['cleared', 'expired']) test(`${outcome}: title, selected 
   });
   expect(await page.evaluate(() => window.acceptance.results)).toEqual([outcome === 'cleared' ? 'certificate' : 'failure-notice']);
   expect((await history()).length).toBe(1);
+  const readKnown = () => page.evaluate(() => JSON.parse(localStorage.getItem('can-we-become-heroes')).runRecords.knownAchievements);
+  const selected = await page.evaluate(() => window.acceptance.resultAchievements);
+  const beforeFlip = await readKnown();
+  expect(selected.every(entry => beforeFlip[entry.id] === true)).toBe(true);
+  if (outcome === 'expired') expect(selected.some(entry => entry.grade === 0)).toBe(true);
+  await page.locator('#trial-run-result .FlipButton').click();
+  await expect.poll(async () => {
+    const known = await readKnown();
+    return selected.every(entry => known[entry.id] === true);
+  }).toBe(true);
+  const afterFlip = await readKnown();
+  expect(afterFlip).toEqual(beforeFlip);
+  await expect(page.locator('#trial-run-result .FlipButton')).toBeEnabled();
+  await page.locator('#trial-run-result .FlipButton').click();
+  await expect(page.locator('#trial-run-result .FlipButton')).toBeEnabled();
+  expect(await readKnown()).toEqual(afterFlip);
+  expect((await history()).length).toBe(1);
   await page.locator('#trial-run-result .ReturnButton').click();
   await expect(page.locator('.TitleMenu__Command.state-primary')).toBeVisible();
   await expect(page.locator('#trial-run-result')).toBeHidden();
+  await page.locator('.TitleMenu__Command').last().click();
+  await page.locator('#record-tab-recordAchievements').click();
+  const expectedRows = await page.evaluate(async () => {
+    const { getRecordAchievements } = await import('/CanWeBecomeHeroes/src/app/RecordScreenData.js');
+    const { statistics, knownAchievements } = JSON.parse(localStorage.getItem('can-we-become-heroes')).runRecords;
+    return getRecordAchievements(statistics, 'ja', knownAchievements).map(entry => entry.label);
+  });
+  await expect(page.locator('.RecordScreen .AchievementTable__Item')).toHaveText(expectedRows);
+  await page.screenshot({ path: `tmp_known_achievements/known-${outcome}.png` });
+  await page.locator('.RecordScreen__Header button').click();
   await startRun(page);
   await selectRoute(page);
   expect((await history()).length).toBe(1);

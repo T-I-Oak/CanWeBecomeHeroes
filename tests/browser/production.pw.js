@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { existsSync, readFileSync } from 'node:fs';
+import RunRecordsRepository from '../../src/game/RunRecordsRepository.js';
 
 const { version } = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
 
@@ -56,15 +57,41 @@ test('normal mobile build keeps records above the animated title across viewport
   await expect(page.locator('.TitleMenu__Version')).toHaveText(`v${version}`);
   await expect(page.locator('.PerformancePanel')).toHaveCount(0);
   const japaneseStart = await page.locator('.TitleMenu__Command.state-primary').textContent();
+  await page.locator('.TitleMenu__Command').last().click();
+  await page.locator('#record-tab-recordAchievements').click();
+  await expect(page.locator('.RecordScreen__Empty')).toHaveText('試験を受けると、ここに成績表が表示されます。');
+  await expect(page.locator('.AchievementTable')).toHaveCount(0);
+  expect(await page.locator('.RecordScreen__ScrollViewport').evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+  await page.screenshot({ path: 'tmp_known_achievements/empty-ja.png' });
+  await page.locator('.RecordScreen__Header button').click();
   await page.locator('#time-settings-toggle').click();
   const language = page.locator('#settings-section-language');
   await language.locator('.ModalSelect__Trigger').click();
   await language.getByRole('option').nth(1).click();
   await expect(page.locator('.TitleMenu__Command.state-primary')).not.toHaveText(japaneseStart);
+  await page.locator('#time-settings-close').click();
+  await page.locator('.TitleMenu__Command').last().click();
+  await page.locator('#record-tab-recordAchievements').click();
+  await expect(page.locator('.RecordScreen__Empty')).toHaveText('Take an exam to record your achievements here.');
+  await expect(page.locator('.AchievementTable')).toHaveCount(0);
+  expect(await page.locator('.RecordScreen__ScrollViewport').evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+  await page.screenshot({ path: 'tmp_known_achievements/empty-en.png' });
+  await page.locator('.RecordScreen__Header button').click();
+  await page.locator('#time-settings-toggle').click();
   await language.locator('.ModalSelect__Trigger').click();
   await language.getByRole('option').nth(0).click();
   await expect(page.locator('.TitleMenu__Command.state-primary')).toHaveText(japaneseStart);
   await page.locator('#time-settings-close').click();
+  const repository = new RunRecordsRepository({ getValue: () => undefined });
+  repository.markAchievementsKnown(Object.keys(repository.data.knownAchievements));
+  await page.evaluate(data => {
+    const saved = JSON.parse(localStorage.getItem('can-we-become-heroes')) ?? {};
+    saved.runRecords = data;
+    localStorage.setItem('can-we-become-heroes', JSON.stringify(saved));
+  }, repository.data);
+  await page.reload();
+  await expect(page.locator('.TitleMenu__Command.state-primary')).toBeVisible();
+  const savedBeforeReading = await page.evaluate(() => localStorage.getItem('can-we-become-heroes'));
   await page.locator('.TitleMenu__Command').last().click();
   const screen = page.locator('.RecordScreen');
   const tabs = screen.getByRole('tab');
@@ -98,6 +125,7 @@ test('normal mobile build keeps records above the animated title across viewport
   }
   await screen.locator('.RecordScreen__Header button').click();
   await expect(screen).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('can-we-become-heroes'))).toBe(savedBeforeReading);
   await expect(page.locator('.TitleMenu__Logo')).toBeVisible();
   const canvas = page.locator('.TitleMenu__Chips');
   const frame = await canvas.evaluate(element => element.toDataURL());

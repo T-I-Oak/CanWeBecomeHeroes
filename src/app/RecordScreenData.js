@@ -23,16 +23,16 @@ export function getAchievementProgress(definition, entry) {
   return { current, target: high, ratio: Math.min(1, current / high) };
 }
 
-export function getRecordAchievements(data, language) {
+export function getRecordAchievements(data, language, knownAchievements) {
   return new Achievements().evaluate(new GameStatistics({ data })).entries.map((entry, index) => {
     const definition = ACHIEVEMENT_DEFINITIONS[index];
     const resource = definition.resources[language];
     return {
-      id: entry.id, categoryId: entry.category, category: resource.category,
+      id: entry.id, grade: entry.grade, categoryId: entry.category, category: resource.category,
       label: resource.label, condition: resource.recordCondition,
       gradeLabel: entry.label, progress: getAchievementProgress(definition, entry),
     };
-  });
+  }).filter(entry => entry.grade > 0 || knownAchievements[entry.id]);
 }
 
 export function getTaskRecords(data) {
