@@ -31,6 +31,44 @@ function fixture() {
   return { input, camera, calls, hero, event };
 }
 
+test('touch loupe follows selection across empty space and edge scrolling, then clears on every exit', () => {
+  for (const exit of ['handlePointerUp', 'handlePointerCancel', 'handleLostPointerCapture', 'pinch']) {
+    const { input, event, camera } = fixture();
+    input.controller.hasSelectionSource = () => Boolean(input.drag?.startedSelection);
+    const touch = (x, y) => ({ ...event(x, y), pointerType: 'touch' });
+    input.handlePointerDown(touch(200, 400));
+    assert.equal(input.getLoupePoint(), null);
+    input.handlePointerMove(touch(220, 400));
+    assert.deepEqual(input.getLoupePoint(), { x: 220, y: 400 });
+    input.handlePointerMove(touch(389, 400));
+    const before = camera.x;
+    input.update(0.05);
+    assert.ok(camera.x > before);
+    assert.deepEqual(input.getLoupePoint(), { x: 389, y: 400 });
+    if (exit === 'pinch') input.handlePointerDown({ ...touch(100, 100), pointerId: 2 });
+    else input[exit](touch(389, 400));
+    assert.equal(input.getLoupePoint(), null);
+    input.handlePointerCancel();
+    input.handlePointerDown(touch(200, 400));
+    input.handlePointerMove(touch(220, 400));
+    assert.deepEqual(input.getLoupePoint(), { x: 220, y: 400 });
+  }
+});
+
+test('mouse, pen, rejected selection and empty-space pan never show the loupe', () => {
+  for (const pointerType of ['mouse', 'pen', 'touch']) {
+    for (const kind of ['accepted', 'rejected', 'pan']) {
+      const { input, event } = fixture();
+      input.controller.hasSelectionSource = () => Boolean(input.drag?.startedSelection);
+      input.controller.beginSelection = () => kind !== 'rejected';
+      if (kind === 'pan') input.controller.getEntityAt = () => null;
+      input.handlePointerDown({ ...event(200, 400), pointerType });
+      input.handlePointerMove({ ...event(220, 400), pointerType });
+      assert.equal(Boolean(input.getLoupePoint()), pointerType === 'touch' && kind === 'accepted');
+    }
+  }
+});
+
 test('direction indicator starts and ends selection without panning or centering', () => {
   const { input, camera, calls, hero, event } = fixture();
   input.handlePointerDown(event(48, 100));

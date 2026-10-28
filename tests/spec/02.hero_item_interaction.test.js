@@ -33,6 +33,41 @@ function createCanvas() {
   };
 }
 
+test('タッチルーペは対象に重なる前から表示し、ズーム・パン後も実際の指の位置で対象を確定する', () => {
+  for (const zoom of [0.25, 0.8, 1.5]) {
+    for (const valid of [true, false]) {
+      const started = [];
+      const controller = new HeroItemInteractionController({}, { start: (...args) => started.push(args) });
+      const hero = { chip: { type: 'hero' }, currentArea: 'preparation', stamina: valid ? 3 : 0 };
+      const item = { chip: { type: 'item' } };
+      const camera = { x: 100, y: 200, toWorld(x, y) { return { x: x / zoom + this.x, y: y / zoom + this.y }; } };
+      controller.getEntityAt = (x) => x < 110 / zoom + camera.x ? hero : x >= 190 / zoom + camera.x ? item : null;
+      const canvas = createCanvas();
+      canvas.getBoundingClientRect = () => ({ left: 10, top: 20, width: 390, height: 844 });
+      const input = new GameCanvasInput(canvas, {
+        screenTargetInputRoot: canvas, camera, controller,
+        getScreenTarget: () => null, getCursor: () => '', onReleaseStaminaPause() {},
+      });
+      const event = x => ({ pointerId: 1, pointerType: 'touch', clientX: x + 10, clientY: 420, preventDefault() {} });
+      input.handlePointerDown(event(100));
+      input.handlePointerMove(event(130));
+      assert.deepEqual(input.getLoupePoint(), { x: 130, y: 400 });
+      assert.equal(controller.getSelectionGuide().target, null);
+      input.handlePointerMove(event(200));
+      assert.equal(controller.getSelectionGuide().target, item);
+      assert.equal(controller.getSelectionGuide().valid, valid);
+      assert.equal(controller.getSelectionGuide().pointerX, camera.toWorld(200, 400).x);
+      input.handlePointerMove(event(150));
+      assert.equal(controller.getSelectionGuide().target, null);
+      assert.ok(input.getLoupePoint());
+      input.handlePointerUp(event(200));
+      assert.equal(started.length, valid ? 1 : 0);
+      if (valid) assert.deepEqual(started[0], [hero, item]);
+      assert.equal(input.getLoupePoint(), null);
+    }
+  }
+});
+
 test('買い物袋には倉庫Itemを3個まで格納でき、行き先Itemは格納できない', () => {
   const board = new ChipBoard({ width: 3000, height: 2000 });
   const controller = new HeroItemInteractionController(board, new ItemPickupController(board, new HeroSlotManager()));
