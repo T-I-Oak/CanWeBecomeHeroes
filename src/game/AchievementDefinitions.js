@@ -28,7 +28,7 @@ const pairStarts = pair => data => sumRecorded(Object.values(data.runs ?? {}).ma
 const fill = (template, values) => template.replace(/\{(\w+)\}|［敵名］/g, (match, key) => values[key ?? 'enemy'] ?? match);
 const name = (catalog, id, language) => catalog[id].name['lang-store'][language];
 
-function resources(key, category, condition, variables, tagId) {
+function resources(key, category, recordConditionKey, variables, tagId) {
   return Object.freeze(Object.fromEntries(['ja', 'en'].map(language => {
     const localized = texts.items[key]['lang-store'][language];
     const values = variables(language);
@@ -38,19 +38,18 @@ function resources(key, category, condition, variables, tagId) {
     return [language, Object.freeze({
       category: texts.categories['lang-store'][language][category],
       label: fill(localized.label, values),
-      condition: fill(texts.conditions[condition][language], values),
-      recordCondition: fill(texts.recordConditions[condition][language], values),
+      recordCondition: fill(texts.recordConditions[recordConditionKey][language], values),
       comments: Object.freeze(comments),
       unachieved: texts.unachieved['lang-store'][language],
     })];
   })));
 }
 
-function definition({ id, category, read, t, key = id, condition = id, variables = () => ({}), levels, tagId }) {
+function definition({ id, category, read, t, key = id, recordConditionKey = id, variables = () => ({}), levels, tagId }) {
   return Object.freeze({
     id, category, read, levels, s: levels.at(-1).minG, t,
     gradeFormula: tagId ? p => (p - 1) / 2 : p => Math.sqrt(p / t) * levels.at(-1).minG,
-    resources: resources(key, category, condition, variables, tagId),
+    resources: resources(key, category, recordConditionKey, variables, tagId),
   });
 }
 
@@ -59,7 +58,7 @@ export function createAchievementDefinitions({ normalLevels = FIFTEEN_LEVELS, ta
   const normal = options => definition({ ...options, levels: normalLevels });
   return Object.freeze([
     ...['Avery|Briar', 'Casey|Darcy', 'Ellis|Finley', 'Garnet|Harper'].map(pair => normal({
-      id: `pair-start:${pair}`, category: 'pair', read: pairStarts(pair), t: 20, key: `pair:${pair}`, condition: 'pair',
+      id: `pair-start:${pair}`, category: 'pair', read: pairStarts(pair), t: 20, key: `pair:${pair}`, recordConditionKey: 'pair',
       variables: language => ({ heroes: pair.split('|').map(id => name(heroTexts, id, language)).join(language === 'ja' ? '・' : ' & ') }),
     })),
     ...[
@@ -69,18 +68,18 @@ export function createAchievementDefinitions({ normalLevels = FIFTEEN_LEVELS, ta
     normal({ id: 'stage-clear', category: 'stage', read: data => sumRecorded(Object.values(data.stages ?? {}).map(stage => stage.clears)), t: 100 }),
     ...Object.values(ENEMY_CATALOG).filter(enemy => !enemy.id.startsWith('phantom-')).map(enemy => normal({
       id: `enemy-defeat:${enemy.id}`, category: 'stage', read: data => data.combat?.enemies?.[enemy.id],
-      t: { small: 100, medium: 60, large: 20 }[enemy.size], key: `enemy:${enemy.size}`, condition: 'enemy',
+      t: { small: 100, medium: 60, large: 20 }[enemy.size], key: `enemy:${enemy.size}`, recordConditionKey: 'enemy',
       variables: language => ({ enemy: name(enemyTexts, enemy.id, language) }),
     })),
     normal({ id: 'contribution', category: 'facility', read: data => data.guildPoints, t: 20000 }),
     ...[['shop', 400], ['guild', 100], ['training', 400]].map(([id, t]) => normal({
-      id: `facility:${id}`, category: 'facility', read: data => data.facilities?.[id], t, condition: 'facility',
+      id: `facility:${id}`, category: 'facility', read: data => data.facilities?.[id], t, recordConditionKey: 'facility',
       variables: language => ({ facility: name(facilityTexts, id, language) }),
     })),
     ...Object.keys(TAGS).filter(tag => TAGS[tag].group === 'status').map(tag => definition({
-      id: `tag:${tag}`, category: 'tag', key: 'tag', condition: 'tag', tagId: tag, levels: tagLevels,
+      id: `tag:${tag}`, category: 'tag', key: 'tag', recordConditionKey: 'tag', tagId: tag, levels: tagLevels,
       read: data => {
-        const values = Object.values(data.heroes ?? {}).map(hero => hero.tags?.[tag]).filter(Number.isFinite);
+        const values = Object.values(data.heroes ?? {}).map(hero => hero.effectiveTags?.[tag]).filter(Number.isFinite);
         return values.length ? Math.max(...values) : undefined;
       },
       variables: language => ({ tag: name(tagTexts, tag, language) }),

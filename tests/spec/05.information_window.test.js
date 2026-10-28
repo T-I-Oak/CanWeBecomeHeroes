@@ -8,6 +8,8 @@ import EntityRegistry from '../../src/game/EntityRegistry.js';
 import HeroFactory from '../../src/game/HeroFactory.js';
 import EnemyFactory from '../../src/game/EnemyFactory.js';
 import { ENEMY_CATALOG } from '../../src/game/EnemyCatalog.js';
+import { TAGS } from '../../src/game/TagCatalog.js';
+import { TAG_DISPLAY_GRID } from '../../src/game/TagDisplayLayout.js';
 import ItemFactory from '../../src/game/ItemFactory.js';
 import GameTextRepository, { textPart } from '../../src/game/GameTextRepository.js';
 import { readGameText } from '../../src/game/readGameText.js';
@@ -54,6 +56,25 @@ async function setup(t) {
   const names = () => root.findAll('.InformationWindow__Name').map(element => element.textContent);
   return { root, registry, clock, layer, manager, window, click, open, definition, instance, names, repository };
 }
+
+test('05: skill badge counts and levels follow corresponding MAX changes for all ten skill tags', async t => {
+  const ui = await setup(t);
+  const hero = new HeroFactory().create({ profession: 'swordfighter', x: 0, y: 0 });
+  hero.tags = Object.keys(TAGS).filter(tag => TAGS[tag].group === 'status').flatMap(tag => Array(9).fill(tag));
+  const entry = ui.instance(hero);
+  const order = TAG_DISPLAY_GRID.flat();
+  for (let maximum = 3; maximum <= 7; maximum++) {
+    for (const definition of Object.values(TAGS).filter(value => value.group === 'status')) hero.maximums[definition.stat] = maximum;
+    ui.manager.refreshDynamicEntries();
+    const badges = ui.window(entry).findAll('.InformationWindow__EntityTag');
+    for (const [tag, definition] of Object.entries(TAGS)) {
+      if (definition.group !== 'status') continue;
+      const badge = badges[order.indexOf(tag)];
+      assert.equal(badge.textContent, String(maximum));
+      assert.equal(badge.dataset.tagSkillLevel, String(hero.getTagSkillLevel(tag)));
+    }
+  }
+});
 
 test('05: dynamic updates retain windows, static content and scroll without measuring unchanged dimensions', async t => {
   const ui = await setup(t);

@@ -343,48 +343,6 @@
       }
     }
   },
-  "conditions": {
-    "pair": {
-      "ja": "{heroes}で勇者認定試験・実力判定試験を開始",
-      "en": "Start a trial or challenge with {heroes}"
-    },
-    "trial-start": {
-      "ja": "試験を開始した回数",
-      "en": "Number of trials started"
-    },
-    "trial-clear": {
-      "ja": "試験に合格した回数",
-      "en": "Number of trials passed"
-    },
-    "trial-fail": {
-      "ja": "試験で不合格になった回数",
-      "en": "Number of failed trials"
-    },
-    "challenge-start": {
-      "ja": "実力判定試験を開始した回数",
-      "en": "Number of proficiency exams started"
-    },
-    "stage-clear": {
-      "ja": "全課題のクリアー回数",
-      "en": "Total tasks cleared"
-    },
-    "enemy": {
-      "ja": "{enemy}を倒した数",
-      "en": "Number of {enemy} defeated"
-    },
-    "contribution": {
-      "ja": "ギルドで消費した貢献ポイント",
-      "en": "Contribution points spent at the guild"
-    },
-    "facility": {
-      "ja": "{facility}への出発確定回数",
-      "en": "Confirmed departures to {facility}"
-    },
-    "tag": {
-      "ja": "全Heroの{tag}タグ数の最高値（装備込み）",
-      "en": "Highest {tag} tag count across all Heroes, including equipment"
-    }
-  },
   "recordConditions": {
     "pair": { "ja": "{heroes}で試験に挑む", "en": "Take on trials with {heroes}" },
     "trial-start": { "ja": "勇者認定試験に挑む", "en": "Take on the hero certification exam" },
@@ -395,7 +353,7 @@
     "enemy": { "ja": "{enemy}を倒す", "en": "Defeat {enemy}" },
     "contribution": { "ja": "ギルドで貢献ポイントを消費する", "en": "Spend contribution points at the guild" },
     "facility": { "ja": "{facility}へ出発する", "en": "Depart for {facility}" },
-    "tag": { "ja": "いずれかの受験者で{tag}タグを集める", "en": "Collect {tag} tags with any examinee" }
+    "tag": { "ja": "いずれかの受験者で{tag}の有効タグ数を増やす", "en": "Increase effective {tag} count with any examinee" }
   },
   "unachieved": {
     "lang-store": {

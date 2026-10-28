@@ -13,7 +13,7 @@ export default class GameStatistics {
   }
 
   getHero(heroId) {
-    return this.data.heroes[heroId] ??= { tags: {}, weapons: {}, facilities: {}, defeats: {}, shopTags: 0, guildHours: 0, trainingLuck: 0 };
+    return this.data.heroes[heroId] ??= { tags: {}, effectiveTags: {}, weapons: {}, facilities: {}, defeats: {}, shopTags: 0, guildHours: 0, trainingLuck: 0 };
   }
 
   record(event) {
@@ -54,6 +54,7 @@ export default class GameStatistics {
     } else if (type === 'hero-tags') {
       const hero = this.getHero(event.heroId);
       Object.entries(event.counts).forEach(([tag, count]) => { hero.tags[tag] = Math.max(hero.tags[tag] ?? 0, count); });
+      Object.entries(event.effectiveCounts).forEach(([tag, count]) => { hero.effectiveTags[tag] = Math.max(hero.effectiveTags[tag] ?? 0, count); });
     } else if (type === 'shop-tags') this.getHero(event.heroId).shopTags += event.count;
     else if (type === 'guild-extension') {
       this.getHero(event.heroId).guildHours += event.hours;
