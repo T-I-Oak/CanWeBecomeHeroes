@@ -227,8 +227,9 @@ export async function startTrial({
       achievementToast.dispose();
       informationWindows.clear({ includePinned: true });
       informationLayer.setLogHistory(null);
-      attemptSave(() => runRecords.save());
       const result = createTrialRunResult({ outcome, members, issuedAt: record.endedAt, record, random, language: document.documentElement.lang?.startsWith('en') ? 'en' : 'ja' });
+      runRecords.markAchievementsKnown(result.achievements.map(entry => entry.id));
+      attemptSave(() => runRecords.save());
       trial.lastRunResult = result;
       trialRunResultModal.show(result).then(finishTrial);
     },

@@ -27,15 +27,16 @@ test('tag progress advances one tag at a time through all seven ranks', () => {
   assert.equal(getAchievementProgress(definition, { p: 7, grade: 7 }).target, null);
 });
 
-test('all achievements retain definition order and zero progress without mutating cumulative data', () => {
+test('all known achievements retain definition order and zero progress without mutating cumulative data', () => {
   const data = new GameStatistics().exportData();
   const before = structuredClone(data);
-  const rows = getRecordAchievements(data, 'ja');
+  const known = Object.fromEntries(ACHIEVEMENT_DEFINITIONS.map(({ id }) => [id, true]));
+  const rows = getRecordAchievements(data, 'ja', known);
   assert.deepEqual(rows.map(row => row.id), ACHIEVEMENT_DEFINITIONS.map(row => row.id));
   assert.ok(rows.every(row => row.gradeLabel === 'E' && row.progress.current === 0));
   assert.deepEqual(data, before);
   data.runs.trial = { 'Avery|Briar': { started: 3, cleared: 0, expired: 0 } };
-  const updated = getRecordAchievements(data, 'en')[0];
+  const updated = getRecordAchievements(data, 'en', known)[0];
   assert.equal(updated.progress.current, 3);
   assert.equal(updated.gradeLabel, new Achievements().evaluate(new GameStatistics({ data })).entries[0].label);
 });

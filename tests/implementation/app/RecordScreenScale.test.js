@@ -8,3 +8,7 @@ test('record content stops shrinking at 75 percent and uses logical width for ho
   assert.deepEqual(getRecordScreenLayout(1026), { scale: .95, width: 1080 });
   assert.deepEqual(getRecordScreenLayout(1200), { scale: 1, width: 1200 });
 });
+
+test('empty achievement guidance uses the viewport width without scaling or horizontal scrolling', () => {
+  for (const width of [300, 378, 824, 1200]) assert.deepEqual(getRecordScreenLayout(width, true), { scale: 1, width });
+});
