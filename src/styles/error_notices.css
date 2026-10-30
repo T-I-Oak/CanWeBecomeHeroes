@@ -1,0 +1,46 @@
+.StartupError {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  overflow-y: auto;
+  background: #211b15;
+  color: #fff4d5;
+  font: 16px/1.5 system-ui, sans-serif;
+}
+.StartupError[hidden] { display: none; }
+.StartupError p { margin: 0; }
+.StartupError button { min-height: 44px; padding: 8px 20px; border: 1px solid #d3ad62; border-radius: 6px; background: #f6e6be; color: #2d301f; font: inherit; cursor: pointer; }
+
+.RecordSaveNotice {
+  position: fixed;
+  z-index: 1100;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  max-height: 35dvh;
+  padding: 10px max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  border-top: 2px solid #d3ad62;
+  background: #263b2a;
+  color: #fff4d5;
+}
+
+.RecordSaveNotice[hidden] { display: none; }
+.RecordSaveNotice__Message { min-height: 0; max-height: 20dvh; overflow-y: auto; margin: 0; font: 14px/1.5 system-ui, sans-serif; }
+.RecordSaveNotice__Retry { min-height: 44px; padding: 8px 12px; border: 1px solid #d3ad62; border-radius: 6px; background: #f6e6be; color: #2d301f; font: 14px system-ui, sans-serif; cursor: pointer; }
+.AppShell .ModalLayer { bottom: var(--record-save-notice-height, 0px); }
+.AppShell .ModalDialog { max-height: calc(100dvh - var(--record-save-notice-height, 0px) - var(--modal-layer-padding) * 2); }
+
+@media (max-width: 480px) {
+  .RecordSaveNotice { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .RecordSaveNotice__Retry { justify-self: end; }
+}

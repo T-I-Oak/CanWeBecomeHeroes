@@ -7,7 +7,7 @@ import { createTrialResultShareImage } from './TrialResultShareImage.js';
 import { shareTrialResultImage, createTrialResultShareText } from './TrialResultShareService.js';
 import { getTrialPaperLayout } from './TrialPaperScale.js';
 import TrialResultShareConfirm from './TrialResultShareConfirm.js';
-const element = (tag, className) => { const node = document.createElement(tag); node.className = className; return node; };
+import { createElement as element } from './UIElement.js';
 
 /** Presentation uses the immutable ending snapshot, without resaving on flips. */
 export default class TrialRunResultModal {
@@ -57,7 +57,7 @@ export default class TrialRunResultModal {
           const prepared = await (preparedImage ??= prepareImage());
           if (closed) return;
           if (prepared.error) throw prepared.error;
-          const text = createTrialResultShareText(result.type, language);
+          const text = createTrialResultShareText(result.type, this.textRepository);
           const mode = await shareTrialResultImage(prepared.blob, text);
           if (closed) return;
           status.textContent = '';

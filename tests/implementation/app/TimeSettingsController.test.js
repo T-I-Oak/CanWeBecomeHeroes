@@ -165,20 +165,20 @@ test('an aborted speed drag does not send the thumb to the left end', () => {
   const pointerDown = { button: 0, pointerId: 1, clientX: 300, clientY: 40, type: 'pointerdown', preventDefault() { this.defaultPrevented = true; } };
 
   listeners.get('pointerdown')(pointerDown);
-  assert.equal(nodes['.SpeedRange__Thumb--normal'].classList.contains('is-raised'), true);
+  assert.equal(nodes['.SpeedRange__Thumb--normal'].classList.contains('state-raised'), true);
   listeners.get('pointercancel')({ type: 'pointercancel', clientX: 0, clientY: 0 });
 
   assert.equal(pointerDown.defaultPrevented, true);
   assert.equal(elements.speedSlider.value, '0');
   assert.equal(elements.acceleratedSpeedSlider.value, '1');
-  assert.equal(nodes['.SpeedRange__Thumb--normal'].classList.contains('is-raised'), false);
-  assert.equal(nodes['.SpeedRange__Thumb--accelerated'].classList.contains('is-raised'), false);
+  assert.equal(nodes['.SpeedRange__Thumb--normal'].classList.contains('state-raised'), false);
+  assert.equal(nodes['.SpeedRange__Thumb--accelerated'].classList.contains('state-raised'), false);
 
   listeners.get('pointerdown')({ button: 0, pointerId: 1, clientX: 400, clientY: 40, type: 'pointerdown', preventDefault() {} });
-  assert.equal(nodes['.SpeedRange__Thumb--accelerated'].classList.contains('is-raised'), true);
-  assert.equal(nodes['.SpeedRange__Thumb--normal'].classList.contains('is-raised'), false);
+  assert.equal(nodes['.SpeedRange__Thumb--accelerated'].classList.contains('state-raised'), true);
+  assert.equal(nodes['.SpeedRange__Thumb--normal'].classList.contains('state-raised'), false);
   listeners.get('pointerup')({ type: 'pointerup', clientX: 400, clientY: 40 });
-  assert.equal(nodes['.SpeedRange__Thumb--accelerated'].classList.contains('is-raised'), false);
+  assert.equal(nodes['.SpeedRange__Thumb--accelerated'].classList.contains('state-raised'), false);
 });
 
 function createOverlappedSpeedController() {

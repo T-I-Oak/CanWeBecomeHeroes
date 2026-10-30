@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createTrialResultShareText, shareTrialResultImage } from '../../../src/app/TrialResultShareService.js';
+import GameTextRepository from '../../../src/game/GameTextRepository.js';
+import resource from '../../../src/game/readGameText.js';
 
 const blob = new Blob(['image'], { type: 'image/png' });
 function environment(navigatorRef = {}) {
@@ -12,15 +14,20 @@ function environment(navigatorRef = {}) {
 }
 
 test('approved result messages use the public URL, title and both hashtags', () => {
+  const texts = language => {
+    const repository = new GameTextRepository();
+    repository.resource = { ui: Object.fromEntries(Object.entries(resource.ui).map(([id, value]) => [id, value['lang-store'][language]])) };
+    return repository;
+  };
   for (const [type, message] of Object.entries({
     certificate: '勇者認定試験に合格しました！',
     'failure-notice': '勇者認定試験に挑戦しました！',
     'challenge-notice': '実力判定試験を終えました！',
   })) {
-    assert.equal(createTrialResultShareText(type, 'ja'), `【Can We Become Heroes?】\n${message}\nhttps://t-i-oak.github.io/CanWeBecomeHeroes/\n#CanWeBecomeHeroes #GameWorksOAK`);
-    assert.doesNotMatch(createTrialResultShareText(type, 'en'), /試験/);
+    assert.equal(createTrialResultShareText(type, texts('ja')), `【Can We Become Heroes?】\n${message}\nhttps://t-i-oak.github.io/CanWeBecomeHeroes/\n#CanWeBecomeHeroes #GameWorksOAK`);
+    assert.doesNotMatch(createTrialResultShareText(type, texts('en')), /試験/);
   }
-  assert.throws(() => createTrialResultShareText('unknown', 'ja'), RangeError);
+  assert.throws(() => createTrialResultShareText('unknown', texts('ja')), RangeError);
 });
 
 test('file sharing passes PNG and text without downloading', async () => {

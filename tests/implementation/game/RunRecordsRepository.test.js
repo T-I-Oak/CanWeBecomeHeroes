@@ -17,7 +17,8 @@ test('checkpoints retain unfinished statistics without inventing completion hist
   assert.equal(loaded.beginRun().total.data.runs.trial['Avery|Briar'].started, 1);
   assert.deepEqual(loaded.data.history, []);
   assert.equal(loaded.data.clear.firstAt, null);
-  assert.equal(loaded.data.legacyClear, true);
+  assert.equal(Object.hasOwn(loaded.data, 'legacyClear'), false);
+  assert.equal(loaded.data.clear.count, 0);
   assert.equal(storage.values.get('timeSettings').speed, 4);
   assert.equal(storage.values.get('heroProgress').unlockedProfessionIds.length, 3);
 });

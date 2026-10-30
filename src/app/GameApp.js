@@ -22,6 +22,8 @@ import VignetteModal from './VignetteModal.js';
 import TitleMenu from './TitleMenu.js';
 import '../styles/tutorial.css';
 import RunRecordsRepository from '../game/RunRecordsRepository.js';
+import RunRecordsSaveController from './RunRecordsSaveController.js';
+import RecordSaveNotice from './RecordSaveNotice.js';
 import { startTrial } from './TrialSession.js';
 
 export async function startGame() {
@@ -38,7 +40,11 @@ export async function startGame() {
   const dataManager = new DataManager('can-we-become-heroes');
   const heroProgress = new HeroProgressRepository(dataManager);
   const runRecords = new RunRecordsRepository(dataManager);
+  const recordSaveNotice = new RecordSaveNotice(document.querySelector('#record-save-notice'), textRepository);
+  const recordSaver = new RunRecordsSaveController(runRecords, recordSaveNotice);
   const assets = new AssetLoader();
+  await Promise.all(['/assets/logo.png', '/assets/background/warehouse.png', '/assets/background/outer-ground.png']
+    .map(path => assets.load(path).decode()));
   const shell = document.querySelector('.AppShell');
   const hudPanel = document.querySelector('.HudPanel');
   const titleMenu = new TitleMenu(document.querySelector('#title-menu'), {
@@ -200,6 +206,7 @@ export async function startGame() {
   requestAnimationFrame(render);
   onLanguageChange(async () => {
     await textRepository.refreshLanguage();
+    recordSaveNotice.refreshLanguage();
     titleMenu.refreshLanguage();
     trial.informationWindows?.refreshEntries();
     trial.stageSelection?.refreshLanguage();
@@ -217,7 +224,9 @@ export async function startGame() {
     shell.classList.add('state-title');
     canvasInput.controller = null;
     settingsModalController.close();
-    const action = await titleMenu.show();
+    const pendingAction = titleMenu.show();
+    window.gameStartup.complete();
+    const action = await pendingAction;
     if (!['trial', 'challenge'].includes(action)) continue;
     const partySelection = new StartPartySelection({ unlockedProfessionIds: heroProgress.getUnlockedProfessionIds() });
     const selectedProfessionIds = await new StartPartySelectionModal(document.querySelector('#start-party-selection'), { assets, textRepository }).show(partySelection);
@@ -227,7 +236,7 @@ export async function startGame() {
     resizeCanvas();
     await startTrial({
       mode: action,
-      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager, runRecords,
+      selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager, runRecords, recordSaver,
     });
     trial.tutorial?.dispose();
     trial.tutorial = null;

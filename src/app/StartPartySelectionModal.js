@@ -1,3 +1,4 @@
+import { createElement } from './UIElement.js';
 import HeroFactory, { HERO_PROFESSION_IDS, getHeroProfessionDefinition } from '../game/HeroFactory.js';
 import { AREA_THEME } from '../game/AreaTheme.js';
 import { getHeroSwingPoseTilt } from '../game/FacilitySwingSystem.js';
@@ -9,12 +10,6 @@ import { beginImageLevelFrame } from '../chips/ScaledImage.js';
 const HERO_PREVIEW_SIZE = 256;
 const PARTY_SELECTION_SWING_ANGULAR_FREQUENCY = 1.2;
 
-function createElement(tagName, className, text = null) {
-  const element = document.createElement(tagName);
-  element.className = className;
-  if (text !== null) element.textContent = text;
-  return element;
-}
 
 export default class StartPartySelectionModal {
   constructor(container, { assets, textRepository } = {}) {

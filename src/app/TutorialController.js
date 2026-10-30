@@ -85,7 +85,7 @@ export default class TutorialController {
           this.canvasInput.controller?.clearSelection();
         }
         this.scenarioActive = true;
-        this.hudPanel.classList.add('is-tutorial-hidden');
+        this.hudPanel.classList.add('state-tutorial-hidden');
         this.root.hidden = false;
         this.clock.pause(PAUSE_REASON);
       },
@@ -166,7 +166,7 @@ export default class TutorialController {
   async preparePage({ page }) {
     const highlightsHud = page.highlight.some(highlight => highlight.elementId
       && this.hudPanel.contains(document.getElementById(highlight.elementId)));
-    this.hudPanel.classList.toggle('is-tutorial-hidden', !highlightsHud);
+    this.hudPanel.classList.toggle('state-tutorial-hidden', !highlightsHud);
     if (page.highlight[0]?.targetType) {
       this.savedCamera ??= { x: this.camera.x, y: this.camera.y, zoom: this.camera.zoom,
         viewport: { ...this.camera.viewport } };
@@ -219,7 +219,7 @@ export default class TutorialController {
   layoutPage({ page, scenario, pageIndex }) {
     const tooltip = this.root.querySelector('#tutorial-tooltip');
     const centered = !page.target;
-    tooltip.classList.toggle('is-centered', centered);
+    tooltip.classList.toggle('state-centered', centered);
     tooltip.style.bottom = 'auto';
     this.root.querySelector('.tooltip-arrow').hidden = centered;
     if (centered) {
@@ -243,7 +243,7 @@ export default class TutorialController {
   async finishScenario() {
     await this.restoreCamera();
     this.scenarioActive = false;
-    this.hudPanel.classList.remove('is-tutorial-hidden');
+    this.hudPanel.classList.remove('state-tutorial-hidden');
     this.root.hidden = true;
   }
 
@@ -260,7 +260,7 @@ export default class TutorialController {
     this.manager.nextButtonElement?.removeEventListener('click', this.manager.boundNextButtonHandler);
     this.transition?.resolve();
     this.clock.resume(PAUSE_REASON);
-    this.hudPanel.classList.remove('is-tutorial-hidden');
+    this.hudPanel.classList.remove('state-tutorial-hidden');
     this.root.remove();
   }
 }

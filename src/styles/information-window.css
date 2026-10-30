@@ -102,18 +102,18 @@
   border-color: #c99d58;
 }
 
-.InformationWindow__Compact.is-compact,
-.InformationWindow__Pin.is-pinned {
+.InformationWindow__Compact.state-compact,
+.InformationWindow__Pin.state-pinned {
   color: #263b2a;
   background: #e6b960;
   border-color: #f7edcf;
   box-shadow: inset 0 0 0 1px #765124;
 }
 
-.InformationWindow__Compact.is-compact:hover,
-.InformationWindow__Compact.is-compact:focus-visible,
-.InformationWindow__Pin.is-pinned:hover,
-.InformationWindow__Pin.is-pinned:focus-visible {
+.InformationWindow__Compact.state-compact:hover,
+.InformationWindow__Compact.state-compact:focus-visible,
+.InformationWindow__Pin.state-pinned:hover,
+.InformationWindow__Pin.state-pinned:focus-visible {
   background: #f2cc72;
   border-color: #fff7de;
 }

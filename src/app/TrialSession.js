@@ -83,7 +83,7 @@ function drawShopPanel(context, assets, shop, bag, transaction, texts) {
 
 export async function startTrial({
   mode = 'trial',
-  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager, runRecords,
+  selectedProfessionIds, textRepository, assets, heroProgress, canvas, context, directionCanvas, directionContext, camera, clock, informationLayer, trial, canvasInput, timeSettingsController, overheadStatusSettingsController, dataManager, runRecords, recordSaver,
 }) {
   const nameplateBounds = createLocationNameplateBoundsRegistry();
   const board = new ChipBoard(WORLD_SIZE);
@@ -95,13 +95,6 @@ export async function startTrial({
   trial.achievementToast = achievementToast;
   const statistics = new TrialStatisticsSession({ repository: runRecords, mode, professionIds: selectedProfessionIds,
     onGradeRaised: createAchievementNotifier(gameLog, achievementToast) });
-  const attemptSave = save => {
-    try { save(); }
-    catch (error) {
-      if (!['QuotaExceededError', 'SecurityError'].includes(error.name)) throw error;
-      console.error('Run records could not be saved.', error);
-    }
-  };
   const onStatistics = statistics.record;
   const flowLog = new FlowLog(document.querySelector('#flow-log'), gameLog);
   const entityRegistry = new EntityRegistry();
@@ -170,7 +163,7 @@ export async function startTrial({
     textRepository,
     onSelect: (choiceId) => {
       stageController.selectStage(choiceId, { tick: clock.tick });
-      attemptSave(() => statistics.checkpoint());
+      recordSaver.attempt(() => statistics.checkpoint());
       informationWindows.closeInvalidEntries();
       stageSelection.hide();
       clock.resume('stage-selection');
@@ -229,7 +222,7 @@ export async function startTrial({
       informationLayer.setLogHistory(null);
       const result = createTrialRunResult({ outcome, members, issuedAt: record.endedAt, record, random, language: document.documentElement.lang?.startsWith('en') ? 'en' : 'ja' });
       runRecords.markAchievementsKnown(result.achievements.map(entry => entry.id));
-      attemptSave(() => runRecords.save());
+      recordSaver.attempt(() => runRecords.save());
       trial.lastRunResult = result;
       trialRunResultModal.show(result).then(finishTrial);
     },

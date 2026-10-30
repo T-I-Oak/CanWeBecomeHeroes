@@ -118,7 +118,7 @@ export default class InformationWindowLayer {
         ? this.entityRenderer.update(view.window, entry) : false;
       view.entry = entry;
       if (!rebuild && (previous.pinned !== entry.pinned || previous.scale !== entry.scale)) {
-        view.window.className = `InformationWindow${entry.scale === COMPACT_WINDOW_SCALE ? ' is-compact' : ''}`;
+        view.window.className = `InformationWindow${entry.scale === COMPACT_WINDOW_SCALE ? ' state-compact' : ''}`;
         view.window.style.scale = String(entry.scale);
         this.#updateControls(view.window, entry);
       }
@@ -149,20 +149,20 @@ export default class InformationWindowLayer {
   #updateControls(windowElement, entry) {
     const compact = windowElement.querySelector('.InformationWindow__Compact');
     const restoresDefault = !isDefaultWindowScale(entry.scale);
-    compact.className = `InformationWindow__Compact${restoresDefault ? ' is-compact' : ''}`;
+    compact.className = `InformationWindow__Compact${restoresDefault ? ' state-compact' : ''}`;
     compact.setAttribute('aria-label', this.textRepository.getLabel(restoresDefault ? 'normalSize' : 'compactSize'));
     compact.setAttribute('aria-pressed', String(restoresDefault));
     compact.replaceChildren(createCompactIcon(restoresDefault));
     const pin = windowElement.querySelector('.InformationWindow__Pin');
     if (pin) {
-      pin.className = `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`;
+      pin.className = `InformationWindow__Pin${entry.pinned ? ' state-pinned' : ''}`;
       pin.setAttribute('aria-label', this.textRepository.getLabel(entry.pinned ? 'unpin' : 'pin'));
       pin.setAttribute('aria-pressed', String(entry.pinned));
     }
   }
 
   #renderWindow(entry) {
-    const window = createElement('section', `InformationWindow${entry.scale === COMPACT_WINDOW_SCALE ? ' is-compact' : ''}`);
+    const window = createElement('section', `InformationWindow${entry.scale === COMPACT_WINDOW_SCALE ? ' state-compact' : ''}`);
     window.dataset.informationWindowId = entry.id;
     window.style.scale = String(entry.scale);
     const content = createElement('div', 'InformationWindow__Content PaperScroll');
@@ -190,14 +190,14 @@ export default class InformationWindowLayer {
     if (!title) return;
     const restoresDefault = !isDefaultWindowScale(entry.scale);
     const actions = createElement('div', 'InformationWindow__TitleActions');
-    const compact = createElement('button', `InformationWindow__Compact${restoresDefault ? ' is-compact' : ''}`);
+    const compact = createElement('button', `InformationWindow__Compact${restoresDefault ? ' state-compact' : ''}`);
     compact.type = 'button';
     compact.setAttribute('aria-label', this.textRepository.getLabel(restoresDefault ? 'normalSize' : 'compactSize'));
     compact.setAttribute('aria-pressed', String(restoresDefault));
     compact.append(createCompactIcon(restoresDefault));
     compact.addEventListener('pointerdown', (event) => event.stopPropagation());
     compact.addEventListener('click', (event) => { event.stopPropagation(); this.manager.toggleCompact(entry.id); });
-    const pin = createElement('button', `InformationWindow__Pin${entry.pinned ? ' is-pinned' : ''}`);
+    const pin = createElement('button', `InformationWindow__Pin${entry.pinned ? ' state-pinned' : ''}`);
     pin.type = 'button';
     pin.setAttribute('aria-label', this.textRepository.getLabel(entry.pinned ? 'unpin' : 'pin'));
     pin.setAttribute('aria-pressed', String(entry.pinned));

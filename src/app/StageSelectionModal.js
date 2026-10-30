@@ -1,3 +1,4 @@
+import { createElement } from './UIElement.js';
 import { createTagAngles, drawFramedTag } from '../chips/ChipRenderer.js';
 import { getTagBaseColors, getTagGlyphScales } from '../game/TagCatalog.js';
 import { getEnemyChipScale } from '../game/HeroSlotLayout.js';
@@ -12,12 +13,6 @@ const SLOT_COUNT = 6;
 const PREVIEW_RENDER_SIZE = 100;
 const TREND_TAG_SIZE = 38;
 
-function createElement(tagName, className, text = null) {
-  const element = document.createElement(tagName);
-  element.className = className;
-  if (text !== null) element.textContent = text;
-  return element;
-}
 
 function getEnemySlotSpan(enemy) {
   return enemy?.definition.size === 'large' ? 2 : 1;

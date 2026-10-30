@@ -7,19 +7,13 @@ import { getRecordAchievements, getTaskRecords } from './RecordScreenData.js';
 import RecordInformation from './RecordInformation.js';
 import { getRecordScreenLayout } from './RecordScreenScale.js';
 import { GAME_TICKS_PER_HOUR } from '../game/GuildTime.js';
+import { createElement as node } from './UIElement.js';
 
 const TABS = ['recordRankings', 'recordAchievements', 'recordTasks'];
 const CRITERION_LABELS = { remainingHours: 'recordRemainingHours', elapsedTicks: 'recordElapsedHours', clearedStages: 'recordClearedStages', defeats: 'recordDefeats', points: 'recordPoints' };
 const COLUMNS = ['recordRank', 'recordClearedStages', 'recordRemainingHours', 'recordDefeats', 'recordPoints', 'recordMembers', 'recordAchievedAt'];
 const CRITERION_COLUMNS = { clearedStages: 1, remainingHours: 2, elapsedTicks: 2, defeats: 3, points: 4 };
 const KIND_LABELS = { regular: 'recordRegular', elite: 'recordElite', boss: 'recordBoss' };
-
-function node(tag, className = '', text = null) {
-  const element = document.createElement(tag);
-  element.className = className;
-  if (text !== null) element.textContent = text;
-  return element;
-}
 
 export default class RecordScreen {
   constructor(container, { repository, textRepository, assets, heroProgress, onClose }) {
@@ -41,7 +35,6 @@ export default class RecordScreen {
     this.information = new RecordInformation(this.texts, this.assets);
     this.render();
     this.resizeObserver.observe(this.container);
-    this.container.querySelector('[role="tab"][aria-selected="true"]').focus();
   }
 
   close() {
@@ -131,7 +124,6 @@ export default class RecordScreen {
   selectTab(key) {
     this.tab = key;
     this.render();
-    this.container.querySelector(`#record-tab-${key}`).focus();
   }
 
   createTable(labels) {
@@ -159,7 +151,6 @@ export default class RecordScreen {
       const button = this.button(CRITERION_LABELS[criterion], () => {
         this[criterionKey] = criterion;
         this.render();
-        this.container.querySelector('.RecordScreen__Selectors .state-selected').focus();
       }, selectedCriterion === criterion);
       button.setAttribute('aria-pressed', String(selectedCriterion === criterion));
       selectors.append(button);

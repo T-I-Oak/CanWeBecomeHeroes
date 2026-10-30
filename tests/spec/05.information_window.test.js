@@ -128,8 +128,8 @@ test('05: changed maximums, item values and tags update without rebuilding the t
   hero.tags.push('valor');
   ui.manager.refreshDynamicEntries();
   const segments = ui.window(entry).findAll('.InformationWindow__EntityStatus')[5].findAll('.InformationWindow__EntityStatusSegment');
-  assert.ok(segments[4].className.includes('is-available'));
-  assert.ok(!segments[5].className.includes('is-available'));
+  assert.ok(segments[4].className.includes('state-available'));
+  assert.ok(!segments[5].className.includes('state-available'));
   assert.equal(ui.window(entry).querySelector('.InformationWindow__EntityTag').textContent, String(hero.getTagCount('valor')));
   const preview = ui.window(entry).querySelector('.InformationWindow__ChipPreview');
   hero.chip.flipped = !hero.chip.flipped;
