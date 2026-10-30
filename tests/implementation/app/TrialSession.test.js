@@ -7,6 +7,7 @@ import GameTextRepository from '../../../src/game/GameTextRepository.js';
 import { WORLD_SIZE } from '../../../src/game/GameAreas.js';
 import { readGameText } from '../../../src/game/readGameText.js';
 import RunRecordsRepository from '../../../src/game/RunRecordsRepository.js';
+import RunRecordsSaveController from '../../../src/app/RunRecordsSaveController.js';
 import { GAME_TICKS_PER_HOUR, INITIAL_TRIAL_HOURS } from '../../../src/game/GuildTime.js';
 import { expandLanguageResource, setLanguage } from '../../../../GameWorksOAK/src/lib/core/i18n.js';
 
@@ -83,7 +84,7 @@ for (const mode of ['trial', 'challenge']) test(`${mode} session connects route 
     camera, clock, trial, canvasInput, informationLayer: { render() { informationRenders.push({ tick: clock.tick, stamina: trial.controller?.getHeroes()[0]?.stamina }); }, setLogHistory() {}, setManager: manager => { informationManager = manager; } },
     timeSettingsController: { pauseOnInformation: false, updateStaminaPause() { if (pauseDuringUpdate) clock.pause('split-test'); }, updateClockSpeed() {}, updateStatus() {} },
     overheadStatusSettingsController: { getSettings: () => ({ statuses: [], visibility: 'always' }) },
-    dataManager, runRecords,
+    dataManager, runRecords, recordSaver: new RunRecordsSaveController(runRecords, { show() {}, hide() {} }),
   });
   let startupError;
   session.catch(error => { startupError = error; });

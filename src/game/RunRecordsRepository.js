@@ -5,13 +5,12 @@ import { ACHIEVEMENT_DEFINITIONS } from './AchievementDefinitions.js';
 export const RUN_RECORDS_KEY = 'runRecords';
 export const RUN_HISTORY_LIMIT = 50;
 
-function createData(legacyProgress) {
+function createData() {
   return {
     sequence: 0, completedSequence: 0,
     statistics: new GameStatistics().exportData(), history: [], rankings: [],
     summary: { completed: 0, cleared: 0, expired: 0, points: 0, highestPoints: 0 },
     clear: { count: 0, firstAt: null, lastAt: null },
-    legacyClear: legacyProgress?.hasClearedTrial === true,
     unlockedProfessionIds: [],
     knownAchievements: Object.fromEntries(ACHIEVEMENT_DEFINITIONS.map(({ id }) => [id, false])),
   };
@@ -30,7 +29,7 @@ export default class RunRecordsRepository {
         throw new RangeError('Invalid run records known achievements.');
       }
     }
-    this.data = absent ? createData(dataManager.getValue('heroProgress')) : structuredClone(saved);
+    this.data = absent ? createData() : structuredClone(saved);
     this.hasUnsavedChanges = false;
   }
 

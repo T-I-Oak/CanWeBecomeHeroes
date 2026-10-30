@@ -125,14 +125,14 @@ export default class TimeSettingsController {
 
   #raiseSpeedThumb(moved) {
     const { speedRange } = this.elements;
-    speedRange.querySelector('.SpeedRange__Thumb--normal').classList.toggle('is-raised', moved === 'normal');
-    speedRange.querySelector('.SpeedRange__Thumb--accelerated').classList.toggle('is-raised', moved === 'accelerated');
+    speedRange.querySelector('.SpeedRange__Thumb--normal').classList.toggle('state-raised', moved === 'normal');
+    speedRange.querySelector('.SpeedRange__Thumb--accelerated').classList.toggle('state-raised', moved === 'accelerated');
   }
 
   #clearRaisedSpeedThumb() {
     const { speedRange } = this.elements;
-    speedRange.querySelector('.SpeedRange__Thumb--normal').classList.remove('is-raised');
-    speedRange.querySelector('.SpeedRange__Thumb--accelerated').classList.remove('is-raised');
+    speedRange.querySelector('.SpeedRange__Thumb--normal').classList.remove('state-raised');
+    speedRange.querySelector('.SpeedRange__Thumb--accelerated').classList.remove('state-raised');
   }
 
   updateStaminaPause() {

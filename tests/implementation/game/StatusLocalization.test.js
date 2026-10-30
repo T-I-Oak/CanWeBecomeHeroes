@@ -83,7 +83,7 @@ test('status resources render, switch language from cache, and preserve links an
   assert.deepEqual(manager.entries, before);
   assert.deepEqual(root.findAll('.InformationWindow__Name').map(el => el.textContent), ['Stamina', 'Durability']);
   assert.equal(root.children[0].style.left, '100px');
-  assert.ok(root.children[0].className.includes('is-compact'));
+  assert.ok(root.children[0].className.includes('state-compact'));
   assert.match(root.textContent, /An ally's Durability/);
   for (const id of ids) {
     const detail = repository.getInformationDetail('status', id);

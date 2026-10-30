@@ -284,7 +284,7 @@ body {
   background: var(--speed-accelerated-color);
 }
 
-.SpeedRange__Thumb.is-raised { z-index: 3; }
+.SpeedRange__Thumb.state-raised { z-index: 3; }
 
 .SpeedRange__Input {
   position: absolute;

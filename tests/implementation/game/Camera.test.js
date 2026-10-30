@@ -200,7 +200,7 @@ test('HUD scale is capped at 1.0 and scales down proportionally to preparation a
   const HUD_BASE_WIDTH = 296;
   const calculateHudScale = (zoom) => Math.min(1, (PREPARATION_PANEL_WIDTH * zoom) / HUD_BASE_WIDTH);
 
-  // zoom = 1.0: 準備エリア幅 796px > HUD幅 296px -> scale 1.0
+  // zoom = 1.0: 準備エリア幅 744px > HUD幅 296px -> scale 1.0
   assert.equal(calculateHudScale(1.0), 1.0);
   // zoom = 0.5: 準備エリア幅 398px > HUD幅 296px -> scale 1.0
   assert.equal(calculateHudScale(0.5), 1.0);

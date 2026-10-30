@@ -1,15 +1,10 @@
+import { createElement } from './UIElement.js';
 import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { APP_COPYRIGHT, APP_VERSION } from '../game/AppMetadata.js';
 import ModalLayer from './ModalLayer.js';
 import TitleChipRain from './TitleChipRain.js';
 import RecordScreen from './RecordScreen.js';
 
-function createElement(tagName, className, text = null) {
-  const element = document.createElement(tagName);
-  element.className = className;
-  if (text !== null) element.textContent = text;
-  return element;
-}
 
 /** Top menu shown before a trial and after the player leaves a result. */
 export default class TitleMenu {
@@ -107,7 +102,6 @@ export default class TitleMenu {
     this.panel.classList.remove('state-open');
     this.container.classList.remove('state-records');
     this.menu.classList.remove('state-hidden');
-    this.commands.find(command => command.label === 'records').element.focus();
   }
 
   choose(action) {

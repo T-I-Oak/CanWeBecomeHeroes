@@ -164,7 +164,7 @@ export default class EntityInformationRenderer {
     gauge.style.setProperty('--status-active-color', ['stamina', 'hp'].includes(status) ? getVitalGaugeColor(current) : '#54c96b');
     [...gauge.querySelector('.InformationWindow__EntityStatusSegments').children].forEach((segment, index) => {
       const fillRatio = Math.max(0, Math.min(1, current - index));
-      const state = fillRatio > 0 ? ' is-active' : index < maximum ? ' is-available' : '';
+      const state = fillRatio > 0 ? ' state-active' : index < maximum ? ' state-available' : '';
       const className = `InformationWindow__EntityStatusSegment${state}`;
       if (segment.className !== className) segment.className = className;
       const fill = `${fillRatio * 100}%`;

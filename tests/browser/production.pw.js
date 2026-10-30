@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { existsSync, readFileSync } from 'node:fs';
 import RunRecordsRepository from '../../src/game/RunRecordsRepository.js';
+import { verifyStartupRecovery, verifyRecordSaveNotice } from './helpers/environmentErrors.js';
 
 const { version } = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
 
-test('production base path loads bundled common library, text and image assets', async ({ page }) => {
+test('production base path loads bundled common library, text and image assets', async ({ page, browser }) => {
   const failures = [];
   const assets = [];
   page.on('pageerror', error => failures.push(error.message));
@@ -68,6 +69,9 @@ test('production base path loads bundled common library, text and image assets',
     }
   }
   expect(failures).toEqual([]);
+  await page.close();
+  await test.step('startup resource failures expose Retry and recover', () => verifyStartupRecovery(browser));
+  await test.step('record saves remain retryable without collecting the run twice', () => verifyRecordSaveNotice(browser));
 });
 
 test('normal mobile build keeps records above the animated title across viewport rotations', async ({ page }) => {

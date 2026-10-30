@@ -86,15 +86,15 @@
   overflow: hidden;
 }
 
-.InformationWindow__EntityStatusSegment.is-available {
+.InformationWindow__EntityStatusSegment.state-available {
   background: #9da9ba;
 }
 
-.InformationWindow__EntityStatusSegment.is-active {
+.InformationWindow__EntityStatusSegment.state-active {
   background: #9da9ba;
 }
 
-.InformationWindow__EntityStatusSegment.is-active::before {
+.InformationWindow__EntityStatusSegment.state-active::before {
   position: absolute;
   inset: 0 auto 0 0;
   width: var(--status-segment-fill, 100%);

@@ -1,22 +1,16 @@
 import { TRIAL_RUN_RESULT_TYPE } from '../game/TrialRunResult.js';
 
 const GAME_URL = 'https://t-i-oak.github.io/CanWeBecomeHeroes/';
-const MESSAGES = {
-  ja: {
-    [TRIAL_RUN_RESULT_TYPE.certificate]: '勇者認定試験に合格しました！',
-    [TRIAL_RUN_RESULT_TYPE.failureNotice]: '勇者認定試験に挑戦しました！',
-    [TRIAL_RUN_RESULT_TYPE.challengeNotice]: '実力判定試験を終えました！',
-  },
-  en: {
-    [TRIAL_RUN_RESULT_TYPE.certificate]: 'I passed the Hero Certification Exam!',
-    [TRIAL_RUN_RESULT_TYPE.failureNotice]: 'I took on the Hero Certification Exam!',
-    [TRIAL_RUN_RESULT_TYPE.challengeNotice]: 'I finished the Hero Proficiency Exam!',
-  },
+const MESSAGE_LABELS = {
+  [TRIAL_RUN_RESULT_TYPE.certificate]: 'trialResultShareCertificate',
+  [TRIAL_RUN_RESULT_TYPE.failureNotice]: 'trialResultShareFailure',
+  [TRIAL_RUN_RESULT_TYPE.challengeNotice]: 'trialResultShareChallenge',
 };
 
-export function createTrialResultShareText(type, language) {
-  const message = MESSAGES[language][type];
-  if (!message) throw new RangeError(`Unknown trial result: ${type}`);
+export function createTrialResultShareText(type, textRepository) {
+  const label = MESSAGE_LABELS[type];
+  if (!label) throw new RangeError(`Unknown trial result: ${type}`);
+  const message = textRepository.getLabel(label);
   return `【Can We Become Heroes?】\n${message}\n${GAME_URL}\n#CanWeBecomeHeroes #GameWorksOAK`;
 }
 
