@@ -1,7 +1,7 @@
 const LEVEL_SIZES = [8, 16, 32, 64, 128, 256, 512, 1024];
 
 export function validateImageDefinition(path, definition) {
-  if (!/^\/assets\/(areas|heroes|tags|status|enemies|items|background)\/[a-z0-9-]+\.png$/.test(path)) throw new Error(`Invalid asset path: ${path}`);
+  if (!/^\/assets\/(?:(areas|heroes|tags|status|enemies|items|background)\/[a-z0-9-]+|effects\/(?:defense\/physical-shield|attributes\/(?:fire|water|lightning)))\.png$/.test(path)) throw new Error(`Invalid asset path: ${path}`);
   if (!Number.isInteger(definition.size) || definition.size < 8 || definition.size > 4096) throw new Error(`Invalid target size: ${path}`);
   if (!/^[a-f0-9]{64}$/.test(definition.sourceSha256)) throw new Error(`Missing master hash: ${path}`);
 }

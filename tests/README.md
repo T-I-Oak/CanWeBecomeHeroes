@@ -162,6 +162,10 @@ node --test tests/implementation/scripts/ImageConversion.test.js tests/implement
 - `ImageLevelCache.test.js`: 容量超過の固定集合、フレーム境界、ズーム切替、読み込み中の保護、容量不足からの静止Canvas再描画。
 - `EnemyChipArtContract.test.js`: 敵画像のsafe-circle・輪郭サイズ契約。
 
+盾と炎・水・雷の属性リングも上記のハッシュ・実寸・段階選択の対象とする。
+最大ズーム1.5・DPR 3・付与値7では段階不足時に元画像へ戻ることを確認する。
+初回表示とズーム変更時は読み込み待機、使用中の他画像の保護、24MiB上限も確認する。
+
 画像サイズ変更後は実ブラウザーで画質を確認する。自動検証だけを実機の画質確認とは扱わない。
 
 ## チップ数に伴う負荷調査

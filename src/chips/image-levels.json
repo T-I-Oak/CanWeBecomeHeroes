@@ -4111,5 +4111,184 @@
         "path": "/assets/image-levels/background/trampled-ground.18e4fe8b38e2.128.png"
       }
     ]
+  },
+  "/assets/effects/defense/physical-shield.png": {
+    "width": 1024,
+    "height": 1024,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/effects/defense/physical-shield.ff0487c5b41d.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/effects/defense/physical-shield.ff0487c5b41d.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/effects/defense/physical-shield.ff0487c5b41d.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/effects/defense/physical-shield.ff0487c5b41d.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/effects/defense/physical-shield.ff0487c5b41d.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/effects/defense/physical-shield.ff0487c5b41d.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/effects/defense/physical-shield.ff0487c5b41d.512.png"
+      }
+    ]
+  },
+  "/assets/effects/attributes/fire.png": {
+    "width": 1254,
+    "height": 1254,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/effects/attributes/fire.6eea65e8c060.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/effects/attributes/fire.6eea65e8c060.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/effects/attributes/fire.6eea65e8c060.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/effects/attributes/fire.6eea65e8c060.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/effects/attributes/fire.6eea65e8c060.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/effects/attributes/fire.6eea65e8c060.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/effects/attributes/fire.6eea65e8c060.512.png"
+      },
+      {
+        "width": 1024,
+        "height": 1024,
+        "path": "/assets/image-levels/effects/attributes/fire.6eea65e8c060.1024.png"
+      }
+    ]
+  },
+  "/assets/effects/attributes/water.png": {
+    "width": 1254,
+    "height": 1254,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/effects/attributes/water.6a910db9791f.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/effects/attributes/water.6a910db9791f.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/effects/attributes/water.6a910db9791f.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/effects/attributes/water.6a910db9791f.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/effects/attributes/water.6a910db9791f.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/effects/attributes/water.6a910db9791f.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/effects/attributes/water.6a910db9791f.512.png"
+      },
+      {
+        "width": 1024,
+        "height": 1024,
+        "path": "/assets/image-levels/effects/attributes/water.6a910db9791f.1024.png"
+      }
+    ]
+  },
+  "/assets/effects/attributes/lightning.png": {
+    "width": 1254,
+    "height": 1254,
+    "levels": [
+      {
+        "width": 8,
+        "height": 8,
+        "path": "/assets/image-levels/effects/attributes/lightning.b0459fddb33b.8.png"
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "path": "/assets/image-levels/effects/attributes/lightning.b0459fddb33b.16.png"
+      },
+      {
+        "width": 32,
+        "height": 32,
+        "path": "/assets/image-levels/effects/attributes/lightning.b0459fddb33b.32.png"
+      },
+      {
+        "width": 64,
+        "height": 64,
+        "path": "/assets/image-levels/effects/attributes/lightning.b0459fddb33b.64.png"
+      },
+      {
+        "width": 128,
+        "height": 128,
+        "path": "/assets/image-levels/effects/attributes/lightning.b0459fddb33b.128.png"
+      },
+      {
+        "width": 256,
+        "height": 256,
+        "path": "/assets/image-levels/effects/attributes/lightning.b0459fddb33b.256.png"
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "path": "/assets/image-levels/effects/attributes/lightning.b0459fddb33b.512.png"
+      },
+      {
+        "width": 1024,
+        "height": 1024,
+        "path": "/assets/image-levels/effects/attributes/lightning.b0459fddb33b.1024.png"
+      }
+    ]
   }
 }

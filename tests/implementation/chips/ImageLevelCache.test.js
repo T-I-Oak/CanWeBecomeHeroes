@@ -38,6 +38,25 @@ test('25-image fixed working set keeps 24 images stable without recurring fetche
   }
 });
 
+test('new shield and ring levels respect capacity while protecting a reused character image', async t => {
+  const h = await setup(t);
+  const effects = ['/assets/effects/defense/physical-shield.png', ...['fire', 'water', 'lightning'].map(name => `/assets/effects/attributes/${name}.png`)]
+    .map(path => { const image = {}; h.registerScaledImage(image, path); return image; });
+  const drawEffects = () => effects.forEach((image, index) => h.drawScaledImage(h.context, image, 0, 0, index === 0 ? 500 : 900, index === 0 ? 500 : 900));
+  h.frame(0);
+  for (let i = 0; i < 24; i++) h.draw(i);
+  h.settle();
+  h.frame(1); h.draw(0); drawEffects();
+  assert.equal(h.created.length, 24);
+  h.frame(2); h.draw(0); drawEffects(); h.settle(); h.budget();
+  assert.equal(h.created.length, 28);
+  h.frame(3); h.draw(0); drawEffects(); h.budget();
+  assert.equal(h.calls.length, 5);
+  assert.equal(h.calls[0][0], h.created[0]);
+  assert.deepEqual(h.calls.slice(1).map(call => call[0]), h.created.slice(24));
+  assert.ok(h.calls.every(call => !effects.includes(call[0])));
+});
+
 test('previous and current anchors protect reused entries and release unused images after a full frame', async t => {
   const h = await setup(t);
   h.frame(0);
