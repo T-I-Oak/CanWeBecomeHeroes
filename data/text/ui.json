@@ -591,6 +591,36 @@
       "en": "Comment"
     }
   },
+  "trialResultShareCertificate": {
+    "lang-store": {
+      "ja": "勇者認定試験に合格しました！",
+      "en": "I passed the Hero Certification Exam!"
+    }
+  },
+  "trialResultShareFailure": {
+    "lang-store": {
+      "ja": "勇者認定試験に挑戦しました！",
+      "en": "I took on the Hero Certification Exam!"
+    }
+  },
+  "trialResultShareChallenge": {
+    "lang-store": {
+      "ja": "実力判定試験を終えました！",
+      "en": "I finished the Hero Proficiency Exam!"
+    }
+  },
+  "recordsSaveFailed": {
+    "lang-store": {
+      "ja": "記録を保存できませんでした。このページを閉じると、未保存の記録が失われます。",
+      "en": "Your records could not be saved. Unsaved records will be lost if you close this page."
+    }
+  },
+  "recordsSaveRetry": {
+    "lang-store": {
+      "ja": "保存を再試行",
+      "en": "Retry saving"
+    }
+  },
   "trialResultEnd": {
     "lang-store": {
       "ja": "試験終了",

@@ -4,10 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Can We Become Heroes?</title>
+    <script>
+      {
+        let active = true;
+        let failed = false;
+        const showFailure = () => {
+          const notice = document.getElementById('startup-error');
+          if (!notice) return;
+          document.querySelector('.AppShell').hidden = true;
+          notice.hidden = false;
+        };
+        const onResourceError = event => {
+          if (event.target.matches?.('script[src], link[rel="stylesheet"]')) {
+            window.gameStartup.fail(new Error(`Startup resource failed: ${event.target.src || event.target.href}`));
+          }
+        };
+        window.gameStartup = {
+          fail(error) {
+            if (!active) throw error;
+            failed = true;
+            console.error(error);
+            showFailure();
+          },
+          complete() {
+            if (failed) return;
+            active = false;
+            window.removeEventListener('error', onResourceError, true);
+          },
+        };
+        window.addEventListener('error', onResourceError, true);
+        document.addEventListener('DOMContentLoaded', () => {
+          document.getElementById('startup-retry').addEventListener('click', () => location.reload());
+          if (failed) showFailure();
+        }, { once: true });
+      }
+    </script>
     <link rel="icon" type="image/png" sizes="1254x1254" href="/CanWeBecomeHeroes/assets/favicon.png" />
-    <script type="module" crossorigin src="/CanWeBecomeHeroes/assets/index-mXJUZCbm.js"></script>
+    <script type="module" crossorigin src="/CanWeBecomeHeroes/assets/index-CTUMb31q.js"></script>
     <link rel="modulepreload" crossorigin href="/CanWeBecomeHeroes/assets/image-levels-axudOqy6.js">
-    <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/index-wsw7hx9a.css">
+    <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/index-Ct5L3M_8.css">
   </head>
   <body>
     <main class="AppShell state-title">
@@ -107,6 +142,11 @@
       <aside class="ModalLayer StageSelection" id="stage-selection" data-ui-aria="chooseRoute" hidden></aside>
       <aside class="ModalLayer TrialRunResult" id="trial-run-result" hidden></aside>
       <aside class="InformationWindowLayer" id="information-windows" data-ui-aria="informationWindows"></aside>
+      <aside class="RecordSaveNotice" id="record-save-notice" role="status" hidden></aside>
     </main>
+    <aside class="StartupError" id="startup-error" role="alert" hidden>
+      <p>Failed to load game data.</p>
+      <button id="startup-retry" type="button">Retry</button>
+    </aside>
   </body>
 </html>
