@@ -1,7 +1,6 @@
 .FlowLog__Entry {
   --flow-subject-color: var(--color-subject-system);
   --flow-level-color: var(--color-level-info);
-  --flow-duration: 6s;
   --flow-font-size: clamp(18px, 4vmin, 32px);
   --flow-font-emphasis: 1;
   position: fixed;
@@ -14,7 +13,7 @@
 
 .FlowLog__Entry.state-running {
   visibility: visible;
-  animation: flow-log-right-to-left var(--flow-duration-adjusted, var(--flow-duration, 6s)) linear backwards;
+  animation: flow-log-right-to-left var(--flow-duration-adjusted) linear backwards;
 }
 
 .FlowLog__Reference {
@@ -66,14 +65,12 @@
 .FlowLog__Entry.enemy.info,
 .FlowLog__Entry.system.info {
   --flow-level-color: var(--color-level-info);
-  --flow-duration: 6s;
 }
 
 .FlowLog__Entry.hero.luck,
 .FlowLog__Entry.enemy.luck,
 .FlowLog__Entry.system.luck {
   --flow-level-color: var(--color-level-luck);
-  --flow-duration: 9s;
   --flow-font-emphasis: 1.3125;
 }
 
@@ -82,13 +79,11 @@
 .FlowLog__Entry.enemy.unluck,
 .FlowLog__Entry.system.unluck {
   --flow-level-color: var(--color-level-unluck);
-  --flow-duration: 7s;
   --flow-font-emphasis: 1.125;
 }
 
 .FlowLog__Entry.system.warning {
   --flow-level-color: var(--color-level-warning);
-  --flow-duration: 10s;
   color: var(--color-level-warning);
   --flow-font-emphasis: 1.4375;
 }

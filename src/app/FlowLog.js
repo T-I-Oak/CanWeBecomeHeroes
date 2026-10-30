@@ -1,17 +1,17 @@
 import { createLogMessageParts } from '../game/LogPresentation.js';
 import { renderLogMessage } from './LogMessageView.js';
 
-const FALLBACK_DURATION_MS = 6000;
+const DEFAULT_DURATION_MS = 6000;
+const LEVEL_DURATION_MS = Object.freeze({ luck: 9000, unluck: 7000 });
 const FLOW_Y_RANGES = Object.freeze({
   battle: Object.freeze({ min: 12, max: 44 }),
   other: Object.freeze({ min: 56, max: 88 }),
 });
 
-function getAnimationDurationMs(element) {
-  const value = window.getComputedStyle(element).getPropertyValue('--flow-duration').trim();
-  if (value.endsWith('ms')) return Number.parseFloat(value) || FALLBACK_DURATION_MS;
-  if (value.endsWith('s')) return (Number.parseFloat(value) || FALLBACK_DURATION_MS / 1000) * 1000;
-  return FALLBACK_DURATION_MS;
+function getAnimationDurationMs({ subject, level }) {
+  if (!['hero', 'enemy', 'system'].includes(subject)) return DEFAULT_DURATION_MS;
+  if (subject === 'system' && level === 'warning') return 10000;
+  return LEVEL_DURATION_MS[level] ?? DEFAULT_DURATION_MS;
 }
 
 export default class FlowLog {
@@ -46,7 +46,7 @@ export default class FlowLog {
     entry.append(message);
     this.container.append(entry);
 
-    const duration = getAnimationDurationMs(entry);
+    const duration = getAnimationDurationMs(record);
     const adjustedDuration = duration * (0.85 + this.random() * 0.3);
     entry.style.setProperty('--flow-y', `${this.getFlowY(record.channel)}%`);
     entry.style.setProperty('--flow-duration-adjusted', `${adjustedDuration}ms`);
