@@ -453,6 +453,22 @@
     "/assets/background/trampled-ground.png": {
       "size": 256,
       "sourceSha256": "18e4fe8b38e2138c0d738479541b002ca541009335fa5b0934cf742cde6cd837"
+    },
+    "/assets/effects/defense/physical-shield.png": {
+      "size": 1024,
+      "sourceSha256": "ff0487c5b41d7506013df1ffa970acec1f196dca1d9e3955979650b40bfa8f0b"
+    },
+    "/assets/effects/attributes/fire.png": {
+      "size": 1254,
+      "sourceSha256": "6eea65e8c0601ede815e888f78eec9817cf02672cbadfb63fdde63b7d6d40b6a"
+    },
+    "/assets/effects/attributes/water.png": {
+      "size": 1254,
+      "sourceSha256": "6a910db9791fa543826081a4b5bc9c6b7e4b7c578d897646fea38eb53ec7a43e"
+    },
+    "/assets/effects/attributes/lightning.png": {
+      "size": 1254,
+      "sourceSha256": "b0459fddb33b5a251d0f524ae17242d70b4feb2df0208bf6c246f1ec92d7cafb"
     }
   }
 }

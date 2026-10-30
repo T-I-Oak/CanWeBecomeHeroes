@@ -188,6 +188,7 @@ export default class CombatEffectSystem {
 
   draw(context, assets = null) {
     context.save();
+    context.save();
     this.lightning.forEach((effect) => {
       const from = visualPosition(effect.from);
       const to = visualPosition(effect.to);
@@ -208,6 +209,7 @@ export default class CombatEffectSystem {
       context.lineTo(to.x, to.y);
       context.stroke();
     });
+    context.restore();
     if (assets) this.tagTransfers.forEach((effect) => {
       const from = visualPosition(effect.from);
       const to = visualPosition(effect.to);
@@ -309,10 +311,7 @@ export default class CombatEffectSystem {
   }
 
   drawNightFamiliar(context, assets, pose) {
-    context.save();
-    context.filter = 'grayscale(1) brightness(0.32)';
     this.drawEffectSprite(context, assets, NIGHT_FAMILIAR_ASSET_PATH, { ...pose, scaleX: pose.flap });
-    context.restore();
   }
 
   getNightFamiliarFlap(index) {

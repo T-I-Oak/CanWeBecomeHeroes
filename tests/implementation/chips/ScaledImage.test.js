@@ -5,6 +5,18 @@ import { createHash } from 'node:crypto';
 import manifest from '../../../src/chips/image-levels.json' with { type: 'json' };
 import { selectImageLevel, registerScaledImage, drawScaledImage, getImageLevelDiagnostics, setImageLevelRedraw } from '../../../src/chips/ScaledImage.js';
 
+test('shield and attribute levels satisfy both axes and fall back at maximum zoom and DPR', () => {
+  const paths = ['/assets/effects/defense/physical-shield.png', ...['fire', 'water', 'lightning'].map(name => `/assets/effects/attributes/${name}.png`)];
+  for (const path of paths) {
+    const entry = manifest[path];
+    assert.ok(entry, path);
+    const size = path.includes('defense') ? 96 * 2.5 / (941 / 1024) * 1.1 : 96 * 4 * 1.125;
+    const selected = selectImageLevel(entry, size, size, { a: 1, b: 0, c: 0, d: 1 });
+    assert.ok(selected.width >= size && selected.height >= size, path);
+    assert.equal(selectImageLevel(entry, size * 2, size * 2, { a: 4.5, b: 0, c: 0, d: 4.5 }), null, path);
+  }
+});
+
 test('static canvases redraw after a shared pending level loads or fails', t => {
   const previous = globalThis.Image;
   const created = [];

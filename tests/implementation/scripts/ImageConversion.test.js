@@ -15,6 +15,12 @@ test('conversion preserves aspect ratio, omits original-size levels and rejects 
   assert.throws(() => getImageConversionPlan(0, 512, 128));
   const definition = { size: 256, sourceSha256: 'a'.repeat(64) };
   assert.doesNotThrow(() => validateImageDefinition('/assets/status/weight.png', definition));
+  assert.doesNotThrow(() => validateImageDefinition('/assets/effects/defense/physical-shield.png', definition));
+  for (const attribute of ['fire', 'water', 'lightning']) {
+    assert.doesNotThrow(() => validateImageDefinition(`/assets/effects/attributes/${attribute}.png`, definition));
+  }
+  assert.throws(() => validateImageDefinition('/assets/effects/night-familiar.png', definition));
+  assert.throws(() => validateImageDefinition('/assets/effects/attributes/unknown.png', definition));
   assert.throws(() => validateImageDefinition('/assets/../../source.png', definition));
   assert.throws(() => validateImageDefinition('/assets/status/weight.png', { ...definition, size: -1 }));
   assert.throws(() => validateImageDefinition('/assets/status/weight.png', { ...definition, sourceSha256: '' }));

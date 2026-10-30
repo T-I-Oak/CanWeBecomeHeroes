@@ -68,8 +68,8 @@ try {
   const groups = new Set(sources.map(source => source.relative.split('/')[0]));
   for (const group of groups) {
     const directory = `public/assets/image-levels/${group}`;
-    for (const filename of await readdir(directory)) {
-      const path = `${directory}/${filename}`;
+    for (const filename of await readdir(directory, { recursive: true })) {
+      const path = `${directory}/${filename.replaceAll('\\', '/')}`;
       if (/\.[a-f0-9]{12}\.\d+\.png$/.test(filename) && !generated.has(path)) await unlink(path);
     }
   }
