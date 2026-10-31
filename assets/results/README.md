@@ -3,7 +3,7 @@
 - 方法：組み込みimage_gen（imagegenスキル）。
 - 背景：透明。
 - 保存先：`public/assets/results/trial-guild-seal-v1.png`。
-- 本番の合格通知とモックアップの認定印として配置。赤いインクの剣・盾・星・月桂樹を組み合わせた、正面向きの紋章印。
+- 本番の合格通知の認定印として`src/app/TrialResultPaper.js`で使用する。赤いインクの剣・盾・星・月桂樹を組み合わせた、正面向きの紋章印。
 
 ## 使用したプロンプト
 
