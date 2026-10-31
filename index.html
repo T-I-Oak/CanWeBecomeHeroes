@@ -8,9 +8,11 @@
       {
         let active = true;
         let failed = false;
+        let failureDetails = '';
         const showFailure = () => {
           const notice = document.getElementById('startup-error');
           if (!notice) return;
+          document.getElementById('startup-error-details').textContent = failureDetails;
           document.querySelector('.AppShell').hidden = true;
           notice.hidden = false;
         };
@@ -23,6 +25,7 @@
           fail(error) {
             if (!active) throw error;
             failed = true;
+            failureDetails = [error?.name, error?.message ?? String(error), error?.stack].filter(Boolean).join('\n');
             console.error(error);
             showFailure();
           },
@@ -40,9 +43,9 @@
       }
     </script>
     <link rel="icon" type="image/png" sizes="1254x1254" href="/CanWeBecomeHeroes/assets/favicon.png" />
-    <script type="module" crossorigin src="/CanWeBecomeHeroes/assets/index-bCL9v0_3.js"></script>
+    <script type="module" crossorigin src="/CanWeBecomeHeroes/assets/index-DnTdenKN.js"></script>
     <link rel="modulepreload" crossorigin href="/CanWeBecomeHeroes/assets/image-levels-axudOqy6.js">
-    <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/index-Ct5L3M_8.css">
+    <link rel="stylesheet" crossorigin href="/CanWeBecomeHeroes/assets/index-BULlKvvs.css">
   </head>
   <body>
     <main class="AppShell state-title">
@@ -147,6 +150,7 @@
     <aside class="StartupError" id="startup-error" role="alert" hidden>
       <p>Failed to load game data.</p>
       <button id="startup-retry" type="button">Retry</button>
+      <pre class="StartupError__Details" id="startup-error-details"></pre>
     </aside>
   </body>
 </html>
