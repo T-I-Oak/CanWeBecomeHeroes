@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import GameCanvasInput from '../../../src/app/GameCanvasInput.js';
 import Camera from '../../../src/game/Camera.js';
 import HeroItemInteractionController from '../../../src/game/HeroItemInteractionController.js';
+import Chip from '../../../src/chips/Chip.js';
+import ChipBoard from '../../../src/chips/ChipBoard.js';
 
 function fixture() {
   const hero = { chip: { x: 1800, y: 1000 } };
@@ -30,6 +32,44 @@ function fixture() {
   const event = (x, y) => ({ pointerId: 1, clientX: x + 10, clientY: y + 20, preventDefault() {} });
   return { input, camera, calls, hero, event };
 }
+
+test('real visual hit testing drives drag start, hover, release and tap through camera transforms', () => {
+  for (const zoom of [0.5, 1, 1.5]) {
+    const { input, camera, event } = fixture();
+    camera.zoom = zoom;
+    camera.x = 100;
+    camera.y = 200;
+    const starts = [];
+    const board = new ChipBoard({ width: 3000, height: 2000 });
+    const controller = new HeroItemInteractionController(board, { start: (...args) => starts.push(args) });
+    const hero = { chip: new Chip({ id: 1, type: 'hero', x: 300, y: 650, weight: 1, tagPaths: [] }), currentArea: 'preparation', stamina: 3 };
+    const item = { chip: new Chip({ id: 2, type: 'item', x: 550, y: 650, weight: 1, tagPaths: [] }) };
+    [hero, item].forEach(entity => {
+      entity.chip.height = 200;
+      entity.chip.effectOffsetX = 20;
+      entity.chip.effectOffsetY = 10;
+      controller.add(entity);
+    });
+    input.controller = controller;
+    input.getScreenTarget = () => null;
+    input.getInformationTarget = point => controller.tap(point.x, point.y);
+    let tapped;
+    input.onInformationTarget = target => { tapped = target; };
+    const at = (x, y) => event((x - camera.x) * zoom, (y - camera.y) * zoom);
+    input.handlePointerDown(at(320, 460));
+    assert.equal(input.drag.entity, hero);
+    input.handlePointerMove(at(570, 460));
+    assert.equal(controller.getSelectionGuide().target, item);
+    input.handlePointerUp(at(570, 460));
+    assert.deepEqual(starts, [[hero, item]]);
+    input.handlePointerDown(at(570, 460));
+    input.handlePointerUp(at(570, 460));
+    assert.equal(tapped, item);
+    input.handlePointerDown(at(550, 650));
+    assert.equal(input.drag.entity, undefined);
+    input.handlePointerCancel();
+  }
+});
 
 test('touch loupe follows selection across empty space and edge scrolling, then clears on every exit', () => {
   for (const exit of ['handlePointerUp', 'handlePointerCancel', 'handleLostPointerCapture', 'pinch']) {

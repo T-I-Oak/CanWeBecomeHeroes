@@ -1,5 +1,6 @@
 import { CHIP_CENTER_ART_MASK_RADIUS_RATIO, getCenterImagePlacement } from './ChipArtLayout.js';
 import { drawScaledImage } from './ScaledImage.js';
+import { getChipVisualCenter } from './ChipVisualGeometry.js';
 import {
   CONDITION_GLYPH_SCALE,
   CONDITION_ICON_CORNER_RATIO,
@@ -97,8 +98,7 @@ export default class ChipRenderer {
   drawBody(chip, timeSeconds = 0) {
     const { context } = this;
     const scale = chip.scale;
-    const visualX = chip.x + (chip.effectOffsetX ?? 0);
-    const drawY = chip.y - chip.height + (chip.effectOffsetY ?? 0);
+    const { x: visualX, y: drawY } = getChipVisualCenter(chip);
     const airRatio = Math.min(chip.height / (chip.radius * 5), 0.65);
     const shadowAlpha = 0.24 / (1 + airRatio);
 
@@ -157,8 +157,7 @@ export default class ChipRenderer {
   }
 
   drawEffects(chip, timeSeconds = 0, { staminaPauseTarget = false } = {}) {
-    const visualX = chip.x + (chip.effectOffsetX ?? 0);
-    const drawY = chip.y - chip.height + (chip.effectOffsetY ?? 0);
+    const { x: visualX, y: drawY } = getChipVisualCenter(chip);
     if (staminaPauseTarget) this.drawStaminaPauseWaves(chip, visualX, drawY, timeSeconds);
     this.drawPhysicalShieldOverlay(chip, visualX, drawY, timeSeconds);
     this.drawAttributeOverlays(chip, visualX, drawY, timeSeconds);

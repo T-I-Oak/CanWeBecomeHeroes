@@ -1,4 +1,5 @@
 import ChipBoard from '../chips/ChipBoard.js';
+import { getChipVisualCenter } from '../chips/ChipVisualGeometry.js';
 import ChipRenderer, { createTagAngles } from '../chips/ChipRenderer.js';
 import { getConditionIconAtPoint, getConditionIconInformationTarget } from '../chips/ConditionIconLayout.js';
 import ItemPickupController from '../game/ItemPickupController.js';
@@ -61,10 +62,9 @@ import { createAchievementNotifier } from '../game/AchievementLog.js';
 function getChipTagAtPoint(entity, point) {
   const { chip, tags = [] } = entity;
   if (!chip || tags.length === 0) return null;
-  const visualX = chip.x + (chip.effectOffsetX ?? 0);
-  const visualY = chip.y - chip.height + (chip.effectOffsetY ?? 0);
+  const { x: visualX, y: visualY } = getChipVisualCenter(chip);
   const rotation = chip.tilt + chip.poseTilt + (chip.effectRotation ?? 0);
-  const scale = chip.scale || 1;
+  const scale = chip.scale;
   const translatedX = (point.x - visualX) / scale;
   const translatedY = (point.y - visualY) / scale;
   const localX = translatedX * Math.cos(rotation) + translatedY * Math.sin(rotation);
@@ -236,7 +236,8 @@ export async function startTrial({
   trial.getDirectionIndicators = () => getHeroDirectionIndicators(controller.getHeroes(), camera);
   trial.getScreenTarget = (point) => getHeroDirectionIndicatorAtPoint(trial.getDirectionIndicators(), point);
   trial.getCursor = (point, screenPoint) => (
-    trial.getScreenTarget(screenPoint) || isWarehousePortalAtPoint(context, point) ? 'pointer' : ''
+    trial.getScreenTarget(screenPoint) || isWarehousePortalAtPoint(context, point)
+      || controller.getEntityAt(point.x, point.y) ? 'pointer' : ''
   );
   trial.getInformationTarget = (point) => {
       if (isWarehousePortalAtPoint(context, point)) return { type: 'portal' };

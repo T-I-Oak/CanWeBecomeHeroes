@@ -80,7 +80,7 @@ test('a ready hero starts moving when one item is selected', () => {
   controller.add(item);
 
   controller.beginSelection(hero);
-  controller.completeSelectionAt(item.chip.x, item.chip.y);
+  controller.completeSelectionAt(item.chip.x, item.chip.y - item.chip.height);
 
   assert.equal(controller.activeHero, null);
   assert.equal(pickupController.states.get(hero).item, item);
@@ -95,7 +95,7 @@ test('a stamina-five hero starts moving after selecting one item', () => {
   [hero, firstItem].forEach((entity) => controller.add(entity));
 
   controller.beginSelection(hero);
-  controller.completeSelectionAt(firstItem.chip.x, firstItem.chip.y);
+  controller.completeSelectionAt(firstItem.chip.x, firstItem.chip.y - firstItem.chip.height);
   assert.equal(pickupController.states.get(hero).item, firstItem);
   assert.deepEqual(pickupController.states.get(hero).selectedItems, []);
 });

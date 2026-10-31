@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { verifyTouchDragLoupe } from './helpers/touchDragLoupe.js';
+import { verifyChipVisualHitTest } from './helpers/chipVisualHitTest.js';
 
 const { version } = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
 
@@ -89,5 +90,6 @@ test('initial heroes land before the introduction, preserving pause, read state 
       completed: tutorial.manager.state.completed.includes('game-screen-intro') };
   })).toEqual({ ready: true, active: false, paused: true, tutorialPause: false, completed: true });
   await verifyTouchDragLoupe(page);
+  await verifyChipVisualHitTest(page);
   expect(errors).toEqual([]);
 });
