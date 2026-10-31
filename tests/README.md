@@ -36,7 +36,7 @@
 | --- | --- |
 | `01.game_settings.md` | `spec/01.game_settings.test.js`、`game/RunScenario`・`StartPartySelection`・`TrialRunResult`、`browser/01.game_settings.pw.js` |
 | `02.hero_item_interaction.md` | `spec/02.hero_item_interaction.test.js`、`game/ItemPickupController`・`ShoppingBag`・`ShopSystem`・`GuildSystem`・`TrainingSystem`、`app/DragControls` |
-| `03.unique_skills.md` | `spec/03.unique_skills.test.js`、`game/UniqueSkillEffectSystem`・`UniqueSkillTrigger`・`CombatConditionSystem`・`CombatDamageReactionSystem`・`CombatAttributeReactionSystem`・`CombatGustSystem`・`CombatKnockbackSystem` |
+| `03.unique_skills.md` | `spec/03.unique_skills.test.js`・`spec/03.unique_skill_owner_verification.test.js`、`game/UniqueSkillEffectSystem`・`UniqueSkillTrigger`・`CombatConditionSystem`・`CombatDamageReactionSystem`・`CombatAttributeReactionSystem`・`CombatGustSystem`・`CombatKnockbackSystem` |
 | `04.combat.md` | `spec/04.combat.test.js`、`game/Combat*`・`BattleSystem`・`EncounterDefinitions`・`StageController` |
 | `05.information_window.md` | `spec/05.information_window.test.js`、`app/InformationWindow*`・`EntityDetailLayout`、`game/EntityRegistry`・`StatusLocalization` |
 | `06.run_records.md` | `spec/06.run_records.test.js`、`game/GameStatistics`・`StatisticsHooks`・`RunRecordsRepository`・`RunRankings`・`Achievements`、`app/RecordScreenData`・`CroppedEnemyLine`・`AchievementTable` |
@@ -46,6 +46,8 @@
 `spec/03.unique_skills.test.js` は実際のBattleSystem・ChipBoard・Factory・装備・入力後の移動制御を接続し、全15種の固有スキルを確認する。Enemy専用・Exの共通規則、撃破時召喚、ダメージ時の宝珠・反撃・属性・ゲージ、行動に伴う首・使い魔・諸刃の剣・タグ消去／移転・水会心・惑乱・不運・突風、加護の戦闘開始／行動後／被弾後の再抽選を対象とする。乱数を制御し、Ex差と主要な不発・解除条件を検証する。補助コードは`spec/helpers/uniqueSkillsFixture.js`に置く。
 
 受入テストは全条件の組合せや乱数分布、Canvasの見た目を網羅しない。反応計算・対象選択・状態解除の細部は既存の実装テストと併用する。暴風の翼はHeroの上昇・等倍維持・倉庫での装備との同時落下・着地後の目的地とEnemyへの不発を自動検証し、見た目は実ゲームまたは一時的な確認ページで判断する。
+
+`spec/03.unique_skill_owner_verification.test.js` は、固有スキルの確認IDに対応する効果・解除条件と、描画へ渡すアイコン・属性画像・ポップアップの値を検証する。Canvasは記録用の代替オブジェクトを使うため、実ブラウザーでの画質・配置やオーナーの視覚判断を代替しない。
 
 `spec/05.information_window.test.js` は実際のManager・描画層・文言リポジトリ・GameClock・EntityRegistry・生成したHero/Enemy/Itemを接続する。最小限のDOMで装備→タグ→ステータスのリンク、子の置換、ピンと閉じるボタン、内外のフォーカス、時間停止の独立性、定義と実体の表示差、スタミナ・HPの再描画、実体消滅を確認する。内外タップは入力側から渡されるウィンドウIDをManagerへ直接通知する境界で検証し、座標のヒット判定・実機タップ・Canvas画像・CSSの見た目は対象外とする。全対象・全表示文言・固有スキルの効果計算を網羅するものではない。
 
