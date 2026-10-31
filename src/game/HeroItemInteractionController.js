@@ -2,6 +2,7 @@ import { GAME_AREAS } from './GameAreas.js';
 import { AREA_THEME } from './AreaTheme.js';
 import EntityRegistry from './EntityRegistry.js';
 import Chip from '../chips/Chip.js';
+import { isChipBodyAtPoint } from '../chips/ChipVisualGeometry.js';
 import { getWarehouseItemCapacity } from './WarehouseCapacity.js';
 
 export default class HeroItemInteractionController {
@@ -56,7 +57,7 @@ export default class HeroItemInteractionController {
   }
 
   getEntityAt(x, y) {
-    const chip = this.board.getRenderChips().toReversed().find((current) => Math.hypot(current.x - x, current.y - y) <= current.radius);
+    const chip = this.board.getRenderChips().toReversed().find((current) => isChipBodyAtPoint(current, x, y));
     const entity = chip && this.entities.get(chip.id);
     return entity?.isStored ? null : entity;
   }

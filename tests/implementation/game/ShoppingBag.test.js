@@ -87,6 +87,6 @@ test('a tap only identifies an entity and does not begin a selection', () => {
   const hero = new HeroFactory().create({ profession: 'mage', x: 700, y: 700, stamina: 3 });
   controller.add(hero);
 
-  assert.equal(controller.tap(hero.chip.x, hero.chip.y), hero);
+  assert.equal(controller.tap(hero.chip.x, hero.chip.y - hero.chip.height), hero);
   assert.equal(controller.hasSelectionSource(), false);
 });
