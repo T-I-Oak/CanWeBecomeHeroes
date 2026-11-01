@@ -4,7 +4,8 @@ import { resolvePublicAssetPath } from '../chips/PublicAssetPath.js';
 import { createAchievementTable } from './AchievementTable.js';
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const element = (tag, className) => { const node = document.createElement(tag); node.className = className; return node; };
-const signature = '<svg class="Signature" viewBox="0 0 190 65" aria-hidden="true"><text x="12" y="39" fill="currentColor" font-size="37" font-family="Segoe Script, cursive" font-style="italic">Zane</text><path d="M8 50Q65 43 159 48M128 35q18 4 38-7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+// Keep the handwritten lettering and flourish as paths so installed fonts cannot change their alignment.
+const signature = '<svg class="Signature" viewBox="0 0 190 65" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 23C28 14 46 14 63 18C48 25 30 39 19 45C35 39 51 38 65 42M27 31L54 29"/><path d="M79 31C75 24 64 29 60 37C55 47 63 49 71 39L80 29C76 37 72 46 79 44L89 37C95 32 99 27 97 29L89 44C96 33 105 26 109 30C112 33 101 45 107 45C112 45 118 38 122 35C137 25 139 35 124 38C117 40 119 47 128 44C139 41 145 35 153 30"/><path d="M153 30C166 24 177 28 169 34C154 46 113 50 69 51C49 51 29 54 20 57" stroke-width="1.3"/></g></svg>';
 
 export function renderTrialResultPaper(paper, result, textRepository, language, reverse = false, headingId = null) {
   const label = id => textRepository.getLabel(id);
