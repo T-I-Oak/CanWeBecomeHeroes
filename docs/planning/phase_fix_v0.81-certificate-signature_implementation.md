@@ -28,9 +28,20 @@
 - 開発サーバーでは既存のpublic配下JSON importに関するViteの警告が出る。標準ブラウザー検証と本番ビルドは成功しており、今回のサイン・バージョン変更に関係しないため変更しない。
 - Chromiumの確認をSafari実機での確認済みとは扱わない。
 
-## オーナー検証
+## ブランチからの直接配信
 
-確認バージョン: `0.81.0`。公開先のv1.0ではなく、このブランチの確認環境を使用する。
+- オーナーの「このブランチから直接公開してください」という指示に基づき、計画へ実装フェーズ中のgh-pages直接配信を追加した。masterへのマージや正式公開用JSONの切替は行っていない。
+- 配信元: `fix/v0.81-certificate-signature`の`f0fe49a`。共通参照は`master`の`e4974f86606374fb81dae4e57644f051085c2c45`でremoteと一致し、src/libの未コミット・未追跡変更なし。push前にも所定の6コマンドで確認した。
+- GitHub CLIが利用できないため、検証済みdistをgh-pagesの作業領域へ反映し、通常コミット・pushした。履歴の書き換え・force pushなし。
+- 配信コミット: `1f9ea162fde60c285468ca594a9aae7f0a31f278`。remoteのgh-pagesとの一致を確認した。
+- 公開先: `https://t-i-oak.github.io/CanWeBecomeHeroes/`。HTTP 200、新ビルド`index-DEOshojw.js`への参照を確認した。公開用JSONに内容の変更はない。
+- `node tmp_signature_public_check.mjs`をサンドボックス外で実行し終了コード0。Chromiumで公開先のタイトル`v0.81.0`、新しい署名パスの存在、旧Segoe Script指定の不在、更新履歴の空配列とボタン`pending`を確認した。HTTPエラー・実行時例外なし。タイトル画像は`tmp_signature_public_title.png`。
+- Windowsビルドのindex.htmlはCRLFを含むため、gh-pages上の差分検査では改行を末尾空白として報告した。配信元の`git diff --check`は成功しており、ビルド成果物の改行だけを理由に製品ソースは変更していない。
+- ネットワークとGit worktree管理領域の制限は必要な権限を申請して対処した。取得に時間のかかったcloneは中断し、既存リポジトリのfetchとworktreeを使用した。
+
+## Safari検証の依頼
+
+確認バージョン: `0.81.0`。上記の公開URLでタイトル左下の表示を確認してから検証する。
 
 | ID | 確認内容と理由 | 操作手順 | 期待結果 | 判断・対応 |
 | --- | --- | --- | --- | --- |
