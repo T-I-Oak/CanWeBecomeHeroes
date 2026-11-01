@@ -50,21 +50,22 @@
   "badge": {
     "content": {
       "lang-store": {
-        "ja": "11月公開予定",
-        "en": "Coming November"
+        "ja": "11月1日 v1.0公開！",
+        "en": "v1.0 released November 1!"
       }
     },
-    "type": "info"
+    "type": "info",
+    "featuredUntil": "2026-12-31"
   },
   "button": {
     "content": {
       "lang-store": {
-        "ja": "COMING SOON",
-        "en": "COMING SOON"
+        "ja": "PLAY",
+        "en": "PLAY"
       }
     },
     "url": "https://t-i-oak.github.io/CanWeBecomeHeroes/",
-    "type": "pending"
+    "type": "published"
   },
   "image": "assets/thumbnail.png"
 }
